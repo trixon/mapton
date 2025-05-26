@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MOptions;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.worldwind.api.WWHelper;
@@ -53,8 +54,8 @@ public class GradeHRenderer extends GradeHRendererBase {
         GradeHRendererBase.sMapObjects = mapObjects;
 //        plotBearing(p, position);
 
-        var pos1 = Position.fromDegrees(p.getP1().getLat(), p.getP1().getLon());
-        var pos2 = Position.fromDegrees(p.getP2().getLat(), p.getP2().getLon());
+        var pos1 = BCoordinatrix.toPositionWW2d(p.getP1());
+        var pos2 = BCoordinatrix.toPositionWW2d(p.getP2());
 
         if (sCheckModel.isChecked(GradeHRendererItem.HOR_INDICATOR)) {
             plotHorIndicator(p, position, pos1, pos2, mapObjects);

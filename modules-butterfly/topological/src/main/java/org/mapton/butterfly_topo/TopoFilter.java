@@ -36,9 +36,9 @@ import javax.swing.SortOrder;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.api.MLatLon;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.FormHelper;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
@@ -513,14 +513,11 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         if (point.getDimension() != BDimension._1d || !m1dCloseToAutoProperty.get()) {
             return true;
         } else {
-            var pointLatLon = new MLatLon(point.getLat(), point.getLon());
-
             return mManager.getAllItems().stream()
                     .filter(p -> p.getMeasurementMode() == BMeasurementMode.AUTOMATIC)
                     .filter(p -> p.ext().getMeasurementAge(ChronoUnit.DAYS) < 7)
                     .filter(p -> {
-                        var latLon = new MLatLon(p.getLat(), p.getLon());
-                        var distance = latLon.distance(pointLatLon);
+                        var distance = BCoordinatrix.toLatLon(p).distance(BCoordinatrix.toLatLon(point));
                         return distance <= 10.0;
                     })
                     .findFirst()

@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo;
 
-import org.mapton.butterfly_topo.graphics.GraphicRenderer;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -31,10 +30,12 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
+import org.mapton.butterfly_topo.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -160,7 +161,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
                 synchronized (mManager.getTimeFilteredItems()) {
                     for (var p : mManager.getTimeFilteredItems()) {
                         if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
-                            var position = Position.fromDegrees(p.getLat(), p.getLon());
+                            var position = BCoordinatrix.toPositionWW2d(p);
                             var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
                             var mapObjects = new ArrayList<AVListImpl>();
 

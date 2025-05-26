@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +15,9 @@
  */
 package org.mapton.butterfly_topo;
 
-import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.api.MLatLon;
 import org.mapton.api.Mapton;
+import org.mapton.butterfly_core.api.BCoordinatrix;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.netbeans.spi.quicksearch.SearchProvider;
 import org.netbeans.spi.quicksearch.SearchRequest;
 import org.netbeans.spi.quicksearch.SearchResponse;
@@ -27,11 +27,11 @@ public class TopoSearchProvider implements SearchProvider {
 
     @Override
     public void evaluate(SearchRequest request, SearchResponse response) {
-        for (var o : TopoManager.getInstance().getAllItems()) {
-            if (StringHelper.matchesSimpleGlob(o.getName(), request.getText(), true, true)) {
+        for (var p : TopoManager.getInstance().getAllItems()) {
+            if (StringHelper.matchesSimpleGlob(p.getName(), request.getText(), true, true)) {
                 if (!response.addResult(() -> {
-                    Mapton.getEngine().panTo(new MLatLon(o.getLat(), o.getLon()), .95);
-                }, o.getName())) {
+                    Mapton.getEngine().panTo(BCoordinatrix.toLatLon(p), .95);
+                }, p.getName())) {
                     break;
                 }
             }

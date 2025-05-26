@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.TreeMap;
 import javafx.geometry.Point2D;
 import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.api.MLatLon;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.BDimension;
@@ -94,8 +94,8 @@ public class GradeHManager extends GradeManagerBase {
         Collections.sort(grades, (o1, o2) -> Double.valueOf(Math.abs(o2.ext().getDiff().getZQuota())).compareTo(Math.abs(o1.ext().getDiff().getZQuota())));
 
         grades.forEach(g -> {
-            var first = new MLatLon(g.getP1().getLat(), g.getP1().getLon());
-            var second = new MLatLon(g.getP2().getLat(), g.getP2().getLon());
+            var first = BCoordinatrix.toLatLon(g.getP1());
+            var second = BCoordinatrix.toLatLon(g.getP2());
             var d = first.distance(second);
             var b = first.getBearing(second);
             var mid = first.getDestinationPoint(b, d * .5);
