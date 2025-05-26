@@ -18,6 +18,7 @@ package org.mapton.api.ui.forms;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.LinkedHashMap;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
@@ -56,18 +57,6 @@ public abstract class MBaseFilterSection {
         }
     }
 
-    public String makeInfo(ObservableList<String> list) {
-        return String.join(",", list);
-    }
-
-    public String makeInfo(String s, String empty) {
-        return StringUtils.equalsIgnoreCase(s, empty) ? "" : s;
-    }
-
-    public String makeInfoInteger(ObservableList<Integer> list) {
-        return String.join(",", list.stream().map(o -> Integer.toString(o)).toList());
-    }
-
     public void createInfoContent(LinkedHashMap<String, String> map) {
     }
 
@@ -87,21 +76,33 @@ public abstract class MBaseFilterSection {
         return mCheckedTab;
     }
 
-    public boolean validateCheck(IndexedCheckModel checkModel, Object o) {
-        return checkModel.isEmpty() || checkModel.isChecked(o);
+    public boolean inRange(double value, DoubleProperty minProperty, DoubleProperty maxProperty) {
+        return value >= minProperty.get() && value <= maxProperty.get();
     }
 
     public void initSession(SessionManager sessionManager) {
 
     }
 
-    public abstract void onShownFirstTime();
-
-    public abstract void reset(PropertiesConfiguration filterConfig);
-
     public boolean isSelected() {
         return selectedProperty().get();
     }
+
+    public String makeInfo(ObservableList<String> list) {
+        return String.join(",", list);
+    }
+
+    public String makeInfo(String s, String empty) {
+        return StringUtils.equalsIgnoreCase(s, empty) ? "" : s;
+    }
+
+    public String makeInfoInteger(ObservableList<Integer> list) {
+        return String.join(",", list.stream().map(o -> Integer.toString(o)).toList());
+    }
+
+    public abstract void onShownFirstTime();
+
+    public abstract void reset(PropertiesConfiguration filterConfig);
 
     public BooleanProperty selectedProperty() {
         return mCheckedTab.getTabCheckBox().selectedProperty();
@@ -122,6 +123,10 @@ public abstract class MBaseFilterSection {
 
     public void setSessionManager(SessionManager sessionManager) {
         mSessionManager = sessionManager;
+    }
+
+    public boolean validateCheck(IndexedCheckModel checkModel, Object o) {
+        return checkModel.isEmpty() || checkModel.isChecked(o);
     }
 
     public Node wrapInTitleBorder(String title, Node node) {
