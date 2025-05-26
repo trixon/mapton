@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_geo_extensometer;
 
-import org.mapton.butterfly_geo_extensometer.chart.ExtensoChartBuilder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,10 +26,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
+import org.mapton.butterfly_geo_extensometer.chart.ExtensoChartBuilderSplit;
 import org.openide.util.Exceptions;
 
 /**
@@ -39,7 +40,7 @@ import org.openide.util.Exceptions;
  */
 public class ExtensoManager extends BaseManager<BGeoExtensometer> {
 
-    private final ExtensoChartBuilder mChartBuilder = new ExtensoChartBuilder();
+    private final ExtensoChartBuilderSplit mChartBuilderSplit = new ExtensoChartBuilderSplit();
     private double mMinimumDepth = 0.0;
     private final ExtensoPropertiesBuilder mPropertiesBuilder = new ExtensoPropertiesBuilder();
 
@@ -58,7 +59,7 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
 
     @Override
     public Object getObjectChart(BGeoExtensometer selectedObject) {
-        return mChartBuilder.build(selectedObject);
+        return mChartBuilderSplit.build(selectedObject);
     }
 
     @Override
@@ -89,6 +90,9 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
             }
 
             extensometers.forEach(ext -> {
+                var refPoint = ButterflyManager.getInstance().getButterfly().topo().getControlPointByName(ext.getReferencePointName());
+                ext.ext().setReferencePoint(refPoint);
+
                 for (var pointName : StringUtils.split(ext.getSensors(), ",")) {
                     var p = nameToPoint.get(pointName);
                     ext.getPoints().add(p);

@@ -18,7 +18,7 @@ package org.mapton.butterfly_geo_extensometer.chart;
 import java.awt.Color;
 import java.awt.Font;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang3.StringUtils;
@@ -46,14 +46,11 @@ import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.ui.VerticalAlignment;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.mapton.api.MLatLon;
 import org.mapton.api.ui.forms.ChartBuilder;
-import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.ce_jfreechart.api.ChartHelper;
-import se.trixon.almond.util.DateHelper;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -64,10 +61,12 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
 
     private JFreeChart mChart;
     private ChartPanel mChartPanel;
+    private final boolean mCompleteView;
     private TextTitle mDateSubTextTitle;
     private TextTitle mDeltaSubTextTitle;
 
-    public ExtensoChartBuilder() {
+    public ExtensoChartBuilder(boolean completeView) {
+        mCompleteView = completeView;
         initChart();
     }
 
@@ -95,7 +94,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
 
     @Override
     public void setTitle(BGeoExtensometer p) {
-        mChart.setTitle(p.getName());
+        mChart.setTitle(mCompleteView ? p.getName() : Dict.LATEST.toString());
     }
 
     @Override
@@ -103,12 +102,71 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
         var plot = (CombinedDomainXYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
         new ArrayList<>(plot.getSubplots()).stream().forEach(p -> plot.remove(p));
+        var startDate = mCompleteView ? LocalDateTime.MIN : LocalDateTime.now().minusWeeks(1);
+
+        if (extenso.ext().getReferencePoint() != null) {
+            var p = extenso.ext().getReferencePoint();
+            var name = p.getName();
+            name = StringUtils.removeStartIgnoreCase(name, extenso.getName());
+            name = StringUtils.removeStartIgnoreCase(name, "-");
+            var series = new TimeSeries(name);
+            for (var o : p.ext().getObservationsTimeFiltered()) {
+                if (o.getDate().isAfter(startDate)) {
+                    var minute = ChartHelper.convertToMinute(o.getDate());
+                    series.addOrUpdate(minute, o.ext().getDelta() * 1000);
+                }
+            }
+
+            var timeSeriesCollection = new TimeSeriesCollection(series);
+            var renderer = new StandardXYItemRenderer();
+//            var rangeAxis = new NumberAxis(name);
+            var rangeAxis = new NumberAxis(mCompleteView ? name : "");
+            var subplot = new XYPlot(timeSeriesCollection, null, rangeAxis, renderer);
+            subplot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
+            subplot.setBackgroundPaint(Color.lightGray);
+            subplot.setDomainGridlinePaint(Color.white);
+            subplot.setRangeGridlinePaint(Color.white);
+//            subplot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
+            subplot.setDomainCrosshairVisible(true);
+            subplot.setRangeCrosshairVisible(true);
+            rangeAxis.setRange(-5, 5);
+//            rangeAxis.setRange(rangeMin, rangeMax);
+//            rangeAxis.setAutoRange(true);
+//            subplot.getRangeAxis().setVisible(mCompleteView);
+            subplot.getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, SwingHelper.getUIScaled(12)));
+            renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);
+            //XyzChartBuilder.plotBlasts(subplot, extenso, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+            for (var o : p.ext().getObservationsTimeFiltered()) {
+                var minute = ChartHelper.convertToMinute(o.getDate());
+                if (o.isReplacementMeasurement()) {
+                    var marker = new ValueMarker(minute.getFirstMillisecond());
+                    marker.setPaint(Color.RED);
+                    marker.setLabel("E");
+                    marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+                    marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+                    subplot.addDomainMarker(marker);
+                } else if (o.isZeroMeasurement()) {
+                    var marker = new ValueMarker(minute.getFirstMillisecond());
+                    marker.setPaint(Color.BLUE);
+                    marker.setLabel("N");
+                    marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+                    marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+                    subplot.addDomainMarker(marker);
+                }
+            }
+
+            plot.add(subplot, 1);
+        }
 
         var rangeMin = Double.MAX_VALUE;
         var rangeMax = Double.MIN_VALUE;
         for (var p : extenso.getPoints()) {
-            double pMin = p.ext().getObservationsTimeFiltered().stream().mapToDouble(o -> o.ext().getDelta()).min().getAsDouble();
-            double pMax = p.ext().getObservationsTimeFiltered().stream().mapToDouble(o -> o.ext().getDelta()).max().getAsDouble();
+            double pMin = p.ext().getObservationsTimeFiltered().stream()
+                    .filter(o -> o.getDate().isAfter(startDate))
+                    .mapToDouble(o -> o.ext().getDelta()).min().getAsDouble();
+            double pMax = p.ext().getObservationsTimeFiltered().stream()
+                    .filter(o -> o.getDate().isAfter(startDate))
+                    .mapToDouble(o -> o.ext().getDelta()).max().getAsDouble();
             rangeMin = Math.min(rangeMin, pMin);
             rangeMax = Math.max(rangeMax, pMax);
         }
@@ -119,13 +177,15 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             name = StringUtils.removeStartIgnoreCase(name, "-");
             var series = new TimeSeries(name);
             for (var o : p.ext().getObservationsTimeFiltered()) {
-                var minute = ChartHelper.convertToMinute(o.getDate());
-                series.addOrUpdate(minute, o.ext().getDelta());
+                if (o.getDate().isAfter(startDate)) {
+                    var minute = ChartHelper.convertToMinute(o.getDate());
+                    series.addOrUpdate(minute, o.ext().getDelta());
+                }
             }
 
             var timeSeriesCollection = new TimeSeriesCollection(series);
             var renderer = new StandardXYItemRenderer();
-            var rangeAxis = new NumberAxis(name);
+            var rangeAxis = new NumberAxis(mCompleteView ? name : "");
             var subplot = new XYPlot(timeSeriesCollection, null, rangeAxis, renderer);
             subplot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
             subplot.setBackgroundPaint(Color.lightGray);
@@ -135,9 +195,11 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             subplot.setDomainCrosshairVisible(true);
             subplot.setRangeCrosshairVisible(true);
             rangeAxis.setRange(rangeMin, rangeMax);
+//            subplot.getRangeAxis().setVisible(mCompleteView);
             subplot.getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, SwingHelper.getUIScaled(12)));
             renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);
-            XyzChartBuilder.plotBlasts(subplot, extenso, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+            var plotBlastLabels = p == extenso.getPoints().getFirst();// && extenso.ext().getReferencePoint() == null;
+            XyzChartBuilder.plotBlasts(subplot, extenso, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate(), plotBlastLabels);
             for (var o : p.ext().getObservationsTimeFiltered()) {
                 var minute = ChartHelper.convertToMinute(o.getDate());
                 if (o.isReplacementMeasurement()) {
@@ -207,23 +269,5 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
         var compositeTitle = new CompositeTitle(blockContainer);
         compositeTitle.setPadding(new RectangleInsets(0, 20, 0, 20));
         mChart.addSubtitle(compositeTitle);
-    }
-
-    private void plotBlastsX(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDate) {
-        var extensometer = new MLatLon(p.getLat(), p.getLon());
-        ButterflyManager.getInstance().getButterfly().noise().getBlasts().stream()
-                .filter(b -> {
-                    var blast = new MLatLon(b.getLat(), b.getLon());
-                    return blast.distance(extensometer) <= 40 && DateHelper.isBetween(
-                            firstDate,
-                            lastDate,
-                            b.getDateLatest().toLocalDate());
-                })
-                .forEachOrdered(b -> {
-                    var minute = ChartHelper.convertToMinute(b.getDateLatest());
-                    var marker = new ValueMarker(minute.getFirstMillisecond());
-                    marker.setPaint(Color.BLACK);
-                    plot.addDomainMarker(marker);
-                });
     }
 }

@@ -107,6 +107,7 @@ public class ExtensoPropertiesBuilder extends BPropertiesBuilder<BGeoExtensomete
         propertyMap.putAll(measMap);
 //******************************************************************************
         var cat1 = "Värden";
+        propertyMap.put(getCatKey(cat1, "Referenspunkt"), p.getReferencePointName());
         for (var point : p.getPoints()) {
             var d = point.ext().getDelta();
             var s = "%.2f (%.1f, %.1f, %.1f)".formatted(d,
