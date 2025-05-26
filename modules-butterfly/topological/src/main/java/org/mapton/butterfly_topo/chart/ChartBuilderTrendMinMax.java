@@ -37,13 +37,13 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class ChartBuilderTrend extends ChartBuilderBase {
+public class ChartBuilderTrendMinMax extends ChartBuilderBase {
 
     private final BDimension mDimension;
     private final Function<BXyzPointObservation, Double> mFunction;
     private final TimeSeries mTimeSeries;
 
-    public ChartBuilderTrend(BDimension dimension, Function<BXyzPointObservation, Double> function) {
+    public ChartBuilderTrendMinMax(BDimension dimension, Function<BXyzPointObservation, Double> function) {
         mDimension = dimension;
         mFunction = function;
         mTimeSeries = new TimeSeries(dimension == BDimension._1d ? Dict.Geometry.HEIGHT : Dict.Geometry.PLANE);
@@ -65,7 +65,6 @@ public class ChartBuilderTrend extends ChartBuilderBase {
                     plot.setDataset(key, null);
                 }
             }
-
         }
 
         plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
@@ -102,17 +101,16 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         var startDateMinus1w = endDateLast.minusWeeks(1);
 
         var index = 1;
-        plot(p, "▼", startDateFirst, LocalDateTime.MIN, Color.GREEN, index++, -50);
-        plot(p, "▲", startDateFirst, LocalDateTime.MIN, Color.GREEN, index++, 50);
-        if (startDateFirst.isBefore(startDateZero)) {
-            plot(p, "Första", startDateFirst, LocalDateTime.MIN, Color.BLACK, index++, null);
-        }
-
-        plot(p, "Nolla", startDateZero, LocalDateTime.MIN, Color.MAGENTA, index++, null);
-        plot(p, "6m", startDateMinus6m, startDateZero, Color.CYAN, index++, null);
-        plot(p, "3m", startDateMinus3m, startDateZero, Color.YELLOW, index++, null);
-        plot(p, "1m", startDateMinus1m, startDateZero, Color.ORANGE, index++, null);
-        plot(p, "1w", startDateMinus1w, startDateZero, Color.RED, index++, null);
+//        if (startDateFirst.isBefore(startDateZero)) {
+        plot(p, "Första", startDateFirst, LocalDateTime.MIN, Color.BLACK, index++, null);
+        plot(p, "Max", startDateFirst, LocalDateTime.MIN, Color.PINK, index++, 50);
+        plot(p, "Min", startDateFirst, LocalDateTime.MIN, Color.PINK, index++, -50);
+//        }
+//        plot(p, "Nolla", startDateZero, LocalDateTime.MIN, Color.MAGENTA, index++);
+//        plot(p, "6m", startDateMinus6m, startDateZero, Color.CYAN, index++);
+//        plot(p, "3m", startDateMinus3m, startDateZero, Color.YELLOW, index++);
+//        plot(p, "1m", startDateMinus1m, startDateZero, Color.ORANGE, index++);
+//        plot(p, "1w", startDateMinus1w, startDateZero, Color.RED, index++);
     }
 
     private void plot(BTopoControlPoint p, String title, LocalDateTime startDate, LocalDateTime limitDate, Color color, int index, Integer percentile) {
@@ -144,6 +142,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
 
         var renderer = new XYLineAndShapeRenderer(true, false);
         renderer.setSeriesPaint(0, color);
+//        renderer.setDefaultOutlineStroke(new BasicStroke(percentile == null ? 4f : 2f));
         renderer.setSeriesStroke(0, new BasicStroke(percentile == null ? 4f : 2f));
         renderer.setDefaultToolTipGenerator((xyDataset, series, item) -> {
             var now = LocalDateTime.now();

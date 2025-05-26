@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
@@ -69,7 +70,7 @@ public abstract class BlastMultiChartPart extends BMultiChartPart {
                     return true;
                 })
                 .filter(p -> {
-                    return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= LIMIT_DISTANCE_BLAST;
+                    return latLon.distance(BCoordinatrix.toLatLon(p)) <= LIMIT_DISTANCE_BLAST;
                 }).collect(Collectors.toCollection(ArrayList::new));
 
         var pointsToExclude = new ArrayList<BTopoControlPoint>();

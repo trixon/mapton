@@ -30,7 +30,7 @@ import org.jfree.chart.entity.LegendItemEntity;
 import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeries;
-import org.mapton.api.MLatLon;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -47,8 +47,8 @@ public class MultiChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
     private LocalDate mDateFirst;
     private LocalDate mDateLast;
     private BMultiChartPart mMultiChartComponent;
-    private final String mTitlePrefix;
     private int mPointSize;
+    private final String mTitlePrefix;
 
     public MultiChartBuilder(String titlePrefix, String axisLabel, String decimalPattern) {
         mTitlePrefix = titlePrefix;
@@ -134,8 +134,7 @@ public class MultiChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
         var plot = (XYPlot) mChart.getPlot();
         resetPlot(plot);
 
-        var latLon = new MLatLon(p.getLat(), p.getLon());
-        var points = mMultiChartComponent.getPoints(latLon, mDateFirst, p.ext().getDateFirst().toLocalDate(), mDateLast);
+        var points = mMultiChartComponent.getPoints(BCoordinatrix.toLatLon(p), mDateFirst, p.ext().getDateFirst().toLocalDate(), mDateLast);
         mPointSize = points.size();
 
         updateDataset2(p);
