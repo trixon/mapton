@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 
 /**
  *
@@ -70,11 +71,13 @@ public class BGeoExtensometer extends BXyzPoint {
     private transient Double rollingY;
     private transient Double rollingZ;
     private String sensors;
+    private String referencePointName;
     private double groundLevel;
 
     public BGeoExtensometer() {
     }
 
+    @Override
     public Ext ext() {
         if (mExt == null) {
             mExt = new Ext();
@@ -101,6 +104,10 @@ public class BGeoExtensometer extends BXyzPoint {
         return mPoints;
     }
 
+    public String getReferencePointName() {
+        return referencePointName;
+    }
+
     public String getSensors() {
         return sensors;
     }
@@ -117,14 +124,28 @@ public class BGeoExtensometer extends BXyzPoint {
         this.sensors = points;
     }
 
+    public void setReferencePointName(String referencePointName) {
+        this.referencePointName = referencePointName;
+    }
+
     public class Ext extends BXyzPoint.Ext<BGeoExtensometerPointObservation> {
 
+        private BTopoControlPoint mReferencePoint;
+
         public Ext() {
+        }
+
+        public BTopoControlPoint getReferencePoint() {
+            return mReferencePoint;
         }
 
         public boolean hasNoObservations() {
             return mPoints.stream()
                     .noneMatch(point -> !point.ext().getObservationsAllRaw().isEmpty());
+        }
+
+        public void setReferencePoint(BTopoControlPoint referencePoint) {
+            this.mReferencePoint = referencePoint;
         }
 
     }
