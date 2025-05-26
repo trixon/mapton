@@ -26,7 +26,6 @@ import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_core.api.FilterSectionMisc;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbPreferences;
-import se.trixon.almond.util.fx.control.RangeSliderPane;
 
 /**
  *
@@ -34,7 +33,6 @@ import se.trixon.almond.util.fx.control.RangeSliderPane;
  */
 public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
 
-    private final RangeSliderPane mAltitudeRangeSlider = new RangeSliderPane("Z", -100.0, 100.0, false);
     private final BlastFilter mFilter;
     private final BFilterSectionDate mFilterSectionDate;
     private final FilterSectionMisc mFilterSectionMisc;
@@ -66,8 +64,6 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionPoint.clear();
         mFilterSectionDate.clear();
         mFilterSectionMisc.clear();
-
-        mAltitudeRangeSlider.clear();
     }
 
     @Override
@@ -89,10 +85,6 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionPoint.load(blasts);
         mFilterSectionDate.load(mManager.getTemporalRange());
         mFilterSectionMisc.load();
-
-        var minZ = blasts.stream().filter(b -> b.getZeroZ() != null).mapToDouble(b -> b.getZeroZ()).min().orElse(-100d);
-        var maxZ = blasts.stream().filter(b -> b.getZeroZ() != null).mapToDouble(b -> b.getZeroZ()).max().orElse(100d);
-        mAltitudeRangeSlider.setMinMaxValue(minZ - 1, maxZ + 1);
     }
 
     @Override
@@ -153,10 +145,6 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
         mFilter.initCheckModelListeners();
 
-        mFilter.mAltitudeSelectedProperty.bind(mAltitudeRangeSlider.selectedProperty());
-        mFilter.mAltitudeMinProperty.bind(mAltitudeRangeSlider.minProperty());
-        mFilter.mAltitudeMaxProperty.bind(mAltitudeRangeSlider.maxProperty());
-
         mFilter.initCheckModelListeners();
     }
 
@@ -166,7 +154,6 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
 
-        mAltitudeRangeSlider.initSession("altitude", sessionManager);
         sessionManager.register("filter.blast.freeText", mFilter.freeTextProperty());
 
         return sessionManager;

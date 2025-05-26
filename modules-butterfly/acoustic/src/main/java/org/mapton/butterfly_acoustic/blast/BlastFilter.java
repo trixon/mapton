@@ -20,16 +20,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
-import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -41,9 +38,6 @@ public class BlastFilter extends FormFilter<BlastManager> implements
         BFilterSectionPointProvider,
         BFilterSectionDateProvider {
 
-    DoubleProperty mAltitudeMaxProperty = new SimpleDoubleProperty();
-    DoubleProperty mAltitudeMinProperty = new SimpleDoubleProperty();
-    SimpleBooleanProperty mAltitudeSelectedProperty = new SimpleBooleanProperty();
     private BFilterSectionDate mFilterSectionDate;
     private BFilterSectionPoint mFilterSectionPoint;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
@@ -107,29 +101,9 @@ public class BlastFilter extends FormFilter<BlastManager> implements
         return createHtmlFilterInfo(map);
     }
 
-    private boolean inRange(double value, DoubleProperty minProperty, DoubleProperty maxProperty) {
-        return value >= minProperty.get() && value <= maxProperty.get();
-    }
-
     private void initListeners() {
-        List.of(mInvertProperty,
-                mAltitudeSelectedProperty,
-                mAltitudeMinProperty,
-                mAltitudeMaxProperty
+        List.of(
+                mInvertProperty
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
-    }
-
-    private boolean validateAltitude(BAcousticBlast b) {
-        try {
-            var z = b.getZeroZ();
-            if (mAltitudeSelectedProperty.get()) {
-                return inRange(z, mAltitudeMinProperty, mAltitudeMaxProperty)
-                        || inRange(z - 360.0, mAltitudeMinProperty, mAltitudeMaxProperty);
-            } else {
-                return true;
-            }
-        } catch (Exception e) {
-            return false;
-        }
     }
 }
