@@ -62,6 +62,10 @@ public class GraphicRendererVector extends GraphicRendererBase {
         if (sCheckModel.isChecked(GraphicItem.VECTOR_3D) && dimension == BDimension._3d) {
             plot3d(p, position);
         }
+
+        if (sCheckModel.isChecked(GraphicItem.PIN) && dimension != BDimension._2d) {
+            plotPoint(p, position);
+        }
     }
 
     private void plot1d(BTopoControlPoint p, Position position) {
@@ -175,7 +179,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
             return;
         }
 
-        var positions = plot3dOffsetPole(p, position);
+        var positions = plot3dOffsetPole(p, position, 1.0, true);
         var startPosition = positions[0];
         var endPosition = positions[1];
 
@@ -194,6 +198,15 @@ public class GraphicRendererVector extends GraphicRendererBase {
         pathDeltaR.setAttributes(mAttributeManager.getComponentVector2dAttributes(p));
         addRenderable(pathDeltaR, true, null, sMapObjects);
 
+        plotLabel(p, positions[0]);
+    }
+
+    private void plotPoint(BTopoControlPoint p, Position position) {
+        if (ObjectUtils.anyNull(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
+            return;
+        }
+
+        var positions = plot3dOffsetPole(p, position, 0.75, false);
         plotLabel(p, positions[0]);
     }
 

@@ -112,7 +112,7 @@ public class GraphicRendererGroup extends GraphicRendererBase {
         var endPositions = new ArrayList<Position>();
 
         for (var p : points) {
-            var positions = plot3dOffsetPole(p, p.getValue("position"));
+            var positions = plot3dOffsetPole(p, p.getValue("position"), 1.0, true);
             startPositions.add(positions[0]);
             endPositions.add(positions[1]);
         }
@@ -181,7 +181,7 @@ public class GraphicRendererGroup extends GraphicRendererBase {
                     addRenderable(groundPath, true, null, sMapObjects);
                 }
 
-                var positions = plot3dOffsetPole(p, p.getValue("position"), false);
+                var positions = plot3dOffsetPole(p, p.getValue("position"), false, 1.0, true);
                 var altitude = p.getZeroZ() + TopoLayerBundle.getZOffset();
                 var startPosition = WWHelper.positionFromPosition(firstPosition, altitude);
                 var endPosition = WWHelper.positionFromPosition(positions[1], altitude);

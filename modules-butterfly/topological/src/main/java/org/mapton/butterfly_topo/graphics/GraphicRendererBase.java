@@ -72,22 +72,27 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         return ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ(), o1.getMeasuredZ(), o2.getMeasuredZ());
     }
 
-    public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position) {
-        return plot3dOffsetPole(p, position, true);
+    public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, double scaleZero, boolean plotCurrent) {
+        return plot3dOffsetPole(p, position, true, scaleZero, plotCurrent);
     }
 
-    public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, boolean plotEnabled) {
+    public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, boolean plotEnabled, double scaleZero, boolean plotCurrent) {
         var scale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosi.class, 500);
         var scale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosi.class, 500);
 
         return sPointToPositionMap.computeIfAbsent(p, k -> {
             var CURRENT_SIZE = 0.001 * scale3dP;
+//            var ZERO_SIZE = CURRENT_SIZE * 1.2 * scaleZero;
             var ZERO_SIZE = CURRENT_SIZE * 1.2;
             var zeroZ = p.getZeroZ();
 
             var startPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.getZOffset());
             var startEllipsoid = new Ellipsoid(startPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
-            startEllipsoid.setAttributes(mAttributeManager.getComponentZeroAttributes());
+            if (plotCurrent) {
+                startEllipsoid.setAttributes(mAttributeManager.getComponentZeroAttributes());
+            } else {
+                startEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));
+            }
 
             if (plotEnabled) {
                 addRenderable(startEllipsoid, true, null, sMapObjects);
@@ -100,24 +105,26 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
             }
 
             var currentPosition = startPosition;
+            if (plotCurrent) {
 //            var o1 = p.ext().getObservationsTimeFiltered().getFirst();
-            var o2 = p.ext().getObservationsTimeFiltered().getLast();
+                var o2 = p.ext().getObservationsTimeFiltered().getLast();
 
-            if (o2.ext().getDeltaZ() != null) {
-                var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * scale3dP;
-                var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * scale3dP;
-                var z = +o2.getMeasuredZ()
-                        + TopoLayerBundle.getZOffset()
-                        + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * scale3dH;
+                if (o2.ext().getDeltaZ() != null) {
+                    var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * scale3dP;
+                    var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * scale3dP;
+                    var z = +o2.getMeasuredZ()
+                            + TopoLayerBundle.getZOffset()
+                            + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * scale3dH;
 
-                var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
-                currentPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
-            }
+                    var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
+                    currentPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
+                }
 
-            var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
-            currentEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));
-            if (plotEnabled) {
-                addRenderable(currentEllipsoid, true, null, sMapObjects);
+                var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
+                currentEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));
+                if (plotEnabled) {
+                    addRenderable(currentEllipsoid, true, null, sMapObjects);
+                }
             }
 
             return new Position[]{startPosition, currentPosition};

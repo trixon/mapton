@@ -120,7 +120,7 @@ public class GraphicRendererTrace extends GraphicRendererBase {
             return;
         }
 
-        var positions = plot3dOffsetPole(p, position);
+        var positions = plot3dOffsetPole(p, position, 1.0, true);
         if (ObjectUtils.anyNull(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
             return;
         }
