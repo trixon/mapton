@@ -27,8 +27,8 @@ import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
  */
 public class ExtensoChartBuilderSplit {
 
-    private final ExtensoChartBuilder mCompleteChartBuilder = new ExtensoChartBuilder(true);
-    private final ExtensoChartBuilder mLatestChartBuilder = new ExtensoChartBuilder(false);
+    private final ExtensoChartBuilder mCompleteChartBuilder = new ExtensoChartBuilder(null);
+    private final ExtensoChartBuilder mLatestChartBuilder = new ExtensoChartBuilder(7);
 
     public ExtensoChartBuilderSplit() {
     }

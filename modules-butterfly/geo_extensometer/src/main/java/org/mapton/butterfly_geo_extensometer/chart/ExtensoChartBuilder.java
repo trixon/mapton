@@ -50,7 +50,6 @@ import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.ce_jfreechart.api.ChartHelper;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -64,9 +63,12 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
     private final boolean mCompleteView;
     private TextTitle mDateSubTextTitle;
     private TextTitle mDeltaSubTextTitle;
+    private final Integer mRecentDays;
 
-    public ExtensoChartBuilder(boolean completeView) {
-        mCompleteView = completeView;
+    public ExtensoChartBuilder(Integer recentDays) {
+        mCompleteView = recentDays == null;
+        mRecentDays = recentDays;
+
         initChart();
     }
 
@@ -94,7 +96,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
 
     @Override
     public void setTitle(BGeoExtensometer p) {
-        mChart.setTitle(mCompleteView ? p.getName() : Dict.LATEST.toString());
+        mChart.setTitle(mCompleteView ? p.getName() : "Senaste %d dygnen".formatted(mRecentDays));
     }
 
     @Override
@@ -102,7 +104,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
         var plot = (CombinedDomainXYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
         new ArrayList<>(plot.getSubplots()).stream().forEach(p -> plot.remove(p));
-        var startDate = mCompleteView ? LocalDateTime.MIN : LocalDateTime.now().minusWeeks(1);
+        var startDate = mCompleteView ? LocalDateTime.MIN : LocalDateTime.now().minusDays(mRecentDays);
 
         if (extenso.ext().getReferencePoint() != null) {
             var p = extenso.ext().getReferencePoint();
@@ -119,23 +121,19 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
 
             var timeSeriesCollection = new TimeSeriesCollection(series);
             var renderer = new StandardXYItemRenderer();
-//            var rangeAxis = new NumberAxis(name);
             var rangeAxis = new NumberAxis(mCompleteView ? name : "");
             var subplot = new XYPlot(timeSeriesCollection, null, rangeAxis, renderer);
             subplot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
             subplot.setBackgroundPaint(Color.lightGray);
             subplot.setDomainGridlinePaint(Color.white);
             subplot.setRangeGridlinePaint(Color.white);
-//            subplot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
             subplot.setDomainCrosshairVisible(true);
             subplot.setRangeCrosshairVisible(true);
             rangeAxis.setRange(-5, 5);
-//            rangeAxis.setRange(rangeMin, rangeMax);
-//            rangeAxis.setAutoRange(true);
-//            subplot.getRangeAxis().setVisible(mCompleteView);
-            subplot.getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, SwingHelper.getUIScaled(12)));
+
+            subplot.getRangeAxis().setLabelFont(new Font(Font.DIALOG, Font.BOLD, SwingHelper.getUIScaled(10)));
             renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);
-            //XyzChartBuilder.plotBlasts(subplot, extenso, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+
             for (var o : p.ext().getObservationsTimeFiltered()) {
                 var minute = ChartHelper.convertToMinute(o.getDate());
                 if (o.isReplacementMeasurement()) {
@@ -163,10 +161,15 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
         for (var p : extenso.getPoints()) {
             double pMin = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> o.getDate().isAfter(startDate))
-                    .mapToDouble(o -> o.ext().getDelta()).min().getAsDouble();
+                    .mapToDouble(o -> o.ext().getDelta())
+                    .min()
+                    .orElse(0.0);
             double pMax = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> o.getDate().isAfter(startDate))
-                    .mapToDouble(o -> o.ext().getDelta()).max().getAsDouble();
+                    .filter(o -> o.ext().getDelta() != null)
+                    .mapToDouble(o -> o.ext().getDelta())
+                    .max()
+                    .orElse(0.0);
             rangeMin = Math.min(rangeMin, pMin);
             rangeMax = Math.max(rangeMax, pMax);
         }
@@ -176,12 +179,12 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             name = StringUtils.removeStartIgnoreCase(name, extenso.getName());
             name = StringUtils.removeStartIgnoreCase(name, "-");
             var series = new TimeSeries(name);
-            for (var o : p.ext().getObservationsTimeFiltered()) {
-                if (o.getDate().isAfter(startDate)) {
-                    var minute = ChartHelper.convertToMinute(o.getDate());
-                    series.addOrUpdate(minute, o.ext().getDelta());
-                }
-            }
+            p.ext().getObservationsTimeFiltered().stream()
+                    .filter(o -> o.getDate().isAfter(startDate))
+                    .forEachOrdered(o -> {
+                        var minute = ChartHelper.convertToMinute(o.getDate());
+                        series.addOrUpdate(minute, o.ext().getDelta());
+                    });
 
             var timeSeriesCollection = new TimeSeriesCollection(series);
             var renderer = new StandardXYItemRenderer();
@@ -191,12 +194,29 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             subplot.setBackgroundPaint(Color.lightGray);
             subplot.setDomainGridlinePaint(Color.white);
             subplot.setRangeGridlinePaint(Color.white);
-//            subplot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
             subplot.setDomainCrosshairVisible(true);
             subplot.setRangeCrosshairVisible(true);
-            rangeAxis.setRange(rangeMin, rangeMax);
-//            subplot.getRangeAxis().setVisible(mCompleteView);
-            subplot.getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, SwingHelper.getUIScaled(12)));
+
+            if (mCompleteView) {
+                rangeAxis.setRange(rangeMin, rangeMax);
+            } else {
+                rangeAxis.setAutoRange(true);
+                rangeAxis.setAutoRangeIncludesZero(false);
+                if (!series.getItems().isEmpty()) {
+                    var span = "  %.2f  ".formatted(rangeAxis.getRange().getLength());
+                    var minute = ChartHelper.convertToMinute(startDate);
+                    var marker = new ValueMarker(minute.getFirstMillisecond());
+                    marker.setLabel(span);
+                    marker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
+                    marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+                    marker.setLabelFont(new Font(Font.DIALOG, Font.BOLD, SwingHelper.getUIScaled(10)));
+                    marker.setLabelBackgroundColor(Color.BLACK);
+                    marker.setLabelPaint(Color.YELLOW);
+                    marker.setPaint(plot.getBackgroundPaint());
+                    subplot.addDomainMarker(marker);
+                }
+            }
+            subplot.getRangeAxis().setLabelFont(new Font(Font.DIALOG, Font.BOLD, SwingHelper.getUIScaled(12)));
             renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);
             var plotBlastLabels = p == extenso.getPoints().getFirst();// && extenso.ext().getReferencePoint() == null;
             XyzChartBuilder.plotBlasts(subplot, extenso, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate(), plotBlastLabels);
@@ -254,7 +274,6 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
         mChartPanel = new ChartPanel(mChart);
         mChartPanel.setMouseZoomable(true, false);
         mChartPanel.setDisplayToolTips(true);
-//        mChartPanel.setDomainZoomable(true);
         mChartPanel.setMouseWheelEnabled(false);
 
         var font = new Font("monospaced", Font.BOLD, SwingHelper.getUIScaled(12));
