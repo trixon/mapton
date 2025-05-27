@@ -33,8 +33,12 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MLatLon;
+import org.mapton.butterfly_alarm.api.AlarmHelper;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -60,24 +64,20 @@ public class GraphicRenderer {
             plotIndicators(extenso, position);
         }
 
-//        if (mCheckModel.isChecked(GraphicRendererItem.TRACE)) {
-//            plotTrace(extenso);
-//        }
         if (mCheckModel.isChecked(GraphicRendererItem.LABEL_ALARM_LEVELS)) {
+            plotLabelsAlarm(extenso.ext().getReferencePoint());
             plotLabelsAlarm(extenso);
         }
 
         if (mCheckModel.isChecked(GraphicRendererItem.LABEL_DELTA_Z)) {
+            plotLabelsDeltaZ(extenso.ext().getReferencePoint());
             plotLabelsDeltaZ(extenso);
         }
 
         if (mCheckModel.isChecked(GraphicRendererItem.LABEL_DEPTH)) {
+            plotLabelsDepth(extenso.ext().getReferencePoint());
             plotLabelsDepth(extenso);
         }
-
-//        if (mCheckModel.isChecked(GraphicRendererItem.SLICE)) {
-//            plotSlice(extenso, position);
-//        }
     }
 
     private void addRenderable(Renderable renderable, boolean interactiveLayer) {
@@ -123,6 +123,27 @@ public class GraphicRenderer {
             indicatorAltitude -= indicatorStep;
         }
 
+        if (extenso.ext().getReferencePoint() != null) {
+            var p = extenso.ext().getReferencePoint();
+            var pos = WWHelper.positionFromPosition(position, ground + 1);
+            p.setValue(Position.class, pos);
+
+            var pyramid = new Pyramid(WWHelper.positionFromPosition(position, ground + 2), shapeSize * 1.0, shapeSize);
+            var attrs = mAttributeManager.getAlarmInteriorAttributes(TopoHelper.getAlarmLevelHeight(p));
+//            var attrs = TopoAttributeManager.getInstance().getComponentmAlarmLevelTrace1dAttributes();
+//            var attrs = mAttributeManager.getComponentAlarmAttributes(p.ext().getAlarmLevel());
+
+            pyramid.setAttributes(attrs);
+//            point.setValue(Position.class, p);
+            var lastObservation = p.ext().getObservationFilteredLast();
+            if (lastObservation != null && lastObservation.ext().getDelta() < 0) {
+                pyramid.setRoll(Angle.POS180);
+            }
+
+            addRenderable(pyramid, true);
+
+        }
+
         for (var point : extenso.getPoints()) {
             if (point.ext().getObservationsTimeFiltered().isEmpty()) {
                 continue;
@@ -151,7 +172,7 @@ public class GraphicRenderer {
 
     private void plotLabel(BGeoExtensometer extenso, Function<BGeoExtensometerPoint, String> function, double offset) {
         extenso.getPoints().forEach(p -> {
-            Position position = p.getValue(Position.class);
+            var position = p.<Position>getValue(Position.class);
             var placemark = new PointPlacemark(WWHelper.positionFromPosition(position, position.elevation + offset));
             placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
             placemark.setAltitudeMode(WorldWind.ABSOLUTE);
@@ -160,7 +181,20 @@ public class GraphicRenderer {
             placemark.setAlwaysOnTop(true);
             addRenderable(placemark, true);
         });
+    }
 
+    private void plotLabel(BTopoControlPoint p, Function<BTopoControlPoint, String> function, double offset) {
+        if (p == null) {
+            return;
+        }
+        var position = p.<Position>getValue(Position.class);
+        var placemark = new PointPlacemark(WWHelper.positionFromPosition(position, position.elevation + offset));
+        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+        placemark.setAltitudeMode(WorldWind.ABSOLUTE);
+        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+        placemark.setLabelText("•    " + function.apply(p));
+        placemark.setAlwaysOnTop(true);
+        addRenderable(placemark, true);
     }
 
     private void plotLabelsAlarm(BGeoExtensometer extenso) {
@@ -172,14 +206,29 @@ public class GraphicRenderer {
         plotLabel(extenso, function, .75);
     }
 
+    private void plotLabelsAlarm(BTopoControlPoint point) {
+        var function = (Function<BTopoControlPoint, String>) p -> AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p);
+        plotLabel(point, function, .75);
+    }
+
     private void plotLabelsDeltaZ(BGeoExtensometer extenso) {
         var function = (Function<BGeoExtensometerPoint, String>) p -> "%.2f".formatted(p.ext().getDelta());
         plotLabel(extenso, function, 0);
     }
 
+    private void plotLabelsDeltaZ(BTopoControlPoint point) {
+        var function = (Function<BTopoControlPoint, String>) p -> p.ext().deltaZero().getDelta1(3);
+        plotLabel(point, function, 0);
+    }
+
     private void plotLabelsDepth(BGeoExtensometer extenso) {
         var function = (Function<BGeoExtensometerPoint, String>) p -> "%.1f".formatted(p.getDepth());
         plotLabel(extenso, function, -.75);
+    }
+
+    private void plotLabelsDepth(BTopoControlPoint point) {
+        var function = (Function<BTopoControlPoint, String>) p -> "%.1f".formatted(p.getZeroZ());
+        plotLabel(point, function, -.75);
     }
 
     private void plotSlice(BGeoExtensometer extenso, Position position) {

@@ -104,6 +104,14 @@ limitations under the License.
             <groupId>${project.groupId}</groupId>
             <artifactId>butterfly-geo</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>butterfly-alarm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>butterfly-topo</artifactId>
+        </dependency>
 
         <!--Other-->
     </dependencies>
