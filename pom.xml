@@ -371,10 +371,10 @@
     </dependencyManagement>
 
     <repositories>
-        <repository>
+<!--        <repository>
             <id>mapton</id>
             <url>https://mapton.org/repo/maven/</url>
-        </repository>
+        </repository>-->
     </repositories>
 
     <profiles>
