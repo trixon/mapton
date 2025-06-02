@@ -98,8 +98,8 @@ public class ConvergenceAttributeManager extends BaseAttributeManager {
             mSinglePinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
             mSinglePinAttributes.setImageAddress("https://maps.google.com/mapfiles/kml/shapes/polygon.png");
             mSinglePinAttributes.setImageColor(color);
-            mSinglePinAttributes.setScale(Mapton.SCALE_PIN_IMAGE);
-            mSinglePinAttributes.setLabelScale(Mapton.SCALE_PIN_LABEL);
+            mSinglePinAttributes.setScale(Mapton.getScalePinImage());
+            mSinglePinAttributes.setLabelScale(Mapton.getScalePinLabel());
             mSinglePinAttributes.setImageOffset(Offset.BOTTOM_CENTER);
         }
 

@@ -214,8 +214,8 @@ public abstract class BaseAttributeManager {
             mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
             mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
             mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
-            mLabelPlacemarkAttributes.setScale(Mapton.SCALE_PIN_IMAGE);
-            mLabelPlacemarkAttributes.setLabelScale(Mapton.SCALE_PIN_LABEL);
+            mLabelPlacemarkAttributes.setScale(Mapton.getScalePinImage());
+            mLabelPlacemarkAttributes.setLabelScale(Mapton.getScalePinLabel());
         }
 
         return mLabelPlacemarkAttributes;
@@ -226,8 +226,8 @@ public abstract class BaseAttributeManager {
             mSinglePinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
             mSinglePinAttributes.setImageAddress("images/pushpins/plain-white.png");
             mSinglePinAttributes.setImageColor(color);
-            mSinglePinAttributes.setScale(Mapton.SCALE_PIN_IMAGE);
-            mSinglePinAttributes.setLabelScale(Mapton.SCALE_PIN_LABEL);
+            mSinglePinAttributes.setScale(Mapton.getScalePinImage());
+            mSinglePinAttributes.setLabelScale(Mapton.getScalePinLabel());
         }
 
         return mSinglePinAttributes;
@@ -238,10 +238,10 @@ public abstract class BaseAttributeManager {
             mPinAttributes = new PointPlacemarkAttributes[4];
             for (int i = 0; i < 4; i++) {
                 var attrs = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-                attrs.setScale(Mapton.SCALE_PIN_IMAGE);
+                attrs.setScale(Mapton.getScalePinImage());
                 attrs.setImageAddress("images/pushpins/plain-white.png");
                 attrs.setImageColor(ButterflyHelper.getAlarmColorAwt(i - 1));
-                attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
+                attrs.setLabelScale(Mapton.getScalePinLabel());
 
                 mPinAttributes[i] = attrs;
             }

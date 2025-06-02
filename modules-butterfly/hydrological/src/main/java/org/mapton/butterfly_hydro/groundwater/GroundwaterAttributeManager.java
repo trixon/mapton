@@ -61,8 +61,8 @@ public class GroundwaterAttributeManager extends BaseAttributeManager {
             mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
             mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
             mPinAttributes.setImageColor(Color.BLUE.brighter());
-            mPinAttributes.setScale(Mapton.SCALE_PIN_IMAGE);
-            mPinAttributes.setLabelScale(Mapton.SCALE_PIN_LABEL);
+            mPinAttributes.setScale(Mapton.getScalePinImage());
+            mPinAttributes.setLabelScale(Mapton.getScalePinLabel());
         }
 
         var attrs = new PointPlacemarkAttributes(mPinAttributes);

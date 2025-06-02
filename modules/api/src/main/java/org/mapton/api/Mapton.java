@@ -53,8 +53,6 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class Mapton {
 
-    public static final double SCALE_PIN_IMAGE = SwingHelper.getUIScaled(0.5);
-    public static final double SCALE_PIN_LABEL = SwingHelper.getUIScaled(1.0);
     public static final int ICON_SIZE_MODULE = 32;
     public static final int ICON_SIZE_MODULE_TOOLBAR = 40;
     public static final int ICON_SIZE_PROFILE = 32;
@@ -256,6 +254,14 @@ public class Mapton {
 
     public static Log getLog() {
         return sLog;
+    }
+
+    public static double getScalePinImage() {
+        return SwingHelper.getUIScaled(0.3);
+    }
+
+    public static double getScalePinLabel() {
+        return SwingHelper.getUIScaled(0.75);
     }
 
     public static Background getThemeBackground() {

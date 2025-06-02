@@ -76,8 +76,8 @@ public class MonAttributeManager extends BaseAttributeManager {
                 var attrs = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
                 attrs.setImageAddress("images/pushpins/plain-white.png");
                 attrs.setImageColor(mStationConnectorColors[i]);
-                attrs.setScale(Mapton.SCALE_PIN_IMAGE);
-                attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
+                attrs.setScale(Mapton.getScalePinImage());
+                attrs.setLabelScale(Mapton.getScalePinLabel());
 
                 mPinAttributes[i] = attrs;
             }

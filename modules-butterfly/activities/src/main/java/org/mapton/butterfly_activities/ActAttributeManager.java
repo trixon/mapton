@@ -47,8 +47,8 @@ public class ActAttributeManager extends BaseAttributeManager {
     public PointPlacemarkAttributes getPinAttributes(BAreaActivity a) {
         return mStatusToPointPlacemarkAttributes.computeIfAbsent(a.getStatus(), k -> {
             var attrs = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            attrs.setScale(Mapton.SCALE_PIN_IMAGE);
-            attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
+            attrs.setScale(Mapton.getScalePinImage());
+            attrs.setLabelScale(Mapton.getScalePinLabel());
             attrs.setImageAddress("images/pushpins/plain-white.png");
             switch (a.getStatus()) {
                 case OTHER ->

@@ -97,8 +97,8 @@ public class GradeAttributeManager extends BaseAttributeManager {
                 attrs.setImageAddress("images/pushpins/plain-white.png");
                 attrs.setImageColor(ButterflyHelper.getAlarmColorAwt(i - 1));
                 attrs.setImageColor(Color.ORANGE);
-                attrs.setScale(Mapton.SCALE_PIN_IMAGE);
-                attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
+                attrs.setScale(Mapton.getScalePinImage());
+                attrs.setLabelScale(Mapton.getScalePinLabel());
 
                 mPinAttributes[i] = attrs;
             }
