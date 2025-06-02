@@ -92,8 +92,8 @@ public class TemporaryPoiLayerBundle extends LayerBundle {
                     PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
                     attrs.setImageAddress("images/pushpins/plain-white.png");
                     attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(poi.getColor())));
-                    attrs.setScale(Mapton.SCALE_PIN_IMAGE);
-                    attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
+                    attrs.setScale(Mapton.getScalePinImage());
+                    attrs.setLabelScale(Mapton.getScalePinLabel());
                     placemark.setAttributes(attrs);
                     placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
 

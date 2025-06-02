@@ -86,8 +86,8 @@ public class BookmarkLayerBundle extends LayerBundle {
                     var attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
                     attrs.setImageAddress("images/pushpins/plain-white.png");
                     attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(bookmark.getColor())));
-                    attrs.setScale(Mapton.SCALE_PIN_IMAGE);
-                    attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
+                    attrs.setScale(Mapton.getScalePinImage());
+                    attrs.setLabelScale(Mapton.getScalePinLabel());
                     placemark.setAttributes(attrs);
                     placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
 

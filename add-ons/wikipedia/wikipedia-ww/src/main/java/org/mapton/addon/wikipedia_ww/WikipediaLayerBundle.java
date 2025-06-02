@@ -91,7 +91,7 @@ public class WikipediaLayerBundle extends LayerBundle {
                 attrs.setImageAddress(imageAddress);
                 attrs.setImageColor(Color.decode("#ff8888"));
                 attrs.setImageOffset(Offset.CENTER);
-                attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
+                attrs.setLabelScale(Mapton.getScalePinLabel());
                 attrs.setScale(SwingHelper.getUIScaled(0.15));
 
                 placemark.setAttributes(attrs);

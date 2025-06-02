@@ -177,8 +177,8 @@ public class RorelseLayerBundle extends BfLayerBundle {
             attrs = new PointPlacemarkAttributes(attrs);
             //attrs.setImageColor(Color.RED);
         }
-        attrs.setScale(Mapton.SCALE_PIN_IMAGE);
-        attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
+        attrs.setScale(Mapton.getScalePinImage());
+        attrs.setLabelScale(Mapton.getScalePinLabel());
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
