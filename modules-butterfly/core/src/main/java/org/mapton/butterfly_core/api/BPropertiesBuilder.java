@@ -65,6 +65,8 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
     public LinkedHashMap<String, Object> populateDatabase(BXyzPoint p) {
         var map = new LinkedHashMap<String, Object>();
 
+        map.put(getCatKeyNum(CAT_DATABASE, "Enhet"), p.getUnit());
+        map.put(getCatKeyNum(CAT_DATABASE, "Enhet, diff"), p.getUnitDiff());
         map.put(getCatKeyNum(CAT_DATABASE, Dict.CREATED.toString()), DateHelper.toDateString(p.getDateCreated()));
         map.put(getCatKeyNum(CAT_DATABASE, Dict.CHANGED.toString()), DateHelper.toDateString(p.getDateChanged()));
 

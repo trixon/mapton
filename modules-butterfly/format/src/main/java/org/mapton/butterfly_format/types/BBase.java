@@ -36,6 +36,8 @@ public abstract class BBase {
     private String name;
     private String origin;
     private transient final HashMap<Object, Object> values = new HashMap<>();
+    private String unitDiff;
+    private String unit;
 
     public Double getAzimuth() {
         return azimuth;
@@ -75,6 +77,14 @@ public abstract class BBase {
 
     public String getOrigin() {
         return origin;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public String getUnitDiff() {
+        return unitDiff;
     }
 
     public <T> T getValue(String key, Class<T> type) {
@@ -132,6 +142,14 @@ public abstract class BBase {
 
     public void setOrigin(String origin) {
         this.origin = origin;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public void setUnitDiff(String unitDiff) {
+        this.unitDiff = unitDiff;
     }
 
     public Object setValue(Object key, Object value) {
