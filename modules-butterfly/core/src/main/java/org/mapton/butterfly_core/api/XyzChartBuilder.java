@@ -74,6 +74,28 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     private TextTitle mLeftSubTextTitle;
     private TextTitle mRightSubTextTitle;
 
+    public static void addMarker(XYPlot plot, Minute minute, String string, Color color) {
+        var marker = new ValueMarker(minute.getFirstMillisecond());
+        marker.setPaint(color);
+        marker.setLabel(string);
+        marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+        marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+        plot.addDomainMarker(marker);
+    }
+
+    public static void addNEMarkers2(XYPlot plot, BBaseControlPointObservation o, boolean doPlot) {
+        if (!doPlot) {
+            return;
+        }
+        var minute = ChartHelper.convertToMinute(o.getDate());
+        if (o.isReplacementMeasurement()) {
+            addMarker(plot, minute, "E", Color.RED);
+        } else if (o.isZeroMeasurement()) {
+//            mDateNull = DateHelper.convertToDate(o.getDate());
+            addMarker(plot, minute, "N", Color.BLUE);
+        }
+    }
+
     public static void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDate) {
         plotBlasts(plot, p, firstDate, lastDate, true);
     }
@@ -115,7 +137,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                             color = new Color(0, 0, 255, alpha);
                             if (plotLabel) {
                                 marker.setLabel("%.0f".formatted(distance));
-                                marker.setLabelFont(new Font("SansSerif", Font.PLAIN, SwingHelper.getUIScaled(10)));
+                                marker.setLabelFont(new Font("Dialog", Font.PLAIN, SwingHelper.getUIScaled(10)));
                                 marker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
                                 marker.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
                             }
@@ -126,13 +148,23 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                 });
     }
 
-    public void addMarker(XYPlot plot, Minute minute, String string, Color color) {
-        var marker = new ValueMarker(minute.getFirstMillisecond());
-        marker.setPaint(color);
-        marker.setLabel(string);
-        marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-        marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-        plot.addDomainMarker(marker);
+    public static void plotMeasNeed(XYPlot plot, BBaseControlPoint p, long days) {
+        if (p.getFrequency() > 0 && days < 0) {
+            var ldt = LocalDateTime.now().plusDays(days);
+            var minute = ChartHelper.convertToMinute(ldt);
+            var marker = new ValueMarker(minute.getFirstMillisecond());
+            marker.setPaint(Color.ORANGE);
+            marker.setLabelPaint(Color.BLACK);
+            marker.setLabelBackgroundColor(Color.ORANGE);
+            marker.setLabel(ldt.toLocalDate().toString());
+            float[] dashPattern = {15f, 15f};
+            marker.setStroke(new BasicStroke(3f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, dashPattern, 0f));
+            marker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
+            marker.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+            marker.setLabelFont(new Font(Font.DIALOG, Font.BOLD, SwingHelper.getUIScaled(11)));
+
+            plot.addDomainMarker(marker);
+        }
     }
 
     public void addNEMarkers(XYPlot plot, BBaseControlPointObservation o, boolean doPlot) {
@@ -178,23 +210,6 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
 
     public TextTitle getRightSubTextTitle() {
         return mRightSubTextTitle;
-    }
-
-    public void plotMeasNeed(XYPlot plot, BBaseControlPoint p, long days) {
-        if (p.getFrequency() > 0 && days < 0) {
-            var ldt = LocalDateTime.now().plusDays(days);
-            var minute = ChartHelper.convertToMinute(ldt);
-            var marker = new ValueMarker(minute.getFirstMillisecond());
-            marker.setPaint(Color.ORANGE);
-            marker.setLabel(ldt.toLocalDate().toString());
-            float[] dashPattern = {15f, 15f};
-            marker.setStroke(new BasicStroke(8f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, dashPattern, 0f));
-            marker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
-            marker.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
-            marker.setLabelFont(new Font("SansSerif", Font.BOLD, SwingHelper.getUIScaled(12)));
-
-            plot.addDomainMarker(marker);
-        }
     }
 
     public void resetPlot(XYPlot plot) {
