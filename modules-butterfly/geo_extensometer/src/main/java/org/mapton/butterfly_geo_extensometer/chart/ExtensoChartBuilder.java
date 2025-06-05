@@ -17,8 +17,11 @@ package org.mapton.butterfly_geo_extensometer.chart;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.geom.Ellipse2D;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +53,7 @@ import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.ce_jfreechart.api.ChartHelper;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -82,9 +86,6 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             setTitle(p);
             updateDataset(p);
             var plot = (CombinedDomainXYPlot) mChart.getPlot();
-
-            var dateAxis = (DateAxis) plot.getDomainAxis();
-            dateAxis.setAutoRange(true);
 
             plot.clearRangeMarkers();
 
@@ -120,7 +121,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             }
 
             var timeSeriesCollection = new TimeSeriesCollection(series);
-            var renderer = new StandardXYItemRenderer();
+            var renderer = new XYLineAndShapeRenderer(true, true);
             var rangeAxis = new NumberAxis(mCompleteView ? name : "");
             var subplot = new XYPlot(timeSeriesCollection, null, rangeAxis, renderer);
             subplot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
@@ -132,25 +133,16 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             rangeAxis.setRange(-5, 5);
 
             subplot.getRangeAxis().setLabelFont(new Font(Font.DIALOG, Font.BOLD, SwingHelper.getUIScaled(10)));
-            renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);
+            var seriesIndex = timeSeriesCollection.getSeriesIndex(series.getKey());
+            renderer.setSeriesPaint(seriesIndex, Color.RED);
+            renderer.setDefaultShape(new java.awt.Rectangle(50, 50));
+            var shapeSize = SwingHelper.getUIScaled(6);
+            var shape = new Ellipse2D.Double(-shapeSize / 2, -shapeSize / 2, shapeSize, shapeSize);
+            renderer.setSeriesShape(seriesIndex, shape);
+            renderer.setSeriesShapesVisible(seriesIndex, true);
 
             for (var o : p.ext().getObservationsTimeFiltered()) {
-                var minute = ChartHelper.convertToMinute(o.getDate());
-                if (o.isReplacementMeasurement()) {
-                    var marker = new ValueMarker(minute.getFirstMillisecond());
-                    marker.setPaint(Color.RED);
-                    marker.setLabel("E");
-                    marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-                    marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-                    subplot.addDomainMarker(marker);
-                } else if (o.isZeroMeasurement()) {
-                    var marker = new ValueMarker(minute.getFirstMillisecond());
-                    marker.setPaint(Color.BLUE);
-                    marker.setLabel("N");
-                    marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-                    marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-                    subplot.addDomainMarker(marker);
-                }
+                XyzChartBuilder.addNEMarkers2(plot, o, true);
             }
 
             plot.add(subplot, 1);
@@ -197,9 +189,15 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             subplot.setDomainCrosshairVisible(true);
             subplot.setRangeCrosshairVisible(true);
 
+            var dateAxis = (DateAxis) plot.getDomainAxis();
+            var now = LocalDate.now();
+            var nowAsDate = DateHelper.convertToDate(now);
+
             if (mCompleteView) {
+                dateAxis.setRange(DateHelper.convertToDate(p.ext().getDateFirst()), nowAsDate);
                 rangeAxis.setRange(rangeMin, rangeMax);
             } else {
+                dateAxis.setRange(DateHelper.convertToDate(now.minusDays(mRecentDays)), nowAsDate);
                 rangeAxis.setAutoRange(true);
                 rangeAxis.setAutoRangeIncludesZero(false);
                 if (!series.getItems().isEmpty()) {
@@ -220,23 +218,10 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);
             var plotBlastLabels = p == extenso.getPoints().getFirst();// && extenso.ext().getReferencePoint() == null;
             XyzChartBuilder.plotBlasts(subplot, extenso, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate(), plotBlastLabels);
+            XyzChartBuilder.plotMeasNeed(subplot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
+
             for (var o : p.ext().getObservationsTimeFiltered()) {
-                var minute = ChartHelper.convertToMinute(o.getDate());
-                if (o.isReplacementMeasurement()) {
-                    var marker = new ValueMarker(minute.getFirstMillisecond());
-                    marker.setPaint(Color.RED);
-                    marker.setLabel("E");
-                    marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-                    marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-                    subplot.addDomainMarker(marker);
-                } else if (o.isZeroMeasurement()) {
-                    var marker = new ValueMarker(minute.getFirstMillisecond());
-                    marker.setPaint(Color.BLUE);
-                    marker.setLabel("N");
-                    marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-                    marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-                    subplot.addDomainMarker(marker);
-                }
+                XyzChartBuilder.addNEMarkers2(plot, o, true);
             }
 
             plot.add(subplot, 1);
@@ -269,7 +254,6 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
 
         var dateAxis = (DateAxis) plot.getDomainAxis();
         dateAxis.setDateFormatOverride(new SimpleDateFormat("yyyy-MM-dd"));
-        dateAxis.setAutoRange(true);
 
         mChartPanel = new ChartPanel(mChart);
         mChartPanel.setMouseZoomable(true, false);
