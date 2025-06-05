@@ -57,6 +57,7 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 public class BFilterSectionPoint extends MBaseFilterSection {
 
     private final SessionCheckComboBox<String> mAlarmNameSccb;
+    private final RangeSliderPane mAltitudeRangeSlider = new RangeSliderPane("Z", -100.0, 100.0, false);
     private final ResourceBundle mBundle = NbBundle.getBundle(getClass());
     private final SessionCheckComboBox<String> mCategorySccb;
     private final SessionCheckComboBox<Integer> mDefaultFrequencySccb;
@@ -71,7 +72,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     private final SessionCheckComboBox<String> mOriginSccb;
     private final PointFilterUI mPointFilterUI;
     private final SessionCheckComboBox<String> mStatusSccb;
-    private final RangeSliderPane mAltitudeRangeSlider = new RangeSliderPane("Z", -100.0, 100.0, false);
+    private final SessionCheckComboBox<String> mUnitDiffSccb;
+    private final SessionCheckComboBox<String> mUnitSccb;
 
     public BFilterSectionPoint() {
         super("Grunddata");
@@ -79,6 +81,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mStatusSccb = new SessionCheckComboBox<>();
         mOriginSccb = new SessionCheckComboBox<>();
         mOperatorSccb = new SessionCheckComboBox<>();
+        mUnitSccb = new SessionCheckComboBox<>();
+        mUnitDiffSccb = new SessionCheckComboBox<>();
         mMeasNextSccb = new SessionCheckComboBox<>(true);
         mGroupSccb = new SessionCheckComboBox<>();
         mFrequencySccb = new SessionCheckComboBox<>();
@@ -134,6 +138,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put(OPERATOR, mOperatorSccb);
         map.put(ORIGIN, mOriginSccb);
         map.put(STATUS, mStatusSccb);
+        map.put(UNIT, mUnitSccb);
+        map.put(UNIT_DIFF, mUnitDiffSccb);
 
         for (var element : elements) {
             map.get(element).setDisable(true);
@@ -152,6 +158,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     && validateCheck(mIntenseFrequencySccb.getCheckModel(), p.getFrequencyIntense())
                     && validateIntenseFregFlags(p, mIntenseFrequencyStatSccb.getCheckModel())
                     && validateCheck(mOperatorSccb.getCheckModel(), p.getOperator())
+                    && validateCheck(mUnitSccb.getCheckModel(), p.getUnit())
+                    && validateCheck(mUnitDiffSccb.getCheckModel(), p.getUnitDiff())
                     && validateCheck(mOriginSccb.getCheckModel(), p.getOrigin())
                     && validateCheckMeasurementMode(mMeasurementModeSccb.getCheckModel(), p.getMeasurementMode())
                     && validateNextMeas(p, mMeasNextSccb.getCheckModel(), remainingDays)
@@ -187,7 +195,9 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                 mIntenseFrequencyStatSccb.getCheckModel(),
                 mMeasurementModeSccb.getCheckModel(),
                 mOperatorSccb.getCheckModel(),
-                mOriginSccb.getCheckModel()
+                mOriginSccb.getCheckModel(),
+                mUnitSccb.getCheckModel(),
+                mUnitDiffSccb.getCheckModel()
         ).forEach(cm -> cm.getCheckedItems().addListener(listChangeListener));
     }
 
@@ -205,6 +215,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mCategorySccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
         mOperatorSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
         mOriginSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
+        mUnitSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getUnit()));
+        mUnitDiffSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getUnitDiff()));
         mStatusSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
         mFrequencySccb.loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequency() != null).map(o -> o.getFrequency()));
         mDefaultFrequencySccb.loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequencyDefault() != null).map(o -> o.getFrequencyDefault()));
@@ -298,19 +310,6 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                 && nset;
     }
 
-    private boolean validateAltitude(BXyzPoint p) {
-        try {
-            var z = p.getZeroZ();
-            if (mAltitudeRangeSlider.selectedProperty().get()) {
-                return inRange(z, mAltitudeRangeSlider.minProperty(), mAltitudeRangeSlider.maxProperty());
-            } else {
-                return true;
-            }
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     public boolean validateIntenseFregFlags(BXyzPoint p, IndexedCheckModel checkModel) {
         if (checkModel.isEmpty()) {
             return true;
@@ -384,6 +383,19 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     private void init() {
     }
 
+    private boolean validateAltitude(BXyzPoint p) {
+        try {
+            var z = p.getZeroZ();
+            if (mAltitudeRangeSlider.selectedProperty().get()) {
+                return inRange(z, mAltitudeRangeSlider.minProperty(), mAltitudeRangeSlider.maxProperty());
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public enum DefaultFreqFlags {
         EQUALS("= %s".formatted(SDict.FREQUENCY.toString())),
         NOT_EQUALS("≠ %s".formatted(SDict.FREQUENCY.toString())),
@@ -436,7 +448,9 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         MEAS_MODE,
         OPERATOR,
         ORIGIN,
-        STATUS;
+        STATUS,
+        UNIT,
+        UNIT_DIFF;
     }
 
     public class PointFilterUI {
@@ -459,6 +473,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mAlarmNameSccb,
                     mOperatorSccb,
                     mOriginSccb,
+                    mUnitSccb,
+                    mUnitDiffSccb,
                     mMeasNextSccb,
                     mMeasurementModeSccb,
                     mFrequencySccb,
@@ -499,6 +515,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             sessionManager.register("filter.checkedOperators", mOperatorSccb.checkedStringProperty());
             sessionManager.register("filter.checkedOrigin", mOriginSccb.checkedStringProperty());
             sessionManager.register("filter.checkedStatus", mStatusSccb.checkedStringProperty());
+            sessionManager.register("filter.checkedUnit", mUnitSccb.checkedStringProperty());
+            sessionManager.register("filter.checkedUnitDiff", mUnitDiffSccb.checkedStringProperty());
             sessionManager.register("filter.measCheckedNextMeas", mMeasNextSccb.checkedStringProperty());
             sessionManager.register("filter.measCheckedMeasMode", mMeasurementModeSccb.checkedStringProperty());
             mAltitudeRangeSlider.initSession("altitude", sessionManager);
@@ -517,6 +535,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             BaseFilterPopOver.splitAndCheck(filterConfig.getString("GROUP"), mGroupSccb.getCheckModel());
             BaseFilterPopOver.splitAndCheck(filterConfig.getString("CATEGORY"), mCategorySccb.getCheckModel());
             BaseFilterPopOver.splitAndCheck(filterConfig.getString("OPERATOR"), mOperatorSccb.getCheckModel());
+//            BaseFilterPopOver.splitAndCheck(filterConfig.getString("UNIT"), mOperatorSccb.getCheckModel());
         }
 
         private void createUI() {
@@ -528,6 +547,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mAlarmNameSccb,
                     mOperatorSccb,
                     mOriginSccb,
+                    mUnitSccb,
+                    mUnitDiffSccb,
                     mMeasurementModeSccb,
                     mFrequencySccb,
                     mDefaultFrequencySccb,
@@ -543,6 +564,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             mAlarmNameSccb.setTitle(SDict.ALARMS.toString());
             mOperatorSccb.setTitle(SDict.OPERATOR.toString());
             mOriginSccb.setTitle(Dict.ORIGIN.toString());
+            mUnitSccb.setTitle("Enhet");
+            mUnitDiffSccb.setTitle("Enhet, diff");
             mFrequencySccb.setTitle(SDict.FREQUENCY.toString());
 
             mDefaultFrequencySccb.setTitle("Frekvens, standard");
@@ -573,6 +596,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mMeasurementModeSccb,
                     mGroupSccb,
                     mOriginSccb,
+                    mUnitSccb,
                     mAltitudeRangeSlider
             );
 
@@ -586,7 +610,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mIntenseFrequencyStatSccb,
                     dummyLabel,
                     mCategorySccb,
-                    mOperatorSccb
+                    mOperatorSccb,
+                    mUnitDiffSccb
             );
 
             int row = 1;
