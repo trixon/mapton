@@ -46,6 +46,7 @@ limitations under the License.
         <module>geo_inclinometer</module>
         <module>structural</module>
         <module>structural_crack</module>
+        <module>structural_load</module>
         <module>structural_strain</module>
         <module>structural_tilt</module>
     </modules>
