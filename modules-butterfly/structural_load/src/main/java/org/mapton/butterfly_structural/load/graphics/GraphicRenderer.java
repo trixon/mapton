@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.load;
+package org.mapton.butterfly_structural.load.graphics;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_structural.load.LoadAttributeManager;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -36,7 +37,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     private final LoadAttributeManager mAttributeManager = LoadAttributeManager.getInstance();
 
-    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer);
         sCheckModel = checkModel;
     }
@@ -44,17 +45,17 @@ public class GraphicRenderer extends GraphicRendererBase {
     public void plot(BStructuralLoadCellPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
 
-        if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION)) {
+        if (sCheckModel.isChecked(GraphicItem.ALARM_CONSUMPTION)) {
             plotAlarmConsumption(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.TRACE)) {
+        if (sCheckModel.isChecked(GraphicItem.TRACE)) {
             plotTrace(p, position);
         }
     }
 
     private void plotAlarmConsumption(BStructuralLoadCellPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.ALARM_CONSUMPTION, position) || p.ext().getObservationFilteredLast() == null) {
+        if (isPlotLimitReached(p, GraphicItem.ALARM_CONSUMPTION, position) || p.ext().getObservationFilteredLast() == null) {
             return;
         }
 
@@ -75,7 +76,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentH / 100.0);
         var box = new Box(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
         box.setAttributes(attrs);
-        addRenderable(box, true, GraphicRendererItem.ALARM_CONSUMPTION, sMapObjects);
+        addRenderable(box, true, GraphicItem.ALARM_CONSUMPTION, sMapObjects);
 
         var alarm = p.ext().getAlarm(BComponent.HEIGHT);
         var alarmShape = new Box(position, PERCENTAGE_SIZE_ALARM, PERCENTAGE_SIZE_ALARM_HEIGHT, PERCENTAGE_SIZE_ALARM);
@@ -85,7 +86,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     private void plotTrace(BStructuralLoadCellPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.TRACE, position)) {
+        if (isPlotLimitReached(p, GraphicItem.TRACE, position)) {
             return;
         }
         var reversedList = p.ext().getObservationsTimeFiltered().reversed();
@@ -126,7 +127,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             }
 
             cylinder.setAttributes(attrs);
-            addRenderable(cylinder, true, GraphicRendererItem.TRACE, sMapObjects);
+            addRenderable(cylinder, true, GraphicItem.TRACE, sMapObjects);
         }
     }
 }

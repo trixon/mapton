@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.load;
 
+import org.mapton.butterfly_structural.load.graphics.GraphicItem;
 import java.util.LinkedHashMap;
 import java.util.stream.Stream;
 import javafx.beans.property.SimpleObjectProperty;
@@ -42,7 +43,7 @@ public class LoadOptionsView extends MOptionsView {
     private static final LoadLabelBy DEFAULT_LABEL_BY = LoadLabelBy.NAME;
     private static final LoadPointBy DEFAULT_POINT_BY = LoadPointBy.PIN;
 
-    private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<LoadLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
@@ -55,7 +56,7 @@ public class LoadOptionsView extends MOptionsView {
         initSession();
     }
 
-    public IndexedCheckModel<GraphicRendererItem> getGraphicCheckModel() {
+    public IndexedCheckModel<GraphicItem> getGraphicCheckModel() {
         return mGraphicSccb.getCheckModel();
     }
 
@@ -77,7 +78,7 @@ public class LoadOptionsView extends MOptionsView {
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
-        mGraphicSccb.getItems().setAll(GraphicRendererItem.values());
+        mGraphicSccb.getItems().setAll(GraphicItem.values());
 
         populateLabelMenuButton();
 
