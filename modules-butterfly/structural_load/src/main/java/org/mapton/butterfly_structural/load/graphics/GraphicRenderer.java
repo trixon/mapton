@@ -22,10 +22,15 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Box;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.stream.Collectors;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPointObservation;
 import org.mapton.butterfly_structural.load.LoadAttributeManager;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -89,14 +94,29 @@ public class GraphicRenderer extends GraphicRendererBase {
         if (isPlotLimitReached(p, GraphicItem.TRACE, position)) {
             return;
         }
-        var reversedList = p.ext().getObservationsTimeFiltered().reversed();
+
+        var weeklyAverages = p.ext().getObservationsTimeFiltered().stream()
+                .collect(Collectors.groupingBy(
+                        o -> o.getDate().toLocalDate().with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1),
+                        Collectors.averagingDouble(BStructuralLoadCellPointObservation::getMeasuredZ)
+                ));
+
+        var reversedList = weeklyAverages.entrySet().stream()
+                .map(entry -> {
+                    var o = new BStructuralLoadCellPointObservation();
+                    o.setDate(entry.getKey().atStartOfDay());
+                    o.ext().setDeltaZ(entry.getValue());
+                    return o;
+                })
+                .sorted(Comparator.comparing(BStructuralLoadCellPointObservation::getDate).reversed())
+                .toList();
+
         var prevDate = LocalDateTime.now();
         var altitude = 0.0;
         var prevHeight = 0.0;
 
         for (int i = 0; i < reversedList.size(); i++) {
             var o = reversedList.get(i);
-
             var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
             var height = timeSpan / 24000.0;
             altitude = altitude + height * 0.5 + prevHeight * 0.5;
@@ -110,15 +130,14 @@ public class GraphicRenderer extends GraphicRendererBase {
             var pos = WWHelper.positionFromPosition(position, altitude);
             var maxRadius = 10.0;
 
-            var mScale1dH = 0.02;
-            var dZ = o.ext().getDeltaZ();
-            var radius = Math.min(maxRadius, Math.abs(dZ) * mScale1dH + 0.05);
+            var mScale1dH = 1.0;
+            var dZ = 1.0 * p.ext().getAlarmPercent(BComponent.HEIGHT, o.ext().getDelta1d());
+            var radius = Math.min(maxRadius, 5.0 * (Math.abs(dZ) / 100.0 * mScale1dH) + 0.05);
             var maximus = radius == maxRadius;
 
             var cylinder = new Box(pos, radius, height, radius);
             var alarmLevel = p.ext().getAlarmLevelHeight(o);
-            var rise = Math.signum(dZ) > 0;
-            var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, maximus);
+            var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, false, maximus);
 
             if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
                 attrs = new BasicShapeAttributes(attrs);
