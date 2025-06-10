@@ -30,7 +30,6 @@ import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
 import org.mapton.butterfly_structural.load.LoadHelper;
-import org.mapton.butterfly_structural.load.LoadManager;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.CircularInt;
 import se.trixon.almond.util.DateHelper;
@@ -95,33 +94,21 @@ public class LoadChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint> 
         plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
-        var single = false;
-        if (single) {
-            updateDataset(p, Color.RED, true);
-        } else {
-            updateDataset(p, Color.RED, true);
-            mColorCircularInt.set(0);
-            LoadManager.getInstance().getTimeFilteredItems().stream()
-                    .filter(pp -> {
-                        return Math.hypot(pp.getZeroX() - p.getZeroX(), pp.getZeroY() - p.getZeroY()) < 1.0;
-                    })
-                    .filter(pp -> pp != p)
-                    .forEach(pp -> {
-                        updateDataset(pp, getColor(), false);
-                    });
-        }
-    }
+        var timeSeries = new TimeSeries(p.getName());
 
-    private Color getColor() {
-        var colors = new Color[]{
-            Color.BLUE,
-            Color.CYAN,
-            Color.MAGENTA,
-            Color.YELLOW,
-            Color.GREEN,
-            Color.ORANGE};
+        p.ext().getObservationsTimeFiltered().forEach(o -> {
+            addNEMarkers(plot, o, true);
 
-        return colors[mColorCircularInt.inc()];
+            if (o.ext().getDeltaZ() != null) {
+                var minute = ChartHelper.convertToMinute(o.getDate());
+                timeSeries.addOrUpdate(minute, o.ext().getDeltaZ());
+            }
+        });
+
+        var renderer = plot.getRenderer();
+
+        getDataset().addSeries(timeSeries);
+        renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), Color.RED);
     }
 
     private void plotAlarmIndicator(BComponent component, double value, Color color) {
@@ -157,24 +144,5 @@ public class LoadChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint> 
                 plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum(), Color.RED);
             }
         }
-    }
-
-    private void updateDataset(BStructuralLoadCellPoint p, Color color, boolean plotZeroAndReplacement) {
-        var plot = (XYPlot) mChart.getPlot();
-        var timeSeries = new TimeSeries(p.getName());
-
-        p.ext().getObservationsTimeFiltered().forEach(o -> {
-            addNEMarkers(plot, o, plotZeroAndReplacement);
-
-            if (o.ext().getDeltaZ() != null) {
-                var minute = ChartHelper.convertToMinute(o.getDate());
-                timeSeries.addOrUpdate(minute, o.ext().getDeltaZ());
-            }
-        });
-
-        var renderer = plot.getRenderer();
-
-        getDataset().addSeries(timeSeries);
-        renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
     }
 }
