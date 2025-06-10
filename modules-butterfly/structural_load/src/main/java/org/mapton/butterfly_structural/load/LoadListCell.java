@@ -70,7 +70,6 @@ class LoadListCell extends ListCell<BStructuralLoadCellPoint> {
         var sign = "⇐";
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), p.getAlarm1Id());
         var dateSB = new StringBuilder(StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE"));
-//        var nextDate = p.ext().getObservationRawNextDate();
         LocalDate nextDate = null;
         if (nextDate != null) {
             dateSB.append(" (").append(nextDate.toString()).append(")");
@@ -80,19 +79,17 @@ class LoadListCell extends ListCell<BStructuralLoadCellPoint> {
         }
 
         var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
-        var desc3 = "%s: %s".formatted(dateRolling, p.ext().getDeltaRolling());
 
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
-        var desc4 = "%s: %s".formatted(dateZero, p.ext().getDeltaZero());
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(dateSB.toString());
-        mDesc3Label.setText(desc3);
-        mDesc4Label.setText(desc4);
+        mDesc3Label.setText(dateRolling);
+        mDesc4Label.setText(dateZero);
 
-        mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
-        mTooltip.setText("TODO");
+//        mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
+//        mTooltip.setText("TODO");
         setGraphic(mVBox);
     }
 
@@ -107,7 +104,6 @@ class LoadListCell extends ListCell<BStructuralLoadCellPoint> {
                 mHeaderLabel,
                 mDesc1Label,
                 mDesc2Label,
-                mDesc3Label,
                 mDesc4Label
         );
 

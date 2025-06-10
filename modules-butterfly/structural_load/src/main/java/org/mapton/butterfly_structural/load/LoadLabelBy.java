@@ -109,31 +109,6 @@ public enum LoadLabelBy {
     MISC_FREQUENCY(LabelByCategories.MISC, SDict.FREQUENCY.toString(), p -> {
         return p.getFrequency() != null ? p.getFrequency().toString() : "--";
     }),
-    //    MISC_DIMENS(LabelByCategories.MISC, SDict.DIMENSION.toString(), p -> {
-    //        return p.getDimension() != null ? p.getDimension().getName() : "--";
-    //    }),
-    //    MISC_DIMENS_FREQUENCY(LabelByCategories.MISC, TopoLabelBy.Strings.DIMENS_FREQ, p -> {
-    //        return "%sD %s".formatted(MISC_DIMENS.getLabel(p), MISC_FREQUENCY.getLabel(p));
-    //    }),
-    //    MEAS_SPEED(LabelByCategories.MEAS, "%s (mm/%s)".formatted(Dict.SPEED.toString(), Dict.Time.YEAR.toLower()), p -> {
-    //        if (p.getDimension() == BDimension._2d || p.ext().getObservationsTimeFiltered().size() < 2 || p.ext().deltaZero().getDelta1() == null) {
-    //            return "-";
-    //        } else {
-    //            try {
-    //                var speed = p.ext().getSpeed();
-    //                var ageIndicator = p.ext().getMeasurementAge(ChronoUnit.DAYS) > 365 ? "*" : "";
-    //
-    //                return "%.1f  (%.1f)%s".formatted(speed[0] * 1000.0, speed[1], ageIndicator);
-    ////                return "%.1f mm/%s (%.1f)%s".formatted(speed[0] * 1000.0, Dict.Time.YEAR.toLower(), speed[1], ageIndicator);
-    ////                return "%.1f (%.1f)%s".formatted(speed[0], Dict.Time.YEAR.toLower(), speed[1], ageIndicator);
-    //            } catch (Exception e) {
-    //                return "-";
-    //            }
-    //        }
-    //    }),
-    //    MEAS_LATEST_OPERATOR(LabelByCategories.MEAS, SDict.LATEST_S.toString().formatted(SDict.OPERATOR.toLower()), p -> {
-    //        return p.ext().getObservationsAllRaw().getLast().getOperator();
-    //    }),
     MEAS_COUNT_ALL(LabelByCategories.MEAS, "TopoLabelBy.Strings.MEAS_COUNT_ALL", p -> {
         return "%d".formatted(
                 p.ext().getNumOfObservations()
@@ -169,21 +144,8 @@ public enum LoadLabelBy {
         var need = p.getFrequency() == 0 ? "-" : Long.toString(p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
         return need;
     }),
-    VALUE_DELTA_ZERO(LabelByCategories.VALUE, "Δ₀", p -> {
-        return p.ext().getDeltaZero();
-    }),
-    VALUE_DELTA_ZERO_Z(LabelByCategories.VALUE, "ΔR₀", p -> {
-        String deltaRAbsolute = p.ext().deltaZero().getDeltaZAbsolute(1);
-        return StringUtils.replace(deltaRAbsolute, "Z", "R");
-//        var daysSinceMeasurement = p.ext().getZeroMeasurementAge(ChronoUnit.DAYS);
-//
-//        return "%s (%d)".formatted(p.ext().deltaZero().getDelta1(3), daysSinceMeasurement);
-//        var d = p.ext().deltaZero().getDeltaZ();
-//        if (d != null) {
-//            return "%.1f".formatted(d);
-//        } else {
-//            return "";
-//        }
+    VALUE_DELTA_ZERO(LabelByCategories.VALUE, Dict.VALUE.toString(), p -> {
+        return "%.0f".formatted(p.ext().getObservationFilteredLast().getMeasuredZ());
     });
     private final String mCategory;
     private final Function<BStructuralLoadCellPoint, String> mFunction;

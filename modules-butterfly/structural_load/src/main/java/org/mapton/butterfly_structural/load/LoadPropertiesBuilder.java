@@ -22,6 +22,7 @@ import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -73,6 +74,7 @@ public class LoadPropertiesBuilder extends BPropertiesBuilder<BStructuralLoadCel
         propertyMap.putAll(populateDates(p, dateParams));
 //******************************************************************************
         propertyMap.putAll(populateDatabase(p));
+        removeByKeyContains(propertyMap, "Δ", Dict.BEARING.toString());
 
         return propertyMap;
     }
