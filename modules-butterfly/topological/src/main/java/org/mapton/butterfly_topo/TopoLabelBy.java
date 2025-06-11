@@ -210,12 +210,12 @@ public enum TopoLabelBy {
         return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
     }),
     VALUE_DELTA_ZERO(LabelByCategories.VALUE, "Δ₀", p -> {
-        return p.ext().deltaZero().getDelta(3);
+        return p.ext().deltaZero().getDelta(0, 1000);
     }),
     VALUE_DELTA_ZERO_Z(LabelByCategories.VALUE, "ΔZ₀", p -> {
         var daysSinceMeasurement = p.ext().getZeroMeasurementAge(ChronoUnit.DAYS);
 
-        return "%s (%d)".formatted(p.ext().deltaZero().getDelta1(3), daysSinceMeasurement);
+        return "%s (%d)".formatted(p.ext().deltaZero().getDelta1(0, 1000), daysSinceMeasurement);
     }),
     VALUE_DELTA_LATEST_Z(LabelByCategories.VALUE, "ΔZ (dagar)", p -> {
         if (p.getDimension() == BDimension._2d) {

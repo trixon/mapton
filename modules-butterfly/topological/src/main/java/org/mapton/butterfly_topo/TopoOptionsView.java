@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo;
 
-import org.mapton.butterfly_topo.graphics.GraphicItem;
 import java.util.LinkedHashMap;
 import java.util.stream.Stream;
 import javafx.beans.property.BooleanProperty;
@@ -36,6 +35,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MRunnable;
 import org.mapton.api.ui.forms.CheckedTab;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
+import org.mapton.butterfly_topo.graphics.GraphicItem;
 import org.mapton.butterfly_topo.shared.ColorBy;
 import org.mapton.butterfly_topo.shared.PointBy;
 import org.mapton.worldwind.api.MOptionsView;
@@ -112,7 +112,7 @@ public class TopoOptionsView extends MOptionsView implements MRunnable {
 
     @Override
     public void runOnce() {
-        FxHelper.setVisibleRowCount(25, mGraphicSccb);
+        FxHelper.setVisibleRowCount(99, mGraphicSccb);
     }
 
     private void createUI() {
