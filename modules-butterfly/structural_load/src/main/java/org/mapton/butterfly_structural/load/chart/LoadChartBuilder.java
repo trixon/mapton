@@ -15,23 +15,18 @@
  */
 package org.mapton.butterfly_structural.load.chart;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.ui.LengthAdjustmentType;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
 import org.mapton.butterfly_structural.load.LoadHelper;
 import org.mapton.ce_jfreechart.api.ChartHelper;
-import se.trixon.almond.util.CircularInt;
 import se.trixon.almond.util.DateHelper;
 
 /**
@@ -40,7 +35,6 @@ import se.trixon.almond.util.DateHelper;
  */
 public class LoadChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint> {
 
-    private final CircularInt mColorCircularInt = new CircularInt(0, 5);
     private final TimeSeries mTimeSeriesZ = new TimeSeries("kN");
 
     public LoadChartBuilder() {
@@ -111,38 +105,4 @@ public class LoadChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint> 
         renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), Color.RED);
     }
 
-    private void plotAlarmIndicator(BComponent component, double value, Color color) {
-        var marker = new ValueMarker(value);
-        float width = 1.0f;
-        float dash[] = {5.0f, 5.0f};
-        var dashedStroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, dash, 0);
-        var stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, null, 0);
-        if (component == BComponent.HEIGHT) {
-            marker.setStroke(dashedStroke);
-        } else {
-            marker.setStroke(stroke);
-        }
-        marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
-        marker.setPaint(color);
-
-        var plot = (XYPlot) mChart.getPlot();
-        plot.addRangeMarker(marker);
-    }
-
-    private void plotAlarmIndicators(BStructuralLoadCellPoint p) {
-        var ha = p.ext().getAlarm(BComponent.HEIGHT);
-        if (ha != null) {
-            var range0 = ha.ext().getRange0();
-            if (range0 != null) {
-                plotAlarmIndicator(BComponent.HEIGHT, range0.getMinimum(), Color.YELLOW);
-                plotAlarmIndicator(BComponent.HEIGHT, range0.getMaximum(), Color.YELLOW);
-            }
-
-            var range1 = ha.ext().getRange1();
-            if (range1 != null) {
-                plotAlarmIndicator(BComponent.HEIGHT, range1.getMinimum(), Color.RED);
-                plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum(), Color.RED);
-            }
-        }
-    }
 }

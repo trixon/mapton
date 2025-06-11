@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_structural.strain.chart;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
@@ -23,14 +22,11 @@ import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.ui.LengthAdjustmentType;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.butterfly_structural.strain.StrainHelper;
 import org.mapton.butterfly_structural.strain.StrainManager;
@@ -143,41 +139,6 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
             Color.ORANGE};
 
         return colors[mColorCircularInt.inc()];
-    }
-
-    private void plotAlarmIndicator(BComponent component, double value, Color color) {
-        var marker = new ValueMarker(value);
-        float width = 1.0f;
-        float dash[] = {5.0f, 5.0f};
-        var dashedStroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, dash, 0);
-        var stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, null, 0);
-        if (component == BComponent.HEIGHT) {
-            marker.setStroke(dashedStroke);
-        } else {
-            marker.setStroke(stroke);
-        }
-        marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
-        marker.setPaint(color);
-
-        var plot = (XYPlot) mChart.getPlot();
-        plot.addRangeMarker(marker);
-    }
-
-    private void plotAlarmIndicators(BStructuralStrainGaugePoint p) {
-        var ha = p.ext().getAlarm(BComponent.HEIGHT);
-        if (ha != null) {
-            var range0 = ha.ext().getRange0();
-            if (range0 != null) {
-                plotAlarmIndicator(BComponent.HEIGHT, range0.getMinimum(), Color.YELLOW);
-                plotAlarmIndicator(BComponent.HEIGHT, range0.getMaximum(), Color.YELLOW);
-            }
-
-            var range1 = ha.ext().getRange1();
-            if (range1 != null) {
-                plotAlarmIndicator(BComponent.HEIGHT, range1.getMinimum(), Color.RED);
-                plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum(), Color.RED);
-            }
-        }
     }
 
     private void updateDataset(BStructuralStrainGaugePoint p, Color color, boolean plotZeroAndReplacement) {

@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_geo.inclinometer.chart;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.text.SimpleDateFormat;
@@ -32,53 +31,34 @@ import org.jfree.chart.block.BorderArrangement;
 import org.jfree.chart.block.EmptyBlock;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.CompositeTitle;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.chart.ui.HorizontalAlignment;
-import org.jfree.chart.ui.LengthAdjustmentType;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.VerticalAlignment;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.mapton.api.ui.forms.ChartBuilder;
-import org.mapton.butterfly_format.types.BComponent;
+import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
-import se.trixon.almond.util.CircularInt;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class InclinoChartBuilder extends ChartBuilder<BGeoInclinometerPoint> {
+public class InclinoChartBuilder extends XyzChartBuilder<BGeoInclinometerPoint> {
 
-    private final CircularInt mColorCircularInt = new CircularInt(0, 5);
-    private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
-    private final NumberAxis mTemperatureAxis = new NumberAxis("°C");
-    private final TimeSeriesCollection mTemperatureDataset = new TimeSeriesCollection();
-    private final TimeSeries mTimeSeriesTemperature = new TimeSeries("°C");
-    private final TimeSeries mTimeSeriesZ = new TimeSeries("Δ µε");
-    private JFreeChart mChart;
     private ChartPanel mChartPanel;
     private TextTitle mDateSubTextTitle;
     private TextTitle mDeltaSubTextTitle;
 
     public InclinoChartBuilder() {
         initChart();
-//        initChart("mm", null);
-//
-//        var plot = (CombinedDomainXYPlot) mChart.getPlot();
-//        plot.setRangeAxis(2, mTemperatureAxis);
-//        plot.setDataset(2, mTemperatureDataset);
-//        plot.mapDatasetToRangeAxis(2, 2);
-//        plot.setRangeAxisLocation(2, AxisLocation.BOTTOM_OR_RIGHT);
-//        plot.setRenderer(2, mSecondaryRenderer);
     }
 
     private void initChart() {
@@ -112,7 +92,7 @@ public class InclinoChartBuilder extends ChartBuilder<BGeoInclinometerPoint> {
         mChartPanel = new ChartPanel(mChart);
         mChartPanel.setMouseZoomable(true, false);
         mChartPanel.setDisplayToolTips(true);
-//        mChartPanel.setDomainZoomable(true);
+        //        mChartPanel.setDomainZoomable(true);
         mChartPanel.setMouseWheelEnabled(false);
 
         var font = new Font("monospaced", Font.BOLD, SwingHelper.getUIScaled(12));
@@ -235,128 +215,4 @@ public class InclinoChartBuilder extends ChartBuilder<BGeoInclinometerPoint> {
         }
     }
 
-    public synchronized void updateDatasetXX(BGeoInclinometerPoint p) {
-//        getDataset().removeAllSeries();
-        mTimeSeriesZ.clear();
-
-        mTemperatureDataset.removeAllSeries();
-        mTimeSeriesTemperature.clear();
-
-        var plot = (XYPlot) mChart.getPlot();
-        plot.clearDomainMarkers();
-
-//        updateDatasetTemperature(p);
-        var depthToSeries = new LinkedHashMap<Double, TimeSeries>();
-
-        updateDatasetXX(p, Color.RED, true);
-        mColorCircularInt.set(0);
-
-        for (var o : p.ext().getObservationsTimeFiltered()) {
-            var minute = ChartHelper.convertToMinute(o.getDate());
-            for (var oi : o.getObservationItems()) {
-                var timeSeries = depthToSeries.computeIfAbsent(oi.getDown(), k -> new TimeSeries("%.1f".formatted(k)));
-                double value = oi.getDown() + oi.getDistance() * 100;
-                timeSeries.addOrUpdate(minute, value);
-            }
-        }
-
-        for (var timeSeries : depthToSeries.values()) {
-//            getDataset().addSeries(timeSeries);
-        }
-
-//        mManager.getTimeFilteredItems().stream()
-//                .filter(pp -> {
-//                    return Math.hypot(pp.getZeroX() - p.getZeroX(), pp.getZeroY() - p.getZeroY()) < 1.0;
-//                })
-//                .filter(pp -> pp != p)
-//                .forEach(pp -> {
-//                    updateDataset(pp, getColor(), false);
-//                });
-    }
-
-    private Color getColor() {
-        var colors = new Color[]{
-            Color.BLUE,
-            Color.CYAN,
-            Color.MAGENTA,
-            Color.YELLOW,
-            Color.GREEN,
-            Color.ORANGE};
-
-        return colors[mColorCircularInt.inc()];
-    }
-
-    private void plotAlarmIndicator(BComponent component, double value, Color color) {
-        var marker = new ValueMarker(value);
-        float width = 1.0f;
-        float dash[] = {5.0f, 5.0f};
-        var dashedStroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, dash, 0);
-        var stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, null, 0);
-        if (component == BComponent.HEIGHT) {
-            marker.setStroke(dashedStroke);
-        } else {
-            marker.setStroke(stroke);
-        }
-        marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
-        marker.setPaint(color);
-
-        var plot = (XYPlot) mChart.getPlot();
-        plot.addRangeMarker(marker);
-    }
-
-    private void plotAlarmIndicators(BGeoInclinometerPoint p) {
-        var ha = p.ext().getAlarm(BComponent.HEIGHT);
-        if (ha != null) {
-            var range0 = ha.ext().getRange0();
-            if (range0 != null) {
-                plotAlarmIndicator(BComponent.HEIGHT, range0.getMinimum(), Color.YELLOW);
-                plotAlarmIndicator(BComponent.HEIGHT, range0.getMaximum(), Color.YELLOW);
-            }
-
-            var range1 = ha.ext().getRange1();
-            if (range1 != null) {
-                plotAlarmIndicator(BComponent.HEIGHT, range1.getMinimum(), Color.RED);
-                plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum(), Color.RED);
-            }
-        }
-    }
-
-    private void updateDatasetXX(BGeoInclinometerPoint p, Color color, boolean plotZeroAndReplacement) {
-        var plot = (XYPlot) mChart.getPlot();
-        var timeSeries = new TimeSeries(p.getName());
-
-        p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = ChartHelper.convertToMinute(o.getDate());
-//            if (plotZeroAndReplacement) {
-//                if (o.isReplacementMeasurement()) {
-//                    addMarker(plot, minute, "E", Color.RED);
-//                } else if (o.isZeroMeasurement()) {
-//                    addMarker(plot, minute, "N", Color.BLUE);
-//                }
-//            }
-
-            if (o.ext().getDeltaZ() != null) {
-                timeSeries.addOrUpdate(minute, o.ext().getDeltaZ() * 1000);
-            }
-        });
-
-        var renderer = plot.getRenderer();
-
-//        getDataset().addSeries(timeSeries);
-//        renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
-    }
-
-    private void updateDatasetTemperature(BGeoInclinometerPoint p) {
-        p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = ChartHelper.convertToMinute(o.getDate());
-//            if (MathHelper.isBetween(-40d, +40d, o.getA())) {
-//                mTimeSeriesTemperature.addOrUpdate(minute, o.getA());
-//            }
-        });
-
-        if (!mTimeSeriesTemperature.isEmpty()) {
-            mTemperatureDataset.addSeries(mTimeSeriesTemperature);
-            mSecondaryRenderer.setSeriesPaint(mTemperatureDataset.getSeriesIndex(mTimeSeriesTemperature.getKey()), Color.GRAY);
-        }
-    }
 }

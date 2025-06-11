@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
+import org.apache.commons.numbers.core.Precision;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -38,6 +39,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.CompositeTitle;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.chart.ui.HorizontalAlignment;
+import org.jfree.chart.ui.LengthAdjustmentType;
 import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
@@ -52,6 +54,7 @@ import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.BBaseControlPointObservation;
 import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
@@ -235,6 +238,62 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
             dateAxis.setRange(dateNull, DateHelper.convertToDate(LocalDate.now()));
         } catch (IllegalArgumentException e) {
             System.out.println("%s: Bad chart plot range".formatted(p.getName()));
+        }
+    }
+
+    private void plotAlarmIndicator(BComponent component, double value, Color color) {
+        var marker = new ValueMarker(value);
+        float width = 1.0f;
+        float dash[] = {5.0f, 5.0f};
+        var dashedStroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, dash, 0);
+        var stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, null, 0);
+        if (component == BComponent.HEIGHT) {
+            marker.setStroke(dashedStroke);
+        } else {
+            marker.setStroke(stroke);
+        }
+        marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
+        marker.setPaint(color);
+
+        var plot = (XYPlot) mChart.getPlot();
+        plot.addRangeMarker(marker);
+    }
+
+    public void plotAlarmIndicators(BXyzPoint p) {
+        if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
+            var ha = ext.getAlarm(BComponent.HEIGHT);
+            if (ha != null) {
+                var range0 = ha.ext().getRange0();
+                if (range0 != null) {
+                    plotAlarmIndicator(BComponent.HEIGHT, range0.getMinimum(), Color.YELLOW);
+                    plotAlarmIndicator(BComponent.HEIGHT, range0.getMaximum(), Color.YELLOW);
+                }
+
+                var range1 = ha.ext().getRange1();
+                if (range1 != null) {
+                    plotAlarmIndicator(BComponent.HEIGHT, range1.getMinimum(), Color.RED);
+                    plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum(), Color.RED);
+                }
+            }
+
+            var pa = ext.getAlarm(BComponent.PLANE);
+            if (pa != null) {
+                var range0 = pa.ext().getRange0();
+                if (range0 != null) {
+                    if (!Precision.equals(range0.getMinimum(), 0.0)) {
+                        plotAlarmIndicator(BComponent.PLANE, range0.getMinimum(), Color.YELLOW);
+                    }
+                    plotAlarmIndicator(BComponent.PLANE, range0.getMaximum(), Color.YELLOW);
+                }
+
+                var range1 = pa.ext().getRange1();
+                if (range1 != null) {
+                    if (!Precision.equals(range1.getMinimum(), 0.0)) {
+                        plotAlarmIndicator(BComponent.PLANE, range1.getMinimum(), Color.RED);
+                    }
+                    plotAlarmIndicator(BComponent.PLANE, range1.getMaximum(), Color.RED);
+                }
+            }
         }
     }
 

@@ -23,17 +23,13 @@ import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.ui.LengthAdjustmentType;
 import org.jfree.data.time.MovingAverage;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
-import org.mapton.butterfly_structural.tilt.TiltHelper;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
@@ -175,42 +171,42 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
         mSecondaryRenderer.setSeriesPaint(mTemperatureDataset.getSeriesIndex(mTimeSeriesTemperature.getKey()), Color.GRAY);
     }
 
-    private void plotAlarmIndicator(BComponent component, double value, Color color) {
-        var marker = new ValueMarker(value);
-        float width = 1.0f;
-        float dash[] = {5.0f, 5.0f};
-        var dashedStroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, dash, 0);
-        var stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, null, 0);
-        if (component == BComponent.HEIGHT) {
-            marker.setStroke(dashedStroke);
-        } else {
-            marker.setStroke(stroke);
-        }
-        marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
-        marker.setPaint(color);
-
-        var plot = (XYPlot) mChart.getPlot();
-        plot.addRangeMarker(marker);
-    }
-
-    private void plotAlarmIndicators(BStructuralTiltPoint p) {
-        var ha = p.ext().getAlarm(BComponent.HEIGHT);
-        if (ha != null) {
-            var range0 = ha.ext().getRange0();
-            if (range0 != null) {
-                var min = TiltHelper.toRadianBased(range0.getMinimum());
-                var max = TiltHelper.toRadianBased(range0.getMaximum());
-                plotAlarmIndicator(BComponent.HEIGHT, min, Color.YELLOW);
-                plotAlarmIndicator(BComponent.HEIGHT, max, Color.YELLOW);
-            }
-
-            var range1 = ha.ext().getRange1();
-            if (range1 != null) {
-                var min = TiltHelper.toRadianBased(range1.getMinimum());
-                var max = TiltHelper.toRadianBased(range1.getMaximum());
-                plotAlarmIndicator(BComponent.HEIGHT, min, Color.RED);
-                plotAlarmIndicator(BComponent.HEIGHT, max, Color.RED);
-            }
-        }
-    }
+//    private void plotAlarmIndicator(BComponent component, double value, Color color) {
+//        var marker = new ValueMarker(value);
+//        float width = 1.0f;
+//        float dash[] = {5.0f, 5.0f};
+//        var dashedStroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, dash, 0);
+//        var stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, null, 0);
+//        if (component == BComponent.HEIGHT) {
+//            marker.setStroke(dashedStroke);
+//        } else {
+//            marker.setStroke(stroke);
+//        }
+//        marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
+//        marker.setPaint(color);
+//
+//        var plot = (XYPlot) mChart.getPlot();
+//        plot.addRangeMarker(marker);
+//    }
+//
+//    private void plotAlarmIndicators(BStructuralTiltPoint p) {
+//        var ha = p.ext().getAlarm(BComponent.HEIGHT);
+//        if (ha != null) {
+//            var range0 = ha.ext().getRange0();
+//            if (range0 != null) {
+//                var min = TiltHelper.toRadianBased(range0.getMinimum());
+//                var max = TiltHelper.toRadianBased(range0.getMaximum());
+//                plotAlarmIndicator(BComponent.HEIGHT, min, Color.YELLOW);
+//                plotAlarmIndicator(BComponent.HEIGHT, max, Color.YELLOW);
+//            }
+//
+//            var range1 = ha.ext().getRange1();
+//            if (range1 != null) {
+//                var min = TiltHelper.toRadianBased(range1.getMinimum());
+//                var max = TiltHelper.toRadianBased(range1.getMaximum());
+//                plotAlarmIndicator(BComponent.HEIGHT, min, Color.RED);
+//                plotAlarmIndicator(BComponent.HEIGHT, max, Color.RED);
+//            }
+//        }
+//    }
 }

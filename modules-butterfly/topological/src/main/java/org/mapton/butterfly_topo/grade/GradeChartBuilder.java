@@ -44,6 +44,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.ChartBuilder;
+import static org.mapton.butterfly_core.api.XyzChartBuilder.plotBlasts;
 import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
@@ -169,41 +170,6 @@ public class GradeChartBuilder extends ChartBuilder<BTopoGrade> {
         plot.addRangeMarker(marker);
     }
 
-//    private void plotAlarmIndicators(BTopoGrade p) {
-//        var ha = p.ext().getAlarm(BComponent.HEIGHT);
-//        if (ha != null) {
-//            var range0 = ha.ext().getRange0();
-//            if (range0 != null) {
-//                plotAlarmIndicator(BComponent.HEIGHT, range0.getMinimum(), Color.YELLOW);
-//                plotAlarmIndicator(BComponent.HEIGHT, range0.getMaximum(), Color.YELLOW);
-//            }
-//
-//            var range1 = ha.ext().getRange1();
-//            if (range1 != null) {
-//                plotAlarmIndicator(BComponent.HEIGHT, range1.getMinimum(), Color.RED);
-//                plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum(), Color.RED);
-//            }
-//        }
-//
-//        var pa = p.ext().getAlarm(BComponent.PLANE);
-//        if (pa != null) {
-//            var range0 = pa.ext().getRange0();
-//            if (range0 != null) {
-//                if (!Precision.equals(range0.getMinimum(), 0.0)) {
-//                    plotAlarmIndicator(BComponent.PLANE, range0.getMinimum(), Color.YELLOW);
-//                }
-//                plotAlarmIndicator(BComponent.PLANE, range0.getMaximum(), Color.YELLOW);
-//            }
-//
-//            var range1 = pa.ext().getRange1();
-//            if (range1 != null) {
-//                if (!Precision.equals(range1.getMinimum(), 0.0)) {
-//                    plotAlarmIndicator(BComponent.PLANE, range1.getMinimum(), Color.RED);
-//                }
-//                plotAlarmIndicator(BComponent.PLANE, range1.getMaximum(), Color.RED);
-//            }
-//        }
-//    }
     @Override
     public void setTitle(BTopoGrade p) {
         mChart.setTitle(p.getName());
@@ -258,7 +224,9 @@ public class GradeChartBuilder extends ChartBuilder<BTopoGrade> {
         mTimeSeriesV.clear();
 
         var plot = (XYPlot) mChart.getPlot();
+
         plot.clearDomainMarkers();
+        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
         p.getCommonObservations().entrySet().forEach(entry -> {
             var date = entry.getKey();
             var p1 = entry.getValue();

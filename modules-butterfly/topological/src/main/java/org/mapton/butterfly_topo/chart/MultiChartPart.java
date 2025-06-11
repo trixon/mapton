@@ -94,7 +94,6 @@ public abstract class MultiChartPart extends BMultiChartPart {
         for (var p : pointList) {
             var observations = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
-                    //                    .filter(o -> o.getMeasuredZ() != null)
                     .map(o -> {
                         var oo = new BTopoControlPointObservation();
                         oo.setDate(o.getDate());
@@ -169,7 +168,6 @@ public abstract class MultiChartPart extends BMultiChartPart {
                 } else {
                     pointsToExclude.add(p);
                 }
-
             } else {
                 pointsToExclude.add(p);
             }
