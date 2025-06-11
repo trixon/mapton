@@ -163,9 +163,17 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
             if (rising) {
                 limit0 = alarm.ext().getRange0().getMaximum();
                 limit1 = alarm.ext().getRange1().getMaximum();
+                if (Double.isInfinite(limit0) || Double.isInfinite(limit1)) {
+                    limit0 = alarm.ext().getRange0().getMinimum();
+                    limit1 = alarm.ext().getRange1().getMinimum();
+                }
             } else {
                 limit0 = alarm.ext().getRange0().getMinimum();
                 limit1 = alarm.ext().getRange1().getMinimum();
+                if (Double.isInfinite(limit0) || Double.isInfinite(limit1)) {
+                    limit0 = alarm.ext().getRange0().getMaximum();
+                    limit1 = alarm.ext().getRange1().getMaximum();
+                }
             }
 
             var percent = limit0 / limit1;
