@@ -690,12 +690,16 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
         public abstract class Delta {
 
-            public String getDelta(int decimals) {
+            public String getDelta(int decimals, int factor) {
                 return StringHelper.joinNonNulls(", ",
-                        getDelta1(decimals),
-                        getDelta2(decimals),
-                        getDelta3(decimals)
+                        getDelta1(decimals, factor),
+                        getDelta2(decimals, factor),
+                        getDelta3(decimals, factor)
                 );
+            }
+
+            public String getDelta(int decimals) {
+                return getDelta(decimals, 1);
             }
 
             public Double getDelta() {
@@ -719,13 +723,29 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
 
             public String getDelta1(int decimals) {
+                return getDelta1(decimals, 1);
+            }
+
+            public String getDelta1(int decimals, int factor) {
                 var delta = getDelta1();
-                return delta == null ? null : StringHelper.round(delta, decimals, "Δ1d=", "", true);
+                if (delta == null) {
+                    return null;
+                } else {
+                    return StringHelper.round(delta * factor, decimals, "Δ1d ", "", true);
+                }
             }
 
             public String getDelta2(int decimals) {
+                return getDelta2(decimals, 1);
+            }
+
+            public String getDelta2(int decimals, int factor) {
                 var delta = getDelta2();
-                return delta == null ? null : StringHelper.round(delta, decimals, "Δ2d=", "", false);
+                if (delta == null) {
+                    return null;
+                } else {
+                    return StringHelper.round(delta * factor, decimals, "Δ2d ", "", true);
+                }
             }
 
             public Double getDelta2() {
@@ -737,8 +757,16 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
 
             public String getDelta3(int decimals) {
+                return getDelta3(decimals, 1);
+            }
+
+            public String getDelta3(int decimals, int factor) {
                 var delta = getDelta3();
-                return delta == null ? null : StringHelper.round(delta, decimals, "Δ3d=", "", false);
+                if (delta == null) {
+                    return null;
+                } else {
+                    return StringHelper.round(delta * factor, decimals, "Δ3d ", "", true);
+                }
             }
 
             public Double getDelta3() {
@@ -765,14 +793,14 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
             public abstract Double getDeltaZ();
 
-            public String getDeltaZAbsolute(int decimals) {
-                var delta = getDeltaZ();
-                return delta == null ? null : StringHelper.round(Math.abs(delta), decimals, "ΔZ=", "", false);
-            }
-
             public String getDeltaZ(int decimals) {
                 var delta = getDeltaZ();
                 return delta == null ? null : StringHelper.round(delta, decimals, "ΔZ=", "", true);
+            }
+
+            public String getDeltaZAbsolute(int decimals) {
+                var delta = getDeltaZ();
+                return delta == null ? null : StringHelper.round(Math.abs(delta), decimals, "ΔZ=", "", false);
             }
         }
 
