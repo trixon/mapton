@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.io.ImportFromCsv;
@@ -51,6 +52,8 @@ import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation
 import org.mapton.butterfly_format.types.monmon.BMonmon;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
+import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
@@ -94,6 +97,8 @@ public class Butterfly {
     private final Structural mStructural = new Structural();
     private final ArrayList<BStructuralCrackPoint> mStructuralCrackPoints = new ArrayList<>();
     private final ArrayList<BStructuralCrackPointObservation> mStructuralCrackPointsObservations = new ArrayList<>();
+    private final ArrayList<BStructuralLoadCellPoint> mStructuralLoadPoints = new ArrayList<>();
+    private final ArrayList<BStructuralLoadCellPointObservation> mStructuralLoadPointsObservations = new ArrayList<>();
     private final ArrayList<BStructuralStrainGaugePoint> mStructuralStrainPoints = new ArrayList<>();
     private final ArrayList<BStructuralStrainGaugePointObservation> mStructuralStrainPointsObservations = new ArrayList<>();
     private final ArrayList<BStructuralTiltPoint> mStructuralTiltPoints = new ArrayList<>();
@@ -207,6 +212,12 @@ public class Butterfly {
         new ImportFromCsv<BStructuralCrackPointObservation>(BStructuralCrackPointObservation.class) {
         }.load(sourceDir, "structuralCrackPointsObservations.csv", mStructuralCrackPointsObservations);
 
+        new ImportFromCsv<BStructuralLoadCellPoint>(BStructuralLoadCellPoint.class) {
+        }.load(sourceDir, "structuralLoadCellPoints.csv", mStructuralLoadPoints);
+
+        new ImportFromCsv<BStructuralLoadCellPointObservation>(BStructuralLoadCellPointObservation.class) {
+        }.load(sourceDir, "structuralLoadCellPointsObservations.csv", mStructuralLoadPointsObservations);
+
         new ImportFromCsv<BStructuralStrainGaugePoint>(BStructuralStrainGaugePoint.class) {
         }.load(sourceDir, "structuralStrainGaugePoints.csv", mStructuralStrainPoints);
 
@@ -276,34 +287,45 @@ public class Butterfly {
     }
 
     void postLoad() {
+        List.of(mAlarms,
+                mHydroGroundwaterPoints,
+                mStructuralCrackPoints,
+                mStructuralLoadPoints,
+                mStructuralStrainPoints,
+                mStructuralTiltPoints,
+                mTopoConvergenceGroups,
+                mTopoControlPoints,
+                mGeoExtensometers,
+                mGeoInclinometerPoints
+        ).forEach(items -> items.forEach(item -> item.setButterfly(this)));
+
         for (var a : mAlarms) {
-            a.setButterfly(this);
+//            a.setButterfly(this);
             a.ext().populateRanges();
         }
 
         for (var p : mHydroGroundwaterPoints) {
-            p.setButterfly(this);
+//            p.setButterfly(this);
             p.setDimension(BDimension._1d);
         }
 
-        for (var p : mStructuralCrackPoints) {
-            p.setButterfly(this);
-        }
-
-        for (var p : mStructuralStrainPoints) {
-            p.setButterfly(this);
-        }
-
-        for (var p : mStructuralTiltPoints) {
-            p.setButterfly(this);
-        }
-
-        for (var p : mTopoConvergenceGroups) {
-            p.setButterfly(this);
-        }
-
+//        for (var p : mStructuralCrackPoints) {
+//            p.setButterfly(this);
+//        }
+//        for (var p : mStructuralStrainPoints) {
+//            p.setButterfly(this);
+//        }
+//        for (var p : mStructuralLoadPoints) {
+//            p.setButterfly(this);
+//        }
+//        for (var p : mStructuralTiltPoints) {
+//            p.setButterfly(this);
+//        }
+//        for (var p : mTopoConvergenceGroups) {
+//            p.setButterfly(this);
+//        }
         for (var p : mTopoControlPoints) {
-            p.setButterfly(this);
+//            p.setButterfly(this);
             calcFreqIntenseBuffer(p);
         }
 
@@ -312,12 +334,12 @@ public class Butterfly {
         }
 
         for (var p : mGeoExtensometers) {
-            p.setButterfly(this);
+//            p.setButterfly(this);
             p.setMeasurementMode(BMeasurementMode.AUTOMATIC);
         }
 
         for (var p : mGeoInclinometerPoints) {
-            p.setButterfly(this);
+//            p.setButterfly(this);
         }
 
         structural().postLoad();
@@ -470,6 +492,7 @@ public class Butterfly {
     public class Structural {
 
         private final HashMap<String, BStructuralCrackPoint> mNameToCrackPoint = new HashMap<>();
+        private final HashMap<String, BStructuralLoadCellPoint> mNameToLoadPoint = new HashMap<>();
         private final HashMap<String, BStructuralStrainGaugePoint> mNameToStrainPoint = new HashMap<>();
         private final HashMap<String, BStructuralTiltPoint> mNameToTiltPoint = new HashMap<>();
 
@@ -483,6 +506,14 @@ public class Butterfly {
 
         public ArrayList<BStructuralCrackPointObservation> getCrackPointsObservations() {
             return mStructuralCrackPointsObservations;
+        }
+
+        public ArrayList<BStructuralLoadCellPoint> getLoadPoints() {
+            return mStructuralLoadPoints;
+        }
+
+        public ArrayList<BStructuralLoadCellPointObservation> getLoadPointsObservations() {
+            return mStructuralLoadPointsObservations;
         }
 
         public BStructuralStrainGaugePoint getStrainPointByName(String name) {
@@ -515,6 +546,10 @@ public class Butterfly {
                 mNameToCrackPoint.put(crackPoint.getName(), crackPoint);
             });
 
+            mNameToLoadPoint.clear();
+            getLoadPoints().forEach(loadPoint -> {
+                mNameToLoadPoint.put(loadPoint.getName(), loadPoint);
+            });
             mNameToStrainPoint.clear();
             getStrainPoints().forEach(strainPoint -> {
                 mNameToStrainPoint.put(strainPoint.getName(), strainPoint);
