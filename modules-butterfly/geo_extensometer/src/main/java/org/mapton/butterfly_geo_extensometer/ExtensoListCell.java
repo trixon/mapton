@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_geo_extensometer;
 
-import java.time.LocalDate;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -56,47 +55,28 @@ class ExtensoListCell extends ListCell<BGeoExtensometer> {
         }
     }
 
-    private void addContent(BGeoExtensometer p) {
+    private void addContent(BGeoExtensometer ext) {
         setText(null);
-        var header = p.getName();
-        if (StringUtils.isNotBlank(p.getStatus())) {
-            header = "%s [%s]".formatted(header, p.getStatus());
+        var header = ext.getName();
+        if (StringUtils.isNotBlank(ext.getStatus())) {
+            header = "%s [%s]".formatted(header, ext.getStatus());
         }
 
-        var sign = "⇐";
-        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), p.getAlarm1Id());
-        var dateSB = new StringBuilder(StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE"));
-//        var nextDate = p.ext().getObservationRawNextDate();
-        LocalDate nextDate = null;
-        if (nextDate != null) {
-            dateSB.append(" (").append(nextDate.toString()).append(")");
-            if (nextDate.isBefore(LocalDate.now())) {
-                dateSB.append(" ").append(sign);
-            }
-        }
+        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(ext.getCategory(), "NOVALUE"), ext.getAlarm1Id());
+        var date = ext.getDateLatest();
+        var dateLatest = StringHelper.toString(date == null ? null : date.toLocalDate(), "NOVALUE");
 
-        var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
-        var list = p.getPoints().stream().map(point -> "%.1f".formatted(point.ext().getDelta())).toList();
+        var dateZero = StringHelper.toString(ext.getDateZero(), "NOVALUE");
+        var list = ext.getPoints().stream().map(point -> "%.1f".formatted(point.ext().getDelta())).toList();
 
         String desc4 = String.join(" / ", list);
-        var lastObservation = p.ext().getObservationFilteredLast();
-
-        if (lastObservation != null) {
-//            var maxItem = lastObservation.getObservationItems().stream()
-//                    .max(Comparator.comparingDouble(BGeoInclinometerPointObservation.ObservationItem::getDistance));
-//            if (maxItem.isPresent()) {
-//                var item = maxItem.get();
-//                desc4 = "%.1fmm @ %.1fm".formatted(item.getDistance() * 1000, item.getDown());
-//            }
-        }
-        //mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
-        mDesc2Label.setText(dateSB.toString());
+        mDesc2Label.setText(dateLatest);
         mDesc3Label.setText(dateZero);
         mDesc4Label.setText(desc4);
 
-        mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
+//        mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
 //        mTooltip.setText("TODO");
         setGraphic(mVBox);
     }

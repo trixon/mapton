@@ -117,12 +117,18 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
                 }
             });
 
-            var dates = new TreeSet<LocalDateTime>();
+            var allDates = new TreeSet<LocalDateTime>();
             extensometers.forEach(ext -> {
                 ext.ext().getObservationsAllRaw().clear();
                 ext.ext().getObservationsTimeFiltered().clear();
-                ext.getPoints().forEach(p -> {
-                    dates.addAll(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());
+                var minLastDate = LocalDateTime.MAX;
+                for (var p : ext.getPoints()) {
+                    var last = p.ext().getDateLatest();
+                    if (last.isBefore(minLastDate) && p.getFrequency() > 0) {
+                        minLastDate = last;
+                    }
+                    var dates = new TreeSet<LocalDateTime>(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());
+                    allDates.addAll(dates);
                     ext.ext().getObservationsAllRaw().addAll(p.ext().getObservationsAllRaw());
                     ext.ext().getObservationsTimeFiltered().addAll(p.ext().getObservationsTimeFiltered());
                     ext.setDateRolling(p.getDateRolling());
@@ -132,14 +138,15 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
 
                     if (!dates.isEmpty()) {
                         ext.ext().setDateFirst(dates.first());
-                        ext.setDateLatest(dates.last());
-                        ext.ext().setDateLatest(dates.last());
                     }
-                });
+                }
+
+                ext.setDateLatest(minLastDate);
+                ext.ext().setDateLatest(minLastDate);
             });
 
-            if (!dates.isEmpty()) {
-                setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
+            if (!allDates.isEmpty()) {
+                setTemporalRange(new MTemporalRange(allDates.first(), allDates.last()));
                 boolean layerBundleEnabled = isLayerBundleEnabled();
                 updateTemporal(!layerBundleEnabled);
                 updateTemporal(layerBundleEnabled);
