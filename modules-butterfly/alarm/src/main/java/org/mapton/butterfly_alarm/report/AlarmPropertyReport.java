@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.TreeSet;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.report.MReport;
-import org.mapton.butterfly_alarm.api.AlarmManager;
+import org.mapton.butterfly_core.api.AlarmManager;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.openide.util.lookup.ServiceProvider;
 

@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_alarm.api;
+package org.mapton.butterfly_core.api;
 
+import java.util.Arrays;
+import javafx.geometry.Point2D;
+import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPoint;
-import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
-import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import se.trixon.almond.util.StringHelper;
 
 /**
@@ -59,29 +60,35 @@ public class AlarmHelper {
         return result;
     }
 
-    public String getLimitsAsString(BStructuralStrainGaugePoint p) {
-        var result = "";
-        var alarm = mManager.getAllItemsMap().get(p.getAlarm1Id());
-        if (alarm != null) {
-            result = StringHelper.join(" // ", "-", alarm.getLimit1(), alarm.getLimit2());
-        } else {
-            System.out.println("Alarm not found: %s, %s".formatted(p.getName(), p.getAlarm1Id()));
+    public Point2D getMinMax(BAlarm... alarms) {
+        var min = Double.MAX_VALUE;
+        var max = Double.MIN_VALUE;
+
+        for (var alarm : alarms) {
+            if (alarm != null) {
+                for (var r : Arrays.asList(alarm.ext().getRange0(), alarm.ext().getRange1(), alarm.ext().getRange2())) {
+                    if (r != null) {
+                        var rMin = r.getMinimum();
+                        if (Double.isFinite(rMin) && rMin < min) {
+                            min = r.getMinimum();
+                        }
+                        var rMax = r.getMaximum();
+                        if (Double.isFinite(rMax) && rMax > max) {
+                            max = r.getMaximum();
+                        }
+                    }
+                }
+            }
         }
 
-        return result;
-    }
-
-    public String getLimitsAsString(BHydroGroundwaterPoint p) {
-        var result = "";
-        var alarm = mManager.getAllItemsMap().get(p.getAlarm1Id());
-
-        if (alarm != null) {
-            result = StringHelper.join(" // ", "-", alarm.getLimit1(), alarm.getLimit2());
-        } else {
-            System.out.println("Alarm H not found: %s, %s".formatted(p.getName(), p.getAlarm1Id()));
+        if (Double.isInfinite(min) || Double.MAX_VALUE == min) {
+            min = 0.0;
+        }
+        if (Double.isInfinite(max) || Double.MIN_VALUE == max) {
+            max = 0.0;
         }
 
-        return result;
+        return new Point2D(min, max);
     }
 
     private static class AlarmHelperHolder {

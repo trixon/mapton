@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_alarm.api;
+package org.mapton.butterfly_core.api;
 
 import java.util.ArrayList;
-import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.openide.util.Exceptions;
