@@ -20,10 +20,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
 import org.mapton.butterfly_structural.load.LoadHelper;
 import org.mapton.ce_jfreechart.api.ChartHelper;
@@ -55,10 +55,6 @@ public class LoadChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint> 
 
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);
-
-            var rangeAxis = (NumberAxis) plot.getRangeAxis();
-            rangeAxis.setAutoRange(true);
-//            rangeAxis.setRange(-0.050, +0.050);
 
             return getChartPanel();
         };
@@ -96,6 +92,9 @@ public class LoadChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint> 
             if (o.ext().getDeltaZ() != null) {
                 var minute = ChartHelper.convertToMinute(o.getDate());
                 timeSeries.addOrUpdate(minute, o.ext().getDeltaZ());
+                if (DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), p.getDateZero())) {
+                    mMinMaxCollection.add(o.ext().getDeltaZ());
+                }
             }
         });
 
@@ -103,6 +102,7 @@ public class LoadChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint> 
 
         getDataset().addSeries(timeSeries);
         renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), Color.RED);
+        setRange(1.05, p.ext().getAlarm(BComponent.HEIGHT));
     }
 
 }

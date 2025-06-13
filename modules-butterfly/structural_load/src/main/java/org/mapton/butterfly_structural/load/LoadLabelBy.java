@@ -20,8 +20,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_alarm.api.AlarmHelper;
+import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_core.api.LabelByCategories;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -41,7 +42,7 @@ public enum LoadLabelBy {
         return p.getAlarm1Id();
     }),
     ALARM_VALUE(LabelByCategories.ALARM, Dict.VALUE.toString(), p -> {
-        return AlarmHelper.getInstance().getLimitsAsString(p);
+        return AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p);
     }),
     ALARM_PERCENT(LabelByCategories.ALARM, "%", p -> {
         return p.ext().getAlarmPercentHString(p.ext());
