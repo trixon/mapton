@@ -30,8 +30,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_alarm.api.AlarmHelper;
+import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BComponent;
@@ -39,7 +38,6 @@ import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
-import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -124,31 +122,33 @@ public class TopoPropertiesBuilder extends BPropertiesBuilder<BTopoControlPoint>
         );
         propertyMap.putAll(populateDates(p, dateParams));
 //******************************************************************************
-        var category = "Analys (VARNING)";
-        try {
-            var trend = p.ext().getHeightDirectionTrendDaysMeas();
-            propertyMap.put(getCatKeyNum(category, "Trend (dagar::antal)"), "%s::%d::%d".formatted(trend[0], trend[1], trend[2]));
 
-        } catch (NullPointerException e) {
-        }
-        var speed = p.ext().getSpeed();
-        var ageIndicator = p.ext().getMeasurementAge(ChronoUnit.DAYS) > 365 ? "*" : "";
-        var speedString = "%.1f mm/%s (%.1f)%s".formatted(speed[0] * 1000.0, Dict.Time.YEAR.toLower(), speed[1], ageIndicator);
-
-        propertyMap.put(getCatKeyNum(category, Dict.SPEED.toString()), speedString);
-
-        var limitValuePredictor = p.ext().limitValuePredictor();
-        if (limitValuePredictor.getRemainingUntilLimit() != null) {
-            propertyMap.put(getCatKeyNum(category, Dict.REMAINING.toString()), StringHelper.round(limitValuePredictor.getRemainingUntilLimit() * 1000, 1, "", " mm", false));
-            var limitDate = limitValuePredictor.getExtrapolatedLimitDate();
-            if (!StringUtils.equalsAny(limitDate, "-", "E")) {
-                limitDate = "%s (%d)".formatted(limitDate, limitValuePredictor.getExtrapolatedLimitDaysFromNow());
-            }
-            propertyMap.put(getCatKeyNum(category, Dict.Time.END_DATE.toString()), limitDate);
-            var direction = limitValuePredictor.isRisingByTrend() ? Dict.INCREASEING.toString() : Dict.DECREASING.toString();
-            propertyMap.put(getCatKeyNum(category, Dict.Geometry.DIRECTION.toString()), direction);
-        }
-
+//TODO Replace with trend based analysis
+//
+//        var category = "Analys (VARNING)";
+//        try {
+//            var trend = p.ext().getHeightDirectionTrendDaysMeas();
+//            propertyMap.put(getCatKeyNum(category, "Trend (dagar::antal)"), "%s::%d::%d".formatted(trend[0], trend[1], trend[2]));
+//
+//        } catch (NullPointerException e) {
+//        }
+//        var speed = p.ext().getSpeed();
+//        var ageIndicator = p.ext().getMeasurementAge(ChronoUnit.DAYS) > 365 ? "*" : "";
+//        var speedString = "%.1f mm/%s (%.1f)%s".formatted(speed[0] * 1000.0, Dict.Time.YEAR.toLower(), speed[1], ageIndicator);
+//
+//        propertyMap.put(getCatKeyNum(category, Dict.SPEED.toString()), speedString);
+//
+//        var limitValuePredictor = p.ext().limitValuePredictor();
+//        if (limitValuePredictor.getRemainingUntilLimit() != null) {
+//            propertyMap.put(getCatKeyNum(category, Dict.REMAINING.toString()), StringHelper.round(limitValuePredictor.getRemainingUntilLimit() * 1000, 1, "", " mm", false));
+//            var limitDate = limitValuePredictor.getExtrapolatedLimitDate();
+//            if (!StringUtils.equalsAny(limitDate, "-", "E")) {
+//                limitDate = "%s (%d)".formatted(limitDate, limitValuePredictor.getExtrapolatedLimitDaysFromNow());
+//            }
+//            propertyMap.put(getCatKeyNum(category, Dict.Time.END_DATE.toString()), limitDate);
+//            var direction = limitValuePredictor.isRisingByTrend() ? Dict.INCREASEING.toString() : Dict.DECREASING.toString();
+//            propertyMap.put(getCatKeyNum(category, Dict.Geometry.DIRECTION.toString()), direction);
+//        }
 //******************************************************************************
         propertyMap.putAll(populateDatabase(p));
 

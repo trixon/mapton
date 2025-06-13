@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_alarm.api.AlarmHelper;
+import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_core.api.LabelByCategories;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
@@ -125,21 +125,24 @@ public enum TopoLabelBy {
     MISC_FREQUENCY(LabelByCategories.MISC, SDict.FREQUENCY.toString(), p -> {
         return p.getFrequency() != null ? p.getFrequency().toString() : "--";
     }),
+    MISC_FREQUENCY_ALL(LabelByCategories.MISC, "%s (aktuell : standard : hög)".formatted(SDict.FREQUENCY.toString()), p -> {
+        return StringHelper.join(" : ", "", p.getFrequency().toString(), p.getFrequencyDefault().toString(), p.getFrequencyIntense().toString());
+    }),
     MISC_FREQUENCY_DEFAULT(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toLower()), p -> {
         return p.getFrequencyDefault().toString();
     }),
-    MISC_FREQUENCY_INTENSE(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), "INTENSE"), p -> {
+    MISC_FREQUENCY_INTENSE(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), "hög"), p -> {
         return p.getFrequencyIntense().toString();
     }),
-    MISC_FREQUENCY_INTENSE_PARAM(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), "INTENSE PARAM"), p -> {
+    MISC_FREQUENCY_INTENSE_PARAM(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), "hög, villkor"), p -> {
         return p.getFrequencyIntenseParam();
     }),
-    MISC_FREQUENCY_AND_DEFAULT(LabelByCategories.MISC, "%s / %s".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toString()), p -> {
-        var freq = p.getFrequency() != null ? p.getFrequency().toString() : "--";
-        var def = p.getFrequencyDefault() != null ? p.getFrequencyDefault().toString() : "--";
-
-        return "%s / %s".formatted(freq, def);
-    }),
+    //    MISC_FREQUENCY_AND_DEFAULT(LabelByCategories.MISC, "%s / %s".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toString()), p -> {
+    //        var freq = p.getFrequency() != null ? p.getFrequency().toString() : "--";
+    //        var def = p.getFrequencyDefault() != null ? p.getFrequencyDefault().toString() : "--";
+    //
+    //        return "%s / %s".formatted(freq, def);
+    //    }),
     MISC_DIMENS(LabelByCategories.MISC, SDict.DIMENSION.toString(), p -> {
         return p.getDimension() != null ? p.getDimension().getName() : "--";
     }),
