@@ -126,8 +126,8 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
                 params.numOfObsTotal
         );
         map.put(getCatKeyNum(CAT_MEAS, SDict.MEASUREMENTS.toString()), measurements);
-        map.put(getCatKeyNum(CAT_MEAS, "FIRST_IS_ZERO"), BooleanHelper.asYesNo(params.firstIsZero));
-        map.put(getCatKeyNum(CAT_MEAS, "NUM_OF_REPLACEMENTS"), params.numOfReplacements);
+        map.put(getCatKeyNum(CAT_MEAS, SDict.MEASUREMENTS_FIRST_IS_ZERO.toString()), BooleanHelper.asYesNo(params.firstIsZero));
+        map.put(getCatKeyNum(CAT_MEAS, SDict.MEASUREMENTS_NUM_OF_REPLACEMENTS.toString()), params.numOfReplacements);
         var delta = "Δ ";
         map.put(getCatKeyNum(CAT_MEAS, Dict.BEARING.toString()), StringHelper.round(params.azimuth(), 0));
         map.put(getCatKeyNum(CAT_MEAS, delta + SDict.ROLLING.toString()), params.deltaRolling);

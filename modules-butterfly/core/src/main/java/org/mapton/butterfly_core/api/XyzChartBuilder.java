@@ -51,6 +51,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.MLatLon;
 import org.mapton.api.ui.forms.ChartBuilder;
+import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.BBaseControlPointObservation;
 import org.mapton.butterfly_format.types.BBasePoint;
@@ -60,6 +61,7 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.MinMaxCollection;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -72,6 +74,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     protected JFreeChart mChart;
     protected Date mDateEnd;
     protected Date mDateNull;
+    protected final MinMaxCollection mMinMaxCollection = new MinMaxCollection();
     private ChartPanel mChartPanel;
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private TextTitle mLeftSubTextTitle;
@@ -215,50 +218,6 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         return mRightSubTextTitle;
     }
 
-    public void resetPlot(XYPlot plot) {
-        getDataset().removeAllSeries();
-        plot.clearDomainMarkers();
-        plot.clearAnnotations();
-    }
-
-    public void setDateRangeNullLast(XYPlot plot, BBaseControlPoint p, Date dateNull, Date dateEnd) {
-        try {
-            var dateAxis = (DateAxis) plot.getDomainAxis();
-            dateAxis.setAutoRange(true);
-            dateAxis.setRange(dateNull, dateEnd);
-        } catch (IllegalArgumentException e) {
-            System.out.println("%s: Bad chart plot range".formatted(p.getName()));
-        }
-    }
-
-    public void setDateRangeNullNow(XYPlot plot, BBaseControlPoint p, Date dateNull) {
-        try {
-            var dateAxis = (DateAxis) plot.getDomainAxis();
-            dateAxis.setAutoRange(true);
-            dateAxis.setRange(dateNull, DateHelper.convertToDate(LocalDate.now()));
-        } catch (IllegalArgumentException e) {
-            System.out.println("%s: Bad chart plot range".formatted(p.getName()));
-        }
-    }
-
-    private void plotAlarmIndicator(BComponent component, double value, Color color) {
-        var marker = new ValueMarker(value);
-        float width = 1.0f;
-        float dash[] = {5.0f, 5.0f};
-        var dashedStroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, dash, 0);
-        var stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, null, 0);
-        if (component == BComponent.HEIGHT) {
-            marker.setStroke(dashedStroke);
-        } else {
-            marker.setStroke(stroke);
-        }
-        marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
-        marker.setPaint(color);
-
-        var plot = (XYPlot) mChart.getPlot();
-        plot.addRangeMarker(marker);
-    }
-
     public void plotAlarmIndicators(BXyzPoint p) {
         if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
             var ha = ext.getAlarm(BComponent.HEIGHT);
@@ -295,6 +254,46 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                 }
             }
         }
+    }
+
+    public void resetPlot(XYPlot plot) {
+        getDataset().removeAllSeries();
+        plot.clearDomainMarkers();
+        plot.clearAnnotations();
+        mMinMaxCollection.reset();
+    }
+
+    public void setDateRangeNullLast(XYPlot plot, BBaseControlPoint p, Date dateNull, Date dateEnd) {
+        try {
+            var dateAxis = (DateAxis) plot.getDomainAxis();
+            dateAxis.setAutoRange(true);
+            dateAxis.setRange(dateNull, dateEnd);
+        } catch (IllegalArgumentException e) {
+            System.out.println("%s: Bad chart plot range".formatted(p.getName()));
+        }
+    }
+
+    public void setDateRangeNullNow(XYPlot plot, BBaseControlPoint p, Date dateNull) {
+        try {
+            var dateAxis = (DateAxis) plot.getDomainAxis();
+            dateAxis.setAutoRange(true);
+            dateAxis.setRange(dateNull, DateHelper.convertToDate(LocalDate.now()));
+        } catch (IllegalArgumentException e) {
+            System.out.println("%s: Bad chart plot range".formatted(p.getName()));
+        }
+    }
+
+    public void setRange(double margin, BAlarm... alarms) {
+        setRange(margin, 1.0, alarms);
+    }
+
+    public void setRange(double margin, double alarmFactor, BAlarm... alarms) {
+        var alarmMinMax = AlarmHelper.getInstance().getMinMax(alarms);
+        mMinMaxCollection.add(alarmMinMax.getX() * alarmFactor, alarmMinMax.getY() * alarmFactor);
+        var plot = (XYPlot) mChart.getPlot();
+        var rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setAutoRange(false);
+        rangeAxis.setRange(mMinMaxCollection.getMin() * margin, mMinMaxCollection.getMax() * margin);
     }
 
     @Override
@@ -364,6 +363,24 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         var compositeTitle = new CompositeTitle(blockContainer);
         compositeTitle.setPadding(new RectangleInsets(0, 20, 0, 20));
         mChart.addSubtitle(compositeTitle);
+    }
+
+    private void plotAlarmIndicator(BComponent component, double value, Color color) {
+        var marker = new ValueMarker(value);
+        float width = 1.0f;
+        float dash[] = {5.0f, 5.0f};
+        var dashedStroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, dash, 0);
+        var stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, null, 0);
+        if (component == BComponent.HEIGHT) {
+            marker.setStroke(dashedStroke);
+        } else {
+            marker.setStroke(stroke);
+        }
+        marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
+        marker.setPaint(color);
+
+        var plot = (XYPlot) mChart.getPlot();
+        plot.addRangeMarker(marker);
     }
 
 }
