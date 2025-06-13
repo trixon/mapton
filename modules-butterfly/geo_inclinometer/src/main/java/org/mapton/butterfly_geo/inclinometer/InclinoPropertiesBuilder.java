@@ -18,7 +18,7 @@ package org.mapton.butterfly_geo.inclinometer;
 import gov.nasa.worldwind.geom.Angle;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
-import org.mapton.butterfly_alarm.api.AlarmHelper;
+import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;

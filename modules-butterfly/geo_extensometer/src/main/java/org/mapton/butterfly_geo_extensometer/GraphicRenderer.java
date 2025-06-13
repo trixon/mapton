@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MLatLon;
-import org.mapton.butterfly_alarm.api.AlarmHelper;
+import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;

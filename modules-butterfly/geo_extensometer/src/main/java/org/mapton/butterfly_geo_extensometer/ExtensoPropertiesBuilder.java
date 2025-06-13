@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
+import se.trixon.almond.util.SDict;
 
 /**
  *
@@ -101,8 +102,8 @@ public class ExtensoPropertiesBuilder extends BPropertiesBuilder<BGeoExtensomete
         );
 
         var measMap = populateMeas(p, measParams);
-        measMap.put(getCatKeyNum(CAT_MEAS, "FIRST_IS_ZERO"), NA);
-        measMap.put(getCatKeyNum(CAT_MEAS, "NUM_OF_REPLACEMENTS"), NA);
+        measMap.put(getCatKeyNum(CAT_MEAS, SDict.MEASUREMENTS_FIRST_IS_ZERO.toString()), NA);
+        measMap.put(getCatKeyNum(CAT_MEAS, SDict.MEASUREMENTS_NUM_OF_REPLACEMENTS.toString()), NA);
 
         propertyMap.putAll(measMap);
 //******************************************************************************
