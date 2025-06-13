@@ -231,7 +231,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
 
             mLevelPeriodDirectionScb.getItems().setAll(Direction.values());
             mLevelPeriodDirectionScb.getSelectionModel().select(mDefaultDirection);
-            var levelPeriodGridPane = new GridPane(hGap, vGap);
+            var levelPeriodGridPane = new GridPane(GAP_H, GAP_V);
             levelPeriodGridPane.add(mLevelPeriodCheckbox, 0, 0, 2, 1);
             levelPeriodGridPane.addRow(1, mLevelPeriodAllSds, mLevelPeriodDirectionScb);
             FxHelper.autoSizeColumn(levelPeriodGridPane, 2);
