@@ -17,7 +17,7 @@ package org.mapton.butterfly_structural.tilt;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.util.FastMath;
-import org.mapton.butterfly_alarm.api.AlarmManager;
+import org.mapton.butterfly_core.api.AlarmManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
