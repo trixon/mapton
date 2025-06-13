@@ -103,10 +103,6 @@ limitations under the License.
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>butterfly-alarm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>butterfly-geo</artifactId>
         </dependency>
     </dependencies>

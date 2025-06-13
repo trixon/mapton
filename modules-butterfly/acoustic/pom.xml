@@ -113,10 +113,6 @@ limitations under the License.
             <groupId>${project.groupId}</groupId>
             <artifactId>butterfly-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.mapton</groupId>
-            <artifactId>butterfly-alarm</artifactId>
-        </dependency>
 
         <!--Other-->
     </dependencies>
