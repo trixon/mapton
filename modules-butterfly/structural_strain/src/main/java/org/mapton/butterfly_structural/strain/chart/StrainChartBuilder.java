@@ -27,6 +27,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.butterfly_structural.strain.StrainHelper;
 import org.mapton.butterfly_structural.strain.StrainManager;
@@ -74,10 +75,6 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);
 
-            var rangeAxis = (NumberAxis) plot.getRangeAxis();
-            rangeAxis.setAutoRange(true);
-//            rangeAxis.setRange(-0.050, +0.050);
-
             return getChartPanel();
         };
 
@@ -112,7 +109,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
 
         updateDatasetTemperature(p);
 
-        var single = false;
+        var single = true;
         if (single) {
             updateDataset(p, Color.RED, true);
         } else {
@@ -151,6 +148,9 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
             if (o.ext().getDeltaZ() != null) {
                 var minute = ChartHelper.convertToMinute(o.getDate());
                 timeSeries.addOrUpdate(minute, o.ext().getDeltaZ());
+                if (DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), p.getDateZero())) {
+                    mMinMaxCollection.add(o.ext().getDeltaZ());
+                }
             }
         });
 
@@ -158,6 +158,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
 
         getDataset().addSeries(timeSeries);
         renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
+        setRange(1.05, p.ext().getAlarm(BComponent.HEIGHT));
     }
 
     private void updateDatasetTemperature(BStructuralStrainGaugePoint p) {
