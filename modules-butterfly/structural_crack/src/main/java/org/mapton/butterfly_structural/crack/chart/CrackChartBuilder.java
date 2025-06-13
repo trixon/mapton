@@ -27,6 +27,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_structural.crack.CrackHelper;
 import org.mapton.butterfly_structural.crack.CrackManager;
@@ -73,10 +74,6 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
 
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);
-
-            var rangeAxis = (NumberAxis) plot.getRangeAxis();
-            rangeAxis.setAutoRange(true);
-//            rangeAxis.setRange(-0.050, +0.050);
 
             return getChartPanel();
         };
@@ -150,7 +147,11 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
 
             if (o.ext().getDeltaZ() != null) {
                 var minute = ChartHelper.convertToMinute(o.getDate());
-                timeSeries.addOrUpdate(minute, o.ext().getDeltaZ() * 1000);
+                var delta = o.ext().getDeltaZ() * 1000;
+                timeSeries.addOrUpdate(minute, delta);
+                if (DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), p.getDateZero())) {
+                    mMinMaxCollection.add(delta);
+                }
             }
         });
 
@@ -158,6 +159,9 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
 
         getDataset().addSeries(timeSeries);
         renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
+
+        var alarmFactor = p.getUnit().equalsIgnoreCase("m") ? 1000 : 1;
+        setRange(1.05, alarmFactor, p.ext().getAlarm(BComponent.HEIGHT));
     }
 
     private void updateDatasetTemperature(BStructuralCrackPoint p) {
