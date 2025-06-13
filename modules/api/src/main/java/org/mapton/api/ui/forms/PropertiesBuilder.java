@@ -61,6 +61,34 @@ public abstract class PropertiesBuilder<T> {
         }
     }
 
+    public void removeByKeyContains(Map<String, Object> map, String... values) {
+        var iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            var entry = iterator.next();
+            var key = entry.getKey();
+            for (var value : values) {
+                if (key != null && StringUtils.containsIgnoreCase(key, value)) {
+                    iterator.remove();
+                    break;
+                }
+            }
+        }
+    }
+
+    public void removeByKeyStartsWith(Map<String, Object> map, String... values) {
+        var iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            var entry = iterator.next();
+            var key = entry.getKey();
+            for (var value : values) {
+                if (key != null && StringUtils.startsWithIgnoreCase(key, value)) {
+                    iterator.remove();
+                    break;
+                }
+            }
+        }
+    }
+
     public void removeByValues(Map<String, Object> map, String... values) {
         var iterator = map.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -68,6 +96,34 @@ public abstract class PropertiesBuilder<T> {
             Object value = entry.getValue();
             if (value != null && StringUtils.equalsAnyIgnoreCase(value.toString(), values)) {
                 iterator.remove();
+            }
+        }
+    }
+
+    public void removeByValuesContains(Map<String, Object> map, String... values) {
+        var iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            var entry = iterator.next();
+            Object value = entry.getValue();
+            for (var value1 : values) {
+                if (value != null && StringUtils.containsIgnoreCase(value.toString(), value1)) {
+                    iterator.remove();
+                    break;
+                }
+            }
+        }
+    }
+
+    public void removeByValuesStartsWith(Map<String, Object> map, String... values) {
+        var iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            var entry = iterator.next();
+            Object value = entry.getValue();
+            for (var value1 : values) {
+                if (value != null && StringUtils.startsWithIgnoreCase(value.toString(), value1)) {
+                    iterator.remove();
+                    break;
+                }
             }
         }
     }

@@ -261,7 +261,7 @@ public class Mapton {
     }
 
     public static double getScalePinLabel() {
-        return SwingHelper.getUIScaled(0.75);
+        return SwingHelper.getUIScaled(0.85);
     }
 
     public static Background getThemeBackground() {

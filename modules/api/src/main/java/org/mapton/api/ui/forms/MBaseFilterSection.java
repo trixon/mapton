@@ -34,14 +34,14 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public abstract class MBaseFilterSection {
 
+    public static double GAP_H = FxHelper.getUIScaled(9.0);
+    public static double GAP_V = FxHelper.getUIScaled(4.0);
     public double columnGap = FxHelper.getUIScaled(16);
-    public double hGap = FxHelper.getUIScaled(9.0);
     public final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
     public final double mTopBorderInnerPadding = FxHelper.getUIScaled(16.0);
     public double rowGap = FxHelper.getUIScaled(12);
     public double spinnerWidth = FxHelper.getUIScaled(70.0);
     public double titleGap = FxHelper.getUIScaled(3);
-    public double vGap = FxHelper.getUIScaled(4.0);
     private final CheckedTab mCheckedTab;
     private double mMaxWidth = FxHelper.getUIScaled(500);
     private SessionManager mSessionManager;
