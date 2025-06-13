@@ -24,6 +24,7 @@ import static org.mapton.butterfly_core.api.BPropertiesBuilder.CAT_MEAS;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.openide.util.NbBundle;
+import se.trixon.almond.util.SDict;
 
 /**
  *
@@ -91,8 +92,8 @@ public class VibrationPropertiesBuilder extends BPropertiesBuilder<BAcousticVibr
         );
 
         var measMap = populateMeas(p, measParams);
-        measMap.put(getCatKeyNum(CAT_MEAS, "FIRST_IS_ZERO"), NA);
-        measMap.put(getCatKeyNum(CAT_MEAS, "NUM_OF_REPLACEMENTS"), NA);
+        measMap.put(getCatKeyNum(CAT_MEAS, SDict.MEASUREMENTS_FIRST_IS_ZERO.toString()), NA);
+        measMap.put(getCatKeyNum(CAT_MEAS, SDict.MEASUREMENTS_NUM_OF_REPLACEMENTS.toString()), NA);
 
         propertyMap.putAll(measMap);
 //******************************************************************************
