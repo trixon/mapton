@@ -22,6 +22,7 @@ import java.util.function.Function;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -35,9 +36,10 @@ import se.trixon.almond.util.DateHelper;
  */
 public class ChartBuilderDelta extends ChartBuilderBase {
 
-    private final boolean mPlotAvg = true;
+    private boolean mPlotAvg = true;
 
-    public ChartBuilderDelta() {
+    public ChartBuilderDelta(boolean plotAvg) {
+        mPlotAvg = plotAvg;
         initChart(null, null);
     }
 
@@ -60,6 +62,8 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         if (p.getDimension() == BDimension._3d) {
             plot(p, mTimeSeries3d, Color.BLUE, (BXyzPointObservation o) -> o.ext().getDelta3d());
         }
+
+        setRange(1.05, p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
     }
 
     private void plot(BTopoControlPoint p, TimeSeries timeSeries, Color color, Function<BXyzPointObservation, Double> function) {
@@ -67,7 +71,11 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         var renderer = plot.getRenderer();
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
-            timeSeries.add(ChartHelper.convertToMinute(o.getDate()), function.apply(o));
+            var delta = function.apply(o);
+            timeSeries.add(ChartHelper.convertToMinute(o.getDate()), delta);
+            if (DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), p.getDateZero())) {
+                mMinMaxCollection.add(delta);
+            }
         });
 
         getDataset().addSeries(timeSeries);

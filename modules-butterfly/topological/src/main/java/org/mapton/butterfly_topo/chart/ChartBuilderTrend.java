@@ -26,6 +26,7 @@ import org.jfree.data.general.DatasetUtils;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.mapton.butterfly_core.api.TrendHelper;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -113,6 +114,8 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         plot(p, "3m", startDateMinus3m, startDateZero, Color.YELLOW, index++, null);
         plot(p, "1m", startDateMinus1m, startDateZero, Color.ORANGE, index++, null);
         plot(p, "1w", startDateMinus1w, startDateZero, Color.RED, index++, null);
+
+        setRange(1.05, p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
     }
 
     private void plot(BTopoControlPoint p, String title, LocalDateTime startDate, LocalDateTime limitDate, Color color, int index, Integer percentile) {

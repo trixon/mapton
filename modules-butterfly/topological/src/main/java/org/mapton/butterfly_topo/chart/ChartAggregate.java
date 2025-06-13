@@ -28,11 +28,10 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
  */
 public class ChartAggregate {
 
-    private final ChartBuilderDelta mBuilderDelta = new ChartBuilderDelta();
+    private final ChartBuilderDelta mBuilderDelta = new ChartBuilderDelta(false);
+    private final ChartBuilderDelta mBuilderDeltaAvg = new ChartBuilderDelta(true);
     private final ChartBuilderTrend mBuilderTrend1d;
     private final ChartBuilderTrend mBuilderTrend2d;
-//    private final ChartBuilderTrendMinMax mBuilderTrendMinMax1d;
-//    private final ChartBuilderTrendMinMax mBuilderTrendMinMax2d;
     private final JTabbedPane mTabbedPane;
 
     public ChartAggregate() {
@@ -40,8 +39,6 @@ public class ChartAggregate {
         final Function<BXyzPointObservation, Double> func2d = (var o) -> o.ext().getDelta2d();
         mBuilderTrend1d = new ChartBuilderTrend(BDimension._1d, func1d);
         mBuilderTrend2d = new ChartBuilderTrend(BDimension._2d, func2d);
-//        mBuilderTrendMinMax1d = new ChartBuilderTrendMinMax(BDimension._1d, func1d);
-//        mBuilderTrendMinMax2d = new ChartBuilderTrendMinMax(BDimension._2d, func2d);
 
         mTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
     }
@@ -56,18 +53,13 @@ public class ChartAggregate {
             synchronized (mTabbedPane) {
                 mTabbedPane.removeAll();
                 mTabbedPane.add("Delta", mBuilderDelta.build(p).call());
+                mTabbedPane.add("Delta (avg)", mBuilderDeltaAvg.build(p).call());
                 if (p.getDimension() != BDimension._2d) {
                     mTabbedPane.add("Trend 1d", mBuilderTrend1d.build(p).call());
                 }
                 if (p.getDimension() != BDimension._1d) {
                     mTabbedPane.add("Trend 2d", mBuilderTrend2d.build(p).call());
                 }
-//                if (p.getDimension() != BDimension._2d) {
-//                    mTabbedPane.add("MinMax 1d", mBuilderTrendMinMax1d.build(p).call());
-//                }
-//                if (p.getDimension() != BDimension._1d) {
-//                    mTabbedPane.add("MinMax 2d", mBuilderTrendMinMax2d.build(p).call());
-//                }
 
                 if (prevIndex > -1) {
                     mTabbedPane.setSelectedIndex(prevIndex);

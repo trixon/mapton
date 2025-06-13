@@ -25,7 +25,6 @@ import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.entity.LegendItemEntity;
 import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.plot.XYPlot;
@@ -70,9 +69,6 @@ public class MultiChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
             var dateAxis = (DateAxis) plot.getDomainAxis();
             dateAxis.setRange(DateHelper.convertToDate(mDateFirst), DateHelper.convertToDate(mDateLast));
             plot.clearRangeMarkers();
-
-            var rangeAxis = (NumberAxis) plot.getRangeAxis();
-            rangeAxis.setAutoRange(true);
 
             getChartPanel().addChartMouseListener(new ChartMouseListener() {
                 @Override

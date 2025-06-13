@@ -19,11 +19,10 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
-import org.mapton.butterfly_alarm.api.AlarmHelper;
+import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
@@ -61,10 +60,6 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoControlPoint
             setDateRangeNullNow(plot, p, mDateNull);
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);
-
-            var rangeAxis = (NumberAxis) plot.getRangeAxis();
-            rangeAxis.setAutoRange(true);
-//            rangeAxis.setRange(-0.050, +0.050);
 
             return getChartPanel();
         };
