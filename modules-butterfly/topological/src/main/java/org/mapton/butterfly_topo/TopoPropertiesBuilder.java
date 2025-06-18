@@ -108,8 +108,8 @@ public class TopoPropertiesBuilder extends BPropertiesBuilder<BTopoControlPoint>
                 AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p),
                 p.ext().getAlarmPercentString(p.ext()),
                 p.ext().getAlarmLevelAge(),
-                p.ext().deltaRolling().getDelta(3),
-                p.ext().deltaZero().getDelta(3)
+                p.ext().deltaRolling().getDelta1d2d(3),
+                p.ext().deltaZero().getDelta1d2d(3)
         );
         propertyMap.putAll(populateMeas(p, measParams));
 //******************************************************************************
