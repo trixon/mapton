@@ -281,7 +281,7 @@
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>3.1.3</version>
+            <version>3.2.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -314,7 +314,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolbox</artifactId>
-            <version>21.0.19</version>
+            <version>21.0.21</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -349,7 +349,7 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-pdf-layout</artifactId>
-            <version>7.3.7</version>
+            <version>7.4.0</version>
         </dependency>
         <dependency>
             <groupId>com.helger.font</groupId>
