@@ -86,11 +86,11 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
 
         var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
 
-        String deltaRolling = p.ext().deltaRolling().getDelta(3);
+        String deltaRolling = p.ext().deltaRolling().getDelta1d2d(3);
         var desc3 = "%s: %s".formatted(dateRolling, deltaRolling);
 
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
-        String deltaZero = p.ext().deltaZero().getDelta(3);
+        String deltaZero = p.ext().deltaZero().getDelta1d2d(3);
         var desc4 = "%s: %s".formatted(dateZero, deltaZero);
 
         mAlarmIndicator.update(p);
@@ -100,8 +100,8 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
         mDesc3Label.setText(desc3);
         mDesc4Label.setText(desc4);
 
-        mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
-        mTooltip.setText("TODO");
+//        mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
+//        mTooltip.setText("TODO");
         setGraphic(mVBox);
     }
 

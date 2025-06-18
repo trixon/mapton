@@ -125,16 +125,16 @@ public enum TopoLabelBy {
     MISC_FREQUENCY(LabelByCategories.MISC, SDict.FREQUENCY.toString(), p -> {
         return p.getFrequency() != null ? p.getFrequency().toString() : "--";
     }),
-    MISC_FREQUENCY_ALL(LabelByCategories.MISC, "%s (aktuell : standard : hög)".formatted(SDict.FREQUENCY.toString()), p -> {
+    MISC_FREQUENCY_ALL(LabelByCategories.MISC, "%s (aktuell : %s : %s)".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toLower(), Dict.HIGH.toLower()), p -> {
         return StringHelper.join(" : ", "", p.getFrequency().toString(), p.getFrequencyDefault().toString(), p.getFrequencyIntense().toString());
     }),
     MISC_FREQUENCY_DEFAULT(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toLower()), p -> {
         return p.getFrequencyDefault().toString();
     }),
-    MISC_FREQUENCY_INTENSE(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), "hög"), p -> {
+    MISC_FREQUENCY_INTENSE(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.HIGH.toLower()), p -> {
         return p.getFrequencyIntense().toString();
     }),
-    MISC_FREQUENCY_INTENSE_PARAM(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), "hög, villkor"), p -> {
+    MISC_FREQUENCY_INTENSE_PARAM(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), "%s, villkor".formatted(Dict.HIGH.toLower())), p -> {
         return p.getFrequencyIntenseParam();
     }),
     //    MISC_FREQUENCY_AND_DEFAULT(LabelByCategories.MISC, "%s / %s".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toString()), p -> {
@@ -213,7 +213,7 @@ public enum TopoLabelBy {
         return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
     }),
     VALUE_DELTA_ZERO(LabelByCategories.VALUE, "Δ₀", p -> {
-        return p.ext().deltaZero().getDelta(0, 1000);
+        return p.ext().deltaZero().getDelta1d2d(0, 1000);
     }),
     VALUE_DELTA_ZERO_Z(LabelByCategories.VALUE, "ΔZ₀", p -> {
         var daysSinceMeasurement = p.ext().getZeroMeasurementAge(ChronoUnit.DAYS);
@@ -267,7 +267,7 @@ public enum TopoLabelBy {
         return "%s (%.3f)".formatted(StringHelper.round(delta, 3), p.ext().deltaZero().getDelta1());
     }),
     VALUE_DELTA_ROLLING(LabelByCategories.VALUE, "Δᵣ", p -> {
-        return p.ext().deltaRolling().getDelta(3);
+        return p.ext().deltaRolling().getDelta1d2d(3);
     }),
     VALUE_DELTA_ROLLING_Z(LabelByCategories.VALUE, "ΔZᵣ", p -> {
         return p.ext().deltaRolling().getDelta1(3);

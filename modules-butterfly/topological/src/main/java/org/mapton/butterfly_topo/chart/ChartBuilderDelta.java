@@ -60,7 +60,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
             plot(p, mTimeSeries2d, Color.GREEN, (BXyzPointObservation o) -> o.ext().getDelta2d());
         }
         if (p.getDimension() == BDimension._3d) {
-            plot(p, mTimeSeries3d, Color.BLUE, (BXyzPointObservation o) -> o.ext().getDelta3d());
+//            plot(p, mTimeSeries3d, Color.BLUE, (BXyzPointObservation o) -> o.ext().getDelta3d());
         }
 
         setRange(1.05, p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
