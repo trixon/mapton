@@ -41,6 +41,7 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.TopoPropertiesBuilder;
+import org.mapton.butterfly_topo.TopoTrendsBuilder;
 import org.mapton.butterfly_topo.chart.ChartAggregate;
 import org.mapton.butterfly_topo.chart.MultiChartAggregate;
 import org.openide.util.Exceptions;
@@ -56,10 +57,11 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     public static final String KEY_TRENDS_H = "trendsH";
     public static final String KEY_TRENDS_P = "trendsP";
     private final ChartAggregate mChartAggregate = new ChartAggregate();
+    private int mLoadTrends = 0;
     private double mMinimumZscaled = 0.0;
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
     private final TopoPropertiesBuilder mPropertiesBuilder = new TopoPropertiesBuilder();
-    private int mLoadTrends = 0;
+    private final TopoTrendsBuilder mTrendsBuilder = new TopoTrendsBuilder();
 
     public static TopoManager getInstance() {
         return TopoManagerHolder.INSTANCE;
@@ -86,6 +88,11 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     @Override
     public Object getObjectProperties(BTopoControlPoint selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
+    }
+
+    @Override
+    public Object getObjectTrends(BTopoControlPoint selectedObject) {
+        return mTrendsBuilder.build(selectedObject);
     }
 
     @Override

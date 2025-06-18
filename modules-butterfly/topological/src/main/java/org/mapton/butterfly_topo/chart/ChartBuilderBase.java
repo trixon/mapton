@@ -88,8 +88,6 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoControlPoint
             sb.append("P ").append(p.getAlarm2Id());
         }
 
-        var alarmNames = sb.toString();
-
         String hAlarm = "";
         if (p.getDimension() != BDimension._2d) {
             hAlarm = "H " + AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p);
