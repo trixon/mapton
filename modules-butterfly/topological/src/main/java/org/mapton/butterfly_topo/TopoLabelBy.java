@@ -104,9 +104,6 @@ public enum TopoLabelBy {
             return "%s - %s".formatted(dat1, dat2);
         }
     }),
-    DATE_REACHED_LIMIT_VALUE(LabelByCategories.DATE, SDict.REACHED_LIMIT_VALUE.toString(), p -> {
-        return p.ext().limitValuePredictor().getExtrapolatedLimitDate();
-    }),
     MISC_GROUP(LabelByCategories.MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     }),
