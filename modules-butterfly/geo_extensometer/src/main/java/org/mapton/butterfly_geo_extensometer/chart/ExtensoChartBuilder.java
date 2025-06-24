@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartPanel;
@@ -97,7 +98,9 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
 
     @Override
     public void setTitle(BGeoExtensometer p) {
+        var colors = List.of(Color.BLUE, Color.GREEN.darker(), Color.YELLOW, Color.RED, Color.ORANGE);
         mChart.setTitle(mCompleteView ? p.getName() : "Senaste %d dygnen".formatted(mRecentDays));
+        mChart.getTitle().setPaint(colors.get(p.ext().getAlarmLevel() + 1));
     }
 
     @Override
@@ -214,7 +217,11 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
                     subplot.addDomainMarker(marker);
                 }
             }
-            subplot.getRangeAxis().setLabelFont(new Font(Font.DIALOG, Font.BOLD, SwingHelper.getUIScaled(12)));
+
+            rangeAxis.setLabelFont(new Font(Font.DIALOG, Font.BOLD, SwingHelper.getUIScaled(12)));
+            var colors = List.of(Color.BLUE, Color.GREEN.darker(), Color.YELLOW.darker(), Color.RED, Color.ORANGE);
+            rangeAxis.setLabelPaint(colors.get(p.ext().getAlarmLevel() + 1));
+
             renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);
             var plotBlastLabels = p == extenso.getPoints().getFirst();// && extenso.ext().getReferencePoint() == null;
             XyzChartBuilder.plotBlasts(subplot, extenso, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate(), plotBlastLabels);
