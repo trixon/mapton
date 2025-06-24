@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.TreeSet;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.api.MPolygonFilterManager;
 
 /**
  *
@@ -27,8 +26,8 @@ import org.mapton.api.MPolygonFilterManager;
  */
 public abstract class MFilterBox extends VBox {
 
-    protected final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
-
+//    protected final MCircleFilterManager mCircleFilterManager = MCircleFilterManager.getInstance();
+//    protected final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
     protected String getSortedUnique(String s) {
         return String.join(",", new TreeSet<>(Arrays.asList(StringUtils.split(s))));
     }

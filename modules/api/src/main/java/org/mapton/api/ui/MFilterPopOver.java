@@ -35,6 +35,7 @@ import javafx.scene.layout.VBox;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
+import org.mapton.api.MCircleFilterManager;
 import org.mapton.api.MDict;
 import org.mapton.api.MOptions;
 import org.mapton.api.MPolygonFilterManager;
@@ -59,9 +60,11 @@ public abstract class MFilterPopOver extends MPopOver {
     private final Map<String, Action> mAvailableActions = new HashMap<>();
     private final VBox mBox;
     private final HBox mButtonBox;
+    private final MCircleFilterManager mCircleFilterManager = MCircleFilterManager.getInstance();
     private final Button mClearButton = new Button(Dict.CLEAR.toString());
     private final Button mCopyNamesButton = new Button(Dict.COPY_NAMES.toString());
     private final DelayedResetRunner mDelayedResetRunner;
+    private FormFilter mFilter;
     private final TreeSet<String> mFilteredNames = new TreeSet<>();
     private final TreeSet<String> mMemorySet = new TreeSet<>();
     private final Button mPasteNameButton = new Button("%s %s".formatted(Dict.PASTE.toString(), Dict.NAME.toLower()));
@@ -71,7 +74,6 @@ public abstract class MFilterPopOver extends MPopOver {
     private SessionManager mSessionManager;
     private ToolBar mToolBar;
     private final SimpleBooleanProperty mUsePolygonFilterProperty = new SimpleBooleanProperty();
-    private FormFilter mFilter;
 
     public MFilterPopOver() {
         String title = Dict.FILTER.toString();
@@ -98,6 +100,10 @@ public abstract class MFilterPopOver extends MPopOver {
 
         mDelayedResetRunner = new DelayedResetRunner(500, () -> {
             onPolygonFilterChange();
+        });
+
+        mCircleFilterManager.addListener(() -> {
+            mDelayedResetRunner.reset();
         });
 
         mPolygonFilterManager.addListener(() -> {
@@ -138,18 +144,18 @@ public abstract class MFilterPopOver extends MPopOver {
         }
     }
 
+    public abstract void clear();
+
+    public void copyNames(List<String> names) {
+        SystemHelper.copyToClipboard(String.join("\n", names) + "\n");
+    }
+
     public void filterPresetRestore(Preferences preferences) {
 
     }
 
     public void filterPresetStore(Preferences preferences) {
 
-    }
-
-    public abstract void clear();
-
-    public void copyNames(List<String> names) {
-        SystemHelper.copyToClipboard(String.join("\n", names) + "\n");
     }
 
     public ResourceBundle getBundle() {
@@ -246,7 +252,6 @@ public abstract class MFilterPopOver extends MPopOver {
         });
         var mrAction = new Action("MR", actionEvent -> {
             mFilter.freeTextProperty().set(String.join("\n", mMemorySet));
-
         });
         var mmAction = new Action("M-", actionEvent -> {
             mMemorySet.removeAll(mFilteredNames);
@@ -272,7 +277,6 @@ public abstract class MFilterPopOver extends MPopOver {
 
         mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
         FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBarInt());
-//        FxHelper.undecorateButtons(mToolBar.getItems().stream());
         FxHelper.slimToolBar(mToolBar);
     }
 

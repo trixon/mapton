@@ -41,6 +41,7 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
 
     private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
     private final ObjectProperty<TreeSet<String>> mCategoriesProperty = new SimpleObjectProperty<>();
+    private final MCircleFilterManager mCircleFilterManager = MCircleFilterManager.getInstance();
     private DelayedResetRunner mDelayedResetRunner;
     private String mFilter = "";
     private final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
@@ -145,6 +146,9 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
             refresh();
         });
 
+        mCircleFilterManager.addListener(() -> {
+            refresh();
+        });
         mPolygonFilterManager.addListener(() -> {
             refresh();
         });

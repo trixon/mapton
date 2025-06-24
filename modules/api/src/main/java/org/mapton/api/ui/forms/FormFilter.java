@@ -45,6 +45,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MArea;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MBaseDataManager;
+import org.mapton.api.MCircleFilterManager;
 import org.mapton.api.MDisruptorManager;
 import org.mapton.api.MPolygonFilterManager;
 import org.mapton.api.ui.MInfoPopOver;
@@ -66,6 +67,7 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
     protected IndexedCheckModel<Integer> mFrequencyCheckModel;
     protected ListChangeListener<Object> mListChangeListener;
     private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
+    private final MCircleFilterManager mCircleFilterManager = MCircleFilterManager.getInstance();
     private IndexedCheckModel mDateFromToCheckModel;
     private final DelayedResetRunner mDelayedResetRunner;
     private IndexedCheckModel mDisruptorCheckModel;
@@ -185,6 +187,10 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         boolean valid = mAreaFilterManager.isValidCoordinate(lat, lon);
 
         return valid;
+    }
+
+    public boolean validateCoordinateCircle(Double lat, Double lon) {
+        return mCircleFilterManager.isWithinCircle(lat, lon);
     }
 
     public boolean validateCoordinateRuler(Double lat, Double lon) {
