@@ -116,9 +116,10 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
         //
         var need = p.getFrequency() == 0 ? "-" : Long.toString(params.dayUntilNext);
         map.put(getCatKeyNum(CAT_MEAS,
-                StringHelper.join(SEPARATOR, "", SDict.FREQUENCY.toString(), Dict.DEFAULT.toString(), "HÖG")),
+                StringHelper.join(SEPARATOR, "", SDict.FREQUENCY.toString(), Dict.DEFAULT.toString(), Dict.HIGH.toString())),
                 StringHelper.join(SEPARATOR, "", p.getFrequency().toString(), p.getFrequencyDefault().toString(), p.getFrequencyIntense().toString()));
-
+        var freqCondition = "Frekvensvillkor, hög";
+        map.put(getCatKeyNum(CAT_MEAS, freqCondition), p.getFrequencyIntenseParam());
         map.put(getCatKeyNum(CAT_MEAS, Dict.NEED.toString()), need);
         map.put(getCatKeyNum(CAT_MEAS, Dict.AGE.toString()), params.age);
         var measurements = "%d / %d".formatted(

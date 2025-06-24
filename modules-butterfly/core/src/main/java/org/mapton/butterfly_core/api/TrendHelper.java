@@ -72,7 +72,8 @@ public class TrendHelper {
             return new Trend(
                     new LineFunction2D(coefficients[0], coefficients[1]),
                     ChartHelper.convertToMinute(startDate),
-                    ChartHelper.convertToMinute(endDate)
+                    ChartHelper.convertToMinute(endDate),
+                    timeSeries.getItemCount()
             );
         }
 
@@ -97,14 +98,15 @@ public class TrendHelper {
         return new Trend(
                 new LineFunction2D(coefficients[0], coefficients[1]),
                 ChartHelper.convertToMinute(startDate),
-                ChartHelper.convertToMinute(endDate)
+                ChartHelper.convertToMinute(endDate),
+                timeSeries.getItemCount()
         );
     }
 
     private TrendHelper() {
     }
 
-    public record Trend(LineFunction2D function, Minute startMinute, Minute endMinute) {
+    public record Trend(LineFunction2D function, Minute startMinute, Minute endMinute, int numOfMeas) {
 
     }
 }

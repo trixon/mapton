@@ -112,7 +112,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put(Dict.STATUS.toString(), makeInfo(mStatusSccb.getCheckModel().getCheckedItems()));
         map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencySccb.getCheckModel().getCheckedItems()));
         map.put("%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toLower()), makeInfoInteger(mDefaultFrequencySccb.getCheckModel().getCheckedItems()));
-        map.put("%s (%s)".formatted(SDict.FREQUENCY.toString(), "INTENSE"), makeInfoInteger(mIntenseFrequencySccb.getCheckModel().getCheckedItems()));
+        map.put("%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.HIGH.toLower()), makeInfoInteger(mIntenseFrequencySccb.getCheckModel().getCheckedItems()));
         map.put(mBundle.getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextSccb.getCheckModel().getCheckedItems()));
         map.put(Dict.GROUP.toString(), makeInfo(mGroupSccb.getCheckModel().getCheckedItems()));
         map.put(Dict.CATEGORY.toString(), makeInfo(mCategorySccb.getCheckModel().getCheckedItems()));
@@ -417,10 +417,10 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     public enum IntenseFreqFlags {
         EQUALS("= %s".formatted(SDict.FREQUENCY.toString())),
         NOT_EQUALS("≠ %s".formatted(SDict.FREQUENCY.toString())),
-        SET("Har intensifierad frekvens"),
-        NOT_SET("Saknar intensifierad frekvens"),
-        PARAM_SET("Har intensifierad frekvensparameter"),
-        PARAM_NOT_SET("Saknar intensifierad frekvensparameter");
+        SET("Har hög frekvens"),
+        NOT_SET("Saknar hög frekvens"),
+        PARAM_SET("Har hög frekvensparameter"),
+        PARAM_NOT_SET("Saknar hög frekvensparameter");
         private final String mTitle;
 
         private IntenseFreqFlags(String title) {
@@ -572,8 +572,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             mDefaultFrequencyStatSccb.setTitle("Status, standard");
             mDefaultFrequencyStatSccb.getItems().setAll(DefaultFreqFlags.values());
 
-            mIntenseFrequencySccb.setTitle("Frekvens, intensifierad");
-            mIntenseFrequencyStatSccb.setTitle("Status, intensifierad");
+            mIntenseFrequencySccb.setTitle("%s, %s".formatted(SDict.FREQUENCY.toString(), Dict.HIGH.toLower()));
+            mIntenseFrequencyStatSccb.setTitle("%s, %s".formatted(Dict.STATUS.toString(), Dict.HIGH.toLower()));
             mIntenseFrequencyStatSccb.getItems().setAll(IntenseFreqFlags.values());
             mMeasurementModeSccb.setTitle("Mätläge");
             mMeasNextSccb.getItems().setAll(List.of(

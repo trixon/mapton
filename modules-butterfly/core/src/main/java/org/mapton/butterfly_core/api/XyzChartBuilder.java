@@ -277,7 +277,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         try {
             var dateAxis = (DateAxis) plot.getDomainAxis();
             dateAxis.setAutoRange(true);
-            dateAxis.setRange(dateNull, DateHelper.convertToDate(LocalDate.now()));
+            dateAxis.setRange(dateNull, DateHelper.convertToDate(LocalDate.now().plusDays(1)));
         } catch (IllegalArgumentException e) {
             System.out.println("%s: Bad chart plot range".formatted(p.getName()));
         }
