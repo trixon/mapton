@@ -20,5 +20,15 @@ package org.mapton.butterfly_format.types;
  * @author Patrik Karlström
  */
 public enum BComponent {
-    PLANE, HEIGHT;
+    PLANE(BDimension._2d),
+    HEIGHT(BDimension._1d);
+    private final BDimension mDimension;
+
+    private BComponent(BDimension dimension) {
+        mDimension = dimension;
+    }
+
+    public BDimension getDimension() {
+        return mDimension;
+    }
 }

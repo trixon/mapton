@@ -735,6 +735,17 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                 }
             }
 
+            public String getDelta1d2d(int decimals, int factor) {
+                return StringHelper.joinNonNulls(", ",
+                        getDelta1(decimals, factor),
+                        getDelta2(decimals, factor)
+                );
+            }
+
+            public String getDelta1d2d(int decimals) {
+                return getDelta1d2d(decimals, 1);
+            }
+
             public String getDelta2(int decimals) {
                 return getDelta2(decimals, 1);
             }

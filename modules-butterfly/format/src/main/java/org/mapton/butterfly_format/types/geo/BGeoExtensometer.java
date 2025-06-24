@@ -60,6 +60,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 })
 public class BGeoExtensometer extends BXyzPoint {
 
+    private double groundLevel;
     private transient Ext mExt;
     private transient ArrayList<BGeoExtensometerPoint> mPoints = new ArrayList<>();
     private transient Double numOfDecXY;
@@ -67,12 +68,11 @@ public class BGeoExtensometer extends BXyzPoint {
     private transient Double offsetX;
     private transient Double offsetY;
     private transient Double offsetZ;
+    private String referencePointName;
     private transient Double rollingX;
     private transient Double rollingY;
     private transient Double rollingZ;
     private String sensors;
-    private String referencePointName;
-    private double groundLevel;
 
     public BGeoExtensometer() {
     }
@@ -133,6 +133,10 @@ public class BGeoExtensometer extends BXyzPoint {
         private BTopoControlPoint mReferencePoint;
 
         public Ext() {
+        }
+
+        public int getAlarmLevel() {
+            return getPoints().stream().mapToInt(p -> p.ext().getAlarmLevel()).max().orElse(-1);
         }
 
         public BTopoControlPoint getReferencePoint() {
