@@ -54,6 +54,7 @@ public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
                 .filter(g -> validateCheck(mRörtypCheckModel, g.getRörtyp()))
                 .filter(g -> validateCheck(mSpetstypCheckModel, g.getSpetstyp()))
                 .filter(g -> validateCheck(mStatusCheckModel, g.getStatus()))
+                .filter(g -> validateCoordinateCircle(g.getLat(), g.getLon()))
                 .filter(g -> validateCoordinateArea(g.getLat(), g.getLon()))
                 .filter(g -> validateCoordinateRuler(g.getLat(), g.getLon()))
                 .toList();

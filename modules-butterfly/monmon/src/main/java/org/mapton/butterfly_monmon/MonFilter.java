@@ -77,6 +77,7 @@ public class MonFilter extends FormFilter<MonManager> {
                 .filter(mon -> validateQuota(mLatest7Property, mLatest7ValueProperty, mon.getQuota(7)))
                 .filter(mon -> validateQuota(mLatest14Property, mLatest14ValueProperty, mon.getQuota(14)))
                 //                .filter(mon -> validateCheck(mStatusCheckModel, ActHelper.getStatusAsString(mon.getStatus())))
+                .filter(mon -> validateCoordinateCircle(mon.getLat(), mon.getLon()))
                 .filter(mon -> validateCoordinateArea(mon.getLat(), mon.getLon()))
                 .filter(mon -> validateCoordinateRuler(mon.getLat(), mon.getLon()))
                 .toList();

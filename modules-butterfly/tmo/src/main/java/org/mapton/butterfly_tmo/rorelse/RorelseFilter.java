@@ -50,6 +50,7 @@ public class RorelseFilter extends FormFilter<RorelseManager> {
                 .filter(r -> validateCheck(mStatusCheckModel, r.getStatus()))
                 .filter(r -> validateCheck(mInformationskallorCheckModel, r.getInformationskällor()))
                 //                .filter(r -> !r.ext().getObservationsAllRaw().isEmpty())
+                .filter(r -> validateCoordinateCircle(r.getLat(), r.getLon()))
                 .filter(r -> validateCoordinateArea(r.getLat(), r.getLon()))
                 .filter(r -> validateCoordinateRuler(r.getLat(), r.getLon()))
                 .toList();

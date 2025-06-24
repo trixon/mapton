@@ -53,6 +53,7 @@ public class ConvergencePairFilter extends FormFilter<ConvergencePairManager> {
                 b.getComment())
                 )
                 .filter(b -> validateCheck(mGroupCheckModel, b.getGroup()))
+                .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
                 .filter(b -> validateCoordinateArea(b.getLat(), b.getLon()))
                 .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
                 .toList();

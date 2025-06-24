@@ -45,6 +45,7 @@ public class InfiltrationFilter extends FormFilter<InfiltrationManager> {
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(b -> validateFreeText(b.getName(), b.getGroup(), b.getComment()))
+                .filter(b -> validateCoordinateCircle(b.getLat(), b.getLon()))
                 .filter(b -> validateCoordinateArea(b.getLat(), b.getLon()))
                 .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
                 .toList();

@@ -72,8 +72,8 @@ public class BlastFilter extends FormFilter<BlastManager> implements
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                //                .filter(b -> validateAltitude(b))
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment(), p.getExternalId()))
+                .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))

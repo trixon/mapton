@@ -88,6 +88,7 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
+                .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))

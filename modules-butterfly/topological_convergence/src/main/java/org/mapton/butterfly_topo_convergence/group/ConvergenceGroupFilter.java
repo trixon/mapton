@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo_convergence.group;
 
-import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import j2html.tags.ContainerTag;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
@@ -30,6 +29,7 @@ import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
+import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -81,6 +81,7 @@ public class ConvergenceGroupFilter extends FormFilter<ConvergenceGroupManager> 
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
+                .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
