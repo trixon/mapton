@@ -165,11 +165,19 @@ public abstract class MBaseDataManager<T> {
         return null;
     }
 
+    public String getName() {
+        return getClass().getSimpleName();
+    }
+
     public Object getObjectChart(T t) {
         return Boolean.FALSE;
     }
 
     public Object getObjectProperties(T t) {
+        return Boolean.FALSE;
+    }
+
+    public Object getObjectTrends(T t) {
         return Boolean.FALSE;
     }
 
@@ -402,6 +410,11 @@ public abstract class MBaseDataManager<T> {
             var objectProperties = getObjectProperties(n);
             if (objectProperties != Boolean.FALSE) {
                 Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, objectProperties);
+            }
+
+            var objectTrends = getObjectTrends(n);
+            if (objectTrends != Boolean.FALSE) {
+                Mapton.getGlobalState().put(MKey.OBJECT_TRENDS, objectTrends);
             }
 
             var objectChart = getObjectChart(n);
