@@ -31,6 +31,7 @@ import org.mapton.butterfly_format.types.BAreaBase;
 import org.mapton.butterfly_format.types.BBasePointObservation;
 import org.mapton.butterfly_format.types.BCoordinate;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BHistory;
 import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.BSystemSearchProvider;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -77,6 +78,7 @@ import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 public class Butterfly {
 
     private final ArrayList<BAlarm> mAlarms = new ArrayList<>();
+    private final ArrayList<BHistory> mAlarmsHistory = new ArrayList<>();
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
     private final ArrayList<BAreaBase> mAreaFilters = new ArrayList<>();
     private final ArrayList<BAcousticBlast> mBlasts = new ArrayList<>();
@@ -133,6 +135,10 @@ public class Butterfly {
 
     public ArrayList<BAlarm> getAlarms() {
         return mAlarms;
+    }
+
+    public ArrayList<BHistory> getAlarmsHistory() {
+        return mAlarmsHistory;
     }
 
     public ArrayList<BAreaActivity> getAreaActivities() {
@@ -192,6 +198,9 @@ public class Butterfly {
 
         new ImportFromCsv<BAlarm>(BAlarm.class) {
         }.load(sourceDir, "alarms.csv", mAlarms);
+
+        new ImportFromCsv<BHistory>(BHistory.class) {
+        }.load(sourceDir, "alarms_history.csv", mAlarmsHistory);
 
         new ImportFromCsv<BAreaActivity>(BAreaActivity.class) {
         }.load(sourceDir, "areaActivities.csv", mAreaActivities);
@@ -287,7 +296,9 @@ public class Butterfly {
     }
 
     void postLoad() {
-        List.of(mAlarms,
+        List.of(
+                mAlarms,
+                mAlarmsHistory,
                 mHydroGroundwaterPoints,
                 mStructuralCrackPoints,
                 mStructuralLoadPoints,
@@ -300,32 +311,13 @@ public class Butterfly {
         ).forEach(items -> items.forEach(item -> item.setButterfly(this)));
 
         for (var a : mAlarms) {
-//            a.setButterfly(this);
             a.ext().populateRanges();
         }
 
         for (var p : mHydroGroundwaterPoints) {
-//            p.setButterfly(this);
             p.setDimension(BDimension._1d);
         }
-
-//        for (var p : mStructuralCrackPoints) {
-//            p.setButterfly(this);
-//        }
-//        for (var p : mStructuralStrainPoints) {
-//            p.setButterfly(this);
-//        }
-//        for (var p : mStructuralLoadPoints) {
-//            p.setButterfly(this);
-//        }
-//        for (var p : mStructuralTiltPoints) {
-//            p.setButterfly(this);
-//        }
-//        for (var p : mTopoConvergenceGroups) {
-//            p.setButterfly(this);
-//        }
         for (var p : mTopoControlPoints) {
-//            p.setButterfly(this);
             calcFreqIntenseBuffer(p);
         }
 
@@ -334,12 +326,7 @@ public class Butterfly {
         }
 
         for (var p : mGeoExtensometers) {
-//            p.setButterfly(this);
             p.setMeasurementMode(BMeasurementMode.AUTOMATIC);
-        }
-
-        for (var p : mGeoInclinometerPoints) {
-//            p.setButterfly(this);
         }
 
         structural().postLoad();
