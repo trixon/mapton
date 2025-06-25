@@ -146,6 +146,9 @@ public enum TopoLabelBy {
     MISC_DIMENS_FREQUENCY(LabelByCategories.MISC, Strings.DIMENS_FREQ, p -> {
         return "%sD %s".formatted(MISC_DIMENS.getLabel(p), MISC_FREQUENCY.getLabel(p));
     }),
+    MISC_ROLLING_FORMULA(LabelByCategories.MISC, "Rullande formel", p -> {
+        return p.getRollingFormula();
+    }),
     MEAS_SPEED(LabelByCategories.MEAS, "%s (mm/%s)".formatted(Dict.SPEED.toString(), Dict.Time.YEAR.toLower()), p -> {
         if (p.getDimension() == BDimension._2d || p.ext().getObservationsTimeFiltered().size() < 2 || p.ext().deltaZero().getDelta1() == null) {
             return "-";
@@ -204,20 +207,15 @@ public enum TopoLabelBy {
 
         return "%s (%s)".formatted(need, freq);
     }),
-    VALUE_Z(LabelByCategories.VALUE, "Z", p -> {
-        var z = p.getZeroZ();
-
-        return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
-    }),
     VALUE_DELTA_ZERO(LabelByCategories.VALUE, "Δ₀", p -> {
         return p.ext().deltaZero().getDelta1d2d(0, 1000);
     }),
-    VALUE_DELTA_ZERO_Z(LabelByCategories.VALUE, "ΔZ₀", p -> {
+    VALUE_DELTA_ZERO_1D(LabelByCategories.VALUE, "Δ1d₀", p -> {
         var daysSinceMeasurement = p.ext().getZeroMeasurementAge(ChronoUnit.DAYS);
 
         return "%s (%d)".formatted(p.ext().deltaZero().getDelta1(0, 1000), daysSinceMeasurement);
     }),
-    VALUE_DELTA_LATEST_Z(LabelByCategories.VALUE, "ΔZ (dagar)", p -> {
+    VALUE_DELTA_LATEST_1D(LabelByCategories.VALUE, "Δ1dₛₑₙₐₛₜₑ (dagar)", p -> {
         if (p.getDimension() == BDimension._2d) {
             return ":";
         }
@@ -241,7 +239,7 @@ public enum TopoLabelBy {
 
         return "%s (%d)".formatted(StringHelper.round(delta, 3), daysSinceMeasurement);
     }),
-    VALUE_DELTA_LATEST_Z_ZERO(LabelByCategories.VALUE, "ΔZ (ΔZ₀)", p -> {
+    VALUE_DELTA_LATEST_1D_ZERO(LabelByCategories.VALUE, "Δ1dₛₑₙₐₛₜₑ (Δ1d₀)", p -> {
         if (p.getDimension() == BDimension._2d) {
             return ":";
         }
@@ -263,12 +261,72 @@ public enum TopoLabelBy {
 
         return "%s (%.3f)".formatted(StringHelper.round(delta, 3), p.ext().deltaZero().getDelta1());
     }),
+    VALUE_DELTA_ZERO_2D(LabelByCategories.VALUE, "Δ2d₀", p -> {
+        var daysSinceMeasurement = p.ext().getZeroMeasurementAge(ChronoUnit.DAYS);
+
+        return "%s (%d)".formatted(p.ext().deltaZero().getDelta2(0, 1000), daysSinceMeasurement);
+    }),
+    VALUE_DELTA_LATEST_2D(LabelByCategories.VALUE, "Δ2dₛₑₙₐₛₜₑ (dagar)", p -> {
+        if (p.getDimension() == BDimension._1d) {
+            return ":";
+        }
+        long daysSinceMeasurement;
+        var observations = p.ext().getObservationsTimeFiltered();
+        double delta;
+        if (observations.size() > 1) {
+            var secondLast = observations.get(observations.size() - 2);
+            var last = observations.get(observations.size() - 1);
+            var lastDelta = last.ext().getDelta2d();
+            var secondLastDelta = secondLast.ext().getDelta2d();
+            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+                return "-";
+            }
+
+            delta = lastDelta - secondLastDelta;
+            daysSinceMeasurement = ChronoUnit.DAYS.between(secondLast.getDate(), last.getDate());
+        } else {
+            return "-";
+        }
+
+        return "%s (%d)".formatted(StringHelper.round(delta, 3), daysSinceMeasurement);
+    }),
+    VALUE_DELTA_LATEST_2D_ZERO(LabelByCategories.VALUE, "Δ2dₛₑₙₐₛₜₑ (Δ2d₀)", p -> {
+        if (p.getDimension() == BDimension._1d) {
+            return ":";
+        }
+        var observations = p.ext().getObservationsTimeFiltered();
+        double delta;
+        if (observations.size() > 1) {
+            var secondLast = observations.get(observations.size() - 2);
+            var last = observations.get(observations.size() - 1);
+            var lastDelta = last.ext().getDelta2d();
+            var secondLastDelta = secondLast.ext().getDelta2d();
+            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+                return "-";
+            }
+
+            delta = lastDelta - secondLastDelta;
+        } else {
+            return "-";
+        }
+
+        return "%s (%.3f)".formatted(StringHelper.round(delta, 3), p.ext().deltaZero().getDelta2());
+    }),
     VALUE_DELTA_ROLLING(LabelByCategories.VALUE, "Δᵣ", p -> {
         return p.ext().deltaRolling().getDelta1d2d(3);
     }),
-    VALUE_DELTA_ROLLING_Z(LabelByCategories.VALUE, "ΔZᵣ", p -> {
+    VALUE_DELTA_ROLLING_1D(LabelByCategories.VALUE, "Δ1dᵣ", p -> {
         return p.ext().deltaRolling().getDelta1(3);
+    }),
+    VALUE_DELTA_ROLLING_2D(LabelByCategories.VALUE, "Δ2dᵣ", p -> {
+        return p.ext().deltaRolling().getDelta2(3);
+    }),
+    VALUE_Z(LabelByCategories.VALUE, "Z", p -> {
+        var z = p.getZeroZ();
+
+        return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
     });
+
     private final String mCategory;
     private final Function<BTopoControlPoint, String> mFunction;
     private final String mName;

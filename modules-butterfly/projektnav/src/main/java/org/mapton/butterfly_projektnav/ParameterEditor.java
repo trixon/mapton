@@ -98,6 +98,8 @@ public class ParameterEditor extends BaseEditor {
     private final TextField mUtglesningTextField = new TextField("MEDIAN / 2D");
     private final TextField mDagIntParamTextField = new TextField();
     private final ComboBox<BaseManagerProvider> mManagerComboBox = new ComboBox<>();
+    private final CheckBox mRullandeCheckBox = new CheckBox("Rullande");
+    private final TextField mRullandeTextField = new TextField("Roll(10)");
 
     public ParameterEditor() {
         setName("Parametrar");
@@ -201,6 +203,7 @@ public class ParameterEditor extends BaseEditor {
         mDatFromDatePicker.disableProperty().bind(mDatFromCheckBox.selectedProperty().not());
         mDatToDatePicker.disableProperty().bind(mDatToCheckBox.selectedProperty().not());
         mUtglesningTextField.disableProperty().bind(mUtglesningCheckBox.selectedProperty().not());
+        mRullandeTextField.disableProperty().bind(mRullandeCheckBox.selectedProperty().not());
 
         var gp = new GridPane(FxHelper.getUIScaled(8.0), FxHelper.getUIScaled(2.0));
         gp.setPadding(FxHelper.getUIScaledInsets(8.0));
@@ -219,8 +222,8 @@ public class ParameterEditor extends BaseEditor {
         gp.addRow(++row, mDatFromCheckBox, mDatToCheckBox, mDatToLatestCheckBox);
         gp.addRow(++row, mDatFromDatePicker, mDatToDatePicker);
         gp.addRow(++row, createSpacer());
-        gp.addRow(++row, mUtglesningCheckBox);
-        gp.addRow(++row, mUtglesningTextField);
+        gp.addRow(++row, mUtglesningCheckBox, mRullandeCheckBox);
+        gp.addRow(++row, mUtglesningTextField, mRullandeTextField);
         FxHelper.autoSizeColumn(gp, 3);
 
         FxHelper.setEditable(true, mDagSpinner, mDagDefSpinner, mDagIntSpinner);
@@ -323,6 +326,7 @@ public class ParameterEditor extends BaseEditor {
             addConditionlly(sb, mDatToLatestCheckBox.isSelected(), "dt");
         }
         addConditionlly(sb, mUtglesningCheckBox.isSelected(), "sparse");
+        addConditionlly(sb, mRullandeCheckBox.isSelected(), "roll");
         sb.append("\n");
 
         for (var name : getPointWithNavetNames(StringUtils.split(mSourceTextArea.getText(), "\n"))) {
@@ -371,6 +375,7 @@ public class ParameterEditor extends BaseEditor {
                 addConditionlly(sb, mDatToLatestCheckBox.isSelected(), toDate);
             }
             addConditionlly(sb, mUtglesningCheckBox.isSelected(), mUtglesningTextField.getText());
+            addConditionlly(sb, mRullandeCheckBox.isSelected(), mRullandeTextField.getText());
 
             sb.append("\n");
         }

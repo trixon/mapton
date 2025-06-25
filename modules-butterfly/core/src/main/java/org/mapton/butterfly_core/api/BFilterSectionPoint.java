@@ -64,6 +64,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     private final SessionCheckComboBox<DefaultFreqFlags> mDefaultFrequencyStatSccb;
     private final SessionCheckComboBox<Integer> mFrequencySccb;
     private final SessionCheckComboBox<String> mGroupSccb;
+    private final SessionCheckComboBox<String> mRollingSccb;
     private final SessionCheckComboBox<Integer> mIntenseFrequencySccb;
     private final SessionCheckComboBox<IntenseFreqFlags> mIntenseFrequencyStatSccb;
     private final SessionCheckComboBox<String> mMeasNextSccb;
@@ -85,6 +86,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mUnitDiffSccb = new SessionCheckComboBox<>();
         mMeasNextSccb = new SessionCheckComboBox<>(true);
         mGroupSccb = new SessionCheckComboBox<>();
+        mRollingSccb = new SessionCheckComboBox<>();
         mFrequencySccb = new SessionCheckComboBox<>();
         mDefaultFrequencySccb = new SessionCheckComboBox<>();
         mDefaultFrequencyStatSccb = new SessionCheckComboBox<>();
@@ -115,6 +117,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put("%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.HIGH.toLower()), makeInfoInteger(mIntenseFrequencySccb.getCheckModel().getCheckedItems()));
         map.put(mBundle.getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextSccb.getCheckModel().getCheckedItems()));
         map.put(Dict.GROUP.toString(), makeInfo(mGroupSccb.getCheckModel().getCheckedItems()));
+        map.put("Rolling formula", makeInfo(mRollingSccb.getCheckModel().getCheckedItems()));
         map.put(Dict.CATEGORY.toString(), makeInfo(mCategorySccb.getCheckModel().getCheckedItems()));
         map.put(SDict.ALARMS.toString(), makeInfo(mAlarmNameSccb.getCheckModel().getCheckedItems()));
         map.put(SDict.OPERATOR.toString(), makeInfo(mOperatorSccb.getCheckModel().getCheckedItems()));
@@ -133,6 +136,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put(FREQUENCY_INTENSE_STAT, mIntenseFrequencyStatSccb);
         map.put(FREQUENCY, mFrequencySccb);
         map.put(GROUP, mGroupSccb);
+        map.put(ROLLING_FORMULA, mRollingSccb);
         map.put(MEAS_NEXT, mMeasNextSccb);
         map.put(MEAS_MODE, mMeasurementModeSccb);
         map.put(OPERATOR, mOperatorSccb);
@@ -160,6 +164,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     && validateCheck(mOperatorSccb.getCheckModel(), p.getOperator())
                     && validateCheck(mUnitSccb.getCheckModel(), p.getUnit())
                     && validateCheck(mUnitDiffSccb.getCheckModel(), p.getUnitDiff())
+                    && validateCheck(mRollingSccb.getCheckModel(), p.getRollingFormula())
                     && validateCheck(mOriginSccb.getCheckModel(), p.getOrigin())
                     && validateCheckMeasurementMode(mMeasurementModeSccb.getCheckModel(), p.getMeasurementMode())
                     && validateNextMeas(p, mMeasNextSccb.getCheckModel(), remainingDays)
@@ -197,7 +202,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                 mOperatorSccb.getCheckModel(),
                 mOriginSccb.getCheckModel(),
                 mUnitSccb.getCheckModel(),
-                mUnitDiffSccb.getCheckModel()
+                mUnitDiffSccb.getCheckModel(),
+                mRollingSccb.getCheckModel()
         ).forEach(cm -> cm.getCheckedItems().addListener(listChangeListener));
     }
 
@@ -211,6 +217,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         var allAlarmNames = items.stream().map(o -> o.getAlarm1Id()).collect(Collectors.toCollection(HashSet::new));
         allAlarmNames.addAll(items.stream().map(o -> o.getAlarm2Id()).collect(Collectors.toSet()));
         mAlarmNameSccb.loadAndRestoreCheckItems(allAlarmNames.stream());
+        mRollingSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getRollingFormula()));
         mGroupSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
         mCategorySccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
         mOperatorSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
@@ -448,6 +455,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         MEAS_MODE,
         OPERATOR,
         ORIGIN,
+        ROLLING_FORMULA,
         STATUS,
         UNIT,
         UNIT_DIFF;
@@ -477,6 +485,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mUnitDiffSccb,
                     mMeasNextSccb,
                     mMeasurementModeSccb,
+                    mRollingSccb,
                     mFrequencySccb,
                     mDefaultFrequencyStatSccb,
                     mDefaultFrequencySccb,
@@ -512,6 +521,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             sessionManager.register("filter.checkedIntenseFrequency", mIntenseFrequencySccb.checkedStringProperty());
             sessionManager.register("filter.checkedIntenseFrequencyStat", mIntenseFrequencyStatSccb.checkedStringProperty());
             sessionManager.register("filter.checkedGroup", mGroupSccb.checkedStringProperty());
+            sessionManager.register("filter.checkedRollingFormula", mRollingSccb.checkedStringProperty());
             sessionManager.register("filter.checkedOperators", mOperatorSccb.checkedStringProperty());
             sessionManager.register("filter.checkedOrigin", mOriginSccb.checkedStringProperty());
             sessionManager.register("filter.checkedStatus", mStatusSccb.checkedStringProperty());
@@ -526,7 +536,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             FxHelper.setVisibleRowCount(25,
                     mGroupSccb,
                     mCategorySccb,
-                    mAlarmNameSccb
+                    mAlarmNameSccb,
+                    mRollingSccb
             );
         }
 
@@ -554,7 +565,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mDefaultFrequencySccb,
                     mDefaultFrequencyStatSccb,
                     mIntenseFrequencySccb,
-                    mIntenseFrequencyStatSccb
+                    mIntenseFrequencyStatSccb,
+                    mRollingSccb
             );
 
             mMeasNextSccb.setTitle(mBundle.getString("nextMeasCheckComboBoxTitle"));
@@ -567,6 +579,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             mUnitSccb.setTitle("Enhet");
             mUnitDiffSccb.setTitle("Enhet, diff");
             mFrequencySccb.setTitle(SDict.FREQUENCY.toString());
+            mRollingSccb.setTitle("Rullande formel");
 
             mDefaultFrequencySccb.setTitle("Frekvens, standard");
             mDefaultFrequencyStatSccb.setTitle("Status, standard");
@@ -608,7 +621,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mMeasNextSccb,
                     mDefaultFrequencyStatSccb,
                     mIntenseFrequencyStatSccb,
-                    dummyLabel,
+                    mRollingSccb,
                     mCategorySccb,
                     mOperatorSccb,
                     mUnitDiffSccb

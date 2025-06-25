@@ -44,6 +44,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
     private Double offsetX;
     private Double offsetY;
     private Double offsetZ;
+    private String rollingFormula;
     private Double rollingX;
     private Double rollingY;
     private Double rollingZ;
@@ -54,12 +55,12 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
     private Double zeroZ;
     private transient Double zeroZScaled;
 
-    public String getAlarm1Id() {
-        return alarm1Id;
-    }
-
     public Object ext() {
         return null;
+    }
+
+    public String getAlarm1Id() {
+        return alarm1Id;
     }
 
     public String getAlarm2Id() {
@@ -97,6 +98,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
     @Override
     public double[] getPoint() {
         return new double[]{zeroXScaled, zeroYScaled, zeroZScaled};
+    }
+
+    public String getRollingFormula() {
+        return rollingFormula;
     }
 
     public Double getRollingX() {
@@ -169,6 +174,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
     public void setOffsetZ(Double offsetZ) {
         this.offsetZ = offsetZ;
+    }
+
+    public void setRollingFormula(String rollingFormula) {
+        this.rollingFormula = rollingFormula;
     }
 
     public void setRollingX(Double rollingX) {
@@ -736,10 +745,17 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
 
             public String getDelta1d2d(int decimals, int factor) {
-                return StringHelper.joinNonNulls(", ",
+                return switch (dimension) {
+                    case _1d ->
+                        getDelta1(decimals, factor);
+                    case _2d ->
+                        getDelta2(decimals, factor);
+                    default ->
+                        StringHelper.joinNonNulls(", ",
                         getDelta1(decimals, factor),
                         getDelta2(decimals, factor)
-                );
+                        );
+                };
             }
 
             public String getDelta1d2d(int decimals) {

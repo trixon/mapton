@@ -95,12 +95,12 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
             validFromTo = StringHelper.joinNonNulls(" // ", fromDat, toDat);
         }
 
-        map.put(getCatKeyNum(CAT_DATE, "%s %s - %s".formatted(Dict.VALID.toString(), Dict.FROM.toLower(), Dict.TO.toLower())), validFromTo);
         map.put(getCatKeyNum(CAT_DATE, Dict.REFERENCE.toString()),
                 "%s (%s)".formatted(
                         Objects.toString(DateHelper.toDateString(p.getDateZero()), "-"),
                         Objects.toString(DateHelper.toDateString(p.getDateRolling()), "-"))
         );
+        map.put(getCatKeyNum(CAT_DATE, "%s %s - %s".formatted(Dict.VALID.toString(), Dict.FROM.toLower(), Dict.TO.toLower())), validFromTo);
 
         return map;
     }
@@ -131,6 +131,7 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
         map.put(getCatKeyNum(CAT_MEAS, SDict.MEASUREMENTS_NUM_OF_REPLACEMENTS.toString()), params.numOfReplacements);
         var delta = "Δ ";
         map.put(getCatKeyNum(CAT_MEAS, Dict.BEARING.toString()), StringHelper.round(params.azimuth(), 0));
+        map.put(getCatKeyNum(CAT_MEAS, SDict.ROLLING.toString()), p.getRollingFormula());
         map.put(getCatKeyNum(CAT_MEAS, delta + SDict.ROLLING.toString()), params.deltaRolling);
         map.put(getCatKeyNum(CAT_MEAS, delta + Dict.REFERENCE.toString()), params.deltaZero);
         map.put(getCatKeyNum(CAT_MEAS, "N"), StringHelper.round(p.getZeroY(), 3));
