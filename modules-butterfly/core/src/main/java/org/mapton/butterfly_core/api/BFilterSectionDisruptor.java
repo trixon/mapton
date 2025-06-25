@@ -27,6 +27,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.mapton.api.MDisruptorManager;
 import org.mapton.api.ui.forms.MBaseFilterSection;
@@ -34,7 +35,6 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.session.SessionCheckBox;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
 import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
@@ -48,10 +48,10 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
     private final double mDefaultDisruptorDistance = 75.0;
     private final DisruptorFilterUI mDisruptorFilterUI;
     private final SessionComboBox<String> mDisruptorGtLtScb = new SessionComboBox<>();
+    private final SessionComboBox<String> mDisruptorHighFrequencyModeScb = new SessionComboBox<>();
     private final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
     private final SessionCheckComboBox<String> mDisruptorSccb = new SessionCheckComboBox<>();
     private final SessionDoubleSpinner mDisruptorSds = new SessionDoubleSpinner(0, 500.0, mDefaultDisruptorDistance, 5.0);
-    private final SessionCheckBox mDisruptorFrequencyCheckBox = new SessionCheckBox("Inom hög frekvens");
 
     public BFilterSectionDisruptor() {
         super("Störningskällor");
@@ -76,10 +76,11 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
     public boolean filter(BXyzPoint p) {
         if (isSelected()) {
             var validStep1 = validateDisruptor(p.getZeroX(), p.getZeroY());
-            if (mDisruptorFrequencyCheckBox.isSelected()) {
+            var selectedIndex = mDisruptorHighFrequencyModeScb.getSelectionModel().getSelectedIndex();
+            if (validStep1 && selectedIndex > 0) {
                 var validStep2 = false;
                 if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
-                    validStep2 = validateFreqParameter(p.getZeroX(), p.getZeroY(), ext.getFrequenceIntenseBuffer());
+                    validStep2 = validateFreqParameter(p.getZeroX(), p.getZeroY(), ext.getFrequenceIntenseBuffer(), selectedIndex);
                 }
                 return validStep1 && validStep2;
             } else {
@@ -96,7 +97,7 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
                 mDisruptorSds.sessionValueProperty(),
                 mDisruptorManager.lastChangedProperty(),
                 mDisruptorGtLtScb.getSelectionModel().selectedItemProperty(),
-                mDisruptorFrequencyCheckBox.selectedProperty()
+                mDisruptorHighFrequencyModeScb.getSelectionModel().selectedItemProperty()
         ).forEach(propertyBase -> propertyBase.addListener(changeListener));
 
         List.of(
@@ -111,7 +112,7 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
         sessionManager.register("filter.checkedDisruptors", mDisruptorSccb.checkedStringProperty());
         sessionManager.register("filter.disruptorDistance", mDisruptorSds.sessionValueProperty());
         sessionManager.register("filter.disruptor.gtlt", mDisruptorGtLtScb.selectedIndexProperty());
-        sessionManager.register("filter.disruptor.frequency", mDisruptorFrequencyCheckBox.selectedProperty());
+        sessionManager.register("filter.disruptor.highFrequencyMode", mDisruptorHighFrequencyModeScb.selectedIndexProperty());
     }
 
     public void load() {
@@ -139,13 +140,13 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
         }
     }
 
-    private boolean validateFreqParameter(Double x, Double y, Double buffer) {
+    private boolean validateFreqParameter(Double x, Double y, Double buffer, int selectedIndex) {
         if (buffer == null) {
             return false;
         } else {
             var valid = mDisruptorManager.isValidDistance(
                     mDisruptorSccb.getCheckModel(),
-                    true,
+                    selectedIndex == 1,
                     buffer,
                     x, y);
             return valid;
@@ -166,31 +167,42 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
             mDisruptorSccb.loadAndRestoreCheckItems(mDisruptorManager.getCategories().stream());
             mDisruptorSds.load();
             mDisruptorGtLtScb.load();
-            mDisruptorFrequencyCheckBox.load();
+            mDisruptorHighFrequencyModeScb.load();
         }
 
         public void reset() {
             mDisruptorSds.getValueFactory().setValue(mDefaultDisruptorDistance);
             mDisruptorSccb.clearChecks();
             mDisruptorGtLtScb.getSelectionModel().selectFirst();
-            mDisruptorFrequencyCheckBox.setSelected(false);
+            mDisruptorHighFrequencyModeScb.getSelectionModel().selectFirst();
         }
 
         private void createUI() {
             mDisruptorSccb.setShowCheckedCount(true);
             mDisruptorSccb.setTitle(mBundle.getString("DisruptorCheckComboBoxTitle"));
-            var hbox = new HBox(FxHelper.getUIScaled(8), new Label("Avstånd"), mDisruptorGtLtScb, mDisruptorSds, mDisruptorSccb, mDisruptorFrequencyCheckBox);
-            hbox.setAlignment(Pos.CENTER);
-            mRoot.addRow(0, hbox);
+            var hbox = new HBox(FxHelper.getUIScaled(8), new Label("Avstånd"), mDisruptorGtLtScb, mDisruptorSds);
+            hbox.setAlignment(Pos.CENTER_LEFT);
+            var leftBox = new VBox(rowGap,
+                    mDisruptorSccb
+            );
+            var rightBox = new VBox(rowGap,
+                    mDisruptorHighFrequencyModeScb
+            );
+            FxHelper.bindWidthForChildrens(leftBox, rightBox);
+            mRoot.addRow(0, leftBox, rightBox);
+            mRoot.add(hbox, 0, 1, 2, 1);
+            FxHelper.autoSizeColumn(mRoot, 2);
             mDisruptorGtLtScb.getItems().setAll("<=", ">=");
+            mDisruptorHighFrequencyModeScb.getItems().setAll("Bortse från hög frekvens", "Har utlösare", "Saknar utlösare");
             FxHelper.setEditable(true, mDisruptorSds);
             FxHelper.autoCommitSpinners(mDisruptorSds);
             mDisruptorGtLtScb.getSelectionModel().selectFirst();
+            mDisruptorHighFrequencyModeScb.getSelectionModel().selectFirst();
 
             var empty = Bindings.isEmpty(mDisruptorSccb.getCheckModel().getCheckedItems());
             mDisruptorSds.disableProperty().bind(empty);
             mDisruptorGtLtScb.disableProperty().bind(empty);
-            mDisruptorFrequencyCheckBox.disableProperty().bind(empty);
+            mDisruptorHighFrequencyModeScb.disableProperty().bind(empty);
         }
     }
 }
