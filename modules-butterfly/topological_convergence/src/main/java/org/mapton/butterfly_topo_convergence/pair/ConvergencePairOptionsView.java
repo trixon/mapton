@@ -117,7 +117,11 @@ public class ConvergencePairOptionsView extends MOptionsView {
         sessionManager.register("options.convergence.pair.labelBy", mLabelByIdProperty);
         sessionManager.register("options.convergence.pair.checkedGraphics", mGraphicSccb.checkedStringProperty());
 
-        mLabelByProperty.set(ConvergencePairLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(ConvergencePairLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

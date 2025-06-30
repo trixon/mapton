@@ -100,7 +100,11 @@ public class RorelseOptionsView extends MOptionsView {
         sessionManager.register("options.rorelse.pointBy", mPointSelectionModelSession.selectedIndexProperty());
         sessionManager.register("options.rorelse.labelBy", mLabelByIdProperty);
 
-        mLabelByProperty.set(RorelseLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(RorelseLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

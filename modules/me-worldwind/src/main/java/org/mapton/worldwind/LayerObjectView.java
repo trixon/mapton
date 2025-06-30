@@ -31,7 +31,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ContextMenu;
@@ -49,7 +48,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.CheckModel;
 import org.controlsfx.control.CheckTreeView;
 import org.controlsfx.control.MaskerPane;
-import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
@@ -57,12 +55,11 @@ import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MActivatable;
 import org.mapton.api.MDict;
 import org.mapton.api.MKey;
-import org.mapton.api.MRunnable;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.api.ui.MOptionsPopOver;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
+import org.openide.awt.Actions;
 import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
@@ -70,6 +67,7 @@ import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -85,8 +83,7 @@ public class LayerObjectView extends BorderPane implements MActivatable {
     private final Map<String, CheckBoxTreeItem<Layer>> mLayerParents;
     private final HashMap<Layer, CheckBoxTreeCell<Layer>> mLayerToCheckBoxTreeCell = new HashMap<>();
     private WorldWindowPanel mMap;
-    private Action mOptionsAction;
-    private MOptionsPopOver mOptionsPopOver;
+    private Action mLayerPropertiesAction;
     private CheckBoxTreeItem<Layer> mRootItem;
     private ToolBar mToolBar;
     private final Set<CheckBoxTreeItem<Layer>> mTreeItemExpanderSet;
@@ -203,27 +200,12 @@ public class LayerObjectView extends BorderPane implements MActivatable {
         mTreeView.setShowRoot(false);
         mTreeView.setCellFactory(param -> new LayerTreeCell());
 
-        var runOnceChecker = new HashSet<Node>();
-
-        mOptionsPopOver = new MOptionsPopOver();
-        mOptionsPopOver.setArrowLocation(PopOver.ArrowLocation.LEFT_CENTER);
-        mOptionsPopOver.setOnShowing(windowEvent -> {
-            var layerBundle = (LayerBundle) getSelectedTreeItem().getValue().getValue("layerBundle");
-            var optionsView = layerBundle.getOptionsView();
-            mOptionsPopOver.setContentNode(optionsView);
-            if (optionsView instanceof MRunnable r) {
-                FxHelper.runLaterDelayed(50, () -> {
-                    if (!runOnceChecker.contains(optionsView)) {
-                        runOnceChecker.add(optionsView);
-                        r.runOnce();
-                    }
-                    r.run();
-                });
-            }
+        mLayerPropertiesAction = new Action(Dict.LAYER_PROPERTIES.toString(), ae -> {
+            SwingHelper.runLater(() -> {
+                Actions.forID("Mapton", "org.mapton.core.actions.LayerPropertiesAction").actionPerformed(null);
+            });
         });
-
-        mOptionsAction = mOptionsPopOver.getAction();
-        mOptionsAction.setDisabled(true);
+        mLayerPropertiesAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));
 
         var maskerPane = new MaskerPane();
         maskerPane.setText(MDict.LOADING_LAYERS.toString());
@@ -252,8 +234,9 @@ public class LayerObjectView extends BorderPane implements MActivatable {
         );
 
         var actions = Arrays.asList(
-                selectActionGroup,
-                mOptionsAction
+                selectActionGroup
+        //                ,
+        //                mLayerPropertiesAction
         );
 
         mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
@@ -267,9 +250,9 @@ public class LayerObjectView extends BorderPane implements MActivatable {
         setTop(topBorderPane);
 
         var optionsItem = new MenuItem(Dict.OPTIONS.toString());
-        optionsItem.disableProperty().bind(mOptionsAction.disabledProperty());
+        optionsItem.disableProperty().bind(mLayerPropertiesAction.disabledProperty());
         optionsItem.setOnAction(actionEvent -> {
-            mOptionsAction.handle(new ActionEvent(getOptionsToolBarButton(), this));
+            mLayerPropertiesAction.handle(new ActionEvent(getOptionsToolBarButton(), this));
 
         });
 
@@ -277,7 +260,7 @@ public class LayerObjectView extends BorderPane implements MActivatable {
     }
 
     private ButtonBase getOptionsToolBarButton() {
-        return FxHelper.getButtonForAction(mOptionsAction, mToolBar.getItems());
+        return FxHelper.getButtonForAction(mLayerPropertiesAction, mToolBar.getItems());
     }
 
     private CheckBoxTreeItem<Layer> getParent(CheckBoxTreeItem<Layer> parent, String category) {
@@ -313,13 +296,12 @@ public class LayerObjectView extends BorderPane implements MActivatable {
     }
 
     private void initListeners() {
-        mTreeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        mTreeView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
             try {
                 var layerBundle = (LayerBundle) getSelectedTreeItem().getValue().getValue("layerBundle");
-                var optionsNode = layerBundle.getOptionsView();
-                mOptionsAction.setDisabled(optionsNode == null);
+                Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES, layerBundle.getOptionsView());
             } catch (Exception e) {
-                mOptionsAction.setDisabled(true);
+                mLayerPropertiesAction.setDisabled(true);
             }
         });
 

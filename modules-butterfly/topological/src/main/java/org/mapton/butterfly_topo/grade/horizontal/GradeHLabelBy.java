@@ -17,7 +17,7 @@ package org.mapton.butterfly_topo.grade.horizontal;
 
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_core.api.LabelByCategories;
+import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
@@ -28,13 +28,13 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public enum GradeHLabelBy {
-    NAME(LabelByCategories.ROOT, Dict.NAME.toString(), p -> {
+    NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
-    NONE(LabelByCategories.ROOT, Dict.NONE.toString(), p -> {
+    NONE(LabelBy.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
-    MEAS_GRADE_H(LabelByCategories.MEAS, "GRADE H per mille", p -> {
+    MEAS_GRADE_H(LabelBy.CAT_MEAS, "GRADE H per mille", p -> {
         return MathHelper.convertDoubleToString(p.ext().getDiff().getZPerMille(), 1);
     });
     private final String mCategory;

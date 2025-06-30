@@ -100,7 +100,11 @@ public class TunnelvattenOptionsView extends MOptionsView {
         sessionManager.register("options.tunnelvatten.pointBy", mPointSelectionModelSession.selectedIndexProperty());
         sessionManager.register("options.tunnelvatten.labelBy", mLabelByIdProperty);
 
-        mLabelByProperty.set(TunnelvattenLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(TunnelvattenLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

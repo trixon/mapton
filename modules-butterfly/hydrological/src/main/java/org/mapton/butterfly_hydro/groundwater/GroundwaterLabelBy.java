@@ -21,7 +21,7 @@ import java.util.function.Function;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.AlarmHelper;
-import org.mapton.butterfly_core.api.LabelByCategories;
+import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import se.trixon.almond.util.Dict;
@@ -33,34 +33,34 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public enum GroundwaterLabelBy {
-    NAME(LabelByCategories.ROOT, Dict.NAME.toString(), p -> {
+    NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
-    NONE(LabelByCategories.ROOT, Dict.NONE.toString(), p -> {
+    NONE(LabelBy.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
-    ALARM_H_NAME(LabelByCategories.ALARM, Dict.NAME.toString(), p -> {
+    ALARM_H_NAME(LabelBy.CAT_ALARM, Dict.NAME.toString(), p -> {
         return p.getAlarm1Id();
     }),
-    ALARM_H_VALUE(LabelByCategories.ALARM, Dict.VALUE.toString(), p -> {
+    ALARM_H_VALUE(LabelBy.CAT_ALARM, Dict.VALUE.toString(), p -> {
         return AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p);
     }),
-    DATE_LATEST(LabelByCategories.DATE, SDict.LATEST.toString(), p -> {
+    DATE_LATEST(LabelBy.CAT_DATE, SDict.LATEST.toString(), p -> {
         var date = p.ext().getObservationFilteredLastDate();
 
         return date == null ? "-" : date.toString();
     }),
-    //    DATE_NEXT(LabelByCategories.DATE, Dict.NEXT.toString(), p -> {
+    //    DATE_NEXT(LabelBy.CAT_DATE, Dict.NEXT.toString(), p -> {
     //        var date = p.ext().getObservationRawNextDate();
     //
     //        return date == null ? "-" : date.toString();
     //    }),
-    DATE_FIRST(LabelByCategories.DATE, Dict.FIRST.toString(), p -> {
+    DATE_FIRST(LabelBy.CAT_DATE, Dict.FIRST.toString(), p -> {
         var date = p.ext().getObservationFilteredFirstDate();
 
         return date == null ? "-" : date.toString();
     }),
-    DATE_VALIDITY(LabelByCategories.DATE, "%s - %s".formatted(Dict.FROM.toString(), Dict.TO.toString()), p -> {
+    DATE_VALIDITY(LabelBy.CAT_DATE, "%s - %s".formatted(Dict.FROM.toString(), Dict.TO.toString()), p -> {
         var d1 = p.getDateValidFrom();
         var d2 = p.getDateValidTo();
         if (ObjectUtils.allNull(d1, d2)) {
@@ -72,74 +72,74 @@ public enum GroundwaterLabelBy {
             return "%s - %s".formatted(dat1, dat2);
         }
     }),
-    MISC_GROUP(LabelByCategories.MISC, Dict.GROUP.toString(), p -> {
+    MISC_GROUP(LabelBy.CAT_MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     }),
-    MISC_CATEGORY(LabelByCategories.MISC, Dict.CATEGORY.toString(), p -> {
+    MISC_CATEGORY(LabelBy.CAT_MISC, Dict.CATEGORY.toString(), p -> {
         return Objects.toString(p.getCategory(), "NODATA");
     }),
-    MISC_STATUS(LabelByCategories.MISC, Dict.STATUS.toString(), p -> {
+    MISC_STATUS(LabelBy.CAT_MISC, Dict.STATUS.toString(), p -> {
         return Objects.toString(p.getStatus(), "NODATA");
     }),
-    MISC_OPERATOR(LabelByCategories.MISC, SDict.OPERATOR.toString(), p -> {
+    MISC_OPERATOR(LabelBy.CAT_MISC, SDict.OPERATOR.toString(), p -> {
         return Objects.toString(p.getOperator(), "NODATA");
     }),
-    MISC_ORIGIN(LabelByCategories.MISC, Dict.ORIGIN.toString(), p -> {
+    MISC_ORIGIN(LabelBy.CAT_MISC, Dict.ORIGIN.toString(), p -> {
         return Objects.toString(p.getOrigin(), "NODATA");
     }),
-    MISC_FREQUENCY(LabelByCategories.MISC, SDict.FREQUENCY.toString(), p -> {
+    MISC_FREQUENCY(LabelBy.CAT_MISC, SDict.FREQUENCY.toString(), p -> {
         return p.getFrequency() != null ? p.getFrequency().toString() : "--";
     }),
-    MEAS_LATEST_OPERATOR(LabelByCategories.MEAS, SDict.LATEST_S.toString().formatted(SDict.OPERATOR.toLower()), p -> {
+    MEAS_LATEST_OPERATOR(LabelBy.CAT_MEAS, SDict.LATEST_S.toString().formatted(SDict.OPERATOR.toLower()), p -> {
         return p.ext().getObservationsAllRaw().getLast().getOperator();
     }),
-    MEAS_COUNT_ALL(LabelByCategories.MEAS, Strings.MEAS_COUNT_ALL, p -> {
+    MEAS_COUNT_ALL(LabelBy.CAT_MEAS, Strings.MEAS_COUNT_ALL, p -> {
         return "%d".formatted(
                 p.ext().getNumOfObservations()
         );
     }),
-    MEAS_COUNT_SELECTION(LabelByCategories.MEAS, Strings.MEAS_COUNT_SELECTION, p -> {
+    MEAS_COUNT_SELECTION(LabelBy.CAT_MEAS, Strings.MEAS_COUNT_SELECTION, p -> {
         return "%d".formatted(
                 p.ext().getNumOfObservationsFiltered()
         );
     }),
-    MEAS_COUNT_SELECTION_ALL(LabelByCategories.MEAS, Strings.MEAS_COUNT, p -> {
+    MEAS_COUNT_SELECTION_ALL(LabelBy.CAT_MEAS, Strings.MEAS_COUNT, p -> {
         return "%d / %d".formatted(
                 p.ext().getNumOfObservationsFiltered(),
                 p.ext().getNumOfObservations()
         );
     }),
-    MEAS_AGE(LabelByCategories.MEAS, Dict.AGE.toString(), p -> {
+    MEAS_AGE(LabelBy.CAT_MEAS, Dict.AGE.toString(), p -> {
         var daysSinceMeasurement = p.ext().getMeasurementAge(ChronoUnit.DAYS);
 
         return "%d".formatted(daysSinceMeasurement);
     }),
-    MEAS_NEED(LabelByCategories.MEAS, Dict.NEED.toString(), p -> {
+    MEAS_NEED(LabelBy.CAT_MEAS, Dict.NEED.toString(), p -> {
         var need = p.getFrequency() == 0 ? "-" : Long.toString(p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         return need;
     }),
-    VALUE_LEVEL_CHANGE_30(LabelByCategories.VALUE, "Nivåförändring, 30 dagar", p -> {
+    VALUE_LEVEL_CHANGE_30(LabelBy.CAT_VALUE, "Nivåförändring, 30 dagar", p -> {
         var z = p.ext().getGroundwaterLevelDiff(30);
 
         return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
     }),
-    VALUE_LEVEL_CHANGE_60(LabelByCategories.VALUE, "Nivåförändring, 60 dagar", p -> {
+    VALUE_LEVEL_CHANGE_60(LabelBy.CAT_VALUE, "Nivåförändring, 60 dagar", p -> {
         var z = p.ext().getGroundwaterLevelDiff(60);
 
         return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
     }),
-    VALUE_LEVEL_CHANGE_90(LabelByCategories.VALUE, "Nivåförändring, 90 dagar", p -> {
+    VALUE_LEVEL_CHANGE_90(LabelBy.CAT_VALUE, "Nivåförändring, 90 dagar", p -> {
         var z = p.ext().getGroundwaterLevelDiff(90);
 
         return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
     }),
-    VALUE_GROUNDWATER(LabelByCategories.VALUE, "Grundvattennivå", p -> {
+    VALUE_GROUNDWATER(LabelBy.CAT_VALUE, "Grundvattennivå", p -> {
         var z = p.ext().getObservationFilteredLast().getGroundwaterLevel();
 
         return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
     }),
-    VALUE_Z(LabelByCategories.VALUE, "Z", p -> {
+    VALUE_Z(LabelBy.CAT_VALUE, "Z", p -> {
         var z = p.getZeroZ();
 
         return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);

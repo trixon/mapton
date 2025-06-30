@@ -98,7 +98,11 @@ public class ActOptionsView extends MOptionsView {
         sessionManager.register("options.pointBy", mPointScb.selectedIndexProperty());
         sessionManager.register("options.labelBy", mLabelByIdProperty);
 
-        mLabelByProperty.set(ActLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(ActLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

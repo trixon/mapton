@@ -114,7 +114,11 @@ public class MonOptionsView extends MOptionsView {
         sessionManager.register("options.labelBy", mLabelByIdProperty);
         sessionManager.register("options.checkedGraphics", mGraphicSccb.checkedStringProperty());
 
-        mLabelByProperty.set(MonLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(MonLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

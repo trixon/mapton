@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.tilt;
+package org.mapton.butterfly_geo.inclinometer;
 
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.LabelBy;
-import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -26,7 +26,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public enum TiltLabelBy {
+public enum InclinoLabelBy {
     NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
@@ -37,7 +37,7 @@ public enum TiltLabelBy {
         return LabelBy.alarmHName(p);
     }),
     ALARM_VALUE(LabelBy.CAT_ALARM, Dict.VALUE.toString(), p -> {
-        return TiltHelper.getLimitsAsString(p);
+        return LabelBy.alarmHValue(p);
     }),
     ALARM_PERCENT(LabelBy.CAT_ALARM, "%", p -> {
         return LabelBy.alarmHPercent(p);
@@ -130,19 +130,28 @@ public enum TiltLabelBy {
     }),
     MEAS_NEED_FREQ(LabelBy.CAT_MEAS, "%s (%s)".formatted(Dict.NEED.toString(), SDict.FREQUENCY.toString()), p -> {
         return LabelBy.measNeedFreq(p);
-    }),
-    VALUE_DELTA_ZERO(LabelBy.CAT_VALUE, "Δ₀", p -> {
-        return p.ext().getDeltaZero();
-    }),
-    VALUE_DELTA_ZERO_Z(LabelBy.CAT_VALUE, "ΔR₀", p -> {
-        String deltaRAbsolute = p.ext().deltaZero().getDeltaZAbsolute(1);
-        return StringUtils.replace(deltaRAbsolute, "Z", "R");
+//    }),
+        //    VALUE_DELTA_ZERO(LabelBy.CAT_VALUE, "Δ₀", p -> {
+        //        return p.ext().getDeltaZero();
+        //    }),
+//    VALUE_DELTA_ZERO_Z(LabelBy.CAT_VALUE, "ΔR₀", p -> {
+//        String deltaRAbsolute = p.ext().deltaZero().getDeltaZAbsolute(1);
+//        return StringUtils.replace(deltaRAbsolute, "Z", "R");
+//        var daysSinceMeasurement = p.ext().getZeroMeasurementAge(ChronoUnit.DAYS);
+//
+//        return "%s (%d)".formatted(p.ext().deltaZero().getDelta1(3), daysSinceMeasurement);
+//        var d = p.ext().deltaZero().getDeltaZ();
+//        if (d != null) {
+//            return "%.1f".formatted(d);
+//        } else {
+//            return "";
+//        }
     });
     private final String mCategory;
-    private final Function<BStructuralTiltPoint, String> mFunction;
+    private final Function<BGeoInclinometerPoint, String> mFunction;
     private final String mName;
 
-    private TiltLabelBy(String category, String name, Function<BStructuralTiltPoint, String> function) {
+    private InclinoLabelBy(String category, String name, Function<BGeoInclinometerPoint, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -160,7 +169,7 @@ public enum TiltLabelBy {
         }
     }
 
-    public String getLabel(BStructuralTiltPoint o) {
+    public String getLabel(BGeoInclinometerPoint o) {
         try {
             return mFunction.apply(o);
         } catch (Exception e) {
@@ -171,5 +180,4 @@ public enum TiltLabelBy {
     public String getName() {
         return mName;
     }
-
 }

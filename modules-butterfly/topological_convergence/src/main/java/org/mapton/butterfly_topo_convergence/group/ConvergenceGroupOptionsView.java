@@ -117,7 +117,11 @@ public class ConvergenceGroupOptionsView extends MOptionsView {
         sessionManager.register("options.convergence.group.labelBy", mLabelByIdProperty);
         sessionManager.register("options.convergence.group.checkedGraphics", mGraphicSccb.checkedStringProperty());
 
-        mLabelByProperty.set(ConvergenceGroupLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(ConvergenceGroupLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

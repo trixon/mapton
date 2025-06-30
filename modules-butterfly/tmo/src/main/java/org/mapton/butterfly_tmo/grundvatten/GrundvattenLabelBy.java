@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_core.api.LabelByCategories;
+import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -31,24 +31,24 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public enum GrundvattenLabelBy {
-    NAME(LabelByCategories.ROOT, Dict.NAME.toString(), p -> {
+    NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
-    NONE(LabelByCategories.ROOT, Dict.NONE.toString(), p -> {
+    NONE(LabelBy.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
-    DATE_LATEST(LabelByCategories.DATE, SDict.LATEST.toString(), p -> {
+    DATE_LATEST(LabelBy.CAT_DATE, SDict.LATEST.toString(), p -> {
         var date = p.ext().getObservationFilteredLastDate();
 //        var date = p.getDateLatest();
 
         return date == null ? "-" : date.toString();
     }),
-    //    DATE_ZERO(LabelByCategories.DATE, SDict.ZERO.toString(), p -> {
+    //    DATE_ZERO(LabelBy.CAT_DATE, SDict.ZERO.toString(), p -> {
     //        var date = p.getDateZero();
     //
     //        return date == null ? "-" : date.toString();
     //    }),
-    DATE_FIRST(LabelByCategories.DATE, Dict.FIRST.toString(), p -> {
+    DATE_FIRST(LabelBy.CAT_DATE, Dict.FIRST.toString(), p -> {
 //        try {
 //            return p.ext().getObservationsTimeFiltered().getFirst().getDate().toLocalDate().toString();
 //        } catch (Exception e) {
@@ -58,20 +58,20 @@ public enum GrundvattenLabelBy {
 
         return date == null ? "-" : date.toString();
     }),
-    MISC_DATE(LabelByCategories.MISC, Dict.DATE.toString(), p -> {
+    MISC_DATE(LabelBy.CAT_MISC, Dict.DATE.toString(), p -> {
         var date = Objects.toString(DateHelper.toDateString(p.getInstallationsdatum()), "-");
 
         return date;
     }),
-    MISC_AGE(LabelByCategories.MISC, Dict.AGE.toString(), p -> {
+    MISC_AGE(LabelBy.CAT_MISC, Dict.AGE.toString(), p -> {
         var daysSinceMeasurement = p.ext().getMeasurementAge(ChronoUnit.DAYS);
 
         return "%d".formatted(daysSinceMeasurement);
     }),
-    MISC_GROUP(LabelByCategories.MISC, Dict.GROUP.toString(), p -> {
+    MISC_GROUP(LabelBy.CAT_MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     }),
-    MISC_MARKNIVA(LabelByCategories.MISC, "Marknivå", p -> {
+    MISC_MARKNIVA(LabelBy.CAT_MISC, "Marknivå", p -> {
         var z = p.getMarknivå();
 
         return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);

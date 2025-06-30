@@ -100,7 +100,11 @@ public class VaderstationOptionsView extends MOptionsView {
         sessionManager.register("options.vaderstation.pointBy", mPointSelectionModelSession.selectedIndexProperty());
         sessionManager.register("options.vaderstation.labelBy", mLabelByIdProperty);
 
-        mLabelByProperty.set(VaderstationLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(VaderstationLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

@@ -117,7 +117,11 @@ public class BlastOptionsView extends MOptionsView {
         sessionManager.register("options.blast.labelBy", mLabelByIdProperty);
         sessionManager.register("options.blast.checkedGraphics", mGraphicSccb.checkedStringProperty());
 
-        mLabelByProperty.set(BlastLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(BlastLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

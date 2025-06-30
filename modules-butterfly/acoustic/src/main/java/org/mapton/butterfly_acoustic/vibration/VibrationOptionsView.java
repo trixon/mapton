@@ -117,7 +117,11 @@ public class VibrationOptionsView extends MOptionsView {
         sessionManager.register("options.Vibration.labelBy", mLabelByIdProperty);
         sessionManager.register("options.Vibration.checkedGraphics", mGraphicSccb.checkedStringProperty());
 
-        mLabelByProperty.set(VibrationLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(VibrationLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

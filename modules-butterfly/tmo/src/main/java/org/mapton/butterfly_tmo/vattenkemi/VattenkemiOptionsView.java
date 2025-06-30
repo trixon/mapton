@@ -100,7 +100,11 @@ public class VattenkemiOptionsView extends MOptionsView {
         sessionManager.register("options.vattenkemi.pointBy", mPointSelectionModelSession.selectedIndexProperty());
         sessionManager.register("options.vattenkemi.labelBy", mLabelByIdProperty);
 
-        mLabelByProperty.set(VattenkemiLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(VattenkemiLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

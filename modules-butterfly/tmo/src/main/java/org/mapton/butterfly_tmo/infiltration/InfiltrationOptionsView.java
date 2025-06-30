@@ -100,7 +100,11 @@ public class InfiltrationOptionsView extends MOptionsView {
         sessionManager.register("options.infiltration.pointBy", mPointSelectionModelSession.selectedIndexProperty());
         sessionManager.register("options.infiltration.labelBy", mLabelByIdProperty);
 
-        mLabelByProperty.set(InfiltrationLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(InfiltrationLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

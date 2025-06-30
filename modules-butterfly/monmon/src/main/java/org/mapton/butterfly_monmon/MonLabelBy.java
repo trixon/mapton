@@ -17,7 +17,7 @@ package org.mapton.butterfly_monmon;
 
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_core.api.LabelByCategories;
+import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -27,18 +27,18 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public enum MonLabelBy {
-    NAME(LabelByCategories.ROOT, Dict.NAME.toString(), p -> {
+    NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
-    NONE(LabelByCategories.ROOT, Dict.NONE.toString(), p -> {
+    NONE(LabelBy.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
-    MISC_LATEST(LabelByCategories.MISC, SDict.LATEST.toString(), mon -> {
+    MISC_LATEST(LabelBy.CAT_DATE, SDict.LATEST.toString(), mon -> {
         var date = mon.getControlPoint().ext().getObservationFilteredLastDate();
 
         return date == null ? "-" : date.toString();
     }),
-    MISC_QUOTA(LabelByCategories.MISC, "Kvot", mon -> {
+    MISC_QUOTA(LabelBy.CAT_MISC, "Kvot", mon -> {
         return "%s   %s   %s".formatted(mon.getString(1), mon.getString(7), mon.getString(14));
     });
 

@@ -39,12 +39,12 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public class InclinoOptionsView extends MOptionsView {
 
-    private static final LabelBy DEFAULT_LABEL_BY = LabelBy.NAME;
+    private static final InclinoLabelBy DEFAULT_LABEL_BY = InclinoLabelBy.NAME;
     private static final InclinoPointBy DEFAULT_POINT_BY = InclinoPointBy.PIN;
 
     private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
-    private final SimpleObjectProperty<LabelBy> mLabelByProperty = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<InclinoLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final SessionComboBox<InclinoPointBy> mPointScb = new SessionComboBox<>();
 
@@ -59,7 +59,7 @@ public class InclinoOptionsView extends MOptionsView {
         return mGraphicSccb.getCheckModel();
     }
 
-    public LabelBy getLabelBy() {
+    public InclinoLabelBy getLabelBy() {
         return mLabelByProperty.get();
     }
 
@@ -67,7 +67,7 @@ public class InclinoOptionsView extends MOptionsView {
         return mPointScb.valueProperty().get();
     }
 
-    public SimpleObjectProperty<LabelBy> labelByProperty() {
+    public SimpleObjectProperty<InclinoLabelBy> labelByProperty() {
         return mLabelByProperty;
     }
 
@@ -116,17 +116,18 @@ public class InclinoOptionsView extends MOptionsView {
         sessionManager.register("options.measPoint.pointBy", mPointScb.selectedIndexProperty());
         sessionManager.register("options.measPoint.labelBy", mLabelByIdProperty);
         sessionManager.register("options.measPoint.checkedGraphics", mGraphicSccb.checkedStringProperty());
+
         try {
-            mLabelByProperty.set(LabelBy.valueOf(mLabelByIdProperty.get()));
+            mLabelByProperty.set(InclinoLabelBy.valueOf(mLabelByIdProperty.get()));
         } catch (IllegalArgumentException e) {
-            mLabelByProperty.set(LabelBy.NAME);
+            mLabelByProperty.set(InclinoLabelBy.NAME);
         }
     }
 
     private void populateLabelMenuButton() {
         var categoryToMenu = new LinkedHashMap<String, Menu>();
 
-        for (var topoLabel : LabelBy.values()) {
+        for (var topoLabel : InclinoLabelBy.values()) {
             var menu = categoryToMenu.computeIfAbsent(topoLabel.getCategory(), k -> {
                 return new Menu(k);
             });

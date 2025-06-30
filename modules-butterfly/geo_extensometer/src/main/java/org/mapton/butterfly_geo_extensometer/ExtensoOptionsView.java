@@ -114,7 +114,11 @@ public class ExtensoOptionsView extends MOptionsView {
         sessionManager.register("options.labelBy", mLabelByIdProperty);
         sessionManager.register("options.checkedGraphics", mGraphicSccb.checkedStringProperty());
 
-        mLabelByProperty.set(ExtensoLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(ExtensoLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

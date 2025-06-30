@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_core.api.LabelByCategories;
+import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
@@ -30,59 +30,59 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public enum VibrationLabelBy {
-    NAME(LabelByCategories.ROOT, Dict.NAME.toString(), p -> {
+    NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
-    NONE(LabelByCategories.ROOT, Dict.NONE.toString(), p -> {
+    NONE(LabelBy.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
-    DATE_LATEST(LabelByCategories.DATE, SDict.LATEST.toString(), p -> {
+    DATE_LATEST(LabelBy.CAT_DATE, SDict.LATEST.toString(), p -> {
         var date = p.ext().getObservationFilteredLastDate();
 
         return date == null ? "-" : date.toString();
     }),
-    DATE_FIRST(LabelByCategories.DATE, Dict.FIRST.toString(), p -> {
+    DATE_FIRST(LabelBy.CAT_DATE, Dict.FIRST.toString(), p -> {
         var date = p.ext().getObservationFilteredFirstDate();
 
         return date == null ? "-" : date.toString();
     }),
-    MISC_GROUP(LabelByCategories.MISC, Dict.GROUP.toString(), p -> {
+    MISC_GROUP(LabelBy.CAT_MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     }),
-    MISC_CATEGORY(LabelByCategories.MISC, Dict.CATEGORY.toString(), p -> {
+    MISC_CATEGORY(LabelBy.CAT_MISC, Dict.CATEGORY.toString(), p -> {
         return Objects.toString(p.getCategory(), "NODATA");
     }),
-    MISC_STATUS(LabelByCategories.MISC, Dict.STATUS.toString(), p -> {
+    MISC_STATUS(LabelBy.CAT_MISC, Dict.STATUS.toString(), p -> {
         return Objects.toString(p.getStatus(), "NODATA");
     }),
-    MISC_OPERATOR(LabelByCategories.MISC, SDict.OPERATOR.toString(), p -> {
+    MISC_OPERATOR(LabelBy.CAT_MISC, SDict.OPERATOR.toString(), p -> {
         return Objects.toString(p.getOperator(), "NODATA");
     }),
-    MISC_ORIGIN(LabelByCategories.MISC, Dict.ORIGIN.toString(), p -> {
+    MISC_ORIGIN(LabelBy.CAT_MISC, Dict.ORIGIN.toString(), p -> {
         return Objects.toString(p.getOrigin(), "NODATA");
     }),
-    MEAS_COUNT_ALL(LabelByCategories.MEAS, Strings.MEAS_COUNT_ALL, p -> {
+    MEAS_COUNT_ALL(LabelBy.CAT_MEAS, Strings.MEAS_COUNT_ALL, p -> {
         return "%d".formatted(
                 p.ext().getNumOfObservations()
         );
     }),
-    MEAS_COUNT_SELECTION(LabelByCategories.MEAS, Strings.MEAS_COUNT_SELECTION, p -> {
+    MEAS_COUNT_SELECTION(LabelBy.CAT_MEAS, Strings.MEAS_COUNT_SELECTION, p -> {
         return "%d".formatted(
                 p.ext().getNumOfObservationsFiltered()
         );
     }),
-    MEAS_COUNT_SELECTION_ALL(LabelByCategories.MEAS, Strings.MEAS_COUNT, p -> {
+    MEAS_COUNT_SELECTION_ALL(LabelBy.CAT_MEAS, Strings.MEAS_COUNT, p -> {
         return "%d / %d".formatted(
                 p.ext().getNumOfObservationsFiltered(),
                 p.ext().getNumOfObservations()
         );
     }),
-    MEAS_AGE(LabelByCategories.MEAS, Dict.AGE.toString(), p -> {
+    MEAS_AGE(LabelBy.CAT_MEAS, Dict.AGE.toString(), p -> {
         var daysSinceMeasurement = p.ext().getMeasurementAge(ChronoUnit.DAYS);
 
         return "%d".formatted(daysSinceMeasurement);
     }),
-    VALUE_Z(LabelByCategories.VALUE, "Z", p -> {
+    VALUE_Z(LabelBy.CAT_VALUE, "Z", p -> {
         var z = p.getZeroZ();
 
         return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
