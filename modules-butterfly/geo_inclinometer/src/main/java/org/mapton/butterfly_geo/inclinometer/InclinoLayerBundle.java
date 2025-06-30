@@ -161,8 +161,8 @@ public class InclinoLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BGeoInclinometerPoint p, LabelBy labelBy, Position position) {
-        if (labelBy == LabelBy.NONE) {
+    private PointPlacemark plotLabel(BGeoInclinometerPoint p, InclinoLabelBy labelBy, Position position) {
+        if (labelBy == InclinoLabelBy.NONE) {
             return null;
         }
 

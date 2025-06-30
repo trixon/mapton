@@ -124,7 +124,11 @@ public class GradeVOptionsView extends MOptionsView implements TabOptionsViewPro
         sessionManager.register("options.gradeV.labelBy", mLabelByIdProperty);
         sessionManager.register("options.gradeV.pointBy", mPointScb.selectedIndexProperty());
 
-        mLabelByProperty.set(GradeVLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(GradeVLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

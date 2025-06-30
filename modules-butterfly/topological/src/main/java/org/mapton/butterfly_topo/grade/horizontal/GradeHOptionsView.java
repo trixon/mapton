@@ -150,7 +150,11 @@ public class GradeHOptionsView extends MOptionsView implements TabOptionsViewPro
         sessionManager.register("options.gradeH.checkedGraphics", mGraphicSccb.checkedStringProperty());
         sessionManager.register("options.gradeH.pointBy", mPointScb.selectedIndexProperty());
 
-        mLabelByProperty.set(GradeHLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(GradeHLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {

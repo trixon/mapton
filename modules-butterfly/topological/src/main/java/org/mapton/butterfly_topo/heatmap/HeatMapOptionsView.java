@@ -18,14 +18,13 @@ package org.mapton.butterfly_topo.heatmap;
 import javafx.scene.Node;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
 import org.mapton.worldwind.api.MOptionsView;
-import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = TabOptionsViewProvider.class)
+//@ServiceProvider(service = TabOptionsViewProvider.class)
 public class HeatMapOptionsView extends MOptionsView implements TabOptionsViewProvider {
 
     public HeatMapOptionsView() {
