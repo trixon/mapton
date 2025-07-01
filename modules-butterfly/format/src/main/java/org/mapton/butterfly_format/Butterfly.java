@@ -318,7 +318,7 @@ public class Butterfly {
             p.setDimension(BDimension._1d);
         }
         for (var p : mTopoControlPoints) {
-            calcFreqIntenseBuffer(p);
+            calcFreqHighBuffer(p);
         }
 
         for (var p : tmo().mGrundvatten) {
@@ -335,12 +335,12 @@ public class Butterfly {
         populateMonmon();
     }
 
-    private void calcFreqIntenseBuffer(BXyzPoint p) {
-        var param = p.getFrequencyIntenseParam();
+    private void calcFreqHighBuffer(BXyzPoint p) {
+        var param = p.getFrequencyHighParam();
         if (param != null && p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
             var numberString = param.replaceAll("[^0-9]", "");
             if (StringUtils.isNotBlank(numberString)) {
-                ext.setFrequenceIntenseBuffer(Double.valueOf(numberString + "d"));
+                ext.setFrequenceHighBuffer(Double.valueOf(numberString + "d"));
             }
         }
     }

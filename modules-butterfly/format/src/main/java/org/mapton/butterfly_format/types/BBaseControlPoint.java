@@ -32,8 +32,8 @@ public abstract class BBaseControlPoint extends BBasePoint {
     private LocalDate dateZero;
     private Integer frequency;
     private Integer frequencyDefault;
-    private Integer frequencyIntense;
-    private String frequencyIntenseParam;
+    private Integer frequencyHigh;
+    private String frequencyHighParam;
     private String operator;
     private String status;
     private String tag;
@@ -77,16 +77,16 @@ public abstract class BBaseControlPoint extends BBasePoint {
         return frequencyDefault;
     }
 
-    public Integer getFrequencyIntense() {
-        if (frequencyIntense == null) {
-            frequencyIntense = -1;
+    public Integer getFrequencyHigh() {
+        if (frequencyHigh == null) {
+            frequencyHigh = -1;
         }
 
-        return frequencyIntense;
+        return frequencyHigh;
     }
 
-    public String getFrequencyIntenseParam() {
-        return frequencyIntenseParam;
+    public String getFrequencyHighParam() {
+        return frequencyHighParam;
     }
 
     public String getOperator() {
@@ -133,12 +133,12 @@ public abstract class BBaseControlPoint extends BBasePoint {
         this.frequencyDefault = frequencyDefault;
     }
 
-    public void setFrequencyIntense(Integer frequencyIntense) {
-        this.frequencyIntense = frequencyIntense;
+    public void setFrequencyHigh(Integer frequencyHigh) {
+        this.frequencyHigh = frequencyHigh;
     }
 
-    public void setFrequencyIntenseParam(String frequencyIntenseParam) {
-        this.frequencyIntenseParam = frequencyIntenseParam;
+    public void setFrequencyHighParam(String frequencyHighParam) {
+        this.frequencyHighParam = frequencyHighParam;
     }
 
     public void setOperator(String operator) {
