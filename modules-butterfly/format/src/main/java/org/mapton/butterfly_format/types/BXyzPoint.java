@@ -48,6 +48,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
     private Double rollingX;
     private Double rollingY;
     private Double rollingZ;
+    private String sparse;
     private Double zeroX;
     private transient Double zeroXScaled;
     private Double zeroY;
@@ -57,6 +58,14 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
     public Object ext() {
         return null;
+    }
+
+    public BXyzPoint.Ext<? extends BXyzPointObservation> extOrNull() {
+        if (ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
+            return ext;
+        } else {
+            return null;
+        }
     }
 
     public String getAlarm1Id() {
@@ -114,6 +123,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
     public Double getRollingZ() {
         return rollingZ;
+    }
+
+    public String getSparse() {
+        return sparse;
     }
 
     public Double getZeroX() {
@@ -192,6 +205,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         this.rollingZ = rollingZ;
     }
 
+    public void setSparse(String sparse) {
+        this.sparse = sparse;
+    }
+
     public void setZeroX(Double zeroX) {
         this.zeroX = zeroX;
     }
@@ -220,7 +237,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
         private transient final DeltaRolling deltaRolling = new DeltaRolling();
         private transient final DeltaZero deltaZero = new DeltaZero();
-        private transient Double mFrequenceIntenseBuffer;
+        private transient Double mFrequenceHighBuffer;
 
         public void calculateObservations(List<T> observations) {
             if (observations.isEmpty()) {
@@ -553,85 +570,8 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
         }
 
-        public Double getFrequenceIntenseBuffer() {
-            return mFrequenceIntenseBuffer;
-        }
-
-        /**
-         * WARNING!!!
-         */
-        public Object[] getHeightDirectionTrendDaysMeas() {
-            var observations = getObservationsTimeFiltered();
-            if (observations.size() < 2 || getDimension() == _2d) {
-                return new Object[]{null, -1, -1};
-            }
-
-            T last = observations.getLast();
-            T prevO = observations.get(observations.size() - 2);
-            T firstO = null;
-
-            int days = -1;
-            int meas = 1;
-
-            var prevSignum = Math.signum(rounder(last.ext().getDeltaZ()) - rounder(prevO.ext().getDeltaZ()));
-            for (T o : observations.reversed()) {
-                if (o == last) {
-                    continue;
-                }
-                var signum = Math.signum(rounder(o.ext().getDeltaZ()) - rounder(prevO.ext().getDeltaZ()));
-                firstO = o;
-
-                if (signum != prevSignum) {
-                    break;
-                }
-                meas++;
-                prevO = o;
-            }
-
-            if (firstO != null) {
-                days = (int) ChronoUnit.DAYS.between(firstO.getDate(), last.getDate());
-            }
-
-            return new Object[]{firstO.getDate().toLocalDate().toString(), days, meas};
-        }
-
-        /**
-         * WARNING!!!
-         */
-        public int[] getHeightDirectionTrendDaysMeasXXX() {
-            var observations = getObservationsTimeFiltered();
-
-            if (observations.size() < 2 || getDimension() == _2d) {
-                return new int[]{-1, -1};
-            }
-
-            T last = observations.getLast();
-            T prevO = observations.get(observations.size() - 2);
-            T firstO = null;
-
-            int days = -1;
-            int meas = 1;
-
-            double prevSignum = Math.signum(last.ext().getDeltaZ() - prevO.ext().getDeltaZ());
-            for (T o : observations.reversed()) {
-                if (o == last) {
-                    continue;
-                }
-                var signum = Math.signum(o.ext().getDeltaZ() - prevO.ext().getDeltaZ());
-                firstO = o;
-
-                if (signum != prevSignum) {
-                    break;
-                }
-                meas++;
-                prevO = o;
-            }
-
-            if (firstO != null) {
-                days = (int) ChronoUnit.DAYS.between(firstO.getDate(), last.getDate());
-            }
-
-            return new int[]{days, meas};
+        public Double getFrequenceHighBuffer() {
+            return mFrequenceHighBuffer;
         }
 
         public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
@@ -646,29 +586,6 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                 return getObservationRawLastDate().plusDays(getFrequency());
             } else {
                 return null;
-            }
-        }
-
-        public double[] getSpeed() {
-            try {
-                var periodLength = ChronoUnit.DAYS.between(getObservationFilteredFirstDate(), getObservationFilteredLastDate()) / 365.0;
-                var distance = deltaZero().getDelta1() - getObservationsTimeFiltered().getFirst().ext().getDeltaZ();
-                var speed = distance / periodLength;
-
-                return new double[]{speed, periodLength};
-            } catch (Exception e) {
-                return new double[]{-1, -1};
-            }
-        }
-
-        public double[] getSpeed(BXyzPointObservation o1, BXyzPointObservation o2) {
-            try {
-                var periodLength = ChronoUnit.DAYS.between(o1.getDate(), o2.getDate()) / 365.0;
-                var speed = (o2.ext().getDeltaZ() - o1.ext().getDeltaZ()) / periodLength;
-
-                return new double[]{speed, periodLength};
-            } catch (Exception e) {
-                return new double[]{-1, -1};
             }
         }
 
@@ -688,8 +605,8 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
         }
 
-        public void setFrequenceIntenseBuffer(Double frequenceIntenseBuffer) {
-            this.mFrequenceIntenseBuffer = frequenceIntenseBuffer;
+        public void setFrequenceHighBuffer(Double frequenceHighBuffer) {
+            this.mFrequenceHighBuffer = frequenceHighBuffer;
         }
 
         private double rounder(double d) {
