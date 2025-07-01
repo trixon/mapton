@@ -28,6 +28,7 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     PIN(Dict.PIN.toString(), Integer.MAX_VALUE),
     CLUSTER_DEFORMATION("Kluster, deformation", Integer.MAX_VALUE),
     CLUSTER_DEFORMATION_PLANE_ALTITUDES("Kluster, deformation plan på olika höjder", Integer.MAX_VALUE),
+    //CLUSTER_DEFORMATION_TIN("Kluster, yta", Integer.MAX_VALUE),
     BEARING(Dict.BEARING.toString(), Integer.MAX_VALUE),
     CIRCLE_1D("1d-delta", Integer.MAX_VALUE),
     CIRCLE_2D("2d-delta", Integer.MAX_VALUE),
@@ -42,16 +43,16 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     VECTOR_3D(SDict.VECTOR_3D.toString(), Integer.MAX_VALUE),
     MEASUREMENTS(Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower()), Integer.MAX_VALUE),
     MEASUREMENTS_PER_MONTH(Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower() + "/" + Dict.Time.MONTH.toLower()), 10_000),
-    SPEED_1D("1d %s".formatted(Dict.SPEED.toLower()), Integer.MAX_VALUE),
-    SPEED_1D_TRACE("1d %s (%s)".formatted(Dict.SPEED.toLower(), SDict.TRACE.toLower()), Integer.MAX_VALUE),
     ALARM_LEVEL(SDict.ALARM_LEVEL.toString(), Integer.MAX_VALUE),
     ALARM_CONSUMPTION("Larmförbrukning", Integer.MAX_VALUE),
     ALARM_CONSUMPTION_TRACE_1("\t— spår höjd", Integer.MAX_VALUE),
     ALARM_CONSUMPTION_TRACE_2("\t— spår plan", Integer.MAX_VALUE),
     TRACE_ALARM_LEVEL("%s (%s)".formatted(SDict.ALARM_LEVEL.toString(), SDict.TRACE.toLower()), Integer.MAX_VALUE),
-    TREND_INTERVAL_HEIGHT("Trend, höjd (intervall)", Integer.MAX_VALUE),
-    TREND_INTERVAL_PLANE("Trend, plan (intervall)", Integer.MAX_VALUE),
-    FREQ_BUFFER("Frekvens, intensifierad (buffer)", Integer.MAX_VALUE);
+    TREND_1D_PIE("Trend, 1d (paj)", Integer.MAX_VALUE),
+    TREND_1D_STACK("Trend, 1d (stapel)", Integer.MAX_VALUE),
+    TREND_2D_PIE("Trend, 2d (paj)", Integer.MAX_VALUE),
+    TREND_2D_STACK("Trend, 2d (intervall)", Integer.MAX_VALUE),
+    FREQ_BUFFER("Frekvens, hög (buffer)", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 

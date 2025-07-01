@@ -22,12 +22,12 @@ import gov.nasa.worldwind.render.AbstractShape;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.airspaces.AbstractAirspace;
 import gov.nasa.worldwind.render.airspaces.BasicAirspaceAttributes;
 import gov.nasa.worldwind.render.airspaces.PartialCappedCylinder;
 import gov.nasa.worldwind.render.airspaces.Polygon;
 import java.awt.Color;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +36,7 @@ import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.ce_jfreechart.api.ChartHelper;
+import static org.mapton.butterfly_topo.graphics.GraphicRendererBase.sMapObjects;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -47,31 +47,111 @@ public class GraphicRendererTrend extends GraphicRendererBase {
 
     private double mAltitude;
 
+    private final Map<Integer, String> mIndexToIntervalMap = Map.of(
+            0, "z",
+            1, "6m",
+            2, "3m",
+            3, "1m",
+            4, "1w"
+    );
+    private final Map<String, Material> mIntervalToMaterialMap = Map.of(
+            "1w", Material.RED,
+            "1m", Material.ORANGE,
+            "3m", Material.YELLOW,
+            "6m", Material.CYAN,
+            "z", Material.MAGENTA,
+            "f", Material.BLACK);
+    private final double maxRadius = 10.0;
+
     public GraphicRendererTrend(RenderableLayer layer, RenderableLayer passiveLayer) {
         super(layer, passiveLayer);
     }
 
     public void plot(BTopoControlPoint p, Position position) {
-        if (sCheckModel.isChecked(GraphicItem.TREND_INTERVAL_HEIGHT)) {
-            plotTrendInterval(p, position, BComponent.HEIGHT, GraphicItem.TREND_INTERVAL_HEIGHT);
+        if (sCheckModel.isChecked(GraphicItem.TREND_1D_STACK)) {
+            plotTrendStack(p, position, BComponent.HEIGHT, GraphicItem.TREND_1D_STACK);
         }
-        if (sCheckModel.isChecked(GraphicItem.TREND_INTERVAL_PLANE)) {
-            plotTrendInterval(p, position, BComponent.PLANE, GraphicItem.TREND_INTERVAL_HEIGHT);
+        if (sCheckModel.isChecked(GraphicItem.TREND_2D_STACK)) {
+            plotTrendStack(p, position, BComponent.PLANE, GraphicItem.TREND_1D_STACK);
+        }
+
+        if (sCheckModel.isChecked(GraphicItem.TREND_1D_PIE)) {
+            plotTrendPie(p, position, BDimension._1d, GraphicItem.TREND_1D_PIE);
+        }
+
+        if (sCheckModel.isChecked(GraphicItem.TREND_2D_PIE)) {
+            plotTrendPie(p, position, BDimension._2d, GraphicItem.TREND_2D_PIE);
+        }
+
+    }
+
+    private double getSpeed(TrendHelper.Trend trend) {
+        return TrendHelper.getMmPerYear(trend) / 5;
+    }
+
+    private void plotTrendPie(BTopoControlPoint p, Position position, BDimension dimension, GraphicItem graphicItem) {
+        HashMap<String, TrendHelper.Trend> map;
+        if (graphicItem == GraphicItem.TREND_1D_PIE) {
+            map = p.getValue(TopoManager.KEY_TRENDS_H);
+        } else {
+            map = p.getValue(TopoManager.KEY_TRENDS_P);
+        }
+
+        if ((map == null || isPlotLimitReached(p, graphicItem, position))
+                || (p.getDimension() == BDimension._1d && dimension == BDimension._2d)
+                || (p.getDimension() == BDimension._2d && dimension == BDimension._1d)) {
+            return;
+        }
+
+        int slices = 5;
+
+        for (int i = 0; i < slices - 0; i++) {
+            var interval = mIndexToIntervalMap.get(i);
+            var trend = map.get(interval);
+            if (trend == null) {
+                continue;
+            }
+            var innerRadius = 0.0;
+            var speed = getSpeed(trend);
+            var radius = Math.abs(speed);
+            var outerRadius = innerRadius + Math.min(radius, maxRadius);
+            var attrs = new BasicAirspaceAttributes();
+            attrs.setOutlineWidth(3.0);
+            attrs.setOutlineMaterial(Material.LIGHT_GRAY);
+            attrs.setDrawOutline(speed < 0);
+            attrs.setDrawInterior(true);
+            if (radius > maxRadius) {
+                var maxMaterial = new Material(Color.decode("#800080"));
+                attrs.setInteriorMaterial(maxMaterial);
+            } else {
+                attrs.setInteriorMaterial(mIntervalToMaterialMap.getOrDefault(interval, Material.GRAY));
+            }
+
+            var partCyl = new PartialCappedCylinder(attrs);
+            partCyl.setCenter(position);
+
+            partCyl.setRadii(innerRadius, outerRadius);
+            if (dimension == BDimension._1d) {
+                partCyl.setAltitudes(0.0, 0.25);
+            } else {
+                partCyl.setAltitudes(5.0, 5.25);
+                var groundPath = new Path(position, WWHelper.positionFromPosition(position, 5.0));
+                groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+                addRenderable(groundPath, true, null, sMapObjects);
+            }
+            var step = 72;
+            var left = -1.5 * step + (i + 1) * step;
+            var right = left + step;
+            partCyl.setAzimuths(Angle.fromDegrees(left), Angle.fromDegrees(right));
+
+            addRenderable(partCyl, true, null, sMapObjects);
         }
     }
 
-    private void plotTrendInterval(BTopoControlPoint p, Position position, BComponent component, GraphicItem graphicItem) {
+    private void plotTrendStack(BTopoControlPoint p, Position position, BComponent component, GraphicItem graphicItem) {
         final var height = 25.0;
         mAltitude = height * .5;
-        var maxRadius = 15.0;
         var minRadius = 0.1;
-        var intervalToColor = Map.of(
-                "1w", Color.RED,
-                "1m", Color.ORANGE,
-                "3m", Color.YELLOW,
-                "6m", Color.CYAN,
-                "z", Color.MAGENTA,
-                "f", Color.BLACK);
 
         List.of("1w", "1m", "3m", "6m", "z", "f").forEach(key -> {
             HashMap<String, TrendHelper.Trend> map = p.getValue(component == BComponent.HEIGHT ? TopoManager.KEY_TRENDS_H : TopoManager.KEY_TRENDS_P);
@@ -80,10 +160,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
             if (map != null) {
                 if (map.get(key) != null) {
                     var trend = map.get(key);
-                    var now = LocalDateTime.now();
-                    var val1 = trend.function().getValue(ChartHelper.convertToMinute(now.plusYears(1)).getFirstMillisecond());
-                    var val2 = trend.function().getValue(ChartHelper.convertToMinute(now).getFirstMillisecond());
-                    speed = (val1 - val2) * 1000;
+                    speed = getSpeed(trend);
                     radius = Math.max(minRadius, Math.abs(speed * 0.5));
                     radius = Math.min(radius, maxRadius);
                 }
@@ -109,7 +186,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
                     var attrs = new BasicShapeAttributes();
                     attrs.setInteriorOpacity(0.75);
                     attrs.setDrawOutline(false);
-                    attrs.setInteriorMaterial(new Material(intervalToColor.get(key)));
+                    attrs.setInteriorMaterial(mIntervalToMaterialMap.get(key));
                     attrs.setEnableLighting(true);
                     shape.setAttributes(attrs);
                     addRenderable(shape, true, graphicItem, sMapObjects);
@@ -119,7 +196,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
 
                     if (speed > 0) {
                         attrs.setDrawOutline(true);
-                        if (intervalToColor.get(key).equals(Color.BLACK)) {
+                        if (mIntervalToMaterialMap.get(key).equals(Material.BLACK)) {
                             attrs.setOutlineMaterial(Material.WHITE);
                         }
                     }
@@ -127,7 +204,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
                     airspace.setAltitudes(mAltitude - height / 2, mAltitude + height / 2);
                     var attrs = new BasicAirspaceAttributes();
                     attrs.setInteriorOpacity(0.75);
-                    attrs.setInteriorMaterial(new Material(intervalToColor.get(key)));
+                    attrs.setInteriorMaterial(mIntervalToMaterialMap.get(key));
 
                     airspace.setAttributes(attrs);
                     addRenderable(airspace, true, graphicItem, sMapObjects);
@@ -137,7 +214,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
 
                     if (speed > 0) {
                         attrs.setDrawOutline(true);
-                        if (intervalToColor.get(key).equals(Color.BLACK)) {
+                        if (mIntervalToMaterialMap.get(key).equals(Material.BLACK)) {
                             attrs.setOutlineMaterial(Material.WHITE);
                         }
                     }

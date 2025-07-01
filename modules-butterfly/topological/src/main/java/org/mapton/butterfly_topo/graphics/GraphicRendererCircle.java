@@ -145,7 +145,7 @@ public class GraphicRendererCircle extends GraphicRendererBase {
     }
 
     private void plotFreqBuffer(BTopoControlPoint p, Position position) {
-        var radius = p.ext().getFrequenceIntenseBuffer();
+        var radius = p.ext().getFrequenceHighBuffer();
         if (radius != null) {
             var circle = new SurfaceCircle(position, Math.max(0.1, radius));
             var attrs = new BasicShapeAttributes();
