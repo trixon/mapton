@@ -48,7 +48,7 @@ public class GrundvattenOptionsView extends MOptionsView {
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public GrundvattenOptionsView(GrundvattenLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_GrundvattenAction());
         createUI();
         initListeners();
         initSession();

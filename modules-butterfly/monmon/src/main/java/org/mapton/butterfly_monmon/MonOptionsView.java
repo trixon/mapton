@@ -48,7 +48,7 @@ public class MonOptionsView extends MOptionsView {
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public MonOptionsView(MonLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_MonmonAction());
         createUI();
         initListeners();
         initSession();

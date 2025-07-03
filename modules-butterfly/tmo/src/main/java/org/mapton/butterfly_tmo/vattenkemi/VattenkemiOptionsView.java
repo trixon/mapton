@@ -46,7 +46,7 @@ public class VattenkemiOptionsView extends MOptionsView {
     private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
 
     public VattenkemiOptionsView(VattenkemiLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_VattenkemiAction());
         createUI();
         initListeners();
         initSession();

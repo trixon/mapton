@@ -17,6 +17,7 @@ package org.mapton.worldwind.api;
 
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
+import org.mapton.api.Mapton;
 
 /**
  *
@@ -35,6 +36,13 @@ public class MOptionsView extends org.mapton.api.ui.MOptionsView {
     public MOptionsView(LayerBundle layerBundle) {
         this();
         mLayerBundle = layerBundle;
+    }
+
+    public MOptionsView(LayerBundle layerBundle, String title) {
+        this(layerBundle);
+        var titleLabel = Mapton.createTitle(title);
+        setTop(titleLabel);
+        titleLabel.prefWidthProperty().bind(widthProperty());
     }
 
     public ChangeListener<Object> getChangeListener() {

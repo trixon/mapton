@@ -45,7 +45,7 @@ public class ActOptionsView extends MOptionsView {
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public ActOptionsView(ActLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_ActAction());
         createUI();
         initListeners();
         initSession();

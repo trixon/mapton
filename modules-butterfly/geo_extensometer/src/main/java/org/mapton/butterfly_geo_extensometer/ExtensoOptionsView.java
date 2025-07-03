@@ -48,7 +48,7 @@ public class ExtensoOptionsView extends MOptionsView {
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public ExtensoOptionsView(ExtensoLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_ExtensometerAction());
         createUI();
         initListeners();
         initSession();

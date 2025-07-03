@@ -49,7 +49,7 @@ public class TiltOptionsView extends MOptionsView {
     private final SessionComboBox<TiltPointBy> mPointScb = new SessionComboBox<>();
 
     public TiltOptionsView(TiltLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_TiltAction());
         createUI();
         initListeners();
         initSession();

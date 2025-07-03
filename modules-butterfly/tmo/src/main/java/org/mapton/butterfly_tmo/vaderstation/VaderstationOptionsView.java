@@ -46,7 +46,7 @@ public class VaderstationOptionsView extends MOptionsView {
     private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
 
     public VaderstationOptionsView(VaderstationLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_VaderstationAction());
         createUI();
         initListeners();
         initSession();

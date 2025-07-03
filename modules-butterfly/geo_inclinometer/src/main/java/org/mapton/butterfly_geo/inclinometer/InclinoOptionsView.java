@@ -49,7 +49,7 @@ public class InclinoOptionsView extends MOptionsView {
     private final SessionComboBox<InclinoPointBy> mPointScb = new SessionComboBox<>();
 
     public InclinoOptionsView(InclinoLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_InclinometerAction());
         createUI();
         initListeners();
         initSession();

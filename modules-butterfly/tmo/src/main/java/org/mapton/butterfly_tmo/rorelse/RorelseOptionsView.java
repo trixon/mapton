@@ -46,7 +46,7 @@ public class RorelseOptionsView extends MOptionsView {
     private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
 
     public RorelseOptionsView(RorelseLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_RorelseAction());
         createUI();
         initListeners();
         initSession();

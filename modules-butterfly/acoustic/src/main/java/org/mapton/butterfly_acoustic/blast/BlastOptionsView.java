@@ -49,7 +49,7 @@ public class BlastOptionsView extends MOptionsView {
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public BlastOptionsView(BlastLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_BlastAction());
         createUI();
         initListeners();
         initSession();

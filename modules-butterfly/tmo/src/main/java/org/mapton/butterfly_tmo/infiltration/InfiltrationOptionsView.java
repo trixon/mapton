@@ -46,7 +46,7 @@ public class InfiltrationOptionsView extends MOptionsView {
     private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
 
     public InfiltrationOptionsView(InfiltrationLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_InfiltrationAction());
         createUI();
         initListeners();
         initSession();

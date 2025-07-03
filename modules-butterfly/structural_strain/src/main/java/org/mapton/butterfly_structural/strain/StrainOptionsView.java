@@ -49,7 +49,7 @@ public class StrainOptionsView extends MOptionsView {
     private final SessionComboBox<StrainPointBy> mPointScb = new SessionComboBox<>();
 
     public StrainOptionsView(StrainLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_StrainAction());
         createUI();
         initListeners();
         initSession();

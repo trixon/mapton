@@ -49,7 +49,7 @@ public class ConvergenceGroupOptionsView extends MOptionsView {
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public ConvergenceGroupOptionsView(ConvergenceGroupLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_ConvergenceGroupAction());
         createUI();
         initListeners();
         initSession();

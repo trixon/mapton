@@ -46,7 +46,7 @@ public class TunnelvattenOptionsView extends MOptionsView {
     private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
 
     public TunnelvattenOptionsView(TunnelvattenLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_TunnelvattenAction());
         createUI();
         initListeners();
         initSession();

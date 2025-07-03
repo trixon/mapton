@@ -49,7 +49,7 @@ public class CrackOptionsView extends MOptionsView {
     private final SessionComboBox<CrackPointBy> mPointScb = new SessionComboBox<>();
 
     public CrackOptionsView(CrackLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_CrackAction());
         createUI();
         initListeners();
         initSession();

@@ -48,7 +48,7 @@ public class GroundwaterOptionsView extends MOptionsView {
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public GroundwaterOptionsView(GroundwaterLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_GroundwaterAction());
         createUI();
         initListeners();
         initSession();

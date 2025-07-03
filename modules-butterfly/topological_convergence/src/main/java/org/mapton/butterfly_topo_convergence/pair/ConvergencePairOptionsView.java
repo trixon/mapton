@@ -49,7 +49,7 @@ public class ConvergencePairOptionsView extends MOptionsView {
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public ConvergencePairOptionsView(ConvergencePairLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_ConvergencePairAction());
         createUI();
         initListeners();
         initSession();

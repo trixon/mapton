@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_structural.load;
 
-import org.mapton.butterfly_structural.load.graphics.GraphicItem;
 import java.util.LinkedHashMap;
 import java.util.stream.Stream;
 import javafx.beans.property.SimpleObjectProperty;
@@ -28,6 +27,7 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.butterfly_structural.load.graphics.GraphicItem;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -50,7 +50,7 @@ public class LoadOptionsView extends MOptionsView {
     private final SessionComboBox<LoadPointBy> mPointScb = new SessionComboBox<>();
 
     public LoadOptionsView(LoadLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_LoadAction());
         createUI();
         initListeners();
         initSession();

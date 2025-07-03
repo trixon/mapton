@@ -49,7 +49,7 @@ public class VibrationOptionsView extends MOptionsView {
     private final SessionComboBox<VibrationPointBy> mPointScb = new SessionComboBox<>();
 
     public VibrationOptionsView(VibrationLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_VibrationAction());
         createUI();
         initListeners();
         initSession();
