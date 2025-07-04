@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo_convergence.pair;
 
-import org.mapton.butterfly_topo_convergence.pair.chart.ConvergencePairChartBuilder;
 import gov.nasa.worldwind.render.Ellipsoid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,6 +34,7 @@ import org.mapton.butterfly_format.types.topo.BTopoConvergencePairObservation;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
 import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
+import org.mapton.butterfly_topo_convergence.pair.chart.ConvergencePairChartBuilder;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -181,6 +181,16 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
             observations.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
             pair.setObservations(observations);
         }
+
+        pairs.sort((o1, o2) -> {
+            var d1 = o1.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
+            var d2 = o2.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
+
+            d1 = Math.abs(d1);
+            d2 = Math.abs(d2);
+
+            return Double.compare(d2, d1);
+        });
 
         initAllItems(pairs);
     }
