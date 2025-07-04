@@ -19,7 +19,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang3.StringUtils;
@@ -39,20 +38,16 @@ import org.jfree.chart.ui.HorizontalAlignment;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.VerticalAlignment;
-import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.MKey;
-import org.mapton.api.MLatLon;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.Mapton;
 import org.mapton.api.ui.forms.ChartBuilder;
-import org.mapton.butterfly_core.api.ButterflyManager;
+import static org.mapton.butterfly_core.api.XyzChartBuilder.plotBlasts;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePairObservation;
 import org.mapton.butterfly_topo_convergence.pair.ConvergencePairManager;
 import org.mapton.ce_jfreechart.api.ChartHelper;
-import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -71,7 +66,6 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
     private final TimeSeries mTimeSeriesBlast = new TimeSeries("Salvor inom 40 m");
     private final TimeSeries mTimeSeriesDeltaL = new TimeSeries("Längdförändring");
-    private final TimeSeries mTimeSeriesDeltaV = new TimeSeries("Hastighet");
 
     public ConvergencePairChartBuilder() {
         initChart();
@@ -114,34 +108,23 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
     public void updateDataset(BTopoConvergencePair p) {
         mDataset.removeAllSeries();
         mTimeSeriesDeltaL.clear();
-        mTimeSeriesDeltaV.clear();
         mTimeSeriesBlast.clear();
 
         var plot = (XYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
 
-        BTopoConvergencePairObservation prevO = null;
         for (var o : p.getObservations()) {
             var minute = ChartHelper.convertToMinute(o.getDate());
             mTimeSeriesDeltaL.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
-
-            var velocity = 0.0;
-            if (prevO != null) {
-                var delta = o.getDeltaDistanceInPairForSameDate() - prevO.getDeltaDistanceInPairForSameDate();
-                var timeSpanMinutes = prevO.getDate().until(o.getDate(), ChronoUnit.MINUTES);
-                double minutesInAWeek = 168.0 * 60;
-                velocity = delta / (timeSpanMinutes / minutesInAWeek) * 1000;
-            }
-
-            mTimeSeriesDeltaV.add(minute, Math.abs(velocity));
-
-            prevO = o;
         }
+
         if (!p.getObservations().isEmpty()) {
-            plotBlasts(p);
+            var lastDate = p.getObservations().getLast().getDate().toLocalDate();
+            var firstDate = p.getObservations().getFirst().getDate().toLocalDate();
+
+            plotBlasts(plot, p, firstDate, lastDate);
         }
         mDataset.addSeries(mTimeSeriesDeltaL);
-        mDataset.addSeries(mTimeSeriesDeltaV);
         if (!mTimeSeriesBlast.isEmpty()) {
             mDataset.addSeries(mTimeSeriesBlast);
         }
@@ -201,24 +184,6 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
         var compositeTitle = new CompositeTitle(blockContainer);
         compositeTitle.setPadding(new RectangleInsets(0, 20, 0, 20));
         mChart.addSubtitle(compositeTitle);
-    }
-
-    private void plotBlasts(BTopoConvergencePair p) {
-        ButterflyManager.getInstance().getButterfly().noise().getBlasts().forEach(b -> {
-            var ll1 = new MLatLon(b.getLat(), b.getLon());
-            var ll2 = new MLatLon(p.getP1().getLat(), p.getP1().getLon());
-
-            if (ll1.distance(ll2) <= 40 && DateHelper.isBetween(p.getObservations().getFirst().getDate().toLocalDate(),
-                    p.getObservations().getLast().getDate().toLocalDate(),
-                    b.getDateLatest().toLocalDate())) {
-                try {
-                    var minute = ChartHelper.convertToMinute(b.getDateLatest());
-                    mTimeSeriesBlast.add(minute, -20.0);
-                } catch (SeriesException e) {
-                    //
-                }
-            }
-        });
     }
 
     private void plotChartForNode(String node) {
