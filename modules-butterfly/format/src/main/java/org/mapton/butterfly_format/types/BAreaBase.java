@@ -30,13 +30,18 @@ import org.locationtech.jts.geom.Geometry;
 })
 public class BAreaBase extends BBasePoint {
 
+    private double buffer;
     private String description;
-    private String id;
     private transient Geometry geometry;
+    private String id;
     private transient Geometry targetGeometry;
     private String wkt;
 
     public BAreaBase() {
+    }
+
+    public double getBuffer() {
+        return buffer;
     }
 
     public String getDescription() {
@@ -57,6 +62,10 @@ public class BAreaBase extends BBasePoint {
 
     public String getWkt() {
         return wkt;
+    }
+
+    public void setBuffer(double buffer) {
+        this.buffer = buffer;
     }
 
     public void setDescription(String description) {

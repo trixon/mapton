@@ -152,6 +152,11 @@ public class GeoToolsCooTrans implements MCooTrans {
         return JTS.transform(geometry, mMathTransform);
     }
 
+    @Override
+    public Geometry transformInverse(Geometry geometry) throws MismatchedDimensionException, TransformException {
+        return JTS.transform(geometry, mInverseMathTransform);
+    }
+
     private Position getPosition(MathTransform mathTransform, double latitude, double longitude) {
         try {
             return mathTransform.transform(new Position2D(longitude, latitude), null);

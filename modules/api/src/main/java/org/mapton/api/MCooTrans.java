@@ -72,4 +72,8 @@ public interface MCooTrans {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    default Geometry transformInverse(Geometry geometry) throws MismatchedDimensionException, TransformException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

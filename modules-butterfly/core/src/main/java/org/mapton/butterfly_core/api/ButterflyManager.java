@@ -53,6 +53,7 @@ import static org.mapton.butterfly_format.BundleMode.ZIP;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.ButterflyLoader;
 import org.mapton.butterfly_format.ZipHelper;
+import org.mapton.butterfly_format.types.BAreaBase;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.tmo.BBasObjekt;
 import org.netbeans.api.progress.ProgressHandle;
@@ -194,19 +195,30 @@ public class ButterflyManager {
                 calculateCoordinates(butterfly);
 
                 var areas = new ArrayList<MArea>();
-                var prefix = "Haga/";
-                butterfly.getAreaFilters().stream().forEachOrdered(areaFilter -> {
-                    var area = new MArea(areaFilter.getName());
-                    area.setName(areaFilter.getName());
-                    area.setWktGeometry(areaFilter.getWkt());
-                    areas.add(area);
-                });
+                butterfly.getAreaFilters().stream()
+                        .forEachOrdered(areaFilter -> {
+                            var area = new MArea(areaFilter.getName());
+                            if (areaFilter.getBuffer() > 0) {
+                                try {
+                                    createBufferedArea(areaFilter);
+                                } catch (ParseException | MismatchedDimensionException | TransformException ex) {
+                                    Exceptions.printStackTrace(ex);
+                                }
+                            }
+                            area.setName(areaFilter.getName());
+                            area.setWktGeometry(areaFilter.getWkt());
+                            areas.add(area);
+                        });
 
+                var prefix = "Haga/";
                 mAreaFilterManager.clearByPrefix(prefix);
                 mAreaFilterManager.addAll(areas);
 
                 for (var area : butterfly.getAreaActivities()) {
                     try {
+                        if (area.getBuffer() > 0) {
+                            createBufferedArea(area);
+                        }
                         var geometry = mWktReader.read(area.getWkt());
                         area.setGeometry(geometry);
 
@@ -216,7 +228,7 @@ public class ButterflyManager {
                         } catch (MismatchedDimensionException | TransformException ex) {
                             Exceptions.printStackTrace(ex);
                         }
-                    } catch (ParseException ex) {
+                    } catch (ParseException | MismatchedDimensionException | TransformException ex) {
                         Exceptions.printStackTrace(ex);
                     }
                 }
@@ -269,6 +281,17 @@ public class ButterflyManager {
                 cp.setLon(MathHelper.round(wgs84.getX(), 6));
             }
         }
+    }
+
+    private void createBufferedArea(BAreaBase area) throws ParseException, MismatchedDimensionException, TransformException {
+        var cooTrans = MOptions.getInstance().getMapCooTrans();
+        var geometry = mWktReader.read(area.getWkt());
+        var targetGeometry = cooTrans.transform(geometry);
+        var buffer = area.getBuffer();
+        targetGeometry = targetGeometry.buffer(buffer);
+        geometry = cooTrans.transformInverse(targetGeometry);
+        area.setGeometry(geometry);
+        area.setWkt(geometry.toString());
     }
 
     private void extractXfiles() {
