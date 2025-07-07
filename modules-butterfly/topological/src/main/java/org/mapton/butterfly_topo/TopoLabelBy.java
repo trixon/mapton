@@ -58,11 +58,14 @@ public enum TopoLabelBy {
     ALARM_PERCENT(LabelBy.CAT_ALARM, "%", p -> {
         return LabelBy.alarmPercent(p);
     }),
+    DATE_NEXT(LabelBy.CAT_DATE, Dict.NEXT.toString(), p -> {
+        return LabelBy.dateNext(p);
+    }),
     DATE_LATEST(LabelBy.CAT_DATE, SDict.LATEST.toString(), p -> {
         return LabelBy.dateLatest(p);
     }),
-    DATE_NEXT(LabelBy.CAT_DATE, Dict.NEXT.toString(), p -> {
-        return LabelBy.dateNext(p);
+    DATE_ROLLING(LabelBy.CAT_DATE, SDict.ROLLING.toString(), p -> {
+        return LabelBy.dateRolling(p);
     }),
     DATE_ZERO(LabelBy.CAT_DATE, SDict.ZERO.toString(), p -> {
         return LabelBy.dateZero(p);
@@ -70,11 +73,6 @@ public enum TopoLabelBy {
     DATE_FIRST(LabelBy.CAT_DATE, Dict.FIRST.toString(), p -> {
         return LabelBy.dateFirst(p);
     }),
-    //    DATE_ROLLING(LabelBy.CAT_DATE, "rullande", o -> {
-    //        var date = o.getDateRolling();
-    //
-    //        return date == null ? "-" : date.toString();
-    //    }),
     DATE_VALIDITY(LabelBy.CAT_DATE, "%s - %s".formatted(Dict.FROM.toString(), Dict.TO.toString()), p -> {
         return LabelBy.dateValidity(p);
     }),
@@ -151,6 +149,9 @@ public enum TopoLabelBy {
         return p.ext().deltaZero().getDelta1d2d(0, 1000);
     }),
     VALUE_DELTA_ZERO_1D(LabelBy.CAT_VALUE, "Δ1d₀", p -> {
+        return p.ext().deltaZero().getDelta1(0, 1000);
+    }),
+    VALUE_DELTA_ZERO_1D_DAYS(LabelBy.CAT_VALUE, "Δ1d₀ (dagar)", p -> {
         var daysSinceMeasurement = p.ext().getZeroMeasurementAge(ChronoUnit.DAYS);
 
         return "%s (%d)".formatted(p.ext().deltaZero().getDelta1(0, 1000), daysSinceMeasurement);
@@ -202,6 +203,9 @@ public enum TopoLabelBy {
         return "%s (%.3f)".formatted(StringHelper.round(delta, 3), p.ext().deltaZero().getDelta1());
     }),
     VALUE_DELTA_ZERO_2D(LabelBy.CAT_VALUE, "Δ2d₀", p -> {
+        return p.ext().deltaZero().getDelta2(0, 1000);
+    }),
+    VALUE_DELTA_ZERO_2D_DAYS(LabelBy.CAT_VALUE, "Δ2d₀ (dagar)", p -> {
         var daysSinceMeasurement = p.ext().getZeroMeasurementAge(ChronoUnit.DAYS);
 
         return "%s (%d)".formatted(p.ext().deltaZero().getDelta2(0, 1000), daysSinceMeasurement);

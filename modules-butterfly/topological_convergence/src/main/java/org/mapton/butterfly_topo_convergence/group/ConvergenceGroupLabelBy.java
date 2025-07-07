@@ -46,11 +46,14 @@ public enum ConvergenceGroupLabelBy {
     ALARM_P_VALUE(LabelBy.CAT_ALARM, LabelBy.PLANE_VALUE, p -> {
         return LabelBy.alarmPValue(p);
     }),
+    DATE_NEXT(LabelBy.CAT_DATE, Dict.NEXT.toString(), p -> {
+        return LabelBy.dateNext(p);
+    }),
     DATE_LATEST(LabelBy.CAT_DATE, SDict.LATEST.toString(), p -> {
         return LabelBy.dateLatest(p);
     }),
-    DATE_NEXT(LabelBy.CAT_DATE, Dict.NEXT.toString(), p -> {
-        return LabelBy.dateNext(p);
+    DATE_ROLLING(LabelBy.CAT_DATE, SDict.ROLLING.toString(), p -> {
+        return LabelBy.dateRolling(p);
     }),
     DATE_ZERO(LabelBy.CAT_DATE, SDict.ZERO.toString(), p -> {
         return LabelBy.dateZero(p);
@@ -58,11 +61,6 @@ public enum ConvergenceGroupLabelBy {
     DATE_FIRST(LabelBy.CAT_DATE, Dict.FIRST.toString(), p -> {
         return LabelBy.dateFirst(p);
     }),
-    //    DATE_ROLLING(LabelBy.CAT_DATE, "rullande", o -> {
-    //        var date = o.getDateRolling();
-    //
-    //        return date == null ? "-" : date.toString();
-    //    }),
     DATE_VALIDITY(LabelBy.CAT_DATE, "%s - %s".formatted(Dict.FROM.toString(), Dict.TO.toString()), p -> {
         return LabelBy.dateValidity(p);
     }),

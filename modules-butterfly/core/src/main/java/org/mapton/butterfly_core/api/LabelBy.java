@@ -101,6 +101,10 @@ public class LabelBy {
         return Objects.toString(p.extOrNull().getObservationRawNextDate(), DEFAULT_DATE_IF_NULL);
     }
 
+    public static String dateRolling(BXyzPoint p) {
+        return Objects.toString(p.getDateRolling(), DEFAULT_DATE_IF_NULL);
+    }
+
     public static String dateValidity(BXyzPoint p) {
         var d1 = p.getDateValidFrom();
         var d2 = p.getDateValidTo();
