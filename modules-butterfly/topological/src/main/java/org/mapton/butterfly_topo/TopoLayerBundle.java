@@ -243,7 +243,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
 
         String label;
         try {
-            label = mOptionsView.getLabelBy().getLabel(p);
+            label = mOptionsView.<TopoLabelBy>getLabelBy().getLabel(p);
         } catch (Exception e) {
             label = "ERROR %s <<<<<<<<".formatted(p.getName());
         }
