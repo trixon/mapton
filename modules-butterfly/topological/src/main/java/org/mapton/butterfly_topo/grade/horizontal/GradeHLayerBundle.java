@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo.grade.horizontal;
 
+import org.mapton.butterfly_topo.grade.horizontal.graphic.GraphicRenderer;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -48,7 +49,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
     private static final int PLOT_LIMIT = 10000;
     private final GradeAttributeManager mAttributeManager = GradeAttributeManager.getInstance();
     private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
-    private final GradeHRenderer mGraphicRenderer;
+    private final GraphicRenderer mGraphicRenderer;
     private final GradeHManager mManager = GradeHManager.getInstance();
     private GradeHOptionsView mOptionsView;
 
@@ -56,7 +57,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
         init();
         initRepaint();
         getOptionsView();
-        mGraphicRenderer = new GradeHRenderer(mLayer, mPassiveLayer, mOptionsView.getComponentCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getComponentCheckModel());
         initListeners();
 //        mAttributeManager.setColorBy(mOptionsView.getColorBy());
 
@@ -160,7 +161,6 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
         mOptionsView.plotPointProperty().addListener((p, o, n) -> {
             repaint();
         });
-
     }
 
     private void initRepaint() {

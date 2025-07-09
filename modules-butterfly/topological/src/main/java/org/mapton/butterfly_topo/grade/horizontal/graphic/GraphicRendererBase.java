@@ -13,33 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.grade.horizontal;
+package org.mapton.butterfly_topo.grade.horizontal.graphic;
 
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import java.util.HashMap;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
-import org.mapton.butterfly_topo.graphics.GraphicRendererBase;
 import org.mapton.butterfly_topo.grade.GradeAttributeManager;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class GradeHRendererBase extends GraphicRendererBase {
+public abstract class GraphicRendererBase extends org.mapton.butterfly_topo.graphics.GraphicRendererBase {
 
-    protected static IndexedCheckModel<GradeHRendererItem> sCheckModel;
+    protected static IndexedCheckModel<GraphicItem> sCheckModel;
     protected static HashMap<BTopoGrade, Position[]> sPointToPositionMap = new HashMap<>();
     protected final GradeAttributeManager mAttributeManager = GradeAttributeManager.getInstance();
 
     static {
-        for (var renderItem : GradeHRendererItem.values()) {
+        for (var renderItem : GraphicItem.values()) {
             sPlotLimiter.setLimit(renderItem, renderItem.getPlotLimit());
         }
     }
 
-    public GradeHRendererBase(RenderableLayer layer, RenderableLayer passiveLayer) {
+    public GraphicRendererBase(RenderableLayer layer, RenderableLayer passiveLayer) {
         super(layer, passiveLayer);
     }
 

@@ -22,14 +22,14 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public enum GradeVRendererItem {
+public enum GraphicItem {
     HOR_INDICATOR("H %s".formatted(Dict.INDICATORS.toLower()), Integer.MAX_VALUE),
     VER_INDICATOR("V %s".formatted(Dict.INDICATORS.toLower()), Integer.MAX_VALUE),
     NAME(Dict.NAME.toString(), Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 
-    private GradeVRendererItem(String name, int plotLimit) {
+    private GraphicItem(String name, int plotLimit) {
         mName = name;
         mPlotLimit = plotLimit;
     }

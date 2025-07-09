@@ -29,7 +29,7 @@ import org.mapton.api.ui.forms.TabOptionsViewProvider;
 import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
 import org.mapton.butterfly_topo.grade.GradePointBy;
-import org.mapton.butterfly_topo.grade.vertical.graphics.GradeVRendererItem;
+import org.mapton.butterfly_topo.grade.vertical.graphics.GraphicItem;
 import org.mapton.worldwind.api.MOptionsView;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
@@ -47,7 +47,7 @@ public class GradeVOptionsView extends MOptionsView implements TabOptionsViewPro
 
     private static final GradeVLabelBy DEFAULT_LABEL_BY = GradeVLabelBy.NAME;
     private static final GradePointBy DEFAULT_POINT_BY = GradePointBy.PIN;
-    private final SessionCheckComboBox<GradeVRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<LabelBy.Operations> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
@@ -60,7 +60,7 @@ public class GradeVOptionsView extends MOptionsView implements TabOptionsViewPro
         initSession();
     }
 
-    public IndexedCheckModel<GradeVRendererItem> getComponentCheckModel() {
+    public IndexedCheckModel<GraphicItem> getComponentCheckModel() {
         return mGraphicSccb.getCheckModel();
     }
 
@@ -106,7 +106,7 @@ public class GradeVOptionsView extends MOptionsView implements TabOptionsViewPro
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
-        mGraphicSccb.getItems().setAll(GradeVRendererItem.values());
+        mGraphicSccb.getItems().setAll(GraphicItem.values());
 
         LabelBy.populateMenuButton(mLabelMenuButton, mLabelByProperty, GradeVLabelBy.values());
         var pointLabel = new Label(Dict.Geometry.POINT.toString());

@@ -31,7 +31,7 @@ import org.mapton.butterfly_topo.TopoBaseLayerBundle;
 import org.mapton.butterfly_topo.TopoLayerBundle;
 import org.mapton.butterfly_topo.grade.GradeAttributeManager;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
-import org.mapton.butterfly_topo.grade.vertical.graphics.GradeVRenderer;
+import org.mapton.butterfly_topo.grade.vertical.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.NbBundle;
@@ -48,7 +48,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
 
     private final GradeAttributeManager mAttributeManager = GradeAttributeManager.getInstance();
     private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
-    private final GradeVRenderer mGraphicRenderer;
+    private final GraphicRenderer mGraphicRenderer;
     private final GradeVManager mManager = GradeVManager.getInstance();
     private GradeVOptionsView mOptionsView;
 
@@ -56,7 +56,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
         init();
         initRepaint();
         getOptionsView();
-        mGraphicRenderer = new GradeVRenderer(mLayer, mPassiveLayer, mOptionsView.getComponentCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getComponentCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));

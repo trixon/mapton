@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.grade.vertical.graphics;
+package org.mapton.butterfly_topo.grade.horizontal.graphic;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
@@ -35,7 +35,7 @@ import org.mapton.worldwind.api.WWHelper;
  *
  * @author Patrik Karlström
  */
-public class GradeVRenderer extends GradeVRendererBase {
+public class GraphicRenderer extends GraphicRendererBase {
 
     public static final double MAX = 5.0;
     public static final double MAX_PER_MILLE = 3.0;
@@ -45,30 +45,29 @@ public class GradeVRenderer extends GradeVRendererBase {
     private final HashSet<BTopoControlPoint> mPlottedConnectors = new HashSet();
     private final HashSet<BTopoControlPoint> mPlottedNames = new HashSet();
 
-    public GradeVRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GradeVRendererItem> checkModel) {
+    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer);
         sCheckModel = checkModel;
     }
 
     public void plot(BTopoGrade p, Position position, ArrayList<AVListImpl> mapObjects) {
-        GradeVRendererBase.sMapObjects = mapObjects;
+        GraphicRendererBase.sMapObjects = mapObjects;
 //        plotBearing(p, position);
 
         var pos1 = BCoordinatrix.toPositionWW2d(p.getP1());
         var pos2 = BCoordinatrix.toPositionWW2d(p.getP2());
 
-        if (sCheckModel.isChecked(GradeVRendererItem.HOR_INDICATOR)) {
+        if (sCheckModel.isChecked(GraphicItem.HOR_INDICATOR)) {
             plotHorIndicator(p, position, pos1, pos2, mapObjects);
         }
-        if (sCheckModel.isChecked(GradeVRendererItem.VER_INDICATOR)) {
+        if (sCheckModel.isChecked(GraphicItem.VER_INDICATOR)) {
             plotVerIndicator(p, position, pos1, pos2, mapObjects);
         }
-        if (sCheckModel.isChecked(GradeVRendererItem.NAME)) {
+        if (sCheckModel.isChecked(GraphicItem.NAME)) {
             plotName(p, position, pos1, pos2);
         }
     }
 
-    @Override
     public void reset() {
         resetPlotLimiter();
         sPointToPositionMap.clear();
@@ -77,7 +76,7 @@ public class GradeVRenderer extends GradeVRendererBase {
     }
 
     private void plotHorIndicator(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
-        if (getPlotLimiter().isLimitReached(GradeVRendererItem.HOR_INDICATOR, p.getName())) {
+        if (getPlotLimiter().isLimitReached(GraphicItem.HOR_INDICATOR, p.getName())) {
             return;
         }
 
@@ -99,13 +98,13 @@ public class GradeVRenderer extends GradeVRendererBase {
 
         var path = new Path(WWHelper.positionFromPosition(pos1, z1), WWHelper.positionFromPosition(pos2, z2));
         path.setAttributes(mAttributeManager.getGradeHAttributes(p));
-        addRenderable(path, true, GradeVRendererItem.HOR_INDICATOR, sMapObjects);
+        addRenderable(path, true, GraphicItem.HOR_INDICATOR, sMapObjects);
 
         mapObjects.add(path);
     }
 
     private void plotVerIndicator(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
-        if (getPlotLimiter().isLimitReached(GradeVRendererItem.VER_INDICATOR, p.getName())) {
+        if (getPlotLimiter().isLimitReached(GraphicItem.VER_INDICATOR, p.getName())) {
             return;
         }
 
@@ -120,7 +119,7 @@ public class GradeVRenderer extends GradeVRendererBase {
         var attrs = mAttributeManager.getGradeHAttributes(p);
         attrs.setOutlineWidth(4.0);
         path.setAttributes(attrs);
-        addRenderable(path, true, GradeVRendererItem.HOR_INDICATOR, sMapObjects);
+        addRenderable(path, true, GraphicItem.HOR_INDICATOR, sMapObjects);
 
         mapObjects.add(path);
     }
@@ -152,13 +151,13 @@ public class GradeVRenderer extends GradeVRendererBase {
             placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
             placemark.setLabelText(point.getName());
 
-            addRenderable(placemark, true, GradeVRendererItem.NAME, sMapObjects);
+            addRenderable(placemark, true, GraphicItem.NAME, sMapObjects);
             mPlottedNames.add(point);
         }
     }
 
     private void plotName(BTopoGrade p, Position position, Position pos1, Position pos2) {
-        if (getPlotLimiter().isLimitReached(GradeVRendererItem.NAME, p.getName())) {
+        if (getPlotLimiter().isLimitReached(GraphicItem.NAME, p.getName())) {
             return;
         }
 

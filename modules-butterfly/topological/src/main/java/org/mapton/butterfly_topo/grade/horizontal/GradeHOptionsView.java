@@ -15,7 +15,7 @@
  */
 package org.mapton.butterfly_topo.grade.horizontal;
 
-import java.util.LinkedHashMap;
+import org.mapton.butterfly_topo.grade.horizontal.graphic.GraphicItem;
 import java.util.stream.Stream;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -23,14 +23,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.GridPane;
-import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
+import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
 import org.mapton.butterfly_topo.grade.GradePointBy;
 import org.mapton.worldwind.api.MOptionsView;
@@ -51,11 +48,11 @@ public class GradeHOptionsView extends MOptionsView implements TabOptionsViewPro
     private static final GradeHLabelBy DEFAULT_LABEL_BY = GradeHLabelBy.NAME;
     private static final GradePointBy DEFAULT_POINT_BY = GradePointBy.PIN;
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
-    private final SimpleObjectProperty<GradeHLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final BooleanProperty mPlotPointProperty = new SimpleBooleanProperty();
     private final SessionComboBox<GradePointBy> mPointScb = new SessionComboBox<>();
-    private final SessionCheckComboBox<GradeHRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
+    private final SimpleObjectProperty<LabelBy.Operations> mLabelByProperty = new SimpleObjectProperty<>();
 
     public GradeHOptionsView() {
         createUI();
@@ -63,12 +60,12 @@ public class GradeHOptionsView extends MOptionsView implements TabOptionsViewPro
         initSession();
     }
 
-    public IndexedCheckModel<GradeHRendererItem> getComponentCheckModel() {
+    public IndexedCheckModel<GraphicItem> getComponentCheckModel() {
         return mGraphicSccb.getCheckModel();
     }
 
     public GradeHLabelBy getLabelBy() {
-        return mLabelByProperty.get();
+        return (GradeHLabelBy) mLabelByProperty.get();
     }
 
     @Override
@@ -95,7 +92,7 @@ public class GradeHOptionsView extends MOptionsView implements TabOptionsViewPro
         return mPointScb.valueProperty().get();
     }
 
-    public SimpleObjectProperty<GradeHLabelBy> labelByProperty() {
+    public SimpleObjectProperty<LabelBy.Operations> labelByProperty() {
         return mLabelByProperty;
     }
 
@@ -109,9 +106,9 @@ public class GradeHOptionsView extends MOptionsView implements TabOptionsViewPro
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
-        mGraphicSccb.getItems().setAll(GradeHRendererItem.values());
+        mGraphicSccb.getItems().setAll(GraphicItem.values());
 
-        populateLabelMenuButton();
+        LabelBy.populateMenuButton(mLabelMenuButton, mLabelByProperty, GradeHLabelBy.values());
         var pointLabel = new Label(Dict.Geometry.POINT.toString());
         var labelLabel = new Label(Dict.LABEL.toString());
         var graphicLabel = new Label(Dict.GRAPHICS.toString());
@@ -156,30 +153,4 @@ public class GradeHOptionsView extends MOptionsView implements TabOptionsViewPro
             mLabelByProperty.set(DEFAULT_LABEL_BY);
         }
     }
-
-    private void populateLabelMenuButton() {
-        var categoryToMenu = new LinkedHashMap<String, Menu>();
-
-        for (var topoLabel : GradeHLabelBy.values()) {
-            var menu = categoryToMenu.computeIfAbsent(topoLabel.getCategory(), k -> {
-                return new Menu(k);
-            });
-
-            var menuItem = new MenuItem(topoLabel.getName());
-            menuItem.setOnAction(actionEvent -> {
-                mLabelByProperty.set(topoLabel);
-            });
-            menu.getItems().add(menuItem);
-        }
-
-        mLabelMenuButton.getItems().addAll(categoryToMenu.get("").getItems());
-        mLabelMenuButton.getItems().add(new SeparatorMenuItem());
-
-        for (var entry : categoryToMenu.entrySet()) {
-            if (StringUtils.isNotBlank(entry.getKey())) {
-                mLabelMenuButton.getItems().add(entry.getValue());
-            }
-        }
-    }
-
 }
