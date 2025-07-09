@@ -15,22 +15,19 @@
  */
 package org.mapton.butterfly_topo.grade.horizontal;
 
-import org.mapton.butterfly_topo.grade.horizontal.graphic.GraphicItem;
 import java.util.stream.Stream;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
 import javafx.scene.layout.GridPane;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
+import org.mapton.butterfly_core.api.BOptionsView;
 import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
 import org.mapton.butterfly_topo.grade.GradePointBy;
-import org.mapton.worldwind.api.MOptionsView;
+import org.mapton.butterfly_topo.grade.horizontal.graphic.GraphicItem;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
@@ -43,18 +40,16 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = TabOptionsViewProvider.class)
-public class GradeHOptionsView extends MOptionsView implements TabOptionsViewProvider {
+public class GradeHOptionsView extends BOptionsView implements TabOptionsViewProvider {
 
     private static final GradeHLabelBy DEFAULT_LABEL_BY = GradeHLabelBy.NAME;
     private static final GradePointBy DEFAULT_POINT_BY = GradePointBy.PIN;
-    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
-    private final MenuButton mLabelMenuButton = new MenuButton();
     private final BooleanProperty mPlotPointProperty = new SimpleBooleanProperty();
     private final SessionComboBox<GradePointBy> mPointScb = new SessionComboBox<>();
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
-    private final SimpleObjectProperty<LabelBy.Operations> mLabelByProperty = new SimpleObjectProperty<>();
 
     public GradeHOptionsView() {
+        setDefaultId(DEFAULT_LABEL_BY);
         createUI();
         initListeners();
         initSession();
@@ -62,10 +57,6 @@ public class GradeHOptionsView extends MOptionsView implements TabOptionsViewPro
 
     public IndexedCheckModel<GraphicItem> getComponentCheckModel() {
         return mGraphicSccb.getCheckModel();
-    }
-
-    public GradeHLabelBy getLabelBy() {
-        return (GradeHLabelBy) mLabelByProperty.get();
     }
 
     @Override
@@ -92,10 +83,6 @@ public class GradeHOptionsView extends MOptionsView implements TabOptionsViewPro
         return mPointScb.valueProperty().get();
     }
 
-    public SimpleObjectProperty<LabelBy.Operations> labelByProperty() {
-        return mLabelByProperty;
-    }
-
     public BooleanProperty plotPointProperty() {
         return mPlotPointProperty;
     }
@@ -108,7 +95,7 @@ public class GradeHOptionsView extends MOptionsView implements TabOptionsViewPro
         mGraphicSccb.setShowCheckedCount(true);
         mGraphicSccb.getItems().setAll(GraphicItem.values());
 
-        LabelBy.populateMenuButton(mLabelMenuButton, mLabelByProperty, GradeHLabelBy.values());
+        LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), GradeHLabelBy.values());
         var pointLabel = new Label(Dict.Geometry.POINT.toString());
         var labelLabel = new Label(Dict.LABEL.toString());
         var graphicLabel = new Label(Dict.GRAPHICS.toString());
@@ -129,10 +116,7 @@ public class GradeHOptionsView extends MOptionsView implements TabOptionsViewPro
     }
 
     private void initListeners() {
-        mLabelByProperty.addListener((p, o, n) -> {
-            mLabelMenuButton.setText(n.getFullName());
-            mLabelByIdProperty.set(n.name());
-        });
+        initListenersSuper();
 
         mPointScb.valueProperty().addListener(getChangeListener());
         Stream.of(
@@ -143,14 +127,10 @@ public class GradeHOptionsView extends MOptionsView implements TabOptionsViewPro
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.gradeH.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.gradeH.labelBy", labelByIdProperty());
         sessionManager.register("options.gradeH.checkedGraphics", mGraphicSccb.checkedStringProperty());
         sessionManager.register("options.gradeH.pointBy", mPointScb.selectedIndexProperty());
 
-        try {
-            mLabelByProperty.set(GradeHLabelBy.valueOf(mLabelByIdProperty.get()));
-        } catch (IllegalArgumentException e) {
-            mLabelByProperty.set(DEFAULT_LABEL_BY);
-        }
+        restoreLabelFromId(GradeHLabelBy.class, DEFAULT_LABEL_BY);
     }
 }

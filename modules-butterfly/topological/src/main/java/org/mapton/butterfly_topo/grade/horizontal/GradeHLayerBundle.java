@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo.grade.horizontal;
 
-import org.mapton.butterfly_topo.grade.horizontal.graphic.GraphicRenderer;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -32,6 +31,7 @@ import org.mapton.butterfly_topo.TopoBaseLayerBundle;
 import org.mapton.butterfly_topo.TopoLayerBundle;
 import org.mapton.butterfly_topo.grade.GradeAttributeManager;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
+import org.mapton.butterfly_topo.grade.horizontal.graphic.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.NbBundle;
@@ -83,7 +83,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
 
         String label;
         try {
-            label = mOptionsView.getLabelBy().getLabel(p);
+            label = mOptionsView.<GradeHLabelBy>getLabelBy().getLabel(p);
         } catch (Exception e) {
             label = "ERROR %s <<<<<<<<".formatted(p.getName());
         }

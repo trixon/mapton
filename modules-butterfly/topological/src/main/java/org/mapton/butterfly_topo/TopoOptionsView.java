@@ -15,30 +15,23 @@
  */
 package org.mapton.butterfly_topo;
 
-import java.util.LinkedHashMap;
 import java.util.stream.Stream;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
-import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MRunnable;
 import org.mapton.api.ui.forms.CheckedTab;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
+import org.mapton.butterfly_core.api.BOptionsView;
+import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_topo.graphics.GraphicItem;
 import org.mapton.butterfly_topo.shared.ColorBy;
 import org.mapton.butterfly_topo.shared.PointBy;
-import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Direction;
 import se.trixon.almond.util.SDict;
@@ -50,7 +43,7 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class TopoOptionsView extends MOptionsView implements MRunnable {
+public class TopoOptionsView extends BOptionsView implements MRunnable {
 
     private static final ColorBy DEFAULT_COLOR_BY = ColorBy.ALARM;
     private static final TopoLabelBy DEFAULT_LABEL_BY = TopoLabelBy.NAME;
@@ -59,16 +52,14 @@ public class TopoOptionsView extends MOptionsView implements MRunnable {
     private final SessionComboBox<ColorBy> mColorScb = new SessionComboBox<>();
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<Direction> mIndicatorSccb = new SessionCheckComboBox<>();
-    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
-    private final SimpleObjectProperty<TopoLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
-    private final MenuButton mLabelMenuButton = new MenuButton();
     private final BooleanProperty mPlotPointProperty = new SimpleBooleanProperty();
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
     private CheckedTab mPointTab;
     private final TabPane mTabPane = new TabPane();
 
     public TopoOptionsView(TopoLayerBundle layerBundle) {
-        super(layerBundle);
+        super(layerBundle, Bundle.CTL_ControlPointAction());
+        setDefaultId(DEFAULT_LABEL_BY);
         createUI();
         initListeners();
         initSession();
@@ -90,16 +81,8 @@ public class TopoOptionsView extends MOptionsView implements MRunnable {
         return mIndicatorSccb.getCheckModel();
     }
 
-    public TopoLabelBy getLabelBy() {
-        return mLabelByProperty.get();
-    }
-
     public PointBy getPointBy() {
         return mPointScb.valueProperty().get();
-    }
-
-    public SimpleObjectProperty<TopoLabelBy> labelByProperty() {
-        return mLabelByProperty;
     }
 
     public BooleanProperty plotPointProperty() {
@@ -159,7 +142,7 @@ public class TopoOptionsView extends MOptionsView implements MRunnable {
             }
         });
 
-        populateLabelMenuButton();
+        LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), TopoLabelBy.values());
         var pointLabel = new Label(Dict.Geometry.POINT.toString());
         var colorLabel = new Label(Dict.COLOR.toString());
         var labelLabel = new Label(Dict.LABEL.toString());
@@ -193,11 +176,7 @@ public class TopoOptionsView extends MOptionsView implements MRunnable {
     }
 
     private void initListeners() {
-        mLabelByProperty.addListener((p, o, n) -> {
-            mLabelMenuButton.setText(n.getFullName());
-            mLabelByIdProperty.set(n.name());
-        });
-
+        initListenersSuper();
         mPointScb.valueProperty().addListener(getChangeListener());
         mColorScb.valueProperty().addListener(getChangeListener());
 
@@ -211,7 +190,7 @@ public class TopoOptionsView extends MOptionsView implements MRunnable {
         var sessionManager = getSessionManager();
         sessionManager.register("options.pointBy", mPointScb.selectedIndexProperty());
         sessionManager.register("options.colorBy", mColorScb.selectedIndexProperty());
-        sessionManager.register("options.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.labelBy", labelByIdProperty());
         sessionManager.register("options.checkedGraphics", mGraphicSccb.checkedStringProperty());
         sessionManager.register("options.checkedIndicators", mIndicatorSccb.checkedStringProperty());
 
@@ -222,35 +201,6 @@ public class TopoOptionsView extends MOptionsView implements MRunnable {
                     sessionManager.register("options.CheckedTab." + t.getKey(), t.getTabCheckBox().selectedProperty());
                 });
 
-        try {
-            mLabelByProperty.set(TopoLabelBy.valueOf(mLabelByIdProperty.get()));
-        } catch (IllegalArgumentException e) {
-            mLabelByProperty.set(DEFAULT_LABEL_BY);
-        }
-    }
-
-    private void populateLabelMenuButton() {
-        var categoryToMenu = new LinkedHashMap<String, Menu>();
-
-        for (var topoLabel : TopoLabelBy.values()) {
-            var menu = categoryToMenu.computeIfAbsent(topoLabel.getCategory(), k -> {
-                return new Menu(k);
-            });
-
-            var menuItem = new MenuItem(topoLabel.getName());
-            menuItem.setOnAction(actionEvent -> {
-                mLabelByProperty.set(topoLabel);
-            });
-            menu.getItems().add(menuItem);
-        }
-
-        mLabelMenuButton.getItems().addAll(categoryToMenu.get("").getItems());
-        mLabelMenuButton.getItems().add(new SeparatorMenuItem());
-
-        for (var entry : categoryToMenu.entrySet()) {
-            if (StringUtils.isNotBlank(entry.getKey())) {
-                mLabelMenuButton.getItems().add(entry.getValue());
-            }
-        }
+        restoreLabelFromId(TopoLabelBy.class, DEFAULT_LABEL_BY);
     }
 }

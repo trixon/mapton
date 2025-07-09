@@ -81,7 +81,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
 
         String label;
         try {
-            label = mOptionsView.getLabelBy().getLabel(p);
+            label = mOptionsView.<GradeVLabelBy>getLabelBy().getLabel(p);
         } catch (Exception e) {
             label = "ERROR %s <<<<<<<<".formatted(p.getName());
         }

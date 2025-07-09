@@ -30,7 +30,7 @@ import se.trixon.almond.util.StringHelper;
  *
  * @author Patrik Karlström
  */
-public enum TopoLabelBy {
+public enum TopoLabelBy implements LabelBy.Operations {
     NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
@@ -279,10 +279,12 @@ public enum TopoLabelBy {
         mFunction = function;
     }
 
+    @Override
     public String getCategory() {
         return mCategory;
     }
 
+    @Override
     public String getFullName() {
         if (StringUtils.isBlank(mCategory)) {
             return mName;
@@ -295,6 +297,7 @@ public enum TopoLabelBy {
         return mFunction.apply(o);
     }
 
+    @Override
     public String getName() {
         return mName;
     }
