@@ -21,6 +21,7 @@ import javafx.scene.layout.BorderPane;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BFilterSectionPoint.PointElement;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_core.api.FilterSectionMisc;
 import org.mapton.butterfly_format.Butterfly;
@@ -125,7 +126,9 @@ public class ExtensoFilterPopOver extends BaseTabbedFilterPopOver {
         setContentNode(root);
 
         mFilterSectionPoint.disable(
-                BFilterSectionPoint.PointElement.ALARM
+                PointElement.ALARM,
+                PointElement.FORMULA_ROLLING,
+                PointElement.FORMULA_SPARSE
         );
     }
 
