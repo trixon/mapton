@@ -19,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -28,28 +29,28 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-public enum BlastLabelBy {
-    NAME(Strings.CAT_ROOT, Dict.NAME.toString(), p -> {
+public enum BlastLabelBy implements LabelBy.Operations {
+    NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
-    NONE(Strings.CAT_ROOT, Dict.NONE.toString(), p -> {
+    NONE(LabelBy.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
-    MISC_DATE(Strings.CAT_MISC, Dict.DATE.toString(), p -> {
+    MISC_DATE(LabelBy.CAT_MISC, Dict.DATE.toString(), p -> {
         var date = Objects.toString(DateHelper.toDateString(p.getDateLatest()), "-");
 
         return date;
     }),
-    MISC_AGE(Strings.CAT_MISC, Dict.AGE.toString(), p -> {
+    MISC_AGE(LabelBy.CAT_MISC, Dict.AGE.toString(), p -> {
         return String.valueOf(p.ext().getMeasurementAge(ChronoUnit.DAYS));
     }),
-    MISC_GROUP(Strings.CAT_MISC, Dict.GROUP.toString(), p -> {
+    MISC_GROUP(LabelBy.CAT_MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     }),
-    MISC_EXT_ID(Strings.CAT_MISC, "Ext.id", p -> {
+    MISC_EXT_ID(LabelBy.CAT_MISC, "Ext.id", p -> {
         return p.getExternalId();
     }),
-    MISC_Z(Strings.CAT_MISC, "Z", p -> {
+    MISC_Z(LabelBy.CAT_MISC, "Z", p -> {
         return MathHelper.convertDoubleToString(p.getZeroZ(), 1);
     });
     private final String mCategory;
@@ -62,10 +63,12 @@ public enum BlastLabelBy {
         mFunction = function;
     }
 
+    @Override
     public String getCategory() {
         return mCategory;
     }
 
+    @Override
     public String getFullName() {
         if (StringUtils.isBlank(mCategory)) {
             return mName;
@@ -82,14 +85,8 @@ public enum BlastLabelBy {
         }
     }
 
+    @Override
     public String getName() {
         return mName;
-    }
-
-    private class Strings {
-
-        public static final String CAT_MISC = Dict.MISCELLANEOUS.toString();
-        public static final String CAT_ROOT = "";
-
     }
 }

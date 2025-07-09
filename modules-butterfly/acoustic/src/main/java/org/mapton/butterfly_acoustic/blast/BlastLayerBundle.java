@@ -120,7 +120,7 @@ public class BlastLayerBundle extends BfLayerBundle {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
-                        var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mOptionsView.<BlastLabelBy>getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
