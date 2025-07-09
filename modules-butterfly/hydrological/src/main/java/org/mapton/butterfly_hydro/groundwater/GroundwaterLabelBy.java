@@ -32,7 +32,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public enum GroundwaterLabelBy {
+public enum GroundwaterLabelBy implements LabelBy.Operations {
     NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
@@ -93,17 +93,17 @@ public enum GroundwaterLabelBy {
     MEAS_LATEST_OPERATOR(LabelBy.CAT_MEAS, SDict.LATEST_S.toString().formatted(SDict.OPERATOR.toLower()), p -> {
         return p.ext().getObservationsAllRaw().getLast().getOperator();
     }),
-    MEAS_COUNT_ALL(LabelBy.CAT_MEAS, Strings.MEAS_COUNT_ALL, p -> {
+    MEAS_COUNT_ALL(LabelBy.CAT_MEAS, LabelBy.MEAS_COUNT_ALL, p -> {
         return "%d".formatted(
                 p.ext().getNumOfObservations()
         );
     }),
-    MEAS_COUNT_SELECTION(LabelBy.CAT_MEAS, Strings.MEAS_COUNT_SELECTION, p -> {
+    MEAS_COUNT_SELECTION(LabelBy.CAT_MEAS, LabelBy.MEAS_COUNT_SELECTION, p -> {
         return "%d".formatted(
                 p.ext().getNumOfObservationsFiltered()
         );
     }),
-    MEAS_COUNT_SELECTION_ALL(LabelBy.CAT_MEAS, Strings.MEAS_COUNT, p -> {
+    MEAS_COUNT_SELECTION_ALL(LabelBy.CAT_MEAS, LabelBy.MEAS_COUNT, p -> {
         return "%d / %d".formatted(
                 p.ext().getNumOfObservationsFiltered(),
                 p.ext().getNumOfObservations()
@@ -154,10 +154,12 @@ public enum GroundwaterLabelBy {
         mFunction = function;
     }
 
+    @Override
     public String getCategory() {
         return mCategory;
     }
 
+    @Override
     public String getFullName() {
         if (StringUtils.isBlank(mCategory)) {
             return mName;
@@ -170,16 +172,8 @@ public enum GroundwaterLabelBy {
         return mFunction.apply(o);
     }
 
+    @Override
     public String getName() {
         return mName;
-    }
-
-    private class Strings {
-
-        public static final String MEAS_COUNT = Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower());
-        public static final String MEAS_COUNT_ALL = "%s (%s)".formatted(MEAS_COUNT, Dict.ALL.toLower());
-        public static final String MEAS_COUNT_SELECTION = "%s (%s)".formatted(MEAS_COUNT, Dict.SELECTION.toLower());
-        public static final String DIMENS_FREQ = "%s & %s".formatted(SDict.DIMENSION.toString(), SDict.FREQUENCY.toString());
-
     }
 }
