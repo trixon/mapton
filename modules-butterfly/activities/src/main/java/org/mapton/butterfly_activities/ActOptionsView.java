@@ -15,17 +15,10 @@
  */
 package org.mapton.butterfly_activities;
 
-import java.util.LinkedHashMap;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.VBox;
-import org.apache.commons.lang3.StringUtils;
-import org.mapton.worldwind.api.MOptionsView;
+import org.mapton.butterfly_core.api.BOptionsView;
+import org.mapton.butterfly_core.api.LabelBy;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionComboBox;
@@ -34,40 +27,30 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class ActOptionsView extends MOptionsView {
+public class ActOptionsView extends BOptionsView {
 
     private static final ActLabelBy DEFAULT_LABEL_BY = ActLabelBy.NONE;
     private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;
 
-    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
-    private final SimpleObjectProperty<ActLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
-    private final MenuButton mLabelMenuButton = new MenuButton();
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public ActOptionsView(ActLayerBundle layerBundle) {
         super(layerBundle, Bundle.CTL_ActAction());
+        setDefaultId(DEFAULT_LABEL_BY);
         createUI();
         initListeners();
         initSession();
-    }
-
-    public ActLabelBy getLabelBy() {
-        return mLabelByProperty.get();
     }
 
     public PointBy getPointBy() {
         return mPointScb.valueProperty().get();
     }
 
-    public SimpleObjectProperty<ActLabelBy> labelByProperty() {
-        return mLabelByProperty;
-    }
-
     private void createUI() {
         mPointScb.getItems().setAll(PointBy.values());
         mPointScb.setValue(DEFAULT_POINT_BY);
 
-        populateLabelMenuButton();
+        LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), ActLabelBy.values());
 
         var pointLabel = new Label(Dict.Geometry.POINT.toString());
         var labelLabel = new Label(Dict.LABEL.toString());
@@ -85,10 +68,7 @@ public class ActOptionsView extends MOptionsView {
     }
 
     private void initListeners() {
-        mLabelByProperty.addListener((p, o, n) -> {
-            mLabelMenuButton.setText(n.getFullName());
-            mLabelByIdProperty.set(n.name());
-        });
+        initListenersSuper();
 
         mPointScb.valueProperty().addListener(getChangeListener());
     }
@@ -96,38 +76,8 @@ public class ActOptionsView extends MOptionsView {
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register("options.pointBy", mPointScb.selectedIndexProperty());
-        sessionManager.register("options.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.labelBy", labelByIdProperty());
 
-        try {
-            mLabelByProperty.set(ActLabelBy.valueOf(mLabelByIdProperty.get()));
-        } catch (IllegalArgumentException e) {
-            mLabelByProperty.set(DEFAULT_LABEL_BY);
-        }
+        restoreLabelFromId(ActLabelBy.class, DEFAULT_LABEL_BY);
     }
-
-    private void populateLabelMenuButton() {
-        var categoryToMenu = new LinkedHashMap<String, Menu>();
-
-        for (var topoLabel : ActLabelBy.values()) {
-            var menu = categoryToMenu.computeIfAbsent(topoLabel.getCategory(), k -> {
-                return new Menu(k);
-            });
-
-            var menuItem = new MenuItem(topoLabel.getName());
-            menuItem.setOnAction(actionEvent -> {
-                mLabelByProperty.set(topoLabel);
-            });
-            menu.getItems().add(menuItem);
-        }
-
-        mLabelMenuButton.getItems().addAll(categoryToMenu.get("").getItems());
-        mLabelMenuButton.getItems().add(new SeparatorMenuItem());
-
-        for (var entry : categoryToMenu.entrySet()) {
-            if (StringUtils.isNotBlank(entry.getKey())) {
-                mLabelMenuButton.getItems().add(entry.getValue());
-            }
-        }
-    }
-
 }

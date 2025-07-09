@@ -17,6 +17,7 @@ package org.mapton.butterfly_activities;
 
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import se.trixon.almond.util.Dict;
 
@@ -24,11 +25,11 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public enum ActLabelBy {
-    NAME(Strings.CAT_ROOT, Dict.NAME.toString(), p -> {
+public enum ActLabelBy implements LabelBy.Operations {
+    NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
-    NONE(Strings.CAT_ROOT, Dict.NONE.toString(), p -> {
+    NONE(LabelBy.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
     });
     private final String mCategory;
@@ -41,10 +42,12 @@ public enum ActLabelBy {
         mFunction = function;
     }
 
+    @Override
     public String getCategory() {
         return mCategory;
     }
 
+    @Override
     public String getFullName() {
         if (StringUtils.isBlank(mCategory)) {
             return mName;
@@ -61,14 +64,8 @@ public enum ActLabelBy {
         }
     }
 
+    @Override
     public String getName() {
         return mName;
-    }
-
-    private class Strings {
-
-        public static final String CAT_MISC = Dict.MISCELLANEOUS.toString();
-        public static final String CAT_ROOT = "";
-
     }
 }
