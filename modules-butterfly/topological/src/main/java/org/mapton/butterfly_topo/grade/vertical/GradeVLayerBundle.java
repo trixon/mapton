@@ -31,6 +31,7 @@ import org.mapton.butterfly_topo.TopoBaseLayerBundle;
 import org.mapton.butterfly_topo.TopoLayerBundle;
 import org.mapton.butterfly_topo.grade.GradeAttributeManager;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
+import org.mapton.butterfly_topo.grade.vertical.graphics.GradeVRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.NbBundle;
@@ -46,14 +47,16 @@ import se.trixon.almond.util.SDict;
 public class GradeVLayerBundle extends TopoBaseLayerBundle {
 
     private final GradeAttributeManager mAttributeManager = GradeAttributeManager.getInstance();
-
     private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
+    private final GradeVRenderer mGraphicRenderer;
     private final GradeVManager mManager = GradeVManager.getInstance();
     private GradeVOptionsView mOptionsView;
 
     public GradeVLayerBundle() {
         init();
         initRepaint();
+        getOptionsView();
+        mGraphicRenderer = new GradeVRenderer(mLayer, mPassiveLayer, mOptionsView.getComponentCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -124,6 +127,8 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
         initCommons(mBundle.getString("grade_v"), SDict.TOPOGRAPHY.toString(), "TopoTopComponent");
 
         mLabelLayer.setMaxActiveAltitude(2000);
+//        mMuteLayer.setPickEnabled(false);
+
         setVisibleInLayerManager(mLayer, false);
         connectToOtherBundle(TopoLayerBundle.class, GradeVOptionsView.class.getName());
     }
@@ -151,11 +156,15 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
             repaint();
         });
 
+        mOptionsView.plotPointProperty().addListener((p, o, n) -> {
+            repaint();
+        });
     }
 
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
+            mGraphicRenderer.reset();
 
             if (!mLayer.isEnabled()) {
                 return;
@@ -188,6 +197,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
                             mapObjects.add(labelPlacemark);
                             mapObjects.add(plotPin(p, position, labelPlacemark));
 //                    mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
+                            mGraphicRenderer.plot(p, position, mapObjects);
 
                             var leftClickRunnable = (Runnable) () -> {
                                 mManager.setSelectedItemAfterReset(p);
@@ -195,7 +205,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
 
                             var leftDoubleClickRunnable = (Runnable) () -> {
                                 Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-//                            mGraphicRenderer.addToAllowList(p.getName());
+                                mGraphicRenderer.addToAllowList(p.getName());
                                 repaint();
                             };
 

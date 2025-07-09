@@ -21,13 +21,12 @@ import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
-import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum GradeVLabelBy {
+public enum GradeVLabelBy implements LabelBy.Operations {
     NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
@@ -47,10 +46,12 @@ public enum GradeVLabelBy {
         mFunction = function;
     }
 
+    @Override
     public String getCategory() {
         return mCategory;
     }
 
+    @Override
     public String getFullName() {
         if (StringUtils.isBlank(mCategory)) {
             return mName;
@@ -63,20 +64,9 @@ public enum GradeVLabelBy {
         return mFunction.apply(o);
     }
 
+    @Override
     public String getName() {
         return mName;
-    }
-
-    private class Strings {
-
-        public static final String HEIGHT_NAME = "%s, %s".formatted(Dict.Geometry.HEIGHT, Dict.NAME.toLower());
-        public static final String HEIGHT_VALUE = "%s, %s".formatted(Dict.Geometry.HEIGHT, Dict.VALUE.toLower());
-        public static final String MEAS_COUNT = Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower());
-        public static final String MEAS_COUNT_ALL = "%s (%s)".formatted(MEAS_COUNT, Dict.ALL.toLower());
-        public static final String MEAS_COUNT_SELECTION = "%s (%s)".formatted(MEAS_COUNT, Dict.SELECTION.toLower());
-        public static final String PLANE_NAME = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.NAME.toLower());
-        public static final String PLANE_VALUE = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.VALUE.toLower());
-
     }
 
 }
