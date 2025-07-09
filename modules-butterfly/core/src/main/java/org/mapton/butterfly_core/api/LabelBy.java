@@ -16,8 +16,15 @@
 package org.mapton.butterfly_core.api;
 
 import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashMap;
 import java.util.Objects;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
@@ -217,10 +224,46 @@ public class LabelBy {
         return Objects.toString(p.getStatus(), "NODATA");
     }
 
+    public static void populateMenuButton(MenuButton menuButton, SimpleObjectProperty<LabelBy.Operations> labelByProperty, Enum<? extends LabelBy.Operations>[] items) {
+        var opItems = (LabelBy.Operations[]) items;
+        var categoryToMenu = new LinkedHashMap<String, Menu>();
+
+        for (var item : opItems) {
+            var menu = categoryToMenu.computeIfAbsent(item.getCategory(), k -> {
+                return new Menu(k);
+            });
+
+            var menuItem = new MenuItem(item.getName());
+            menuItem.setOnAction(actionEvent -> {
+                labelByProperty.set(item);
+            });
+            menu.getItems().add(menuItem);
+        }
+
+        menuButton.getItems().addAll(categoryToMenu.get("").getItems());
+        menuButton.getItems().add(new SeparatorMenuItem());
+
+        for (var entry : categoryToMenu.entrySet()) {
+            if (StringUtils.isNotBlank(entry.getKey())) {
+                menuButton.getItems().add(entry.getValue());
+            }
+        }
+    }
+
     public static String valueZeroZ(BXyzPoint p) {
         var z = p.getZeroZ();
 
         return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
     }
 
+    public static interface Operations {
+
+        String getCategory();
+
+        String getFullName();
+
+        String getName();
+
+        String name();
+    }
 }
