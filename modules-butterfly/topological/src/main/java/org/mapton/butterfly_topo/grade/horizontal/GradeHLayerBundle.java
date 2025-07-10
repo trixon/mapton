@@ -26,6 +26,7 @@ import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.Mapton;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoBaseLayerBundle;
 import org.mapton.butterfly_topo.TopoLayerBundle;
@@ -79,23 +80,13 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
     public PointPlacemark plotLabel(BTopoGrade p, GradeHLabelBy labelBy, Position position) {
         if (labelBy == GradeHLabelBy.NONE) {
             return null;
+        } else {
+            var label = labelBy.getLabel(p);
+            p.setValue(BKey.PIN_NAME, label);
+            var placemark = createPlacemark(position, label, mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
+
+            return placemark;
         }
-
-        String label;
-        try {
-            label = mOptionsView.<GradeHLabelBy>getLabelBy().getLabel(p);
-        } catch (Exception e) {
-            label = "ERROR %s <<<<<<<<".formatted(p.getName());
-        }
-
-        var placemark = new PointPlacemark(position);
-        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-        placemark.setLabelText(label);
-        mLabelLayer.addRenderable(placemark);
-
-        return placemark;
     }
 
     public PointPlacemark plotPin(BTopoGrade p, Position position, PointPlacemark labelPlacemark) {

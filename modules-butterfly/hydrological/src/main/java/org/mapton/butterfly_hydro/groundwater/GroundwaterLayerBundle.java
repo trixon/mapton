@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
@@ -148,23 +149,13 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
     private PointPlacemark plotLabel(BHydroGroundwaterPoint p, GroundwaterLabelBy labelBy, Position position) {
         if (labelBy == GroundwaterLabelBy.NONE) {
             return null;
+        } else {
+            var label = labelBy.getLabel(p);
+            p.setValue(BKey.PIN_NAME, label);
+            var placemark = createPlacemark(position, label, mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
+
+            return placemark;
         }
-
-        String label;
-        try {
-            label = labelBy.getLabel(p);
-        } catch (Exception e) {
-            label = "ERROR %s <<<<<<<<".formatted(p.getName());
-        }
-
-        var placemark = new PointPlacemark(position);
-        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-        placemark.setLabelText(label);
-        mLabelLayer.addRenderable(placemark);
-
-        return placemark;
     }
 
     private PointPlacemark plotPin(BHydroGroundwaterPoint p, Position position, PointPlacemark labelPlacemark) {

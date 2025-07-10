@@ -151,18 +151,13 @@ public class BlastLayerBundle extends BfLayerBundle {
     private PointPlacemark plotLabel(BAcousticBlast p, BlastLabelBy labelBy, Position position) {
         if (labelBy == BlastLabelBy.NONE) {
             return null;
+        } else {
+            var label = labelBy.getLabel(p);
+            p.setValue(BKey.PIN_NAME, label);
+            var placemark = createPlacemark(position, label, mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
+
+            return placemark;
         }
-
-        var placemark = new PointPlacemark(position);
-        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-        var label = labelBy.getLabel(p);
-        placemark.setLabelText(label);
-        mLabelLayer.addRenderable(placemark);
-        p.setValue(BKey.PIN_NAME, label);
-
-        return placemark;
     }
 
     private PointPlacemark plotPin(BAcousticBlast p, Position position, PointPlacemark labelPlacemark) {

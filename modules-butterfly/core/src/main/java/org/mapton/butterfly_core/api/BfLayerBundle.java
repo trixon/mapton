@@ -15,9 +15,14 @@
  */
 package org.mapton.butterfly_core.api;
 
+import gov.nasa.worldwind.WorldWind;
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import org.mapton.worldwind.api.LayerBundle;
+import org.mapton.worldwind.api.WWHelper;
 
 /**
  *
@@ -32,6 +37,23 @@ public abstract class BfLayerBundle extends LayerBundle {
     protected final RenderableLayer mPinLayer = new RenderableLayer();
     protected final RenderableLayer mSurfaceLayer = new RenderableLayer();
     protected final RenderableLayer mSymbolLayer = new RenderableLayer();
+
+    public PointPlacemark createPlacemark(Position position, String text, PointPlacemarkAttributes attrs, RenderableLayer layer) {
+        var placemark = new PointPlacemark(position);
+        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        placemark.setLabelText(text);
+
+        if (attrs != null) {
+            placemark.setAttributes(attrs);
+            placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+        }
+
+        if (layer != null) {
+            layer.addRenderable(placemark);
+        }
+
+        return placemark;
+    }
 
     public void initCommons(String name, String category, String topComponentId) {
         mLayer.setName(name);

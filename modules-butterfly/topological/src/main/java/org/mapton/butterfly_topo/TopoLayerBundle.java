@@ -239,24 +239,13 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
     private PointPlacemark plotLabel(BTopoControlPoint p, TopoLabelBy labelBy, Position position) {
         if (labelBy == TopoLabelBy.NONE) {
             return null;
+        } else {
+            var label = labelBy.getLabel(p);
+            p.setValue(BKey.PIN_NAME, label);
+            var placemark = createPlacemark(position, label, mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
+
+            return placemark;
         }
-
-        String label;
-        try {
-            label = mOptionsView.<TopoLabelBy>getLabelBy().getLabel(p);
-        } catch (Exception e) {
-            label = "ERROR %s <<<<<<<<".formatted(p.getName());
-        }
-
-        var placemark = new PointPlacemark(position);
-        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-        placemark.setLabelText(label);
-        mLabelLayer.addRenderable(placemark);
-        p.setValue(BKey.PIN_NAME, label);
-
-        return placemark;
     }
 
     private PointPlacemark plotPin(BTopoControlPoint p, Position position, PointPlacemark labelPlacemark) {

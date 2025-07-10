@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
@@ -150,16 +151,13 @@ public class ConvergencePairLayerBundle extends BfLayerBundle {
     private PointPlacemark plotLabel(BTopoConvergencePair p, ConvergencePairLabelBy labelBy, Position position) {
         if (labelBy == ConvergencePairLabelBy.NONE) {
             return null;
-        }
-        var pos = WWHelper.positionFromPosition(position, p.getZeroZ());
-        var placemark = new PointPlacemark(pos);
-        placemark.setAltitudeMode(WorldWind.ABSOLUTE);
-        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
-//        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-        placemark.setLabelText(labelBy.getLabel(p));
-        mLabelLayer.addRenderable(placemark);
+        } else {
+            var label = labelBy.getLabel(p);
+            p.setValue(BKey.PIN_NAME, label);
+            var placemark = createPlacemark(position, label, mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
 
-        return placemark;
+            return placemark;
+        }
     }
 
     private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {

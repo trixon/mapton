@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo_convergence.group;
 
-import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -25,9 +24,11 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
+import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -152,16 +153,13 @@ public class ConvergenceGroupLayerBundle extends BfLayerBundle {
     private PointPlacemark plotLabel(BTopoConvergenceGroup p, ConvergenceGroupLabelBy labelBy, Position position) {
         if (labelBy == ConvergenceGroupLabelBy.NONE) {
             return null;
+        } else {
+            var label = labelBy.getLabel(p);
+            p.setValue(BKey.PIN_NAME, label);
+            var placemark = createPlacemark(position, label, mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
+
+            return placemark;
         }
-
-        var placemark = new PointPlacemark(position);
-        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-        placemark.setLabelText(labelBy.getLabel(p));
-        mLabelLayer.addRenderable(placemark);
-
-        return placemark;
     }
 
     private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {

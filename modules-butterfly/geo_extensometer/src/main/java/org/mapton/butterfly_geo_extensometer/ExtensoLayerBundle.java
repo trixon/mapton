@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
@@ -144,19 +145,16 @@ public class ExtensoLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BGeoExtensometer extenso, ExtensoLabelBy labelBy, Position position) {
+    private PointPlacemark plotLabel(BGeoExtensometer p, ExtensoLabelBy labelBy, Position position) {
         if (labelBy == ExtensoLabelBy.NONE) {
             return null;
+        } else {
+            var label = labelBy.getLabel(p);
+            p.setValue(BKey.PIN_NAME, label);
+            var placemark = createPlacemark(position, label, mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
+
+            return placemark;
         }
-
-        var placemark = new PointPlacemark(position);
-        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-        placemark.setLabelText(labelBy.getLabel(extenso));
-        mLabelLayer.addRenderable(placemark);
-
-        return placemark;
     }
 
     private PointPlacemark plotPin(BGeoExtensometer extenso, Position position, PointPlacemark labelPlacemark) {
