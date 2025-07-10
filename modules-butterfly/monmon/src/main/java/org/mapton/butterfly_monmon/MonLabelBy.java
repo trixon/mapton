@@ -26,7 +26,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public enum MonLabelBy {
+public enum MonLabelBy implements LabelBy.Operations {
     NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
@@ -52,10 +52,12 @@ public enum MonLabelBy {
         mFunction = function;
     }
 
+    @Override
     public String getCategory() {
         return mCategory;
     }
 
+    @Override
     public String getFullName() {
         if (StringUtils.isBlank(mCategory)) {
             return mName;
@@ -72,6 +74,7 @@ public enum MonLabelBy {
         }
     }
 
+    @Override
     public String getName() {
         return mName;
     }
