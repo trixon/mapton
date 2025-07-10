@@ -18,6 +18,7 @@ package org.mapton.butterfly_topo_convergence.pair;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import se.trixon.almond.util.Dict;
 
@@ -25,26 +26,26 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public enum ConvergencePairLabelBy {
-    NAME(Strings.CAT_ROOT, Dict.NAME.toString(), p -> {
+public enum ConvergencePairLabelBy implements LabelBy.Operations {
+    NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
-    NONE(Strings.CAT_ROOT, Dict.NONE.toString(), p -> {
+    NONE(LabelBy.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
-    MISC_DELTA(Strings.CAT_MISC, "Delta", p -> {
+    MISC_DELTA(LabelBy.CAT_MISC, "Delta", p -> {
         return "%.1f".formatted(p.getDeltaDistanceOverTime() * 1000);
     }),
-    MISC_DISTANCE(Strings.CAT_MISC, "Avstånd", p -> {
+    MISC_DISTANCE(LabelBy.CAT_MISC, "Avstånd", p -> {
         return "%.3f".formatted(p.getDistance());
     }),
-    MISC_DISTANCE_PLANE(Strings.CAT_MISC, "Avstånd, plan", p -> {
+    MISC_DISTANCE_PLANE(LabelBy.CAT_MISC, "Avstånd, plan", p -> {
         return "%.3f".formatted(p.getDeltaR());
     }),
-    MISC_DISTANCE_HEIGHT(Strings.CAT_MISC, "Avstånd, höjd", p -> {
+    MISC_DISTANCE_HEIGHT(LabelBy.CAT_MISC, "Avstånd, höjd", p -> {
         return "%.3f".formatted(p.getDeltaZ());
     }),
-    MISC_GROUP(Strings.CAT_MISC, Dict.GROUP.toString(), p -> {
+    MISC_GROUP(LabelBy.CAT_MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     });
     private final String mCategory;
@@ -57,10 +58,12 @@ public enum ConvergencePairLabelBy {
         mFunction = function;
     }
 
+    @Override
     public String getCategory() {
         return mCategory;
     }
 
+    @Override
     public String getFullName() {
         if (StringUtils.isBlank(mCategory)) {
             return mName;
@@ -77,14 +80,8 @@ public enum ConvergencePairLabelBy {
         }
     }
 
+    @Override
     public String getName() {
         return mName;
-    }
-
-    private class Strings {
-
-        public static final String CAT_MISC = Dict.MISCELLANEOUS.toString();
-        public static final String CAT_ROOT = "";
-
     }
 }
