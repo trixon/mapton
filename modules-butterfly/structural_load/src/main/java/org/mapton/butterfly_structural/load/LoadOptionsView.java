@@ -15,20 +15,13 @@
  */
 package org.mapton.butterfly_structural.load;
 
-import java.util.LinkedHashMap;
 import java.util.stream.Stream;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.VBox;
-import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.butterfly_core.api.BOptionsView;
+import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_structural.load.graphics.GraphicItem;
-import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
@@ -38,19 +31,17 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class LoadOptionsView extends MOptionsView {
+public class LoadOptionsView extends BOptionsView {
 
     private static final LoadLabelBy DEFAULT_LABEL_BY = LoadLabelBy.NAME;
     private static final LoadPointBy DEFAULT_POINT_BY = LoadPointBy.PIN;
 
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
-    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
-    private final SimpleObjectProperty<LoadLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
-    private final MenuButton mLabelMenuButton = new MenuButton();
     private final SessionComboBox<LoadPointBy> mPointScb = new SessionComboBox<>();
 
     public LoadOptionsView(LoadLayerBundle layerBundle) {
         super(layerBundle, Bundle.CTL_LoadAction());
+        setDefaultId(DEFAULT_LABEL_BY);
         createUI();
         initListeners();
         initSession();
@@ -60,16 +51,8 @@ public class LoadOptionsView extends MOptionsView {
         return mGraphicSccb.getCheckModel();
     }
 
-    public LoadLabelBy getLabelBy() {
-        return mLabelByProperty.get();
-    }
-
     public LoadPointBy getPointBy() {
         return mPointScb.valueProperty().get();
-    }
-
-    public SimpleObjectProperty<LoadLabelBy> labelByProperty() {
-        return mLabelByProperty;
     }
 
     private void createUI() {
@@ -80,7 +63,7 @@ public class LoadOptionsView extends MOptionsView {
         mGraphicSccb.setShowCheckedCount(true);
         mGraphicSccb.getItems().setAll(GraphicItem.values());
 
-        populateLabelMenuButton();
+        LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), LoadLabelBy.values());
 
         var pointLabel = new Label(Dict.Geometry.POINT.toString());
         var labelLabel = new Label(Dict.LABEL.toString());
@@ -99,10 +82,7 @@ public class LoadOptionsView extends MOptionsView {
     }
 
     private void initListeners() {
-        mLabelByProperty.addListener((p, o, n) -> {
-            mLabelMenuButton.setText(n.getFullName());
-            mLabelByIdProperty.set(n.name());
-        });
+        initListenersSuper();
 
         mPointScb.valueProperty().addListener(getChangeListener());
 
@@ -115,38 +95,8 @@ public class LoadOptionsView extends MOptionsView {
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register("options.measPoint.pointBy", mPointScb.selectedIndexProperty());
-        sessionManager.register("options.measPoint.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.measPoint.labelBy", labelByIdProperty());
         sessionManager.register("options.measPoint.checkedGraphics", mGraphicSccb.checkedStringProperty());
-        try {
-            mLabelByProperty.set(LoadLabelBy.valueOf(mLabelByIdProperty.get()));
-        } catch (IllegalArgumentException e) {
-            mLabelByProperty.set(LoadLabelBy.NAME);
-        }
+        restoreLabelFromId(LoadLabelBy.class, DEFAULT_LABEL_BY);
     }
-
-    private void populateLabelMenuButton() {
-        var categoryToMenu = new LinkedHashMap<String, Menu>();
-
-        for (var topoLabel : LoadLabelBy.values()) {
-            var menu = categoryToMenu.computeIfAbsent(topoLabel.getCategory(), k -> {
-                return new Menu(k);
-            });
-
-            var menuItem = new MenuItem(topoLabel.getName());
-            menuItem.setOnAction(actionEvent -> {
-                mLabelByProperty.set(topoLabel);
-            });
-            menu.getItems().add(menuItem);
-        }
-
-        mLabelMenuButton.getItems().addAll(categoryToMenu.get("").getItems());
-        mLabelMenuButton.getItems().add(new SeparatorMenuItem());
-
-        for (var entry : categoryToMenu.entrySet()) {
-            if (StringUtils.isNotBlank(entry.getKey())) {
-                mLabelMenuButton.getItems().add(entry.getValue());
-            }
-        }
-    }
-
 }
