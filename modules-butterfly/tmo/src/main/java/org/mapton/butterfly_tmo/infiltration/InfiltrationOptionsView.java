@@ -15,18 +15,11 @@
  */
 package org.mapton.butterfly_tmo.infiltration;
 
-import java.util.LinkedHashMap;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.VBox;
-import org.apache.commons.lang3.StringUtils;
-import org.mapton.worldwind.api.MOptionsView;
+import org.mapton.butterfly_core.api.BOptionsView;
+import org.mapton.butterfly_core.api.LabelBy;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SelectionModelSession;
@@ -35,40 +28,30 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  *
  * @author Patrik Karlström
  */
-public class InfiltrationOptionsView extends MOptionsView {
+public class InfiltrationOptionsView extends BOptionsView {
 
     private static final InfiltrationLabelBy DEFAULT_LABEL_BY = InfiltrationLabelBy.NAME;
 
-    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
-    private final SimpleObjectProperty<InfiltrationLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
-    private final MenuButton mLabelMenuButton = new MenuButton();
     private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();
     private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
 
     public InfiltrationOptionsView(InfiltrationLayerBundle layerBundle) {
         super(layerBundle, Bundle.CTL_InfiltrationAction());
+        setDefaultId(DEFAULT_LABEL_BY);
         createUI();
         initListeners();
         initSession();
-    }
-
-    public InfiltrationLabelBy getLabelBy() {
-        return mLabelByProperty.get();
     }
 
     public PointBy getPointBy() {
         return mPointComboBox.valueProperty().get();
     }
 
-    public SimpleObjectProperty<InfiltrationLabelBy> labelByProperty() {
-        return mLabelByProperty;
-    }
-
     private void createUI() {
         mPointComboBox.getItems().setAll(PointBy.values());
         mPointComboBox.setValue(PointBy.NONE);
 
-        populateLabelMenuButton();
+        LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), InfiltrationLabelBy.values());
 
         var pointLabel = new Label(Dict.Geometry.POINT.toString());
         var labelLabel = new Label(Dict.LABEL.toString());
@@ -86,10 +69,7 @@ public class InfiltrationOptionsView extends MOptionsView {
     }
 
     private void initListeners() {
-        mLabelByProperty.addListener((p, o, n) -> {
-            mLabelMenuButton.setText(n.getFullName());
-            mLabelByIdProperty.set(n.name());
-        });
+        initListenersSuper();
 
         mPointComboBox.valueProperty().addListener(getChangeListener());
 
@@ -98,38 +78,8 @@ public class InfiltrationOptionsView extends MOptionsView {
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register("options.infiltration.pointBy", mPointSelectionModelSession.selectedIndexProperty());
-        sessionManager.register("options.infiltration.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.infiltration.labelBy", labelByIdProperty());
 
-        try {
-            mLabelByProperty.set(InfiltrationLabelBy.valueOf(mLabelByIdProperty.get()));
-        } catch (IllegalArgumentException e) {
-            mLabelByProperty.set(DEFAULT_LABEL_BY);
-        }
+        restoreLabelFromId(InfiltrationLabelBy.class, DEFAULT_LABEL_BY);
     }
-
-    private void populateLabelMenuButton() {
-        var categoryToMenu = new LinkedHashMap<String, Menu>();
-
-        for (var topoLabel : InfiltrationLabelBy.values()) {
-            var menu = categoryToMenu.computeIfAbsent(topoLabel.getCategory(), k -> {
-                return new Menu(k);
-            });
-
-            var menuItem = new MenuItem(topoLabel.getName());
-            menuItem.setOnAction(actionEvent -> {
-                mLabelByProperty.set(topoLabel);
-            });
-            menu.getItems().add(menuItem);
-        }
-
-        mLabelMenuButton.getItems().addAll(categoryToMenu.get("").getItems());
-        mLabelMenuButton.getItems().add(new SeparatorMenuItem());
-
-        for (var entry : categoryToMenu.entrySet()) {
-            if (StringUtils.isNotBlank(entry.getKey())) {
-                mLabelMenuButton.getItems().add(entry.getValue());
-            }
-        }
-    }
-
 }

@@ -158,7 +158,7 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
 
         String label;
         try {
-            label = mOptionsView.getLabelBy().getLabel(p);
+            label = labelBy.getLabel(p);
         } catch (Exception e) {
             label = "ERROR %s <<<<<<<<".formatted(p.getName());
         }

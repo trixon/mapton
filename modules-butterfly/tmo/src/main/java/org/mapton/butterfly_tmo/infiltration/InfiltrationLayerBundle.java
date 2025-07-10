@@ -147,11 +147,10 @@ public class InfiltrationLayerBundle extends BfLayerBundle {
 
         String label;
         try {
-//            label = mOptionsView.getLabelBy().getLabel(p);
+            label = labelBy.getLabel(p);
         } catch (Exception e) {
             label = "ERROR %s <<<<<<<<".formatted(p.getName());
         }
-        label = p.getBenämning();
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
         placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());

@@ -18,6 +18,7 @@ package org.mapton.butterfly_tmo.vattenkemi;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_format.types.tmo.BVattenkemi;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -26,26 +27,26 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public enum VattenkemiLabelBy {
-    NAME(Strings.CAT_ROOT, Dict.NAME.toString(), p -> {
+public enum VattenkemiLabelBy implements LabelBy.Operations {
+    NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
-    NONE(Strings.CAT_ROOT, Dict.NONE.toString(), p -> {
+    NONE(LabelBy.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
-    MISC_DATE(Strings.CAT_MISC, Dict.DATE.toString(), p -> {
+    MISC_DATE(LabelBy.CAT_MISC, Dict.DATE.toString(), p -> {
         var date = Objects.toString(DateHelper.toDateString(p.getInstallationsdatum()), "-");
 
         return date;
     }),
-    MISC_AGE(Strings.CAT_MISC, Dict.AGE.toString(), p -> {
+    MISC_AGE(LabelBy.CAT_MISC, Dict.AGE.toString(), p -> {
         return "?";
 //        return String.valueOf(p.ext().getAge(ChronoUnit.DAYS));
     }),
-    MISC_GROUP(Strings.CAT_MISC, Dict.GROUP.toString(), p -> {
+    MISC_GROUP(LabelBy.CAT_MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     }),
-    MISC_Z(Strings.CAT_MISC, "Z", p -> {
+    MISC_Z(LabelBy.CAT_MISC, "Z", p -> {
         return "?";
 //        return MathHelper.convertDoubleToString(p.getZ(), 1);
     });
@@ -59,10 +60,12 @@ public enum VattenkemiLabelBy {
         mFunction = function;
     }
 
+    @Override
     public String getCategory() {
         return mCategory;
     }
 
+    @Override
     public String getFullName() {
         if (StringUtils.isBlank(mCategory)) {
             return mName;
@@ -75,14 +78,8 @@ public enum VattenkemiLabelBy {
         return mFunction.apply(o);
     }
 
+    @Override
     public String getName() {
         return mName;
-    }
-
-    private class Strings {
-
-        public static final String CAT_MISC = Dict.MISCELLANEOUS.toString();
-        public static final String CAT_ROOT = "";
-
     }
 }
