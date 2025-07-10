@@ -26,7 +26,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public enum StrainLabelBy {
+public enum StrainLabelBy implements LabelBy.Operations {
     NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
@@ -146,10 +146,12 @@ public enum StrainLabelBy {
         mFunction = function;
     }
 
+    @Override
     public String getCategory() {
         return mCategory;
     }
 
+    @Override
     public String getFullName() {
         if (StringUtils.isBlank(mCategory)) {
             return mName;
@@ -166,6 +168,7 @@ public enum StrainLabelBy {
         }
     }
 
+    @Override
     public String getName() {
         return mName;
     }
