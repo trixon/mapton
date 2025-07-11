@@ -301,9 +301,6 @@ public class TopoAttributeManager extends BaseAttributeManager {
             case ORIGIN -> {
                 return getColorForOrigin(p);
             }
-            case SPEED -> {
-                return getColorForSpeed(p);
-            }
             case VERTICAL_DIRECTION -> {
                 return getColorForVerticalDirection(p);
             }
@@ -381,10 +378,6 @@ public class TopoAttributeManager extends BaseAttributeManager {
         index = Math.min(colors.length - 1, index);
 
         return colors[index];
-    }
-
-    private Color getColorForSpeed(BTopoControlPoint p) {
-        return TopoHelper.getSpeedColor(p);
     }
 
     private Color getColorForVerticalDirection(BTopoControlPoint p) {

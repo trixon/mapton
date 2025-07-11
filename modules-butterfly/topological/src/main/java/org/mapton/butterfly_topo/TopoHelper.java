@@ -138,16 +138,6 @@ public class TopoHelper {
         return ButterflyHelper.getAlarmMaterial(getAlarmLevelPlane(p));
     }
 
-    public static Color getSpeedColor(BTopoControlPoint p) {
-        var value = p.ext().getSpeed()[0];
-        return sSpeedColors[getColorIndex(sSpeedColors.length, 0.025, value)];
-    }
-
-    public static Material getSpeedMaterial(BTopoControlPoint p) {
-        var value = p.ext().getSpeed()[0];
-        return sSpeedMaterials[getColorIndex(sSpeedMaterials.length, 0.025, value)];
-    }
-
     public static Color getVerticalColor(BTopoControlPoint p) {
         var dZ = p.ext().deltaZero().getDelta1();
         if (dZ == null) {
