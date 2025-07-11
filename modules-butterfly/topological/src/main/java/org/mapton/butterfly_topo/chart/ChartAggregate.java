@@ -52,17 +52,19 @@ public class ChartAggregate {
         var callable = (Callable<JTabbedPane>) () -> {
             synchronized (mTabbedPane) {
                 mTabbedPane.removeAll();
-                mTabbedPane.add("Delta", mBuilderDelta.build(p).call());
-                mTabbedPane.add("Delta (avg)", mBuilderDeltaAvg.build(p).call());
-                if (p.getDimension() != BDimension._2d) {
-                    mTabbedPane.add("Trend 1d", mBuilderTrend1d.build(p).call());
-                }
-                if (p.getDimension() != BDimension._1d) {
-                    mTabbedPane.add("Trend 2d", mBuilderTrend2d.build(p).call());
-                }
+                if (p.ext().getObservationsTimeFiltered().size() > 1) {
+                    mTabbedPane.add("Delta", mBuilderDelta.build(p).call());
+                    mTabbedPane.add("Delta (avg)", mBuilderDeltaAvg.build(p).call());
+                    if (p.getDimension() != BDimension._2d) {
+                        mTabbedPane.add("Trend 1d", mBuilderTrend1d.build(p).call());
+                    }
+                    if (p.getDimension() != BDimension._1d) {
+                        mTabbedPane.add("Trend 2d", mBuilderTrend2d.build(p).call());
+                    }
 
-                if (prevIndex > -1) {
-                    mTabbedPane.setSelectedIndex(prevIndex);
+                    if (prevIndex > -1) {
+                        mTabbedPane.setSelectedIndex(prevIndex);
+                    }
                 }
 
                 return mTabbedPane;

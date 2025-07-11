@@ -28,7 +28,7 @@ import static j2html.TagCreator.tr;
 import j2html.tags.ContainerTag;
 import java.util.Objects;
 import org.mapton.api.report.MReport;
-import org.mapton.butterfly_alarm.api.AlarmHelper;
+import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.openide.util.lookup.ServiceProvider;
