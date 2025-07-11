@@ -73,7 +73,6 @@ public class TopoTrendsBuilder extends BTrendsBuilder<BTopoControlPoint> {
             for (var key : List.of("1w", "1m", "3m", "6m", "z", "f")) {
                 var trend = map.get(key);
                 if (trend != null && !trend.startMinute().getDay().equals(startMinute.getDay())) {
-                    trend.function();
                     var val1 = trend.function().getValue(ChartHelper.convertToMinute(now.plusYears(1)).getFirstMillisecond());
                     var val2 = trend.function().getValue(ChartHelper.convertToMinute(now).getFirstMillisecond());
                     var speed = "%+.1f mm/år (%d)".formatted((val1 - val2) * 1000, trend.numOfMeas());
