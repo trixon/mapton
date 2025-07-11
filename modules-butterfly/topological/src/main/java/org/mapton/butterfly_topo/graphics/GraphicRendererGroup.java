@@ -33,6 +33,7 @@ import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
+import org.mapton.api.MOptions;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoLayerBundle;
@@ -40,6 +41,7 @@ import static org.mapton.butterfly_topo.graphics.GraphicRendererBase.sCheckModel
 import static org.mapton.butterfly_topo.graphics.GraphicRendererBase.sMapObjects;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.ext.GrahamScan;
 
 /**
@@ -65,7 +67,8 @@ public class GraphicRendererGroup extends GraphicRendererBase {
     }
 
     public void plot(BTopoControlPoint p, Position position) {
-        p.setValue("position", position);
+        initScales();
+        p.setValue("position", new Position(position.latitude, position.longitude, position.getElevation()));
         mPoints.add(p);
     }
 
@@ -112,7 +115,7 @@ public class GraphicRendererGroup extends GraphicRendererBase {
         var endPositions = new ArrayList<Position>();
 
         for (var p : points) {
-            var positions = plot3dOffsetPole(p, p.getValue("position"), 1.0, true);
+            var positions = plot3dOffsetPoleNoCache(p, p.getValue("position"), true, 1.0, true);
             startPositions.add(positions[0]);
             endPositions.add(positions[1]);
         }
@@ -150,6 +153,7 @@ public class GraphicRendererGroup extends GraphicRendererBase {
             return;
         }
 
+        //Calculate and subtract min on order to use dbscan.
         var minX = filteredPoints.stream().mapToDouble(p -> p.getZeroX()).min().getAsDouble();
         var minY = filteredPoints.stream().mapToDouble(p -> p.getZeroY()).min().getAsDouble();
         var minZ = filteredPoints.stream().mapToDouble(p -> p.getZeroZ()).min().getAsDouble();
@@ -165,29 +169,52 @@ public class GraphicRendererGroup extends GraphicRendererBase {
         labelAttributes.setLabelOffset(Offset.CENTER);
 
         for (var cluster : clusters) {
-            var points = cluster.getPoints();
+            var points = new ArrayList<>(cluster.getPoints());
+            var anchorPositions = new ArrayList<Position>();
+
+            //Calculate cirtual center point for each cluster
+            var vcX = points.stream().mapToDouble(p -> p.getZeroX()).sum() / points.size();
+            var vcY = points.stream().mapToDouble(p -> p.getZeroY()).sum() / points.size();
+            var vcZ = points.stream().mapToDouble(p -> p.getZeroZ()).sum() / points.size();
+            var vcWgs = MOptions.getInstance().getMapCooTrans().toWgs84(vcY, vcX);
+            var virtualCenterPos = Position.fromDegrees(vcWgs.getY(), vcWgs.getX());
+
             Collections.sort(points, Comparator.comparing(BTopoControlPoint::getZeroZ));
             var pathPositions = new ArrayList<Position>();
-            var lastP = points.getLast();
-            Position firstPosition = points.getLast().getValue("position");
 
             for (int i = 0; i < points.size(); i++) {
                 var p = points.get(i);
+
+                //Plot vertical ground path once from the virtual center
                 if (i == 0) {
-                    var startPosition = WWHelper.positionFromPosition(firstPosition, 0);
-                    var endPosition = WWHelper.positionFromPosition(firstPosition, lastP.getZeroZ() + TopoLayerBundle.getZOffset());
+                    var topMostZ = points.getLast().getZeroZ();
+                    var startPosition = WWHelper.positionFromPosition(virtualCenterPos, 0);
+                    var endPosition = WWHelper.positionFromPosition(virtualCenterPos, topMostZ + TopoLayerBundle.getZOffset());
                     var groundPath = new Path(startPosition, endPosition);
                     groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
                     addRenderable(groundPath, true, null, sMapObjects);
                 }
 
-                var positions = plot3dOffsetPole(p, p.getValue("position"), false, 1.0, true);
                 var altitude = p.getZeroZ() + TopoLayerBundle.getZOffset();
-                var startPosition = WWHelper.positionFromPosition(firstPosition, altitude);
-                var endPosition = WWHelper.positionFromPosition(positions[1], altitude);
-                pathPositions.add(endPosition);
+                var mapStartPosition = WWHelper.positionFromPosition(virtualCenterPos, altitude);
+                var mapEndPosition = mapStartPosition;
+                var o2 = p.ext().getObservationsTimeFiltered().getLast();
+                anchorPositions.add(mapStartPosition);
 
-                var path = new Path(startPosition, endPosition);
+                if (o2.ext().getDeltaZ() != null) {
+                    var virtualDiffX = p.getZeroX() - vcX;
+                    var virtualDiffY = p.getZeroY() - vcY;
+//                    var virtualDiffZ = p.getZeroZ() - vcZ;
+                    var x = -virtualDiffX + p.getZeroX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * mScale3dP;
+                    var y = -virtualDiffY + p.getZeroY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * mScale3dP;
+
+                    var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
+                    mapEndPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), altitude);
+                }
+
+                pathPositions.add(mapEndPosition);
+
+                var path = new Path(mapStartPosition, mapEndPosition);
                 path.setAttributes(mAttributeManager.getComponentVector2dAttributes(p));
                 addRenderable(path, true, null, sMapObjects);
                 var leftClickRunnable = (Runnable) () -> {
@@ -201,25 +228,42 @@ public class GraphicRendererGroup extends GraphicRendererBase {
                 path.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
                 path.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
 
+                //Plot ruler and label
                 var d2 = p.ext().deltaZero().getDelta2();
                 if (d2 != null) {
-                    var scaleStep = 0.005;
+                    var scaleStep = 0.001;
                     var r = 0.05;
-                    var bearing = WWHelper.latLonFromPosition(startPosition).getBearing(WWHelper.latLonFromPosition(endPosition));
+                    var bearing = WWHelper.latLonFromPosition(mapStartPosition).getBearing(WWHelper.latLonFromPosition(mapEndPosition));
                     for (double j = scaleStep; j < d2; j += scaleStep) {
-                        var rulerPosition = WWHelper.movePolar(startPosition, bearing, j * 500, endPosition.getAltitude());
+                        var rulerPosition = WWHelper.movePolar(mapStartPosition, bearing, j * mScale3dP, mapEndPosition.getAltitude());
                         var ellipsoid = new Ellipsoid(rulerPosition, r, r, r);
                         ellipsoid.setAttributes(mAttributeManager.getSymbolAttributes(p));
                         addRenderable(ellipsoid, false, null, null);
                     }
-                }
 
-                plotLabel(p, positions[0]);
+                    if (sCheckModel.isChecked(GraphicItem.CLUSTER_DEFORMATION_PLANE_ALTITUDES_LABEL)) {
+                        var midPos = WWHelper.movePolar(mapStartPosition, bearing, d2 * .5);
+                        plotLabel(midPos, "TODO");
+                    }
+                }
             }
 
             var path = new Path(pathPositions);
             path.setAttributes(mAttributeManager.getBearingAttribute(true));
             addRenderable(path, false, null, sMapObjects);
+
+            var flagPositions = new ArrayList<Position>(pathPositions);
+            flagPositions.addAll(anchorPositions.reversed());
+            var flagPolygon = new Polygon(flagPositions);
+            var attrs = new BasicShapeAttributes();
+            attrs.setInteriorMaterial(Material.MAGENTA);
+            attrs.setInteriorOpacity(0.5);
+            attrs.setOutlineWidth(8);
+            attrs.setOutlineMaterial(Material.BLACK);
+//            attrs.setDrawOutline(false);
+            flagPolygon.setAttributes(attrs);
+
+            addRenderable(flagPolygon, false, null, sMapObjects);
         }
     }
 }

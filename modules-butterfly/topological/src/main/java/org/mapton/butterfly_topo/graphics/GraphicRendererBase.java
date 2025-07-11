@@ -32,6 +32,7 @@ import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
+import org.mapton.butterfly_core.api.sos.ScalePlot1dHSosi;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -54,6 +55,9 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
     protected final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
     protected final TopoManager mManager = TopoManager.getInstance();
+    protected Integer mScale1dH;
+    protected Integer mScale3dH;
+    protected Integer mScale3dP;
 
     static {
         for (var renderItem : GraphicItem.values()) {
@@ -65,6 +69,12 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         super(layer, passiveLayer, sPlotLimiter);
     }
 
+    public void initScales() {
+        mScale1dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot1dHSosi.class, ScalePlot1dHSosi.DEFAULT_VALUE);
+        mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosi.class, 500);
+        mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosi.class, 500);
+    }
+
     public boolean isValidFor3dPlot(BTopoControlPoint p) {
         var o1 = p.ext().getObservationsTimeFiltered().getFirst();
         var o2 = p.ext().getObservationsTimeFiltered().getLast();
@@ -72,75 +82,75 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         return ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ(), o1.getMeasuredZ(), o2.getMeasuredZ());
     }
 
-    public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, double scaleZero, boolean plotCurrent) {
-        return plot3dOffsetPole(p, position, true, scaleZero, plotCurrent);
+    public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, boolean plotEnabled, double scaleZero, boolean plotCurrent) {
+        return sPointToPositionMap.computeIfAbsent(p, k -> {
+            return plot3dOffsetPoleNoCache(p, position, plotEnabled, 0, plotCurrent);
+        });
     }
 
-    public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, boolean plotEnabled, double scaleZero, boolean plotCurrent) {
-        var scale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosi.class, 500);
-        var scale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosi.class, 500);
+    public Position[] plot3dOffsetPoleNoCache(BTopoControlPoint p, Position position, boolean plotEnabled, double scaleZero, boolean plotCurrent) {
+        var CURRENT_SIZE = 0.500;
+        var ZERO_SIZE = CURRENT_SIZE * 1.2;
+        var zeroZ = p.getZeroZ();
 
-        return sPointToPositionMap.computeIfAbsent(p, k -> {
-            var CURRENT_SIZE = 0.001 * scale3dP;
-//            var ZERO_SIZE = CURRENT_SIZE * 1.2 * scaleZero;
-            var ZERO_SIZE = CURRENT_SIZE * 1.2;
-            var zeroZ = p.getZeroZ();
+        var startPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.getZOffset());
+        var startEllipsoid = new Ellipsoid(startPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
+        if (plotCurrent) {
+            startEllipsoid.setAttributes(mAttributeManager.getComponentZeroAttributes());
+        } else {
+            startEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));
+        }
 
-            var startPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.getZOffset());
-            var startEllipsoid = new Ellipsoid(startPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
-            if (plotCurrent) {
-                startEllipsoid.setAttributes(mAttributeManager.getComponentZeroAttributes());
-            } else {
-                startEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));
-            }
+        if (plotEnabled) {
+            addRenderable(startEllipsoid, true, null, sMapObjects);
+        }
 
-            if (plotEnabled) {
-                addRenderable(startEllipsoid, true, null, sMapObjects);
-            }
+        var groundPath = new Path(position, startPosition);
+        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        if (plotEnabled) {
+            addRenderable(groundPath, true, null, sMapObjects);
+        }
 
-            var groundPath = new Path(position, startPosition);
-            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            if (plotEnabled) {
-                addRenderable(groundPath, true, null, sMapObjects);
-            }
-
-            var currentPosition = startPosition;
-            if (plotCurrent) {
+        var currentPosition = startPosition;
+        if (plotCurrent) {
 //            var o1 = p.ext().getObservationsTimeFiltered().getFirst();
-                var o2 = p.ext().getObservationsTimeFiltered().getLast();
+            var o2 = p.ext().getObservationsTimeFiltered().getLast();
 
-                if (o2.ext().getDeltaZ() != null) {
-                    var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * scale3dP;
-                    var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * scale3dP;
-                    var z = +o2.getMeasuredZ()
-                            + TopoLayerBundle.getZOffset()
-                            + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * scale3dH;
+            if (o2.ext().getDeltaZ() != null) {
+                var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * mScale3dP;
+                var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * mScale3dP;
+                var z = +o2.getMeasuredZ()
+                        + TopoLayerBundle.getZOffset()
+                        + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * mScale3dH;
 
-                    var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
-                    currentPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
-                }
-
-                var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
-                currentEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));
-                if (plotEnabled) {
-                    addRenderable(currentEllipsoid, true, null, sMapObjects);
-                }
+                var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
+                currentPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
             }
 
-            return new Position[]{startPosition, currentPosition};
-        });
+            var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
+            currentEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));
+            if (plotEnabled) {
+                addRenderable(currentEllipsoid, true, null, sMapObjects);
+            }
+        }
+
+        return new Position[]{startPosition, currentPosition};
     }
 
     public void plotLabel(BTopoControlPoint p, Position position) {
         if (sCheckModel.isChecked(GraphicItem.LABEL) && !sLabeledPoints.contains(p)) {
             sLabeledPoints.add(p);
-            var placemark = new PointPlacemark(position);
-            placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
-            placemark.setAltitudeMode(WorldWind.ABSOLUTE);
-            placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-            placemark.setLabelText(p.getValue(BKey.PIN_NAME));
-            addRenderable(placemark, false, null, null);
+            plotLabel(position, p.getValue(BKey.PIN_NAME));
         }
+    }
+
+    public void plotLabel(Position position, String string) {
+        var placemark = new PointPlacemark(position);
+        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+        placemark.setAltitudeMode(WorldWind.ABSOLUTE);
+        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+        placemark.setLabelText(string);
+        addRenderable(placemark, false, null, null);
     }
 
     protected boolean isPlotLimitReached(BTopoControlPoint p, Object key, Position position) {

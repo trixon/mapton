@@ -45,6 +45,7 @@ public class GraphicRendererCount extends GraphicRendererBase {
     }
 
     public void plot(BTopoControlPoint p, Position position) {
+        initScales();
         if (sCheckModel.isChecked(GraphicItem.MEASUREMENTS)) {
             plotCount(p, position);
         }

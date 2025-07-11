@@ -45,22 +45,21 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class GraphicRendererTrend extends GraphicRendererBase {
 
-    private double mAltitude;
-
-    private final Map<Integer, String> mIndexToIntervalMap = Map.of(
+    public static final Map<Integer, String> mIndexToIntervalMap = Map.of(
             0, "z",
             1, "6m",
             2, "3m",
             3, "1m",
             4, "1w"
     );
-    private final Map<String, Material> mIntervalToMaterialMap = Map.of(
+    public static final Map<String, Material> mIntervalToMaterialMap = Map.of(
             "1w", Material.RED,
             "1m", Material.ORANGE,
             "3m", Material.YELLOW,
             "6m", Material.CYAN,
             "z", Material.MAGENTA,
             "f", Material.BLACK);
+    private double mAltitude;
     private final double maxRadius = 10.0;
 
     public GraphicRendererTrend(RenderableLayer layer, RenderableLayer passiveLayer) {
@@ -68,6 +67,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
     }
 
     public void plot(BTopoControlPoint p, Position position) {
+        initScales();
         if (sCheckModel.isChecked(GraphicItem.TREND_1D_STACK)) {
             plotTrendStack(p, position, BComponent.HEIGHT, GraphicItem.TREND_1D_STACK);
         }

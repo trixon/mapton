@@ -59,6 +59,7 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
     }
 
     public void plot(BTopoControlPoint p, Position position) {
+        initScales();
         if (sCheckModel.isChecked(GraphicItem.ALARM_LEVEL)) {
             plotAlarmLevel(p, position);
         }

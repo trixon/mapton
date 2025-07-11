@@ -17,18 +17,26 @@ package org.mapton.butterfly_topo.graphics;
 
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Box;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.TreeSet;
 import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.api.MSimpleObjectStorageManager;
-import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
-import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
+import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.butterfly_topo.TopoLayerBundle;
+import org.mapton.butterfly_topo.api.TopoManager;
+import static org.mapton.butterfly_topo.graphics.GraphicRendererBase.sMapObjects;
+import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -38,16 +46,12 @@ import se.trixon.almond.util.MathHelper;
  */
 public class GraphicRendererVector extends GraphicRendererBase {
 
-    private Integer mScale3dH;
-    private Integer mScale3dP;
-
     public GraphicRendererVector(RenderableLayer layer, RenderableLayer passiveLayer) {
         super(layer, passiveLayer);
     }
 
     public void plot(BTopoControlPoint p, Position position) {
-        mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosi.class, 500);
-        mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosi.class, 500);
+        initScales();
 
         var dimension = p.getDimension();
 
@@ -55,8 +59,16 @@ public class GraphicRendererVector extends GraphicRendererBase {
             plot1d(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicItem.VECTOR_1D) && sCheckModel.isChecked(GraphicItem.VECTOR_1D_ALARM) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
+        if (sCheckModel.isChecked(GraphicItem.VECTOR_1D) && sCheckModel.isChecked(GraphicItem.VECTOR_1D_ALARM) && dimension != BDimension._2d) {
             plot1dVectorAlarm(p, position);
+        }
+
+        if (sCheckModel.isChecked(GraphicItem.VECTOR_1D) && sCheckModel.isChecked(GraphicItem.VECTOR_1D_LABEL) && dimension != BDimension._2d) {
+            plot1dVectorLabel(p, position);
+        }
+
+        if (sCheckModel.isChecked(GraphicItem.VECTOR_1D) && sCheckModel.isChecked(GraphicItem.VECTOR_1D_TREND) && dimension != BDimension._2d) {
+            plot1dVectorTrend(p, position);
         }
 
         if (sCheckModel.isChecked(GraphicItem.VECTOR_3D) && dimension == BDimension._3d) {
@@ -171,6 +183,70 @@ public class GraphicRendererVector extends GraphicRendererBase {
         }
     }
 
+    private void plot1dVectorLabel(BTopoControlPoint p, Position position) {
+        var zeroZ = p.getZeroZ();
+        var o = p.ext().getObservationsTimeFiltered().getLast();
+
+        if (ObjectUtils.anyNull(zeroZ, o.ext().getDeltaZ())) {
+            return;
+        }
+        var zeroPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.getZOffset());
+
+        var z = zeroZ
+                + TopoLayerBundle.getZOffset()
+                + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * mScale3dH;
+
+        var currentPosition = WWHelper.positionFromPosition(zeroPosition, z);
+        plotLabel(currentPosition, p.ext().deltaZero().getDelta1(0, 1000));
+    }
+
+    private void plot1dVectorTrend(BTopoControlPoint p, Position position) {
+        HashMap<String, TrendHelper.Trend> map = p.getValue(TopoManager.KEY_TRENDS_H);
+        var zeroZ = p.getZeroZ();
+        if (ObjectUtils.anyNull(map, zeroZ)) {
+            return;
+        }
+        var TREND_SIZE = 0.3;
+        var zeroPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.getZOffset());
+
+        var now = LocalDateTime.now();
+        var positions = new TreeSet<Position>(Comparator.comparingDouble(Position::getElevation));
+
+        for (var entry : GraphicRendererTrend.mIntervalToMaterialMap.entrySet()) {
+            var key = entry.getKey();
+            var material = entry.getValue();
+            var trend = map.get(key);
+            if (trend == null || entry.getKey().equalsIgnoreCase("f")) {
+                continue;
+            }
+
+            var trendDiff = trend.function().getValue(ChartHelper.convertToMinute(now.plusMonths(1)).getFirstMillisecond());
+
+            var trendPosition = zeroPosition;
+
+            var z = zeroZ
+                    + TopoLayerBundle.getZOffset()
+                    + trendDiff * mScale3dH;
+            trendPosition = WWHelper.positionFromPosition(trendPosition, z);
+            positions.add(trendPosition);
+
+            var trendBox = new Box(trendPosition, TREND_SIZE, TREND_SIZE, TREND_SIZE);
+            var attrs = new BasicShapeAttributes(mAttributeManager.getComponentVectorCurrentHeightAttributes(p));
+            attrs.setInteriorMaterial(material);
+            attrs.setInteriorOpacity(1.0);
+            trendBox.setAttributes(attrs);
+            addRenderable(trendBox, true, null, sMapObjects);
+        }
+
+        if (!positions.isEmpty()) {
+            for (var pos : List.of(positions.first(), positions.last())) {
+                var groundPath = new Path(pos, zeroPosition);
+                groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+                addRenderable(groundPath, true, null, sMapObjects);
+            }
+        }
+    }
+
     private void plot2d(BTopoControlPoint p, Position position) {
     }
 
@@ -179,7 +255,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
             return;
         }
 
-        var positions = plot3dOffsetPole(p, position, 1.0, true);
+        var positions = plot3dOffsetPole(p, position, true, 1.0, true);
         var startPosition = positions[0];
         var endPosition = positions[1];
 
@@ -206,7 +282,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
             return;
         }
 
-        var positions = plot3dOffsetPole(p, position, 0.75, false);
+        var positions = plot3dOffsetPole(p, position, true, 0.75, false);
         plotLabel(p, positions[0]);
     }
 

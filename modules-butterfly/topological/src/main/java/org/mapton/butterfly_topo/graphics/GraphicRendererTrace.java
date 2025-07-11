@@ -26,10 +26,6 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.mapton.api.MOptions;
-import org.mapton.api.MSimpleObjectStorageManager;
-import org.mapton.butterfly_core.api.sos.ScalePlot1dHSosi;
-import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
-import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoLayerBundle;
@@ -42,18 +38,12 @@ import se.trixon.almond.util.MathHelper;
  */
 public class GraphicRendererTrace extends GraphicRendererBase {
 
-    private int mScale1dH;
-    private int mScale3dH;
-    private int mScale3dP;
-
     public GraphicRendererTrace(RenderableLayer layer, RenderableLayer passiveLayer) {
         super(layer, passiveLayer);
     }
 
     public void plot(BTopoControlPoint p, Position position) {
-        mScale1dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot1dHSosi.class, ScalePlot1dHSosi.DEFAULT_VALUE);
-        mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosi.class, ScalePlot3dHSosi.DEFAULT_VALUE);
-        mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosi.class, ScalePlot3dPSosi.DEFAULT_VALUE);
+        initScales();
 
         var dimension = p.getDimension();
 
@@ -120,7 +110,7 @@ public class GraphicRendererTrace extends GraphicRendererBase {
             return;
         }
 
-        var positions = plot3dOffsetPole(p, position, 1.0, true);
+        var positions = plot3dOffsetPole(p, position, true, 1.0, true);
         if (ObjectUtils.anyNull(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
             return;
         }
