@@ -113,10 +113,6 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
         mOptionsView.labelByProperty().addListener((p, o, n) -> {
             repaint();
         });
-
-        mOptionsView.plotPointProperty().addListener((p, o, n) -> {
-            repaint();
-        });
     }
 
     private void initRepaint() {
@@ -128,68 +124,66 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
                 return;
             }
 
-            if (mOptionsView.plotPointProperty().get()) {
-                var pointBy = mOptionsView.getPointBy();
-                switch (pointBy) {
-                    case AUTO -> {
-                        mPinLayer.setEnabled(true);
-                        mSymbolLayer.setEnabled(true);
-                        var pinSymbolCutOff = 400.0;
-                        mSymbolLayer.setMaxActiveAltitude(pinSymbolCutOff);
-                        mPinLayer.setMinActiveAltitude(pinSymbolCutOff);
-                    }
-                    case NONE -> {
-                        mPinLayer.setEnabled(false);
-                        mSymbolLayer.setEnabled(false);
-                    }
-                    case PIN -> {
-                        mSymbolLayer.setEnabled(false);
-                        mPinLayer.setEnabled(true);
-                        mPinLayer.setMinActiveAltitude(Double.MIN_VALUE);
-                        mPinLayer.setMaxActiveAltitude(Double.MAX_VALUE);
-                    }
-                    case SYMBOL -> {
-                        mPinLayer.setEnabled(false);
-                        mSymbolLayer.setEnabled(true);
-                        mSymbolLayer.setMinActiveAltitude(Double.MIN_VALUE);
-                        mSymbolLayer.setMaxActiveAltitude(Double.MAX_VALUE);
-                    }
-                    default ->
-                        throw new AssertionError();
+            var pointBy = mOptionsView.getPointBy();
+            switch (pointBy) {
+                case AUTO -> {
+                    mPinLayer.setEnabled(true);
+                    mSymbolLayer.setEnabled(true);
+                    var pinSymbolCutOff = 400.0;
+                    mSymbolLayer.setMaxActiveAltitude(pinSymbolCutOff);
+                    mPinLayer.setMinActiveAltitude(pinSymbolCutOff);
                 }
-
-                synchronized (mManager.getTimeFilteredItems()) {
-                    for (var p : mManager.getTimeFilteredItems()) {
-                        if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
-                            var position = BCoordinatrix.toPositionWW2d(p);
-                            var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
-                            var mapObjects = new ArrayList<AVListImpl>();
-
-                            mapObjects.add(labelPlacemark);
-                            mapObjects.add(plotPin(p, position, labelPlacemark));
-                            mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
-                            mapObjects.addAll(plotIndicators(p, position));
-
-                            mGraphicRenderer.plot(p, position, mapObjects);
-
-                            var leftClickRunnable = (Runnable) () -> {
-                                mManager.setSelectedItemAfterReset(p);
-                            };
-
-                            var leftDoubleClickRunnable = (Runnable) () -> {
-                                Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                                mGraphicRenderer.addToAllowList(p);
-                                repaint();
-                            };
-
-                            mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                                r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                                r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                            });
-                        }
-                    }
-                    mGraphicRenderer.postPlot();
+                case NONE -> {
+                    mPinLayer.setEnabled(false);
+                    mSymbolLayer.setEnabled(false);
                 }
+                case PIN -> {
+                    mSymbolLayer.setEnabled(false);
+                    mPinLayer.setEnabled(true);
+                    mPinLayer.setMinActiveAltitude(Double.MIN_VALUE);
+                    mPinLayer.setMaxActiveAltitude(Double.MAX_VALUE);
+                }
+                case SYMBOL -> {
+                    mPinLayer.setEnabled(false);
+                    mSymbolLayer.setEnabled(true);
+                    mSymbolLayer.setMinActiveAltitude(Double.MIN_VALUE);
+                    mSymbolLayer.setMaxActiveAltitude(Double.MAX_VALUE);
+                }
+                default ->
+                    throw new AssertionError();
+            }
+
+            synchronized (mManager.getTimeFilteredItems()) {
+                for (var p : mManager.getTimeFilteredItems()) {
+                    if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
+                        var position = BCoordinatrix.toPositionWW2d(p);
+                        var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                        var mapObjects = new ArrayList<AVListImpl>();
+
+                        mapObjects.add(labelPlacemark);
+                        mapObjects.add(plotPin(p, position, labelPlacemark));
+                        mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
+                        mapObjects.addAll(plotIndicators(p, position));
+
+                        mGraphicRenderer.plot(p, position, mapObjects);
+
+                        var leftClickRunnable = (Runnable) () -> {
+                            mManager.setSelectedItemAfterReset(p);
+                        };
+
+                        var leftDoubleClickRunnable = (Runnable) () -> {
+                            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                            mGraphicRenderer.addToAllowList(p);
+                            repaint();
+                        };
+
+                        mapObjects.stream().filter(r -> r != null).forEach(r -> {
+                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                        });
+                    }
+                }
+                mGraphicRenderer.postPlot();
             }
 
             setDragEnabled(false);

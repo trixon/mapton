@@ -17,7 +17,7 @@ package org.mapton.butterfly_topo.grade.horizontal;
 
 import java.util.Arrays;
 import java.util.ResourceBundle;
-import javafx.scene.control.Tab;
+import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
@@ -39,7 +39,6 @@ public class GradeHView {
     private final MFilterPresetPopOver mFilterPresetPopOver;
     private final SingleListForm mListForm;
     private final GradeHManager mManager = GradeHManager.getInstance();
-    private Tab mTab;
 
     public GradeHView() {
         var config = new GradeFilterConfig();
@@ -71,14 +70,7 @@ public class GradeHView {
 
     }
 
-    public Tab getView() {
-        if (mTab == null) {
-            mTab = new Tab(mBundle.getString("grade_h"), mListForm.getView());
-            mManager.selectedItemProperty().addListener((p, o, n) -> {
-                mTab.getTabPane().getSelectionModel().select(mTab);
-            });
-        }
-
-        return mTab;
+    public Pane getView() {
+        return mListForm.getView();
     }
 }

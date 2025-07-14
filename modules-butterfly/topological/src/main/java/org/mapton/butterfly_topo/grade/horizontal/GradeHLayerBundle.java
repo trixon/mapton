@@ -24,13 +24,10 @@ import java.util.ResourceBundle;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.api.Mapton;
-import org.mapton.api.ui.forms.TabOptionsViewProvider;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoBaseLayerBundle;
-import org.mapton.butterfly_topo.TopoLayerBundle;
 import org.mapton.butterfly_topo.grade.GradeAttributeManager;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
 import org.mapton.butterfly_topo.grade.horizontal.graphic.GraphicRenderer;
@@ -53,12 +50,12 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
     private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
     private final GraphicRenderer mGraphicRenderer;
     private final GradeHManager mManager = GradeHManager.getInstance();
-    private GradeHOptionsView mOptionsView;
+    private final GradeHOptionsView mOptionsView;
 
     public GradeHLayerBundle() {
         init();
         initRepaint();
-        getOptionsView();
+        mOptionsView = new GradeHOptionsView(this);
         mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getComponentCheckModel());
         initListeners();
 //        mAttributeManager.setColorBy(mOptionsView.getColorBy());
@@ -68,13 +65,6 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        if (mOptionsView == null) {
-            mOptionsView = (GradeHOptionsView) TabOptionsViewProvider.getInstance(GradeHOptionsView.class);
-            if (mOptionsView != null) {
-                mOptionsView.setLayerBundle(this);
-            }
-        }
-
         return mOptionsView;
     }
 
@@ -85,13 +75,13 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
     }
 
     private void init() {
-        initCommons(mBundle.getString("grade_h"), SDict.TOPOGRAPHY.toString(), "TopoTopComponent");
+        initCommons(Bundle.CTL_GradeHAction(), SDict.TOPOGRAPHY.toString(), "GradeHTopComponent");
 
+        mLayer.setMaxActiveAltitude(16000);
+        mSurfaceLayer.setMaxActiveAltitude(16000);
+        mPinLayer.setMaxActiveAltitude(10000);
         mLabelLayer.setMaxActiveAltitude(2000);
-//        mMuteLayer.setPickEnabled(false);
-
-        setVisibleInLayerManager(mLayer, false);
-        connectToOtherBundle(TopoLayerBundle.class, GradeHOptionsView.class.getName());
+        mGroundConnectorLayer.setMaxActiveAltitude(1000);
     }
 
     private void initListeners() {
@@ -108,12 +98,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
             }
         });
 
-        Mapton.getGlobalState().addListener(gsce -> {
-            mLayer.setEnabled(gsce.getValue());
-            repaint();
-        }, GradeHOptionsView.class.getName());
-
-        ((GradeHOptionsView) getOptionsView()).labelByProperty().addListener((p, o, n) -> {
+        mOptionsView.labelByProperty().addListener((p, o, n) -> {
             repaint();
         });
 

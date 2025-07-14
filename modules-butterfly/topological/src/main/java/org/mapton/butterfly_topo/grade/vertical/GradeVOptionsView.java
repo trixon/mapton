@@ -18,18 +18,15 @@ package org.mapton.butterfly_topo.grade.vertical;
 import java.util.stream.Stream;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.api.ui.forms.TabOptionsViewProvider;
 import org.mapton.butterfly_core.api.BOptionsView;
 import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
 import org.mapton.butterfly_topo.grade.GradePointBy;
 import org.mapton.butterfly_topo.grade.vertical.graphics.GraphicItem;
 import org.openide.util.NbBundle;
-import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
@@ -39,8 +36,7 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = TabOptionsViewProvider.class)
-public class GradeVOptionsView extends BOptionsView implements TabOptionsViewProvider {
+public class GradeVOptionsView extends BOptionsView {
 
     private static final GradeVLabelBy DEFAULT_LABEL_BY = GradeVLabelBy.NAME;
     private static final GradePointBy DEFAULT_POINT_BY = GradePointBy.PIN;
@@ -48,7 +44,8 @@ public class GradeVOptionsView extends BOptionsView implements TabOptionsViewPro
     private final BooleanProperty mPlotPointProperty = new SimpleBooleanProperty();
     private final SessionComboBox<GradePointBy> mPointScb = new SessionComboBox<>();
 
-    public GradeVOptionsView() {
+    public GradeVOptionsView(GradeVLayerBundle layerBundle) {
+        super(layerBundle, NbBundle.getMessage(GradeManagerBase.class, "grade_v"));
         setDefaultId(DEFAULT_LABEL_BY);
         createUI();
         initListeners();
@@ -57,26 +54,6 @@ public class GradeVOptionsView extends BOptionsView implements TabOptionsViewPro
 
     public IndexedCheckModel<GraphicItem> getComponentCheckModel() {
         return mGraphicSccb.getCheckModel();
-    }
-
-    @Override
-    public Node getOvNode() {
-        return this;
-    }
-
-    @Override
-    public String getOvParent() {
-        return "TopoOptionsView";
-    }
-
-    @Override
-    public int getOvPosition() {
-        return 3;
-    }
-
-    @Override
-    public String getOvTitle() {
-        return NbBundle.getMessage(GradeManagerBase.class, "grade_v");
     }
 
     public GradePointBy getPointBy() {

@@ -15,13 +15,12 @@
  */
 package org.mapton.butterfly_topo.grade;
 
-import java.util.concurrent.TimeUnit;
 import javafx.collections.ListChangeListener;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.openide.util.Exceptions;
+import se.trixon.almond.util.fx.DelayedResetRunner;
 
 /**
  *
@@ -31,18 +30,12 @@ public abstract class GradeManagerBase extends BaseManager<BTopoGrade> {
 
     protected final TopoManager mTopoManager = TopoManager.getInstance();
     private final GradeChartBuilder mChartBuilder = new GradeChartBuilder();
+    private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(1000, () -> load());
 
     public GradeManagerBase(Class<BTopoGrade> typeParameterClass) {
         super(typeParameterClass);
         TopoManager.getInstance().getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
-            new Thread(() -> {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(1000);
-                } catch (InterruptedException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                load();
-            }).start();
+            mDelayedResetRunner.reset();
         });
 
     }

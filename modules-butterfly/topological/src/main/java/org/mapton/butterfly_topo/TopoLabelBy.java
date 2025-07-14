@@ -20,6 +20,7 @@ import java.util.function.Function;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.LabelBy;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.Dict;
@@ -45,6 +46,9 @@ public enum TopoLabelBy implements LabelBy.Operations {
     }),
     ALARM_H_PERCENT(LabelBy.CAT_ALARM, LabelBy.HEIGHT_PERCENT, p -> {
         return LabelBy.alarmHPercent(p);
+    }),
+    ALARM_H_DIFFERENTIAL(LabelBy.CAT_ALARM, LabelBy.HEIGHT_DIFFERENTIAL, p -> {
+        return LabelBy.alarmDifferential(p, BComponent.HEIGHT);
     }),
     ALARM_P_NAME(LabelBy.CAT_ALARM, LabelBy.PLANE_NAME, p -> {
         return LabelBy.alarmPName(p);

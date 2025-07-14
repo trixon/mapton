@@ -16,17 +16,12 @@
 package org.mapton.butterfly_topo;
 
 import java.util.stream.Stream;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
-import javafx.scene.control.TabPane;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MRunnable;
-import org.mapton.api.ui.forms.CheckedTab;
-import org.mapton.api.ui.forms.TabOptionsViewProvider;
 import org.mapton.butterfly_core.api.BOptionsView;
 import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_topo.graphics.GraphicItem;
@@ -34,7 +29,6 @@ import org.mapton.butterfly_topo.shared.ColorBy;
 import org.mapton.butterfly_topo.shared.PointBy;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Direction;
-import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
@@ -52,10 +46,7 @@ public class TopoOptionsView extends BOptionsView implements MRunnable {
     private final SessionComboBox<ColorBy> mColorScb = new SessionComboBox<>();
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<Direction> mIndicatorSccb = new SessionCheckComboBox<>();
-    private final BooleanProperty mPlotPointProperty = new SimpleBooleanProperty();
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
-    private CheckedTab mPointTab;
-    private final TabPane mTabPane = new TabPane();
 
     public TopoOptionsView(TopoLayerBundle layerBundle) {
         super(layerBundle, Bundle.CTL_ControlPointAction());
@@ -83,10 +74,6 @@ public class TopoOptionsView extends BOptionsView implements MRunnable {
 
     public PointBy getPointBy() {
         return mPointScb.valueProperty().get();
-    }
-
-    public BooleanProperty plotPointProperty() {
-        return mPlotPointProperty;
     }
 
     @Override
@@ -160,19 +147,7 @@ public class TopoOptionsView extends BOptionsView implements MRunnable {
         gp.setPadding(FxHelper.getUIScaledInsets(8));
         FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
 
-        mTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        mPointTab = new CheckedTab(SDict.POINTS.toString(), gp, "Points");
-        mPointTab.getTabCheckBox().setSelected(true);
-
-        mTabPane.getTabs().setAll(mPointTab);
-        for (var optionsView : TabOptionsViewProvider.getProviders("TopoOptionsView")) {
-            var tab = new CheckedTab(optionsView.getOvTitle(), optionsView.getOvNode(), optionsView.getOvId());
-            mTabPane.getTabs().add(tab);
-        }
-
-        mPlotPointProperty.bind(mPointTab.disabledProperty().not());
-
-        setCenter(mTabPane);
+        setCenter(gp);
     }
 
     private void initListeners() {
@@ -193,13 +168,6 @@ public class TopoOptionsView extends BOptionsView implements MRunnable {
         sessionManager.register("options.labelBy", labelByIdProperty());
         sessionManager.register("options.checkedGraphics", mGraphicSccb.checkedStringProperty());
         sessionManager.register("options.checkedIndicators", mIndicatorSccb.checkedStringProperty());
-
-        mTabPane.getTabs().stream()
-                .filter(t -> t instanceof CheckedTab)
-                .map(t -> (CheckedTab) t)
-                .forEach(t -> {
-                    sessionManager.register("options.CheckedTab." + t.getKey(), t.getTabCheckBox().selectedProperty());
-                });
 
         restoreLabelFromId(TopoLabelBy.class, DEFAULT_LABEL_BY);
     }

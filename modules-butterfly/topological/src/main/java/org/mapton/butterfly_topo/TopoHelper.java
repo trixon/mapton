@@ -19,6 +19,7 @@ import gov.nasa.worldwind.render.Material;
 import java.awt.Color;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 
 /**
  *
@@ -90,6 +91,10 @@ public class TopoHelper {
         }
     }
 
+    public static Color getAlarmColorAwt(BTopoGrade p) {
+        return ButterflyHelper.getAlarmColorAwt(getAlarmLevelHeight(p));
+    }
+
     public static Color getAlarmColorAwt(BTopoControlPoint p) {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
     }
@@ -106,6 +111,10 @@ public class TopoHelper {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevelHeight(p));
     }
 
+    public static javafx.scene.paint.Color getAlarmColorHeightFx(BTopoGrade p) {
+        return ButterflyHelper.getAlarmColorFx(getAlarmLevelHeight(p));
+    }
+
     public static Color getAlarmColorPlaneAwt(BTopoControlPoint p) {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevelPlane(p));
     }
@@ -116,6 +125,10 @@ public class TopoHelper {
 
     public static int getAlarmLevel(BTopoControlPoint p) {
         return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
+    }
+
+    public static int getAlarmLevelHeight(BTopoGrade p) {
+        return p.ext().getAlarmLevelHeight(Math.abs(p.ext().getDiff().getZQuota()));
     }
 
     public static int getAlarmLevelHeight(BTopoControlPoint p) {

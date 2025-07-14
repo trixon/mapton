@@ -182,6 +182,10 @@ public class TopoAttributeManager extends BaseAttributeManager {
         return mVectorAlarmAttributes[level + 1];
     }
 
+    public BasicShapeAttributes getComponentVectorAttributes(int alarmLevel) {
+        return mComponentVector12dAttributes[alarmLevel + 1];
+    }
+
     public BasicShapeAttributes getComponentVectorCurrentAttributes(BTopoControlPoint p) {
         if (mComponentVectorCurrentAttributes == null) {
             mComponentVectorCurrentAttributes = new BasicShapeAttributes[4];
