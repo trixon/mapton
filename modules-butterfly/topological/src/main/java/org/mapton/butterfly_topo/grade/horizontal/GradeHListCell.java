@@ -20,10 +20,10 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_format.types.topo.BTopoGradeDiff;
+import org.mapton.butterfly_topo.TopoHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -103,7 +103,7 @@ class GradeHListCell extends ListCell<BTopoGrade> {
         }
 
         public void update(BTopoGrade p) {
-            mHeightShape.setFill(Color.BLUE);
+            mHeightShape.setFill(TopoHelper.getAlarmColorHeightFx(p));
             mHeightShape.setVisible(true);
         }
 

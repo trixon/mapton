@@ -79,27 +79,26 @@ public abstract class GradeBaseLayerRenderer {
         return placemark;
     }
 
-    public PointPlacemark plotPin(BTopoGrade p, Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes(p);
-
-        var placemark = new PointPlacemark(position);
-        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        placemark.setAttributes(attrs);
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
-
-        mPinLayer.addRenderable(placemark);
-        if (labelPlacemark != null) {
-            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_ON, (Runnable) () -> {
-                labelPlacemark.setHighlighted(true);
-            });
-            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_OFF, (Runnable) () -> {
-                labelPlacemark.setHighlighted(false);
-            });
-        }
-
-        return placemark;
-    }
-
+//    public PointPlacemark plotPin(BTopoGrade p, Position position, BComponent component, PointPlacemark labelPlacemark) {
+//        var attrs = mAttributeManager.getPinAttributes(p, component);
+//
+//        var placemark = new PointPlacemark(position);
+//        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+//        placemark.setAttributes(attrs);
+//        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+//
+//        mPinLayer.addRenderable(placemark);
+//        if (labelPlacemark != null) {
+//            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_ON, (Runnable) () -> {
+//                labelPlacemark.setHighlighted(true);
+//            });
+//            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_OFF, (Runnable) () -> {
+//                labelPlacemark.setHighlighted(false);
+//            });
+//        }
+//
+//        return placemark;
+//    }
     public abstract void reset();
 
 }

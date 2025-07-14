@@ -27,6 +27,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.Mapton;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
 import org.mapton.butterfly_core.api.BKey;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoBaseLayerBundle;
 import org.mapton.butterfly_topo.TopoLayerBundle;
@@ -75,39 +76,6 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
         }
 
         return mOptionsView;
-    }
-
-    public PointPlacemark plotLabel(BTopoGrade p, GradeHLabelBy labelBy, Position position) {
-        if (labelBy == GradeHLabelBy.NONE) {
-            return null;
-        } else {
-            var label = labelBy.getLabel(p);
-            p.setValue(BKey.PIN_NAME, label);
-            var placemark = createPlacemark(position, label, mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
-
-            return placemark;
-        }
-    }
-
-    public PointPlacemark plotPin(BTopoGrade p, Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes(p);
-
-        var placemark = new PointPlacemark(position);
-        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        placemark.setAttributes(attrs);
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
-
-        mPinLayer.addRenderable(placemark);
-        if (labelPlacemark != null) {
-            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_ON, (Runnable) () -> {
-                labelPlacemark.setHighlighted(true);
-            });
-            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_OFF, (Runnable) () -> {
-                labelPlacemark.setHighlighted(false);
-            });
-        }
-
-        return placemark;
     }
 
     @Override
@@ -212,6 +180,39 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
 
             setDragEnabled(false);
         });
+    }
+
+    private PointPlacemark plotLabel(BTopoGrade p, GradeHLabelBy labelBy, Position position) {
+        if (labelBy == null || labelBy == GradeHLabelBy.NONE) {
+            return null;
+        } else {
+            var label = labelBy.getLabel(p);
+            p.setValue(BKey.PIN_NAME, label);
+            var placemark = createPlacemark(position, label, mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
+
+            return placemark;
+        }
+    }
+
+    private PointPlacemark plotPin(BTopoGrade p, Position position, PointPlacemark labelPlacemark) {
+        var attrs = mAttributeManager.getPinAttributes(p, BComponent.HEIGHT);
+
+        var placemark = new PointPlacemark(position);
+        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        placemark.setAttributes(attrs);
+        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+
+        mPinLayer.addRenderable(placemark);
+        if (labelPlacemark != null) {
+            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_ON, (Runnable) () -> {
+                labelPlacemark.setHighlighted(true);
+            });
+            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_OFF, (Runnable) () -> {
+                labelPlacemark.setHighlighted(false);
+            });
+        }
+
+        return placemark;
     }
 
 }

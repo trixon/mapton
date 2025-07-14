@@ -27,6 +27,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.Mapton;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
 import org.mapton.butterfly_core.api.BKey;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoBaseLayerBundle;
 import org.mapton.butterfly_topo.TopoLayerBundle;
@@ -87,8 +88,8 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
         }
     }
 
-    public PointPlacemark plotPin(BTopoGrade p, Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes(p);
+    public PointPlacemark plotPin(BTopoGrade p, Position position, PointPlacemark labelPlacemark, BComponent component) {
+        var attrs = mAttributeManager.getPinAttributes(p, component);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
@@ -186,7 +187,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
                             var mapObjects = new ArrayList<AVListImpl>();
 
                             mapObjects.add(labelPlacemark);
-                            mapObjects.add(plotPin(p, position, labelPlacemark));
+                            mapObjects.add(plotPin(p, position, labelPlacemark, BComponent.PLANE));
 //                    mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
                             mGraphicRenderer.plot(p, position, mapObjects);
 

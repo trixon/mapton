@@ -15,16 +15,14 @@
  */
 package org.mapton.butterfly_topo.grade;
 
-import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
-import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
-import java.awt.Color;
-import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
-import org.mapton.butterfly_core.api.ButterflyHelper;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
+import org.mapton.butterfly_topo.TopoAttributeManager;
+import org.mapton.butterfly_topo.TopoHelper;
 
 /**
  *
@@ -34,7 +32,6 @@ public class GradeAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mGroundCylinderAttributes;
     private BasicShapeAttributes mGroundPathAttributes;
-    private BasicShapeAttributes mGradeHAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
 
     public static GradeAttributeManager getInstance() {
@@ -44,16 +41,8 @@ public class GradeAttributeManager extends BaseAttributeManager {
     private GradeAttributeManager() {
     }
 
-    public BasicShapeAttributes getGroundPathAttributes() {
-        if (mGroundPathAttributes == null) {
-            mGroundPathAttributes = new BasicShapeAttributes();
-            mGroundPathAttributes.setDrawOutline(true);
-            mGroundPathAttributes.setOutlineMaterial(Material.PINK);
-            mGroundPathAttributes.setEnableLighting(false);
-            mGroundPathAttributes.setOutlineWidth(1);
-        }
-
-        return mGroundPathAttributes;
+    public BasicShapeAttributes getGradeHAttributes(BTopoGrade p) {
+        return TopoAttributeManager.getInstance().getComponentVectorAttributes(TopoHelper.getAlarmLevelHeight(p));
     }
 
     public BasicShapeAttributes getGroundCylinderAttributes() {
@@ -69,46 +58,24 @@ public class GradeAttributeManager extends BaseAttributeManager {
         return mGroundCylinderAttributes;
     }
 
-    public BasicShapeAttributes getGradeHAttributes(BTopoGrade p) {
-//        if (mGradeHAttributes == null) {
-        var mGradeHAttributes = new BasicShapeAttributes();
-        mGradeHAttributes.setDrawOutline(true);
-        mGradeHAttributes.setOutlineMaterial(Material.BLUE);
-        mGradeHAttributes.setEnableLighting(false);
-        mGradeHAttributes.setOutlineWidth(2);
-//        }
-        var material = Material.GREEN;
-        var grade = Math.abs(p.ext().getDiff().getZPerMille());
-        if (grade >= 1.0) {
-            material = Material.RED;
-        } else if (grade >= 0.5) {
-            material = Material.YELLOW;
+    public BasicShapeAttributes getGroundPathAttributes() {
+        if (mGroundPathAttributes == null) {
+            mGroundPathAttributes = new BasicShapeAttributes();
+            mGroundPathAttributes.setDrawOutline(true);
+            mGroundPathAttributes.setOutlineMaterial(Material.PINK);
+            mGroundPathAttributes.setEnableLighting(false);
+            mGroundPathAttributes.setOutlineWidth(1);
         }
-        mGradeHAttributes.setOutlineMaterial(material);
 
-        return mGradeHAttributes;
+        return mGroundPathAttributes;
     }
 
-    public PointPlacemarkAttributes getPinAttributes(BTopoGrade p) {
-        if (mPinAttributes == null) {
-            mPinAttributes = new PointPlacemarkAttributes[4];
-            for (int i = 0; i < 4; i++) {
-                var attrs = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-                attrs.setImageAddress("images/pushpins/plain-white.png");
-                attrs.setImageColor(ButterflyHelper.getAlarmColorAwt(i - 1));
-                attrs.setImageColor(Color.ORANGE);
-                attrs.setScale(Mapton.getScalePinImage());
-                attrs.setLabelScale(Mapton.getScalePinLabel());
-
-                mPinAttributes[i] = attrs;
-            }
-        }
-
-        var attrs = mPinAttributes[1];
+    public PointPlacemarkAttributes getPinAttributes(BTopoGrade p, BComponent component) {
+        var attrs = getPinAttributes(TopoHelper.getAlarmLevelHeight(p));
 
 //        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
 //            attrs = new PointPlacemarkAttributes(attrs);
-//            attrs.setImageColor(getColor(mColorBy, p));
+//            attrs.setImageColor(getColor(p));
 //        }
         return attrs;
     }
