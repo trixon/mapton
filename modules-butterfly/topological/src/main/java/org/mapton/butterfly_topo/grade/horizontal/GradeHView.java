@@ -21,7 +21,10 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_topo.grade.GradeFilter;
 import org.mapton.butterfly_topo.grade.GradeFilterConfig;
+import org.mapton.butterfly_topo.grade.GradeFilterPopOver;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
 import org.mapton.core.api.ui.MFilterPresetPopOver;
 import org.openide.util.NbBundle;
@@ -34,11 +37,11 @@ import se.trixon.almond.util.Dict;
 public class GradeHView {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
-    private final GradeHFilter mFilter = new GradeHFilter();
-    private final GradeHFilterPopOver mFilterPopOver;
+    private final GradeFilterPopOver mFilterPopOver;
     private final MFilterPresetPopOver mFilterPresetPopOver;
     private final SingleListForm mListForm;
     private final GradeHManager mManager = GradeHManager.getInstance();
+    private final GradeFilter mFilter = new GradeFilter(mManager);
 
     public GradeHView() {
         var config = new GradeFilterConfig();
@@ -46,8 +49,9 @@ public class GradeHView {
         config.setMinGradeHorizontal(10.0);
         config.setMaxDeltaH(10.0);
         config.setMaxDeltaR(GradeHManager.MAX_RADIAL_DISTANCE);
+        config.setDimension(BDimension._1d);
 
-        mFilterPopOver = new GradeHFilterPopOver(mFilter, config);
+        mFilterPopOver = new GradeFilterPopOver(mFilter, config, BDimension._1d);
         mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "gradeH");
 
         var actions = Arrays.asList(
@@ -64,10 +68,7 @@ public class GradeHView {
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
         mListForm.getListView().setCellFactory(listView -> new GradeHListCell());
-        mListForm.setFreeTextTooltip(
-                Dict.NAME.toString()
-        );
-
+        mListForm.setFreeTextTooltip(Dict.NAME.toString());
     }
 
     public Pane getView() {

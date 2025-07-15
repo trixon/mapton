@@ -15,12 +15,15 @@
  */
 package org.mapton.butterfly_topo.grade;
 
+import org.mapton.butterfly_format.types.BDimension;
+
 /**
  *
  * @author Patrik Karlström
  */
 public class GradeFilterConfig {
 
+    private BDimension mDimension = BDimension._1d;
     private String mKeyPrefix;
     private double mMaxDabbaH = 500.0;
     private double mMaxDabbaR = 500.0;
@@ -34,6 +37,10 @@ public class GradeFilterConfig {
     private double mMinDeltaR;
     private double mMinGradeHorizontal = 0.0;
     private double mMinGradeVertical = 0.0;
+
+    public BDimension getDimension() {
+        return mDimension;
+    }
 
     public String getKeyPrefix() {
         return mKeyPrefix;
@@ -85,6 +92,10 @@ public class GradeFilterConfig {
 
     public double getMinGradeVertical() {
         return mMinGradeVertical;
+    }
+
+    public void setDimension(BDimension dimension) {
+        this.mDimension = dimension;
     }
 
     public void setKeyPrefix(String keyPrefix) {

@@ -16,9 +16,9 @@
 package org.mapton.butterfly_topo.grade.horizontal;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import javafx.geometry.Point2D;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BCoordinatrix;
@@ -79,21 +79,23 @@ public class GradeHManager extends GradeManagerBase {
             }
         }
 
-        var grades = new ArrayList<BTopoGrade>();
+        var gradesAll = new ArrayList<BTopoGrade>();
         for (var entry : pointToPoints.entrySet()) {
             var p1 = mTopoManager.getItemForKey(entry.getKey());
             for (var n2 : entry.getValue()) {
                 var p2 = mTopoManager.getItemForKey(n2);
                 var grade = new BTopoGrade(BAxis.HORIZONTAL, p1, p2);
                 if (grade.getCommonObservations().size() > 1 && Math.abs(grade.ext().getDiff().getZQuota()) >= MIN_GRADE_H) {
-                    grades.add(grade);
+                    gradesAll.add(grade);
                 }
             }
         }
+        var gradesLim = gradesAll.stream()
+                .sorted((o1, o2) -> Double.valueOf(Math.abs(o2.ext().getDiff().getZQuota())).compareTo(Math.abs(o1.ext().getDiff().getZQuota())))
+                .limit(1000)
+                .collect(Collectors.toCollection(ArrayList::new));
 
-        Collections.sort(grades, (o1, o2) -> Double.valueOf(Math.abs(o2.ext().getDiff().getZQuota())).compareTo(Math.abs(o1.ext().getDiff().getZQuota())));
-
-        grades.forEach(g -> {
+        gradesLim.forEach(g -> {
             var first = BCoordinatrix.toLatLon(g.getP1());
             var second = BCoordinatrix.toLatLon(g.getP2());
             var d = first.distance(second);
@@ -104,9 +106,9 @@ public class GradeHManager extends GradeManagerBase {
         });
 
         FxHelper.runLater(() -> {
-            setItemsAll(grades);
-            setItemsFiltered(grades);
-            setItemsTimeFiltered(grades);
+            setItemsAll(gradesLim);
+            setItemsFiltered(gradesLim);
+            setItemsTimeFiltered(gradesLim);
         });
     }
 

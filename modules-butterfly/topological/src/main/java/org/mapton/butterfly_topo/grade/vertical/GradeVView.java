@@ -21,7 +21,10 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_topo.grade.GradeFilter;
 import org.mapton.butterfly_topo.grade.GradeFilterConfig;
+import org.mapton.butterfly_topo.grade.GradeFilterPopOver;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
 import org.mapton.core.api.ui.MFilterPresetPopOver;
 import org.openide.util.NbBundle;
@@ -34,11 +37,11 @@ import se.trixon.almond.util.Dict;
 public class GradeVView {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
-    private final GradeVFilter mFilter = new GradeVFilter();
-    private final GradeVFilterPopOver mFilterPopOver;
+    private final GradeFilterPopOver mFilterPopOver;
     private final MFilterPresetPopOver mFilterPresetPopOver;
     private final SingleListForm mListForm;
     private final GradeVManager mManager = GradeVManager.getInstance();
+    private final GradeFilter mFilter = new GradeFilter(mManager);
 
     public GradeVView() {
         var config = new GradeFilterConfig();
@@ -47,8 +50,9 @@ public class GradeVView {
         config.setMinDeltaH(GradeVManager.MIN_VERTICAL_DISTANCE);
         config.setMinGradeVertical(5.0);
         config.setMinGradeHorizontal(10.0);
+        config.setDimension(BDimension._3d);
 
-        mFilterPopOver = new GradeVFilterPopOver(mFilter, config);
+        mFilterPopOver = new GradeFilterPopOver(mFilter, config, BDimension._3d);
         mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "gradeV");
 
         var actions = Arrays.asList(
@@ -65,9 +69,7 @@ public class GradeVView {
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
         mListForm.getListView().setCellFactory(listView -> new GradeVListCell());
-        mListForm.setFreeTextTooltip(
-                Dict.NAME.toString()
-        );
+        mListForm.setFreeTextTooltip(Dict.NAME.toString());
     }
 
     public Pane getView() {
