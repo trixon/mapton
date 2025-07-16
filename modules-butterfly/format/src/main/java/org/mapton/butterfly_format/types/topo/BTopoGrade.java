@@ -29,15 +29,17 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAxis;
-import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BTopoGrade extends BBasePoint {
+public class BTopoGrade extends BXyzPoint {
 
     private static final String DATE_PATTERN = "YYYY-'W'ww";
     private final BAxis mAxis;
@@ -68,6 +70,7 @@ public class BTopoGrade extends BBasePoint {
         }
     }
 
+    @Override
     public Ext ext() {
         if (mExt == null) {
             mExt = new Ext();
@@ -127,10 +130,14 @@ public class BTopoGrade extends BBasePoint {
         var map1 = new HashMap<LocalDate, Point3D>();
 
         var weekToObservations = new HashMap<String, ArrayList<Point3D>>();
-
+        var beforeZero1 = true;
+        var beforeZero3 = true;
         if (p.getDimension() == BDimension._1d) {
             for (var o : p.ext().getObservationsTimeFiltered()) {
-                if (ObjectUtils.anyNull(o.ext().getDeltaZ())) {
+                if (o.isZeroMeasurement()) {
+                    beforeZero1 = false;
+                }
+                if (beforeZero1 || ObjectUtils.anyNull(o.ext().getDeltaZ())) {
                     continue;
                 }
                 var yyyyww = o.getDate().toLocalDate().format(mWeeklyAvgFormatterTo);
@@ -139,7 +146,10 @@ public class BTopoGrade extends BBasePoint {
             }
         } else if (p.getDimension() == BDimension._3d) {
             for (var o : p.ext().getObservationsTimeFiltered()) {
-                if (ObjectUtils.anyNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ())) {
+                if (o.isZeroMeasurement()) {
+                    beforeZero3 = false;
+                }
+                if (beforeZero3 || ObjectUtils.anyNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ())) {
                     continue;
                 }
                 var key = o.getDate().toLocalDate().format(mWeeklyAvgFormatterTo);
@@ -162,9 +172,45 @@ public class BTopoGrade extends BBasePoint {
         return map1;
     }
 
-    public class Ext extends BBasePoint.Ext<BTopoGradeObservation> {
+    public class Ext extends BXyzPoint.Ext<BTopoGradeObservation> {
 
         public Ext() {
+        }
+
+        public int getAlarmLevel(BComponent component, Double value) {
+            var alarm1 = getAlarmP1(component);
+            var level1 = -1;
+            if (ObjectUtils.allNotNull(alarm1, value)) {
+                level1 = alarm1.ext().getRatioLevel(value);
+            }
+
+            var alarm2 = getAlarmP2(component);
+            var level2 = -1;
+            if (ObjectUtils.allNotNull(alarm2, value)) {
+                level2 = alarm2.ext().getRatioLevel(value);
+            }
+
+            return Math.max(level1, level2);
+        }
+
+        public double getAlarmLevelForRangeByIndex(BAlarm alarm, int rangeIndex) {
+            try {
+                return alarm.ext().getRangeRatio(rangeIndex).getMaximum();
+            } catch (Exception e) {
+                return Double.NaN;
+            }
+        }
+
+        public int getAlarmLevelHeight(Double value) {
+            return getAlarmLevel(BComponent.HEIGHT, value);
+        }
+
+        public BAlarm getAlarmP1(BComponent component) {
+            return mP1.ext().getAlarm(component);
+        }
+
+        public BAlarm getAlarmP2(BComponent component) {
+            return mP2.ext().getAlarm(component);
         }
 
         public BTopoGradeDiff getDiff() {
@@ -173,6 +219,14 @@ public class BTopoGrade extends BBasePoint {
 
         public BTopoGradeDiff getDiff(BTopoGradeObservation referenceObservation, BTopoGradeObservation observation) {
             return new BTopoGradeDiff(BTopoGrade.this, referenceObservation, observation);
+        }
+
+        public Vector3D getMidPoint() {
+            var a = new Vector3D(getP1().getZeroX(), getP1().getZeroY(), getP1().getZeroZ());
+            var b = new Vector3D(getP2().getZeroX(), getP2().getZeroY(), getP2().getZeroZ());
+            var midpoint = a.add(b).scalarMultiply(0.5);
+
+            return midpoint;
         }
 
         public long getNumOfCommonDays() {
@@ -187,13 +241,6 @@ public class BTopoGrade extends BBasePoint {
             return ChronoUnit.DAYS.between(getLastDate(), LocalDate.now());
         }
 
-        public Vector3D getMidPoint() {
-            var a = new Vector3D(getP1().getZeroX(), getP1().getZeroY(), getP1().getZeroZ());
-            var b = new Vector3D(getP2().getZeroX(), getP2().getZeroY(), getP2().getZeroZ());
-            var midpoint = a.add(b).scalarMultiply(0.5);
-
-            return midpoint;
-        }
     }
 
 }

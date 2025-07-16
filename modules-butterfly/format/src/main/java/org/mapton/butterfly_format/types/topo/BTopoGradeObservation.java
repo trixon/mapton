@@ -16,13 +16,13 @@
 package org.mapton.butterfly_format.types.topo;
 
 import javafx.geometry.Point3D;
-import org.mapton.butterfly_format.types.BBaseControlPointObservation;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BTopoGradeObservation extends BBaseControlPointObservation {
+public class BTopoGradeObservation extends BXyzPointObservation {
 
     private final BTopoGrade mGrade;
     private Point3D mPoint3d1;

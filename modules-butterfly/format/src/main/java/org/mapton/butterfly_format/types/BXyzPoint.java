@@ -570,6 +570,15 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
         }
 
+        public String getAlarmRatios(BComponent component) {
+            var alarm = getAlarm(component);
+            if (alarm != null) {
+                return StringHelper.joinNonNulls("//", alarm.getRatio1s(), alarm.getRatio2s(), alarm.getRatio3s());
+            } else {
+                return "";
+            }
+        }
+
         public Double getFrequenceHighBuffer() {
             return mFrequenceHighBuffer;
         }
@@ -579,6 +588,26 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             var nextMeas = latest.plusDays(getFrequency());
 
             return chronoUnit.between(LocalDate.now(), nextMeas);
+        }
+
+        public int getNumOfReplacements() {
+            return (int) getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count();
+        }
+
+        public int getNumOfReplacementsAfterZero() {
+            var num = 0;
+            var zeroFound = false;
+            for (var o : getObservationsAllRaw()) {
+                if (o.isZeroMeasurement()) {
+                    zeroFound = true;
+                }
+
+                if (zeroFound && o.isReplacementMeasurement()) {
+                    num++;
+                }
+            }
+
+            return num;
         }
 
         public LocalDate getObservationRawNextDate() {
