@@ -16,6 +16,7 @@
 package org.mapton.butterfly_core;
 
 import org.mapton.api.MOptions;
+import org.mapton.butterfly_core.api.AlarmHistoryManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.openide.windows.OnShowing;
 import se.trixon.almond.nbp.Almond;
@@ -38,6 +39,7 @@ public class DoOnShowing implements Runnable {
         }
 
         ButterflyHelper.refreshTitle();
+        AlarmHistoryManager.getInstance();
     }
 
 }

@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.function.Function;
 import org.jfree.data.function.LineFunction2D;
 import org.jfree.data.statistics.Regression;
+import org.jfree.data.time.Hour;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -101,6 +102,18 @@ public class TrendHelper {
                 ChartHelper.convertToMinute(endDate),
                 timeSeries.getItemCount()
         );
+    }
+
+    public static Double getMmPerYear(Trend trend) {
+        var now = LocalDateTime.now();
+        var startMinute = new Minute(0, new Hour());
+        if (trend != null && !trend.startMinute().getDay().equals(startMinute.getDay())) {
+            var val1 = trend.function().getValue(ChartHelper.convertToMinute(now.plusYears(1)).getFirstMillisecond());
+            var val2 = trend.function().getValue(ChartHelper.convertToMinute(now).getFirstMillisecond());
+            return (val1 - val2) * 1000;
+        }
+
+        return null;
     }
 
     private TrendHelper() {

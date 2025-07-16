@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javafx.beans.property.BooleanProperty;
@@ -69,7 +70,7 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
 
     public Callable<String> getExternalSysUrlCallable() {
         return () -> {
-            return MSearchProviderManager.getInstance().getUrl(getSelectedItem().getExternalSysId(), getSelectedItem().getExternalSysKey());
+            return MSearchProviderManager.getInstance().getUrl(getSelectedItem().getExternalSysId(), URLEncoder.encode(getSelectedItem().getExternalSysKey(), "UTF-8"));
         };
     }
 

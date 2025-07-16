@@ -80,7 +80,7 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
             if (validStep1 && selectedIndex > 0) {
                 var validStep2 = false;
                 if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
-                    validStep2 = validateFreqParameter(p.getZeroX(), p.getZeroY(), ext.getFrequenceIntenseBuffer(), selectedIndex);
+                    validStep2 = validateFreqParameter(p.getZeroX(), p.getZeroY(), ext.getFrequenceHighBuffer(), selectedIndex);
                 }
                 return validStep1 && validStep2;
             } else {

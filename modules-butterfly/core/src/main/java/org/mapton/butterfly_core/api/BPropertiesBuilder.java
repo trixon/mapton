@@ -117,9 +117,9 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
         var need = p.getFrequency() == 0 ? "-" : Long.toString(params.dayUntilNext);
         map.put(getCatKeyNum(CAT_MEAS,
                 StringHelper.join(SEPARATOR, "", SDict.FREQUENCY.toString(), Dict.DEFAULT.toString(), Dict.HIGH.toString())),
-                StringHelper.join(SEPARATOR, "", p.getFrequency().toString(), p.getFrequencyDefault().toString(), p.getFrequencyIntense().toString()));
+                StringHelper.join(SEPARATOR, "", p.getFrequency().toString(), p.getFrequencyDefault().toString(), p.getFrequencyHigh().toString()));
         var freqCondition = "Frekvensvillkor, hög";
-        map.put(getCatKeyNum(CAT_MEAS, freqCondition), p.getFrequencyIntenseParam());
+        map.put(getCatKeyNum(CAT_MEAS, freqCondition), p.getFrequencyHighParam());
         map.put(getCatKeyNum(CAT_MEAS, Dict.NEED.toString()), need);
         map.put(getCatKeyNum(CAT_MEAS, Dict.AGE.toString()), params.age);
         var measurements = "%d / %d".formatted(
@@ -131,6 +131,7 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
         map.put(getCatKeyNum(CAT_MEAS, SDict.MEASUREMENTS_NUM_OF_REPLACEMENTS.toString()), params.numOfReplacements);
         var delta = "Δ ";
         map.put(getCatKeyNum(CAT_MEAS, Dict.BEARING.toString()), StringHelper.round(params.azimuth(), 0));
+        map.put(getCatKeyNum(CAT_MEAS, "Utglesning"), p.getSparse());
         map.put(getCatKeyNum(CAT_MEAS, SDict.ROLLING.toString()), p.getRollingFormula());
         map.put(getCatKeyNum(CAT_MEAS, delta + SDict.ROLLING.toString()), params.deltaRolling);
         map.put(getCatKeyNum(CAT_MEAS, delta + Dict.REFERENCE.toString()), params.deltaZero);

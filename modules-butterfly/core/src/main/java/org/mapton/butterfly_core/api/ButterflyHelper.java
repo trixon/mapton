@@ -33,13 +33,15 @@ public class ButterflyHelper {
         java.awt.Color.BLUE,
         java.awt.Color.GREEN,
         java.awt.Color.YELLOW,
-        java.awt.Color.RED
+        java.awt.Color.RED,
+        java.awt.Color.RED.darker()
     };
     private static final javafx.scene.paint.Color[] mAlarmColorsFx = new javafx.scene.paint.Color[]{
         javafx.scene.paint.Color.BLUE,
         javafx.scene.paint.Color.LIGHTGREEN,
         javafx.scene.paint.Color.YELLOW,
-        javafx.scene.paint.Color.RED
+        javafx.scene.paint.Color.RED,
+        javafx.scene.paint.Color.RED.darker()
     };
     private static final Material[] mAlarmMaterials = new Material[]{
         Material.BLUE,

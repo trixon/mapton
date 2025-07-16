@@ -108,8 +108,8 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
 
     public static void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDate, boolean plotLabel) {
         var distanceLimitDefault = 40.0;
-        if (p instanceof BXyzPoint xyz && xyz.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext && ext.getFrequenceIntenseBuffer() != null) {
-            distanceLimitDefault = ext.getFrequenceIntenseBuffer();
+        if (p instanceof BXyzPoint xyz && xyz.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext && ext.getFrequenceHighBuffer() != null) {
+            distanceLimitDefault = ext.getFrequenceHighBuffer();
         }
         var distanceLimit = distanceLimitDefault;
         var currentStroke = new BasicStroke(4f);
@@ -218,6 +218,24 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         return mRightSubTextTitle;
     }
 
+    public void plotAlarmIndicator(BComponent component, double value, Color color) {
+        var marker = new ValueMarker(value);
+        float width = 1.0f;
+        float dash[] = {5.0f, 5.0f};
+        var dashedStroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, dash, 0);
+        var stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, null, 0);
+        if (component == BComponent.HEIGHT) {
+            marker.setStroke(dashedStroke);
+        } else {
+            marker.setStroke(stroke);
+        }
+        marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
+        marker.setPaint(color);
+
+        var plot = (XYPlot) mChart.getPlot();
+        plot.addRangeMarker(marker);
+    }
+
     public void plotAlarmIndicators(BXyzPoint p) {
         if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
             var ha = ext.getAlarm(BComponent.HEIGHT);
@@ -296,6 +314,17 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         rangeAxis.setRange(mMinMaxCollection.getMin() * margin, mMinMaxCollection.getMax() * margin);
     }
 
+    public void setRange() {
+        setRange(1.0);
+    }
+
+    public void setRange(double margin) {
+        var plot = (XYPlot) mChart.getPlot();
+        var rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setAutoRange(false);
+        rangeAxis.setRange(mMinMaxCollection.getMin() * margin, mMinMaxCollection.getMax() * margin);
+    }
+
     @Override
     public void setTitle(T p) {
         mChart.setTitle(p.getName());
@@ -363,24 +392,6 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         var compositeTitle = new CompositeTitle(blockContainer);
         compositeTitle.setPadding(new RectangleInsets(0, 20, 0, 20));
         mChart.addSubtitle(compositeTitle);
-    }
-
-    private void plotAlarmIndicator(BComponent component, double value, Color color) {
-        var marker = new ValueMarker(value);
-        float width = 1.0f;
-        float dash[] = {5.0f, 5.0f};
-        var dashedStroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, dash, 0);
-        var stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, null, 0);
-        if (component == BComponent.HEIGHT) {
-            marker.setStroke(dashedStroke);
-        } else {
-            marker.setStroke(stroke);
-        }
-        marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
-        marker.setPaint(color);
-
-        var plot = (XYPlot) mChart.getPlot();
-        plot.addRangeMarker(marker);
     }
 
 }

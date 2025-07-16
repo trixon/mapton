@@ -47,7 +47,7 @@ public class LabelBy {
     public static final String CAT_ROOT = "";
     public static final String CAT_VALUE = Dict.VALUE.toString();
     public static final String DIMENS_FREQ = "%s & %s".formatted(SDict.DIMENSION.toString(), SDict.FREQUENCY.toString());
-
+    public static final String HEIGHT_DIFFERENTIAL = "%s, differential".formatted(Dict.Geometry.HEIGHT);
     public static final String HEIGHT_NAME = "%s, %s".formatted(Dict.Geometry.HEIGHT, Dict.NAME.toLower());
     public static final String HEIGHT_PERCENT = "%s, %%".formatted(Dict.Geometry.HEIGHT);
     public static final String HEIGHT_VALUE = "%s, %s".formatted(Dict.Geometry.HEIGHT, Dict.VALUE.toLower());
@@ -58,6 +58,13 @@ public class LabelBy {
     public static final String PLANE_PERCENT = "%s, %%".formatted(Dict.Geometry.PLANE);
     public static final String PLANE_VALUE = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.VALUE.toLower());
     private static final String DEFAULT_DATE_IF_NULL = "-";
+
+    public static String alarmDifferential(BXyzPoint p, BComponent component) {
+        if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
+            return ext.getAlarmRatios(component);
+        }
+        return "ERROR";
+    }
 
     public static String alarmHName(BXyzPoint p) {
         return p.getAlarm1Id();
