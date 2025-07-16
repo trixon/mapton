@@ -41,9 +41,12 @@ public class BAlarm extends BBase {
     private String limit2;
     private String limit3;
     private final transient Ext mExt = new Ext();
-    private String ratio1;
-    private String ratio2;
-    private String ratio3;
+    private Double ratio1;
+    private String ratio1s;
+    private Double ratio2;
+    private String ratio2s;
+    private Double ratio3;
+    private String ratio3s;
     private String type;
 
     public BAlarm() {
@@ -73,16 +76,28 @@ public class BAlarm extends BBase {
         return limit3;
     }
 
-    public String getRatio1() {
+    public Double getRatio1() {
         return ratio1;
     }
 
-    public String getRatio2() {
+    public String getRatio1s() {
+        return ratio1s;
+    }
+
+    public Double getRatio2() {
         return ratio2;
     }
 
-    public String getRatio3() {
+    public String getRatio2s() {
+        return ratio2s;
+    }
+
+    public Double getRatio3() {
         return ratio3;
+    }
+
+    public String getRatio3s() {
+        return ratio3s;
     }
 
     public String getType() {
@@ -109,16 +124,28 @@ public class BAlarm extends BBase {
         this.limit3 = limit3;
     }
 
-    public void setRatio1(String ratio1) {
+    public void setRatio1(Double ratio1) {
         this.ratio1 = ratio1;
     }
 
-    public void setRatio2(String ratio2) {
+    public void setRatio1s(String ratio1s) {
+        this.ratio1s = ratio1s;
+    }
+
+    public void setRatio2(Double ratio2) {
         this.ratio2 = ratio2;
     }
 
-    public void setRatio3(String ratio3) {
+    public void setRatio2s(String ratio2s) {
+        this.ratio2s = ratio2s;
+    }
+
+    public void setRatio3(Double ratio3) {
         this.ratio3 = ratio3;
+    }
+
+    public void setRatio3s(String ratio3s) {
+        this.ratio3s = ratio3s;
     }
 
     public void setType(String type) {
@@ -130,6 +157,9 @@ public class BAlarm extends BBase {
         private Range<Double> mRange0 = null;
         private Range<Double> mRange1 = null;
         private Range<Double> mRange2 = null;
+        private Range<Double> mRatioRange0 = null;
+        private Range<Double> mRatioRange1 = null;
+        private Range<Double> mRatioRange2 = null;
 
         public Ext() {
         }
@@ -148,6 +178,22 @@ public class BAlarm extends BBase {
             }
         }
 
+        public Range<Double> getRange(int rangeIndex) {
+            switch (rangeIndex) {
+                case 0 -> {
+                    return mRange0;
+                }
+                case 1 -> {
+                    return mRange1;
+                }
+                case 2 -> {
+                    return mRange2;
+                }
+                default ->
+                    throw new AssertionError();
+            }
+        }
+
         public Range<Double> getRange0() {
             return mRange0;
         }
@@ -160,7 +206,54 @@ public class BAlarm extends BBase {
             return mRange2;
         }
 
+        public Range<Double> getRangeRatio(int rangeIndex) {
+            switch (rangeIndex) {
+                case 0 -> {
+                    return mRatioRange0;
+                }
+                case 1 -> {
+                    return mRatioRange1;
+                }
+                case 2 -> {
+                    return mRatioRange2;
+                }
+                default ->
+                    throw new AssertionError();
+            }
+        }
+
+        public int getRatioLevel(Double value) {
+            value = MathHelper.round(value, 6);//Get rid of things like -0.004999999999999005
+
+            if (ObjectUtils.anyNull(value, mRatioRange0, mRatioRange1)) {
+                return -1;
+            } else if (value == 0 || mRatioRange0.contains(value)) {
+                return 0;
+            } else if (mRatioRange1.contains(value)) {
+                return 1;
+            } else {
+                return 2;
+            }
+        }
+
+        public Range<Double> getRatioRange0() {
+            return mRatioRange0;
+        }
+
+        public Range<Double> getRatioRange1() {
+            return mRatioRange1;
+        }
+
+        public Range<Double> getRatioRange2() {
+            return mRatioRange2;
+        }
+
         public void populateRanges() {
+            populateRangesLimit();
+            populateRangesRatio();
+        }
+
+        private void populateRangesLimit() {
             String l1s = getLimit1();
             String l2s = getLimit2();
             String l3s = getLimit3();
@@ -230,6 +323,20 @@ public class BAlarm extends BBase {
 
                 default -> {
                     throw new AssertionError();
+                }
+            }
+        }
+
+        private void populateRangesRatio() {
+            if (ratio1 != null) {
+                mRatioRange0 = Range.of(Double.NEGATIVE_INFINITY, ratio1 - Precision.EPSILON);
+
+                if (ratio2 != null) {
+                    mRatioRange1 = Range.of(Double.NEGATIVE_INFINITY, ratio2 - Precision.EPSILON);
+
+                    if (ratio3 != null) {
+                        mRatioRange2 = Range.of(Double.NEGATIVE_INFINITY, ratio3 - Precision.EPSILON);
+                    }
                 }
             }
         }
