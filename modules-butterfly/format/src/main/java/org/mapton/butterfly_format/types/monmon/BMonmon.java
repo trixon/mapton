@@ -17,6 +17,7 @@ package org.mapton.butterfly_format.types.monmon;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 
 /**
@@ -26,14 +27,24 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 public class BMonmon extends BBasePoint {
 
     private final BTopoControlPoint mControlPoint;
+    private Ext mExt;
     private final int[] mMeasCount = new int[365];
     private final int mMeasPerDay;
     private String mStationName;
+    private BTopoControlPoint mStationPoint;
 
     public BMonmon(BTopoControlPoint controlPoint, int measPerDay, String stationName) {
         mControlPoint = controlPoint;
         mMeasPerDay = measPerDay;
         mStationName = stationName;
+    }
+
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
     }
 
     public BTopoControlPoint getControlPoint() {
@@ -79,6 +90,10 @@ public class BMonmon extends BBasePoint {
         return mStationName;
     }
 
+    public BTopoControlPoint getStationPoint() {
+        return mStationPoint;
+    }
+
     public String getString(int index) {
         int sum = mMeasCount[index];
         int max = getMeasPerDay() * index;
@@ -97,4 +112,26 @@ public class BMonmon extends BBasePoint {
     public void setStationName(String stationName) {
         mStationName = stationName;
     }
+
+    public void setStationPoint(BTopoControlPoint stationPoint) {
+        this.mStationPoint = stationPoint;
+    }
+
+    public class Ext extends BBasePoint.Ext<BStructuralCrackPointObservation> {
+
+        public double getDelta1d() {
+            return Math.abs(mControlPoint.getZeroZ() - mStationPoint.getZeroZ());
+        }
+
+        public double getDelta2d() {
+            double dx = mStationPoint.getZeroX() - mControlPoint.getZeroX();
+            double dy = mStationPoint.getZeroY() - mControlPoint.getZeroY();
+            return Math.hypot(dx, dy);
+        }
+
+        public double getDelta3d() {
+            return Math.hypot(getDelta1d(), getDelta2d());
+        }
+    }
+
 }
