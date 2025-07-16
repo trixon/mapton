@@ -81,6 +81,7 @@ public class MonManager extends BaseManager<BMonmon> {
     private void updateStats() {
         var now = LocalDateTime.now();
         for (var mon : getAllItems()) {
+            mon.setStationPoint(mTopoManager.getItemForKey(mon.getStationName()));
             var list14 = mon.getControlPoint().ext().getObservationsAllRaw().stream()
                     .filter(o -> o.getDate().isAfter(now.minusDays(14))).toList();
 

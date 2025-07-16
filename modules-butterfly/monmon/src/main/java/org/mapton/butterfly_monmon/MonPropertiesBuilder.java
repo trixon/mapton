@@ -21,6 +21,7 @@ import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -46,6 +47,9 @@ public class MonPropertiesBuilder extends PropertiesBuilder<BMonmon> {
         propertyMap.put(getCatKey(cat1, "Senaste dygnet"), mon.getString(1));
         propertyMap.put(getCatKey(cat1, "Senaste veckan"), mon.getString(7));
         propertyMap.put(getCatKey(cat1, "Senaste två veckorna"), mon.getString(14));
+        propertyMap.put(getCatKey(cat1, "Lutande längd"), MathHelper.convertDoubleToString(mon.ext().getDelta3d(), 1));
+        propertyMap.put(getCatKey(cat1, "Planavstånd"), MathHelper.convertDoubleToString(mon.ext().getDelta2d(), 1));
+        propertyMap.put(getCatKey(cat1, "Höjdavstånd"), MathHelper.convertDoubleToString(mon.ext().getDelta1d(), 1));
 
         return propertyMap;
     }

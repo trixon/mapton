@@ -118,17 +118,17 @@ public class MonLayerBundle extends BfLayerBundle {
                     .sorted((o1, o2) -> o1.compareTo(o2)).toList();
 
             var pointToZ = new HashMap<String, Double>();
-            var stationNames = mManager.getFilteredItems().stream().map(m -> m.getStationName()).collect(Collectors.toSet());
-            for (var stationName : stationNames) {
-                var min = mManager.getFilteredItems().stream()
-                        .filter(m -> m.getStationName().equalsIgnoreCase(stationName) || m.getName().equalsIgnoreCase(stationName))
-                        .mapToDouble(m -> m.getControlPoint().getZeroZ())
-                        .min().orElse(0);
-
-                pointToZ.put(stationName, min);
-            }
-
             synchronized (mManager.getTimeFilteredItems()) {
+                var stationNames = mManager.getFilteredItems().stream().map(m -> m.getStationName()).collect(Collectors.toSet());
+                for (var stationName : stationNames) {
+                    var min = mManager.getFilteredItems().stream()
+                            .filter(m -> m.getStationName().equalsIgnoreCase(stationName) || m.getName().equalsIgnoreCase(stationName))
+                            .mapToDouble(m -> m.getControlPoint().getZeroZ())
+                            .min().orElse(0);
+
+                    pointToZ.put(stationName, min);
+                }
+
                 for (var mon : mManager.getTimeFilteredItems()) {
                     var stationIndex = sortedStations.indexOf(mon.getStationName());
                     var mapObjects = new ArrayList<AVListImpl>();
