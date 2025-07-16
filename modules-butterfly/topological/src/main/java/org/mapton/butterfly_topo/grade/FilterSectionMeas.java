@@ -137,8 +137,8 @@ public class FilterSectionMeas extends MBaseFilterSection {
                     && validateRangeSliderPane(mDabbaRRangeSlider, p.ext().getDiff().getPartialDiffR() * 1000)
                     && validateRangeSliderPane(mDeltaHRangeSlider, p.getDistanceHeight())
                     && validateRangeSliderPane(mDeltaRRangeSlider, p.getDistancePlane())
-                    && validateSliderPane(mGradeHorizontalSlider, p.ext().getDiff().getZPerMille())
-                    && validateSliderPane(mGradeVerticalSlider, p.ext().getDiff().getRPerMille());
+                    && validateSliderPane(mGradeHorizontalSlider, Math.abs(p.ext().getDiff().getZPerMille()))
+                    && validateSliderPane(mGradeVerticalSlider, Math.abs(p.ext().getDiff().getRPerMille()));
         } else {
             return true;
         }

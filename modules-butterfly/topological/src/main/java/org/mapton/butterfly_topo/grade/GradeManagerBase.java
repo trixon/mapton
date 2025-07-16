@@ -30,10 +30,13 @@ public abstract class GradeManagerBase extends BaseManager<BTopoGrade> {
 
     protected final TopoManager mTopoManager = TopoManager.getInstance();
     private final GradeChartBuilder mChartBuilder = new GradeChartBuilder();
-    private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(1000, () -> load());
+    private final DelayedResetRunner mDelayedResetRunner;
 
     public GradeManagerBase(Class<BTopoGrade> typeParameterClass) {
         super(typeParameterClass);
+        mDelayedResetRunner = new DelayedResetRunner(1000, () -> {
+            new Thread(() -> load()).start();
+        });
         TopoManager.getInstance().getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
             mDelayedResetRunner.reset();
         });
