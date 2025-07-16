@@ -52,7 +52,7 @@ public class GradeVView {
         config.setMinGradeHorizontal(10.0);
         config.setDimension(BDimension._3d);
 
-        mFilterPopOver = new GradeFilterPopOver(mFilter, config, BDimension._3d);
+        mFilterPopOver = new GradeFilterPopOver(mFilter, config);
         mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "gradeV");
 
         var actions = Arrays.asList(

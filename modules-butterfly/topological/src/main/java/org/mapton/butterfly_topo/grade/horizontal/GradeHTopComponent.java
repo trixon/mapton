@@ -64,10 +64,9 @@ public final class GradeHTopComponent extends MTopComponent {
         setScene(createScene());
     }
 
-    private Scene createScene() {
-        var gradeView = new GradeHView();
-
-        return new Scene(gradeView.getView());
+    void readProperties(java.util.Properties p) {
+        String version = p.getProperty("version");
+        // TODO read your settings according to their version
     }
 
     void writeProperties(java.util.Properties p) {
@@ -77,8 +76,9 @@ public final class GradeHTopComponent extends MTopComponent {
         // TODO store your settings
     }
 
-    void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
-        // TODO read your settings according to their version
+    private Scene createScene() {
+        var gradeView = new GradeHView();
+
+        return new Scene(gradeView.getView());
     }
 }

@@ -18,7 +18,6 @@ package org.mapton.butterfly_topo.grade.vertical;
 import java.util.ResourceBundle;
 import javafx.scene.Scene;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
-import org.mapton.butterfly_topo.grade.horizontal.GradeHView;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -65,10 +64,9 @@ public final class GradeVTopComponent extends MTopComponent {
         setScene(createScene());
     }
 
-    private Scene createScene() {
-        var gradeView = new GradeHView();
-
-        return new Scene(gradeView.getView());
+    void readProperties(java.util.Properties p) {
+        String version = p.getProperty("version");
+        // TODO read your settings according to their version
     }
 
     void writeProperties(java.util.Properties p) {
@@ -78,8 +76,9 @@ public final class GradeVTopComponent extends MTopComponent {
         // TODO store your settings
     }
 
-    void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
-        // TODO read your settings according to their version
+    private Scene createScene() {
+        var gradeView = new GradeVView();
+
+        return new Scene(gradeView.getView());
     }
 }

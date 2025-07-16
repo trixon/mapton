@@ -18,6 +18,7 @@ package org.mapton.butterfly_topo.grade.horizontal;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import org.mapton.api.ui.forms.PropertiesBuilder;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
 import org.openide.util.NbBundle;
@@ -54,6 +55,16 @@ public class GradeHPropertiesBuilder extends PropertiesBuilder<BTopoGrade> {
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHGon")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleGon(), 0));
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHRad")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleRad(), 4));
         propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHPerMille")), MathHelper.convertDoubleToString(p.ext().getDiff().getZPerMille(), 1));
+
+        try {
+            var alarm = p.getP1().ext().getAlarm(BComponent.HEIGHT);
+            propertyMap.put(getCatKey(cat1, "%s".formatted(SDict.ALARM.toString())), alarm.getId());
+            propertyMap.put(getCatKey(cat1, "%s %d".formatted(SDict.ALARM.toString(), 1)), alarm.getRatio1s());
+            propertyMap.put(getCatKey(cat1, "%s %d".formatted(SDict.ALARM.toString(), 2)), alarm.getRatio2s());
+
+        } catch (Exception e) {
+            //nvm
+        }
 
         return propertyMap;
     }
