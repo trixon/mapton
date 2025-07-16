@@ -357,8 +357,8 @@ public class ParameterEditor extends BaseEditor {
             if (mDagDefRestoreCheckBox.isSelected() && p.getFrequencyDefault() != null) {
                 dag = p.getFrequencyDefault();
             }
-            if (mDagIntRestoreCheckBox.isSelected() && p.getFrequencyIntense() != null) {
-                dag = p.getFrequencyIntense();
+            if (mDagIntRestoreCheckBox.isSelected() && p.getFrequencyHigh() != null) {
+                dag = p.getFrequencyHigh();
             }
             addConditionlly(sb, mDagCheckBox.isSelected(), dag);
             addConditionlly(sb, mDagDefCheckBox.isSelected(), "DefaultDag=%d".formatted(mDagDefSpinner.getValue()));
