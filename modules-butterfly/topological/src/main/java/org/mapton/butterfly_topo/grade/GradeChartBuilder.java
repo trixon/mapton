@@ -86,7 +86,8 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
         if (color == Color.RED || color == Color.GREEN) {
             color = color.darker();
         }
-        setTitle(p, color);
+        var title = "%s :: ΔP=%.1fm".formatted(p.getName(), p.getDistancePlane());
+        setTitle(title, color);
 
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getFirstDate()), "");
         var dateLast = Objects.toString(DateHelper.toDateString(p.getLastDate()), "");
@@ -114,7 +115,6 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
         plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
         p.getCommonObservations().entrySet().forEach(entry -> {
             var date = entry.getKey();
-            var p1 = entry.getValue();
             var p2 = entry.getValue();
             //TODO Handle replacement & zero measurements
 

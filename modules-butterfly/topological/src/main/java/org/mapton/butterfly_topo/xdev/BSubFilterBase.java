@@ -15,31 +15,26 @@
  */
 package org.mapton.butterfly_topo.xdev;
 
-import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
+import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class BSubFilterBase<T extends BXyzPoint> {
+public abstract class BSubFilterBase<T extends BXyzPoint> extends MBaseFilterSection {
 
-    public abstract void clear();
-
-    public abstract void createInfoContent(LinkedHashMap<String, String> map);
+    public BSubFilterBase(String title) {
+        super(title);
+    }
 
     public abstract boolean filter(T p);
 
     public abstract void initListeners(ChangeListener changeListener, ListChangeListener listChangeListener);
 
-    public abstract void initSession(SessionManager sessionManager);
-
     public abstract void load(ArrayList<T> items);
-
-    public abstract void onShownFirstTime();
 
 }

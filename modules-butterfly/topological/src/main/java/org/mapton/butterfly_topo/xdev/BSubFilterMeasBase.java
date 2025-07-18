@@ -23,4 +23,8 @@ import org.mapton.butterfly_format.types.BXyzPoint;
  */
 public abstract class BSubFilterMeasBase<TT extends BXyzPoint> extends BSubFilterBase {
 
+    public BSubFilterMeasBase(String title) {
+        super(title);
+    }
+
 }

@@ -68,7 +68,32 @@ public class FilterSectionMeas extends MBaseFilterSection {
         mFilterMeasAlarmLevel.setAlarmLevelFunction(p -> {
             return TopoHelper.getAlarmLevelHeight(p);
         });
+        mFilterMeasAlarmLevel.setAlarmAgeFunction(p -> {
+            var historicLevels = p.getCommonObservations().entrySet().stream()
+                    .mapToInt(entry -> {
+                        var o = entry.getValue();
+                        var gradeDiff = p.ext().getDiff(p.getFirstObservation(), o);
+                        return p.ext().getAlarmLevelHeight(Math.abs(gradeDiff.getZQuota()));
+                    })
+                    .distinct()
+                    .count();
+
+            if (historicLevels < 2) {
+                return null;
+            }
+
+            var value = p.ext().getAlarmLevelAgeGrade();
+            if (value != null) {
+                return value.intValue();
+            } else {
+                return null;
+            }
+        });
+
         mMeasFilterUI = new MeasFilterUI();
+
+        //TODO Make this dynamic on actual load
+        mFilterMeasAlarmLevel.load(null);
 
         setContent(mMeasFilterUI.getRoot());
     }
