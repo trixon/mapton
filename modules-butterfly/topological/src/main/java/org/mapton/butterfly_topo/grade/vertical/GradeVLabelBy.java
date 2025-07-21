@@ -33,7 +33,7 @@ public enum GradeVLabelBy implements LabelBy.Operations {
     NONE(LabelBy.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
-    MEAS_GRADE_H(LabelBy.CAT_MEAS, "GRADE V per mille", p -> {
+    MEAS_GRADE_V(LabelBy.CAT_MEAS, "GRADE V per mille", p -> {
         return MathHelper.convertDoubleToString(p.ext().getDiff().getRPerMille(), 1);
     });
     private final String mCategory;

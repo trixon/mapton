@@ -26,6 +26,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.mapton.api.ui.forms.MBaseFilterSection;
+import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoHelper;
@@ -66,14 +67,18 @@ public class FilterSectionMeas extends MBaseFilterSection {
         mGradeVerticalSlider = new SliderPane(mBundle.getString("filterGradeVPerMille"), mConfig.getMinGradeVertical());
         mFilterMeasAlarmLevel = new BSubFilterMeasAlarmLevel();
         mFilterMeasAlarmLevel.setAlarmLevelFunction(p -> {
-            return TopoHelper.getAlarmLevelHeight(p);
+            return TopoHelper.getAlarmLevel(p);
         });
         mFilterMeasAlarmLevel.setAlarmAgeFunction(p -> {
             var historicLevels = p.getCommonObservations().entrySet().stream()
                     .mapToInt(entry -> {
                         var o = entry.getValue();
                         var gradeDiff = p.ext().getDiff(p.getFirstObservation(), o);
-                        return p.ext().getAlarmLevelHeight(Math.abs(gradeDiff.getZQuota()));
+                        if (p.getAxis() == BAxis.HORIZONTAL) {
+                            return p.ext().getAlarmLevelHeight(Math.abs(gradeDiff.getZQuota()));
+                        } else {
+                            return p.ext().getAlarmLevelHeight(Math.abs(gradeDiff.getRQuota()));
+                        }
                     })
                     .distinct()
                     .count();

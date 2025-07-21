@@ -86,7 +86,9 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
         if (color == Color.RED || color == Color.GREEN) {
             color = color.darker();
         }
-        var title = "%s :: ΔP=%.1fm".formatted(p.getName(), p.getDistancePlane());
+        var value = p.getAxis() == BAxis.HORIZONTAL ? p.getDistancePlane() : p.getDistanceHeight();
+        var label = p.getAxis() == BAxis.HORIZONTAL ? "P" : "H";
+        var title = "%s :: Δ%s=%.1fm".formatted(p.getName(), label, value);
         setTitle(title, color);
 
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getFirstDate()), "");
@@ -95,10 +97,18 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
         getLeftSubTextTitle().setText(date);
 
         var alarmText = "?";
-        if (!StringUtils.isBlank(p.getP1().getAlarm1Id())) {
-            var ratio = p.getP1().ext().getAlarm(BComponent.HEIGHT).getRatio2s();
-            ratio = StringUtils.defaultIfBlank(ratio, "?");
-            alarmText = "%s, %+.1f".formatted(ratio, p.ext().getDiff().getZPerMille());
+        if (p.getAxis() == BAxis.HORIZONTAL) {
+            if (!StringUtils.isBlank(p.getP1().getAlarm1Id())) {
+                var ratio = p.getP1().ext().getAlarm(BComponent.HEIGHT).getRatio2s();
+                ratio = StringUtils.defaultIfBlank(ratio, "?");
+                alarmText = "%s, %+.1f".formatted(ratio, p.ext().getDiff().getZPerMille());
+            }
+        } else {
+            if (!StringUtils.isBlank(p.getP1().getAlarm2Id())) {
+                var ratio = p.getP1().ext().getAlarm(BComponent.PLANE).getRatio2s();
+                ratio = StringUtils.defaultIfBlank(ratio, "?");
+                alarmText = "%s, %+.1f".formatted(ratio, p.ext().getDiff().getRPerMille() * 1000);
+            }
         }
 
         getRightSubTextTitle().setText(alarmText);

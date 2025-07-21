@@ -19,6 +19,7 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
+import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoAttributeManager;
@@ -71,7 +72,12 @@ public class GradeAttributeManager extends BaseAttributeManager {
     }
 
     public PointPlacemarkAttributes getPinAttributes(BTopoGrade p, BComponent component) {
-        var attrs = getPinAttributes(TopoHelper.getAlarmLevelHeight(p));
+        PointPlacemarkAttributes attrs;
+        if (p.getAxis() == BAxis.HORIZONTAL) {
+            attrs = getPinAttributes(TopoHelper.getAlarmLevelHeight(p));
+        } else {
+            attrs = getPinAttributes(TopoHelper.getAlarmLevelPlane(p));
+        }
 
 //        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
 //            attrs = new PointPlacemarkAttributes(attrs);

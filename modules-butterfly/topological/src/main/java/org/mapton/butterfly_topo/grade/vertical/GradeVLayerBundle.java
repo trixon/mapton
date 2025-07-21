@@ -49,7 +49,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
     private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
     private final GraphicRenderer mGraphicRenderer;
     private final GradeVManager mManager = GradeVManager.getInstance();
-    private GradeVOptionsView mOptionsView;
+    private final GradeVOptionsView mOptionsView;
 
     public GradeVLayerBundle() {
         init();
@@ -64,39 +64,6 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
     @Override
     public Node getOptionsView() {
         return mOptionsView;
-    }
-
-    public PointPlacemark plotLabel(BTopoGrade p, GradeVLabelBy labelBy, Position position) {
-        if (labelBy == GradeVLabelBy.NONE) {
-            return null;
-        } else {
-            var label = labelBy.getLabel(p);
-            p.setValue(BKey.PIN_NAME, label);
-            var placemark = createPlacemark(position, label, mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
-
-            return placemark;
-        }
-    }
-
-    public PointPlacemark plotPin(BTopoGrade p, Position position, PointPlacemark labelPlacemark, BComponent component) {
-        var attrs = mAttributeManager.getPinAttributes(p, component);
-
-        var placemark = new PointPlacemark(position);
-        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        placemark.setAttributes(attrs);
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
-
-        mPinLayer.addRenderable(placemark);
-        if (labelPlacemark != null) {
-            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_ON, (Runnable) () -> {
-                labelPlacemark.setHighlighted(true);
-            });
-            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_OFF, (Runnable) () -> {
-                labelPlacemark.setHighlighted(false);
-            });
-        }
-
-        return placemark;
     }
 
     @Override
@@ -168,7 +135,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
                         .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
                         .forEachOrdered(p -> {
                             var position = Position.fromDegrees(p.getLat(), p.getLon());
-                            var labelPlacemark = plotLabel(p, null, position);
+                            var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
                             var mapObjects = new ArrayList<AVListImpl>();
 
                             mapObjects.add(labelPlacemark);
@@ -195,6 +162,39 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
 
             setDragEnabled(false);
         });
+    }
+
+    private PointPlacemark plotLabel(BTopoGrade p, GradeVLabelBy labelBy, Position position) {
+        if (labelBy == null || labelBy == GradeVLabelBy.NONE) {
+            return null;
+        } else {
+            var label = labelBy.getLabel(p);
+            p.setValue(BKey.PIN_NAME, label);
+            var placemark = createPlacemark(position, label, mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
+
+            return placemark;
+        }
+    }
+
+    private PointPlacemark plotPin(BTopoGrade p, Position position, PointPlacemark labelPlacemark, BComponent component) {
+        var attrs = mAttributeManager.getPinAttributes(p, BComponent.PLANE);
+
+        var placemark = new PointPlacemark(position);
+        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        placemark.setAttributes(attrs);
+        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+
+        mPinLayer.addRenderable(placemark);
+        if (labelPlacemark != null) {
+            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_ON, (Runnable) () -> {
+                labelPlacemark.setHighlighted(true);
+            });
+            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_OFF, (Runnable) () -> {
+                labelPlacemark.setHighlighted(false);
+            });
+        }
+
+        return placemark;
     }
 
 }

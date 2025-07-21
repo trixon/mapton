@@ -22,7 +22,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
-import org.mapton.butterfly_format.types.topo.BTopoGradeDiff;
 import org.mapton.butterfly_topo.TopoHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -57,13 +56,10 @@ class GradeHListCell extends ListCell<BTopoGrade> {
     private void addContent(BTopoGrade p) {
         setText(null);
         var header = p.getName();
-//        if (StringUtils.isNotBlank(p.getStatus())) {
-//            header = "%s [%s]".formatted(header, p.getStatus());
-//        }
+        var gradeDiff = p.ext().getDiff();
 
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
-        BTopoGradeDiff gradeDiff = p.ext().getDiff();
         mDesc1Label.setText("%.1f mm/m".formatted(gradeDiff.getZPerMille()));
         mDesc2Label.setText("ΔH=%.1f m, ΔP=%.1f m, ∂iH=%.1f mm".formatted(p.getDistanceHeight(),
                 p.getDistancePlane(),

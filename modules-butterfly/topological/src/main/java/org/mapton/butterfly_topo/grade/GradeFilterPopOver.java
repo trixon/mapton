@@ -41,7 +41,7 @@ public class GradeFilterPopOver extends BaseTabbedFilterPopOver {
     private final GradeManagerBase mManager;
     private final GradeVManager mVManager = GradeVManager.getInstance();
 
-    public GradeFilterPopOver(GradeFilter filter, GradeFilterConfig config) {
+    public GradeFilterPopOver(Class clazz, GradeFilter filter, GradeFilterConfig config) {
         mManager = config.getDimension() == BDimension._1d ? mHManager : mVManager;
 
         mFilterSectionDate = new BFilterSectionDate();
@@ -55,7 +55,7 @@ public class GradeFilterPopOver extends BaseTabbedFilterPopOver {
         setFilter(filter);
         createUI();
         initListeners();
-        initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
+        initSession(NbPreferences.forModule(clazz).node(clazz.getSimpleName()));
 
         populate();
     }

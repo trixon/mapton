@@ -135,10 +135,10 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
             synchronized (mManager.getTimeFilteredItems()) {
                 mManager.getTimeFilteredItems().stream()
                         .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
-                        .limit(PLOT_LIMIT)
+                        //                        .limit(PLOT_LIMIT)
                         .forEachOrdered(p -> {
                             var position = Position.fromDegrees(p.getLat(), p.getLon());
-                            var labelPlacemark = plotLabel(p, null, position);
+                            var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
                             var mapObjects = new ArrayList<AVListImpl>();
 
                             mapObjects.add(labelPlacemark);

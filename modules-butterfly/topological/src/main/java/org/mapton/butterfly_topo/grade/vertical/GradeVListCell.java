@@ -20,9 +20,9 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
+import org.mapton.butterfly_topo.TopoHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -35,7 +35,6 @@ class GradeVListCell extends ListCell<BTopoGrade> {
     private final Label mDesc1Label = new Label();
     private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
-    private final Label mDesc4Label = new Label();
     private final Label mHeaderLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
@@ -57,18 +56,16 @@ class GradeVListCell extends ListCell<BTopoGrade> {
     private void addContent(BTopoGrade p) {
         setText(null);
         var header = p.getName();
-//        if (StringUtils.isNotBlank(p.getStatus())) {
-//            header = "%s [%s]".formatted(header, p.getStatus());
-//        }
+        var gradeDiff = p.ext().getDiff();
 
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
-        mDesc1Label.setText("%.1f mm/m TODO Larm?".formatted(p.ext().getDiff().getRPerMille()));
+        mDesc1Label.setText("%.1f mm/m".formatted(gradeDiff.getRPerMille()));
         mDesc2Label.setText("ΔH=%.1f m, ΔP=%.1f m, ∂iH=%.1f mm, ∂iR=%.1f mm".formatted(
                 p.getDistanceHeight(),
                 p.getDistancePlane(),
-                p.ext().getDiff().getPartialDiffZ() * 1000,
-                p.ext().getDiff().getPartialDiffR() * 1000
+                gradeDiff.getPartialDiffZ() * 1000,
+                gradeDiff.getPartialDiffR() * 1000
         ));
         mDesc3Label.setText("%s (%d)".formatted(p.getPeriod(), p.getCommonObservations().size()));
 
@@ -86,8 +83,7 @@ class GradeVListCell extends ListCell<BTopoGrade> {
                 mHeaderLabel,
                 mDesc1Label,
                 mDesc2Label,
-                mDesc3Label,
-                mDesc4Label
+                mDesc3Label
         );
 
         mHeaderLabel.setGraphic(mAlarmIndicator);
@@ -105,7 +101,7 @@ class GradeVListCell extends ListCell<BTopoGrade> {
         }
 
         public void update(BTopoGrade p) {
-            mHeightShape.setFill(Color.BLUE);
+            mHeightShape.setFill(TopoHelper.getAlarmColorPlaneFx(p));
             mHeightShape.setVisible(true);
         }
 
