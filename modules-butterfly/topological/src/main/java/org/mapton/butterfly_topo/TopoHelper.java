@@ -18,6 +18,7 @@ package org.mapton.butterfly_topo;
 import gov.nasa.worldwind.render.Material;
 import java.awt.Color;
 import org.mapton.butterfly_core.api.ButterflyHelper;
+import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 
@@ -92,7 +93,11 @@ public class TopoHelper {
     }
 
     public static Color getAlarmColorAwt(BTopoGrade p) {
-        return ButterflyHelper.getAlarmColorAwt(getAlarmLevelHeight(p));
+        if (p.getAxis() == BAxis.HORIZONTAL) {
+            return ButterflyHelper.getAlarmColorAwt(getAlarmLevelHeight(p));
+        } else {
+            return ButterflyHelper.getAlarmColorAwt(getAlarmLevelPlane(p));
+        }
     }
 
     public static Color getAlarmColorAwt(BTopoControlPoint p) {
@@ -119,8 +124,20 @@ public class TopoHelper {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevelPlane(p));
     }
 
+    public static javafx.scene.paint.Color getAlarmColorPlaneFx(BTopoGrade p) {
+        return ButterflyHelper.getAlarmColorFx(getAlarmLevelPlane(p));
+    }
+
     public static javafx.scene.paint.Color getAlarmColorPlaneFx(BTopoControlPoint p) {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevelPlane(p));
+    }
+
+    public static int getAlarmLevel(BTopoGrade p) {
+        if (p.getAxis() == BAxis.HORIZONTAL) {
+            return getAlarmLevelHeight(p);
+        } else {
+            return getAlarmLevelPlane(p);
+        }
     }
 
     public static int getAlarmLevel(BTopoControlPoint p) {
@@ -133,6 +150,10 @@ public class TopoHelper {
 
     public static int getAlarmLevelHeight(BTopoControlPoint p) {
         return p.ext().getAlarmLevelHeight(p.ext().getObservationFilteredLast());
+    }
+
+    public static int getAlarmLevelPlane(BTopoGrade p) {
+        return p.ext().getAlarmLevelPlane(Math.abs(p.ext().getDiff().getRQuota()));
     }
 
     public static int getAlarmLevelPlane(BTopoControlPoint p) {

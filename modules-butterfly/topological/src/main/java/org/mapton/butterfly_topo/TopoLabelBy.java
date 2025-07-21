@@ -59,6 +59,9 @@ public enum TopoLabelBy implements LabelBy.Operations {
     ALARM_P_PERCENT(LabelBy.CAT_ALARM, LabelBy.PLANE_PERCENT, p -> {
         return LabelBy.alarmPPercent(p);
     }),
+    ALARM_P_DIFFERENTIAL(LabelBy.CAT_ALARM, LabelBy.PLANE_DIFFERENTIAL, p -> {
+        return LabelBy.alarmDifferential(p, BComponent.PLANE);
+    }),
     ALARM_PERCENT(LabelBy.CAT_ALARM, "%", p -> {
         return LabelBy.alarmPercent(p);
     }),
