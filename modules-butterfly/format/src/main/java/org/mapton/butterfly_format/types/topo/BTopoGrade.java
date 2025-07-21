@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TreeMap;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
@@ -193,6 +194,48 @@ public class BTopoGrade extends BXyzPoint {
             return Math.max(level1, level2);
         }
 
+        public Long getAlarmLevelAgeGrade() {
+            var currentLevel = getAlarmLevelHeight(Math.abs(getDiff().getZQuota()));
+            if (getCommonObservations().isEmpty() || currentLevel == -1) {
+                return null;
+            }
+
+            Long alarmLevelAge = null;
+            Integer prevLevel = null;
+            LocalDate prevDate = null;
+            var list = new ArrayList<>(mCommonObservations.entrySet());
+            for (Map.Entry<LocalDate, BTopoGradeObservation> entry : list.reversed()) {
+                var date = entry.getKey();
+                var o = entry.getValue();
+                var gradeDiff = getDiff(getFirstObservation(), o);
+                var alarmLevel = getAlarmLevelHeight(Math.abs(gradeDiff.getZQuota()));
+                if (alarmLevel != currentLevel) {
+                    prevLevel = alarmLevel;
+                    break;
+                }
+                prevDate = date;
+            }
+//            var lastObservation = getObservationFilteredLast();
+//
+//            for (var o : getObservationsTimeFiltered().reversed()) {
+//                int alarmLevel = getAlarmLevel(component, o);
+//                if (alarmLevel != currentLevel) {
+//                    prevLevel = alarmLevel;
+//                    break;
+//                }
+//                prevDate = o.getDate().toLocalDate();
+//            }
+
+            if (prevLevel != null) {
+                alarmLevelAge = ChronoUnit.DAYS.between(prevDate, LocalDate.now());
+                if (prevLevel < currentLevel) {
+                    alarmLevelAge *= -1;
+                }
+            }
+
+            return alarmLevelAge;
+        }
+
         public double getAlarmLevelForRangeByIndex(BAlarm alarm, int rangeIndex) {
             try {
                 return alarm.ext().getRangeRatio(rangeIndex).getMaximum();
@@ -203,6 +246,10 @@ public class BTopoGrade extends BXyzPoint {
 
         public int getAlarmLevelHeight(Double value) {
             return getAlarmLevel(BComponent.HEIGHT, value);
+        }
+
+        public int getAlarmLevelPlane(Double value) {
+            return getAlarmLevel(BComponent.PLANE, value);
         }
 
         public BAlarm getAlarmP1(BComponent component) {
