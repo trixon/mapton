@@ -15,17 +15,21 @@
  */
 package org.mapton.butterfly_topo.grade.vertical.graphics;
 
-import org.mapton.butterfly_topo.grade.horizontal.*;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum GraphicItem {
-    HOR_INDICATOR("H %s".formatted(Dict.INDICATORS.toLower()), Integer.MAX_VALUE),
-    VER_INDICATOR("V %s".formatted(Dict.INDICATORS.toLower()), Integer.MAX_VALUE),
-    NAME(Dict.NAME.toString(), Integer.MAX_VALUE);
+    PIN(Dict.PIN.toString(), Integer.MAX_VALUE),
+    POINTS(SDict.POINTS.toString(), Integer.MAX_VALUE),
+    VALUE(Dict.VALUE.toString(), Integer.MAX_VALUE),
+    VALUE_TRACE(Dict.VALUE.toString() + ", historik", Integer.MAX_VALUE),
+    BEARING(Dict.BEARING.toString(), Integer.MAX_VALUE),
+    INDICATOR("Indikator", Integer.MAX_VALUE),
+    TRACE(SDict.TRACE.toString(), Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 

@@ -126,7 +126,6 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
         p.getCommonObservations().entrySet().forEach(entry -> {
             var date = entry.getKey();
             var p2 = entry.getValue();
-            //TODO Handle replacement & zero measurements
 
             var minute = ChartHelper.convertToMinute(date.atStartOfDay());
             var gradeDiff = p.ext().getDiff(p.getFirstObservation(), p2);
@@ -158,7 +157,7 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
 
     private void plotAlarmIndicators(BTopoGrade p) {
         try {
-            var alarm = p.ext().getAlarmP1(BComponent.HEIGHT);
+            var alarm = p.ext().getAlarmP1(p.getAxis() == BAxis.HORIZONTAL ? BComponent.HEIGHT : BComponent.PLANE);
             var l1 = 1000 * p.ext().getAlarmLevelForRangeByIndex(alarm, 0);
             var l2 = 1000 * p.ext().getAlarmLevelForRangeByIndex(alarm, 1);
             for (var level : List.of(-l1, l1)) {

@@ -42,8 +42,12 @@ public class GradeAttributeManager extends BaseAttributeManager {
     private GradeAttributeManager() {
     }
 
-    public BasicShapeAttributes getGradeHAttributes(BTopoGrade p) {
-        return TopoAttributeManager.getInstance().getComponentVectorAttributes(TopoHelper.getAlarmLevelHeight(p));
+    public BasicShapeAttributes getGradeVectorAttributes(BTopoGrade p) {
+        return TopoAttributeManager.getInstance().getComponentVectorAttributes(TopoHelper.getAlarmLevel(p));
+    }
+
+    public BasicShapeAttributes getGradeVectorCurrentAttributes(BTopoGrade p) {
+        return TopoAttributeManager.getInstance().getComponentVectorCurrentAttributes(TopoHelper.getAlarmLevel(p));
     }
 
     public BasicShapeAttributes getGroundCylinderAttributes() {
@@ -74,9 +78,9 @@ public class GradeAttributeManager extends BaseAttributeManager {
     public PointPlacemarkAttributes getPinAttributes(BTopoGrade p, BComponent component) {
         PointPlacemarkAttributes attrs;
         if (p.getAxis() == BAxis.HORIZONTAL) {
-            attrs = getPinAttributes(TopoHelper.getAlarmLevelHeight(p));
+            attrs = getPinAttributes(TopoHelper.getAlarmLevelHorizontal(p));
         } else {
-            attrs = getPinAttributes(TopoHelper.getAlarmLevelPlane(p));
+            attrs = getPinAttributes(TopoHelper.getAlarmLevelVertical(p));
         }
 
 //        if (mColorBy != null && mColorBy != ColorBy.ALARM) {

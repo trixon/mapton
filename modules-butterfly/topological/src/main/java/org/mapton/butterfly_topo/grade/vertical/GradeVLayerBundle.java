@@ -21,9 +21,12 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.stream.DoubleStream;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
@@ -103,6 +106,23 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
         mOptionsView.plotPointProperty().addListener((p, o, n) -> {
             repaint();
         });
+
+        mOptionsView.plotSelectedProperty().addListener((p, o, n) -> {
+            repaint();
+        });
+
+        mOptionsView.getDistanceSliderPane().selectedProperty().addListener((p, o, n) -> {
+            repaint();
+        });
+        mOptionsView.getDistanceSliderPane().valueProperty().addListener((p, o, n) -> {
+            repaint();
+        });
+
+        mManager.selectedItemProperty().addListener((ObservableValue<? extends BTopoGrade> observable, BTopoGrade oldValue, BTopoGrade newValue) -> {
+            if (mOptionsView.isPlotSelected()) {
+                repaint();
+            }
+        });
     }
 
     private void initRepaint() {
@@ -134,14 +154,26 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
                 mManager.getTimeFilteredItems().stream()
                         .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
                         .forEachOrdered(p -> {
-                            var position = Position.fromDegrees(p.getLat(), p.getLon());
+                            var elevation = DoubleStream.of(p.getP1().getZeroZ(), p.getP2().getZeroZ()).average().orElse(0.0);
+                            var position = Position.fromDegrees(p.getLat(), p.getLon(), elevation);
                             var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
                             var mapObjects = new ArrayList<AVListImpl>();
 
                             mapObjects.add(labelPlacemark);
                             mapObjects.add(plotPin(p, position, labelPlacemark, BComponent.PLANE));
-//                    mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
-                            mGraphicRenderer.plot(p, position, mapObjects);
+                            if (mOptionsView.isPlotSelected()) {
+                                if (p.equals(mManager.getSelectedItem())) {
+                                    mGraphicRenderer.plot(p, position, mapObjects);
+                                } else if (mManager.getSelectedItem() != null && mOptionsView.getDistanceSliderPane().selectedProperty().get()) {
+                                    var llP = BCoordinatrix.toLatLon(p);
+                                    var llS = BCoordinatrix.toLatLon(mManager.getSelectedItem());
+                                    if (llP.distance(llS) <= mOptionsView.getDistanceSliderPane().valueProperty().doubleValue()) {
+                                        mGraphicRenderer.plot(p, position, mapObjects);
+                                    }
+                                }
+                            } else {
+                                mGraphicRenderer.plot(p, position, mapObjects);
+                            }
 
                             var leftClickRunnable = (Runnable) () -> {
                                 mManager.setSelectedItemAfterReset(p);

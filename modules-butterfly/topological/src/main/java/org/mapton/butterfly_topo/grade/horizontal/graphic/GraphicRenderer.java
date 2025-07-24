@@ -97,28 +97,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
 
         var path = new Path(WWHelper.positionFromPosition(pos1, z1), WWHelper.positionFromPosition(pos2, z2));
-        path.setAttributes(mAttributeManager.getGradeHAttributes(p));
-        addRenderable(path, true, GraphicItem.HOR_INDICATOR, sMapObjects);
-
-        mapObjects.add(path);
-    }
-
-    private void plotVerIndicator(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
-        if (getPlotLimiter().isLimitReached(GraphicItem.VER_INDICATOR, p.getName())) {
-            return;
-        }
-
-        var cootrans = MOptions.getInstance().getMapCooTrans();
-        var wgs = cootrans.toWgs84(p.ext().getMidPoint().getY(), p.ext().getMidPoint().getX());
-
-        var begPos = Position.fromDegrees(wgs.getY(), wgs.getX(), 0.0);
-        var height = Math.abs(p.ext().getDiff().getZPerMille() * 25);
-        var endPos = WWHelper.positionFromPosition(begPos, height);
-
-        var path = new Path(begPos, endPos);
-        var attrs = mAttributeManager.getGradeHAttributes(p);
-        attrs.setOutlineWidth(4.0);
-        path.setAttributes(attrs);
+        path.setAttributes(mAttributeManager.getGradeVectorAttributes(p));
         addRenderable(path, true, GraphicItem.HOR_INDICATOR, sMapObjects);
 
         mapObjects.add(path);
@@ -163,6 +142,27 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         plotName(pos1, p.getP1());
         plotName(pos2, p.getP2());
+    }
+
+    private void plotVerIndicator(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
+        if (getPlotLimiter().isLimitReached(GraphicItem.VER_INDICATOR, p.getName())) {
+            return;
+        }
+
+        var cootrans = MOptions.getInstance().getMapCooTrans();
+        var wgs = cootrans.toWgs84(p.ext().getMidPoint().getY(), p.ext().getMidPoint().getX());
+
+        var begPos = Position.fromDegrees(wgs.getY(), wgs.getX(), 0.0);
+        var height = Math.abs(p.ext().getDiff().getZPerMille() * 25);
+        var endPos = WWHelper.positionFromPosition(begPos, height);
+
+        var path = new Path(begPos, endPos);
+        var attrs = mAttributeManager.getGradeVectorAttributes(p);
+        attrs.setOutlineWidth(4.0);
+        path.setAttributes(attrs);
+        addRenderable(path, true, GraphicItem.HOR_INDICATOR, sMapObjects);
+
+        mapObjects.add(path);
     }
 
 }

@@ -15,20 +15,28 @@
  */
 package org.mapton.butterfly_topo.grade.vertical.graphics;
 
-import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
+import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
-import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.RigidShape;
+import gov.nasa.worldwind.render.Wedge;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.api.MOptions;
 import org.mapton.butterfly_core.api.BCoordinatrix;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
+import org.mapton.butterfly_topo.TopoAttributeManager;
+import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -44,6 +52,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     public static final double SPAN = MAX - MID;
     private final HashSet<BTopoControlPoint> mPlottedConnectors = new HashSet();
     private final HashSet<BTopoControlPoint> mPlottedNames = new HashSet();
+    private final HashSet<BTopoControlPoint> mPlottedPoints = new HashSet();
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer);
@@ -52,19 +61,27 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     public void plot(BTopoGrade p, Position position, ArrayList<AVListImpl> mapObjects) {
         GraphicRendererBase.sMapObjects = mapObjects;
-//        plotBearing(p, position);
 
-        var pos1 = BCoordinatrix.toPositionWW2d(p.getP1());
-        var pos2 = BCoordinatrix.toPositionWW2d(p.getP2());
+        var pos1 = BCoordinatrix.toPositionWW3d(p.getP1());
+        var pos2 = BCoordinatrix.toPositionWW3d(p.getP2());
 
-        if (sCheckModel.isChecked(GraphicItem.HOR_INDICATOR)) {
-            plotHorIndicator(p, position, pos1, pos2, mapObjects);
+        if (sCheckModel.isChecked(GraphicItem.PIN)) {
+            plotPin(p, position);
         }
-        if (sCheckModel.isChecked(GraphicItem.VER_INDICATOR)) {
-            plotVerIndicator(p, position, pos1, pos2, mapObjects);
+        if (sCheckModel.isChecked(GraphicItem.VALUE)) {
+            plotValue(p, position);
         }
-        if (sCheckModel.isChecked(GraphicItem.NAME)) {
-            plotName(p, position, pos1, pos2);
+        if (sCheckModel.isChecked(GraphicItem.BEARING)) {
+            plotBearing(p, position);
+        }
+        if (sCheckModel.isChecked(GraphicItem.POINTS)) {
+            plotRefPoints(p, pos1, pos2);
+        }
+        if (sCheckModel.isChecked(GraphicItem.INDICATOR)) {
+            plotIndicator(p, position, pos1, pos2);
+        }
+        if (sCheckModel.isChecked(GraphicItem.TRACE)) {
+            plotTrace(p, position);
         }
     }
 
@@ -74,96 +91,208 @@ public class GraphicRenderer extends GraphicRendererBase {
         sPointToPositionMap.clear();
         mPlottedConnectors.clear();
         mPlottedNames.clear();
+        mPlottedPoints.clear();
     }
 
-    private void plotHorIndicator(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
-        if (getPlotLimiter().isLimitReached(GraphicItem.HOR_INDICATOR, p.getName())) {
+    private void plotBearing(BTopoGrade p, Position position) {
+        int size = p.getCommonObservations().size();
+        if (!sCheckModel.isChecked(GraphicItem.BEARING)
+                || size == 0) {
             return;
         }
 
-        plotIndicatorGroundPath(pos1, p.getP1());
-        plotIndicatorGroundPath(pos2, p.getP2());
+        int maxNumberOfItemsToPlot = Math.min(10, size);
+        var keys = new ArrayList<>(p.getCommonObservations().keySet());
+        boolean first = true;
 
-        var z = Math.abs(p.ext().getDiff().getZPerMille()) / MAX_PER_MILLE * SPAN;
+        for (int i = size - 1; i >= size - maxNumberOfItemsToPlot + 1; i--) {
+            var o = p.getCommonObservations().get(keys.get(i));
+            var gradeDiff = p.ext().getDiff(p.getFirstObservation(), o);
 
-        double z1;
-        double z2;
+            try {
+                var bearing = gradeDiff.getBearing();
+                if (bearing == null || bearing.isNaN()) {
+                    first = false;
+                    continue;
+                }
 
-        if (Math.signum(p.ext().getDiff().getZPerMille()) > 0) {
-            z1 = MID - z;
-            z2 = MID + z;
-        } else {
-            z1 = MID + z;
-            z2 = MID - z;
+                var length = 10.0;
+                var p2 = WWHelper.movePolar(position, bearing, length);
+                var z = position.elevation - (first ? 0.2 : 0.1);
+                position = WWHelper.positionFromPosition(position, z);
+                p2 = WWHelper.positionFromPosition(p2, z);
+                var path = new Path(position, p2);
+                path.setAttributes(TopoAttributeManager.getInstance().getBearingAttribute(first));
+                first = false;
+
+                addRenderable(path, true, null, null);
+            } catch (Exception e) {
+                System.err.println(e);
+            }
         }
-
-        var path = new Path(WWHelper.positionFromPosition(pos1, z1), WWHelper.positionFromPosition(pos2, z2));
-        path.setAttributes(mAttributeManager.getGradeHAttributes(p));
-        addRenderable(path, true, GraphicItem.HOR_INDICATOR, sMapObjects);
-
-        mapObjects.add(path);
     }
 
-    private void plotVerIndicator(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
-        if (getPlotLimiter().isLimitReached(GraphicItem.VER_INDICATOR, p.getName())) {
+    private void plotIndicator(BTopoGrade p, Position position, Position pos1, Position pos2) {
+        var topPath = new Path(position, WWHelper.positionFromPosition(position, pos2.elevation));
+        topPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        addRenderable(topPath, true, null, sMapObjects);
+
+        var alarm = p.ext().getAlarmP1(BComponent.PLANE);
+        var scale = p.getDistanceHeight() * 0.5 * 1000;
+        var scaledDistance = p.ext().getDiff().getRQuota() * scale;
+        var bearing = p.ext().getDiff().getBearing();
+        var centerHiPosition = WWHelper.positionFromPosition(position, pos2.elevation);
+        var centerLoPosition = WWHelper.positionFromPosition(position, pos1.elevation);
+        var endHiPosition = WWHelper.movePolar(centerHiPosition, bearing, scaledDistance, centerHiPosition.elevation);
+        var endLoPosition = WWHelper.movePolar(centerLoPosition, bearing - 180, scaledDistance, centerLoPosition.elevation);
+        var gradePath = new Path(endHiPosition, endLoPosition);
+        var attrs0 = TopoAttributeManager.getInstance().getComponentVectorAttributes(TopoHelper.getAlarmLevel(p));
+        gradePath.setAttributes(attrs0);
+        addRenderable(gradePath, true, null, sMapObjects);
+
+        if (alarm != null) {
+            List.of(pos1, pos2).forEach(poz -> {
+                var min = 0.0;
+                for (int i = 0; i < alarm.ext().getRatioRanges().size(); i++) {
+                    var bearingAlarmIndicator = bearing;
+
+                    if (poz == pos1) {
+                        bearingAlarmIndicator = bearingAlarmIndicator - 180;
+                    }
+                    var range = alarm.ext().getRatioRanges().get(i);
+                    var max = range.getMaximum();
+                    var scaledMin = min * scale;
+                    var scaledMax = max * scale;
+                    min = max;
+                    var pos0 = WWHelper.positionFromPosition(position, poz.elevation);
+                    var pA = WWHelper.movePolar(pos0, bearingAlarmIndicator, scaledMin, poz.elevation);
+                    var pB = WWHelper.movePolar(pos0, bearingAlarmIndicator, scaledMax, poz.elevation);
+                    var alarmSegmentPath = new Path(pA, pB);
+                    var attrs = TopoAttributeManager.getInstance().getComponentVectorAttributes(i);
+                    alarmSegmentPath.setAttributes(attrs);
+                    addRenderable(alarmSegmentPath, false, null, sMapObjects);
+                }
+            });
+        }
+    }
+
+    private void plotPin(BTopoGrade p, Position position) {
+        var baseSize = 0.5;
+        var midEllipsoid = new Ellipsoid(position, baseSize, baseSize, baseSize);
+        midEllipsoid.setAttributes(mAttributeManager.getGradeVectorCurrentAttributes(p));
+        addRenderable(midEllipsoid, true, GraphicItem.PIN, sMapObjects);
+
+        var groundPath = new Path(WWHelper.positionFromPosition(position, 0), position);
+        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        addRenderable(groundPath, true, null, sMapObjects);
+    }
+
+    private void plotRefPoint(BTopoControlPoint p, double baseSize, Position pos) {
+        if (!mPlottedPoints.contains(p)) {
+            var end_size = 0.5 * baseSize;
+            var ellipsoid = new Ellipsoid(pos, end_size, end_size, end_size);
+            ellipsoid.setAttributes(mTopoAttributeManager.getComponentVectorCurrentAttributes(p));
+            addRenderable(ellipsoid, true, GraphicItem.PIN, null);
+            var leftClickRunnable = (Runnable) () -> {
+                mTopoManager.setSelectedItemAfterReset(p);
+            };
+
+            ellipsoid.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+        }
+    }
+
+    private void plotRefPoints(BTopoGrade p, Position pos1, Position pos2) {
+        var baseSize = 0.5;
+        plotRefPoint(p.getP1(), baseSize, pos1);
+        plotRefPoint(p.getP2(), baseSize, pos2);
+
+        var midPath = new Path(pos1, pos2);
+        midPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        addRenderable(midPath, true, null, sMapObjects);
+    }
+
+    private void plotTrace(BTopoGrade p, Position position) {
+        var prevDate = LocalDateTime.now();
+        var altitude = 0.0;
+        var prevHeight = 0.0;
+        var dates = new ArrayList<>(p.getCommonObservations().keySet()).reversed();
+
+        for (int i = 0; i < dates.size(); i++) {
+            var date = dates.get(i);
+            var o = p.getCommonObservations().get(dates.get(i));
+            var gradeDiff = p.ext().getDiff(p.getFirstObservation(), o);
+            var timeSpan = ChronoUnit.MINUTES.between(date.atStartOfDay(), prevDate);
+            var height = timeSpan / 24000.0;
+            height = Math.max(height, 0.01);
+            altitude = altitude + height * 0.5 + prevHeight * 0.5;
+            prevDate = date.atStartOfDay();
+            prevHeight = height;
+            var pos = WWHelper.positionFromPosition(position, altitude);
+            var radius = Math.max(gradeDiff.getRQuota() * 10000, 0.1);
+            var attrs = TopoAttributeManager.getInstance().getComponentVectorCurrentAttributes(TopoHelper.getAlarmLevel(p, gradeDiff));
+            var bearing = gradeDiff.getBearing();
+            RigidShape rigidShape;
+
+            if (bearing == null || Double.isNaN(bearing)) {
+                rigidShape = new Ellipsoid(pos, radius, height * .5, radius);
+            } else {
+                var angle = 5.0;
+                rigidShape = new Wedge(pos, Angle.fromDegrees(angle), height, radius);
+                var az = Angle.normalizedDegrees(bearing - angle / 2);
+                rigidShape.setHeading(Angle.fromDegrees(az));
+            }
+
+            rigidShape.setAttributes(attrs);
+            addRenderable(rigidShape, true, null, sMapObjects);
+        }
+    }
+
+    private void plotValue(BTopoGrade p, Position position) {
+        int size = p.getCommonObservations().size();
+        if (size == 0) {
             return;
         }
 
-        var cootrans = MOptions.getInstance().getMapCooTrans();
-        var wgs = cootrans.toWgs84(p.ext().getMidPoint().getY(), p.ext().getMidPoint().getX());
+        int maxNumberOfItemsToPlot = Math.min(10, size);
+        var keys = new ArrayList<>(p.getCommonObservations().keySet());
+        boolean first = true;
+        for (int i = size - 1; i >= size - maxNumberOfItemsToPlot + 1; i--) {
+            var o = p.getCommonObservations().get(keys.get(i));
+            var gradeDiff = p.ext().getDiff(p.getFirstObservation(), o);
 
-        var begPos = Position.fromDegrees(wgs.getY(), wgs.getX(), 0.0);
-        var height = Math.abs(p.ext().getDiff().getZPerMille() * 25);
-        var endPos = WWHelper.positionFromPosition(begPos, height);
+            try {
+                var bearing = gradeDiff.getBearing();
+                if (bearing == null || bearing.isNaN()) {
+                    var attrs = TopoAttributeManager.getInstance().getComponentVectorCurrentAttributes(TopoHelper.getAlarmLevel(p, gradeDiff));
+                    var circle = new Cylinder(position, 0.02, 0.75);
+                    circle.setAttributes(attrs);
+                    addRenderable(circle, true, null, null);
+                    first = false;
+                    continue;
+                }
 
-        var path = new Path(begPos, endPos);
-        var attrs = mAttributeManager.getGradeHAttributes(p);
-        attrs.setOutlineWidth(4.0);
-        path.setAttributes(attrs);
-        addRenderable(path, true, GraphicItem.HOR_INDICATOR, sMapObjects);
+                var length = gradeDiff.getRQuota() * 100000;
+                var p2 = WWHelper.movePolar(position, bearing, length);
+                var z = position.elevation - (first ? 0.2 : 0.1);
+                position = WWHelper.positionFromPosition(position, z);
+                p2 = WWHelper.positionFromPosition(p2, z);
+                var path = new Path(position, p2);
+                var attrs = TopoAttributeManager.getInstance().getComponentVectorAttributes(TopoHelper.getAlarmLevel(p, gradeDiff));
+                if (!first) {
+                    attrs = new BasicShapeAttributes(attrs);
+                    attrs.setOutlineOpacity(0.1);
+                }
+                path.setAttributes(attrs);
+                first = false;
 
-        mapObjects.add(path);
-    }
+                addRenderable(path, true, null, null);
+            } catch (Exception e) {
+                System.err.println(e);
+            }
 
-    private void plotIndicatorGroundCylinder(Position position, double z, double r) {
-        var cylinder = new Cylinder(WWHelper.positionFromPosition(position, z), 0.05, r);
-        cylinder.setAttributes(mAttributeManager.getGroundCylinderAttributes());
-        addRenderable(cylinder, false, null, null);
-    }
-
-    private void plotIndicatorGroundPath(Position position, BTopoControlPoint point) {
-        if (!mPlottedConnectors.contains(point)) {
-            var groundPath = new Path(position, WWHelper.positionFromPosition(position, MAX + .3));
-            groundPath.setAttributes(mAttributeManager.getGroundPathAttributes());
-            addRenderable(groundPath, false, null, null);
-
-            mPlottedConnectors.add(point);
-            plotIndicatorGroundCylinder(position, MAX, 0.1);
-            plotIndicatorGroundCylinder(position, MID, 0.05);
-            plotIndicatorGroundCylinder(position, MIN, 0.1);
+            if (!sCheckModel.isChecked(GraphicItem.VALUE_TRACE)) {
+                break;
+            }
         }
     }
-
-    private void plotName(Position position, BTopoControlPoint point) {
-        if (!mPlottedNames.contains(point)) {
-            var placemark = new PointPlacemark(position);
-            placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-            placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
-            placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-            placemark.setLabelText(point.getName());
-
-            addRenderable(placemark, true, GraphicItem.NAME, sMapObjects);
-            mPlottedNames.add(point);
-        }
-    }
-
-    private void plotName(BTopoGrade p, Position position, Position pos1, Position pos2) {
-        if (getPlotLimiter().isLimitReached(GraphicItem.NAME, p.getName())) {
-            return;
-        }
-
-        plotName(pos1, p.getP1());
-        plotName(pos2, p.getP2());
-    }
-
 }
