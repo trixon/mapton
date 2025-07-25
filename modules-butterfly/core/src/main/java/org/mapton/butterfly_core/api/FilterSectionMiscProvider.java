@@ -23,6 +23,14 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public interface FilterSectionMiscProvider {
 
+    public default FilterSectionMisc getSection() {
+        return null;
+    }
+
     public SimpleBooleanProperty invertProperty();
+
+    public default void setFilterSection(FilterSectionMisc filterSection) {
+
+    }
 
 }
