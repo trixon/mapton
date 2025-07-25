@@ -28,16 +28,16 @@ import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
-import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
 import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import se.trixon.almond.util.Dict;
+import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
 public class ConvergenceGroupFilter extends FormFilter<ConvergenceGroupManager> implements
-        FilterSectionMiscProvider,
+        BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
         BFilterSectionDisruptorProvider {
