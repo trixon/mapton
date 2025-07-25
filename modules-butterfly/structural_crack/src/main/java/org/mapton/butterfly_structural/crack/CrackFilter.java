@@ -29,16 +29,16 @@ import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
-import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
+import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
 public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
-        FilterSectionMiscProvider,
+        BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
         BFilterSectionDisruptorProvider {
