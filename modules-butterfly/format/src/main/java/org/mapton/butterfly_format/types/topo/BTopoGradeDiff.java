@@ -16,6 +16,7 @@
 package org.mapton.butterfly_format.types.topo;
 
 import javafx.geometry.Point3D;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -42,6 +43,17 @@ public class BTopoGradeDiff {
         var deltaPoint2 = point2.subtract(referencePoint2);
 
         mDeltaPairPoint3d = deltaPoint2.subtract(deltaPoint1);
+    }
+
+    public Double getBearing() {
+        var b = MathHelper.azimuthToDegrees(mDeltaPairPoint3d.getY(), mDeltaPairPoint3d.getX()) - 180;
+        if (b < 0) {
+            return b + 360;
+        } else if (b > 360) {
+            return b - 360;
+        } else {
+            return b;
+        }
     }
 
     public double getPartialDiffR() {
