@@ -23,7 +23,7 @@ import org.mapton.butterfly_core.api.BFilterSectionDate.DateElement;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPoint.PointElement;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
-import org.mapton.butterfly_core.api.FilterSectionMisc;
+import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbPreferences;
 
@@ -35,14 +35,14 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
 
     private final BlastFilter mFilter;
     private final BFilterSectionDate mFilterSectionDate;
-    private final FilterSectionMisc mFilterSectionMisc;
+    private final BFilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final BlastManager mManager = BlastManager.getInstance();
 
     public BlastFilterPopOver(BlastFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
-        mFilterSectionMisc = new FilterSectionMisc();
+        mFilterSectionMisc = new BFilterSectionMisc();
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
@@ -143,8 +143,6 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMisc.initListeners(mFilter);
 
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
-        mFilter.initCheckModelListeners();
-
         mFilter.initCheckModelListeners();
     }
 

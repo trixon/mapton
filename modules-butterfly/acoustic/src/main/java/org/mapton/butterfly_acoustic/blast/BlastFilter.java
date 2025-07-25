@@ -26,15 +26,15 @@ import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
-import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
 import se.trixon.almond.util.Dict;
+import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
 public class BlastFilter extends FormFilter<BlastManager> implements
-        FilterSectionMiscProvider,
+        BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider {
 
