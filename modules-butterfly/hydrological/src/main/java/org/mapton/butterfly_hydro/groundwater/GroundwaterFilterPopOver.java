@@ -22,7 +22,7 @@ import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
-import org.mapton.butterfly_core.api.FilterSectionMisc;
+import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbPreferences;
 
@@ -35,7 +35,7 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
     private final GroundwaterFilter mFilter;
     private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
-    private final FilterSectionMisc mFilterSectionMisc;
+    private final BFilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final GroundwaterManager mManager = GroundwaterManager.getInstance();
     private final FilterSectionMeas mFilterSectionMeas;
@@ -45,7 +45,7 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMeas = new FilterSectionMeas();
-        mFilterSectionMisc = new FilterSectionMisc();
+        mFilterSectionMisc = new BFilterSectionMisc();
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);

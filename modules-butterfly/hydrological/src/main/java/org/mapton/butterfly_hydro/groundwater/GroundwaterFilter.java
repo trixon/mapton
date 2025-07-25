@@ -28,15 +28,15 @@ import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
-import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
 import se.trixon.almond.util.Dict;
+import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
 public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> implements
-        FilterSectionMiscProvider,
+        BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
         BFilterSectionDisruptorProvider,
@@ -98,8 +98,8 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
-                // .filter(p -> mFilterSectionDisruptor.filter(p))
                 .filter(p -> mFilterSectionMeas.filter(p))
+                // .filter(p -> mFilterSectionDisruptor.filter(p))
                 .toList();
 
         if (mInvertProperty.get()) {
