@@ -16,7 +16,6 @@
 package org.mapton.butterfly_topo.grade.vertical;
 
 import java.util.Arrays;
-import java.util.ResourceBundle;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
@@ -25,25 +24,19 @@ import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_topo.grade.GradeFilter;
 import org.mapton.butterfly_topo.grade.GradeFilterConfig;
 import org.mapton.butterfly_topo.grade.GradeFilterPopOver;
-import org.mapton.butterfly_topo.grade.GradeManagerBase;
+import org.mapton.butterfly_topo.grade.GradeView;
 import org.mapton.core.api.ui.MFilterPresetPopOver;
-import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GradeVView {
-
-    private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
-    private final GradeFilterPopOver mFilterPopOver;
-    private final MFilterPresetPopOver mFilterPresetPopOver;
-    private final SingleListForm mListForm;
-    private final GradeVManager mManager = GradeVManager.getInstance();
-    private final GradeFilter mFilter = new GradeFilter(mManager);
+public class GradeVView extends GradeView {
 
     public GradeVView() {
+        mManager = GradeVManager.getInstance();
+        mFilter = new GradeFilter(mManager);
         var config = new GradeFilterConfig();
         config.setKeyPrefix("_3");
         config.setMaxDeltaR(GradeVManager.MAX_HORIZONTAL_DISTANCE);
@@ -56,6 +49,7 @@ public class GradeVView {
         mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "gradeV");
 
         var actions = Arrays.asList(
+                mRefreshAction,
                 ActionUtils.ACTION_SPAN,
                 mFilter.getInfoPopOver().getAction(),
                 mFilterPresetPopOver.getAction(),

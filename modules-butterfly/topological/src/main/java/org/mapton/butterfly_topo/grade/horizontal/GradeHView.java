@@ -16,7 +16,6 @@
 package org.mapton.butterfly_topo.grade.horizontal;
 
 import java.util.Arrays;
-import java.util.ResourceBundle;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
@@ -25,25 +24,19 @@ import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_topo.grade.GradeFilter;
 import org.mapton.butterfly_topo.grade.GradeFilterConfig;
 import org.mapton.butterfly_topo.grade.GradeFilterPopOver;
-import org.mapton.butterfly_topo.grade.GradeManagerBase;
+import org.mapton.butterfly_topo.grade.GradeView;
 import org.mapton.core.api.ui.MFilterPresetPopOver;
-import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GradeHView {
-
-    private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
-    private final GradeFilterPopOver mFilterPopOver;
-    private final MFilterPresetPopOver mFilterPresetPopOver;
-    private final SingleListForm mListForm;
-    private final GradeHManager mManager = GradeHManager.getInstance();
-    private final GradeFilter mFilter = new GradeFilter(mManager);
+public class GradeHView extends GradeView {
 
     public GradeHView() {
+        mManager = GradeHManager.getInstance();
+        mFilter = new GradeFilter(mManager);
         var config = new GradeFilterConfig();
         config.setKeyPrefix("_1");
         config.setMinGradeHorizontal(10.0);
@@ -55,6 +48,7 @@ public class GradeHView {
         mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "gradeH");
 
         var actions = Arrays.asList(
+                mRefreshAction,
                 ActionUtils.ACTION_SPAN,
                 mFilter.getInfoPopOver().getAction(),
                 mFilterPresetPopOver.getAction(),

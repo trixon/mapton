@@ -38,7 +38,7 @@ public abstract class GradeManagerBase extends BaseManager<BTopoGrade> {
             new Thread(() -> load()).start();
         });
         TopoManager.getInstance().getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
-            mDelayedResetRunner.reset();
+            // mDelayedResetRunner.reset();
         });
 
     }
