@@ -23,8 +23,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
-import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
 import se.trixon.almond.util.Dict;
+import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 
 /**
  *
@@ -33,7 +33,7 @@ import se.trixon.almond.util.Dict;
 public class GradeFilter extends FormFilter<GradeManagerBase> implements
         BFilterSectionDateProvider,
         FilterSectionMeasProvider,
-        FilterSectionMiscProvider {
+        BFilterSectionMiscProvider {
 
     private BFilterSectionDate mFilterSectionDate;
     private FilterSectionMeas mFilterSectionMeas;

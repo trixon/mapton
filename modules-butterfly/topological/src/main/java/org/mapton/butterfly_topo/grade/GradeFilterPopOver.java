@@ -20,7 +20,7 @@ import java.util.prefs.Preferences;
 import javafx.scene.layout.BorderPane;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
-import org.mapton.butterfly_core.api.FilterSectionMisc;
+import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_topo.grade.horizontal.GradeHManager;
@@ -36,7 +36,7 @@ public class GradeFilterPopOver extends BaseTabbedFilterPopOver {
     private final GradeFilter mFilter;
     private final BFilterSectionDate mFilterSectionDate;
     private final FilterSectionMeas mFilterSectionMeas;
-    private final FilterSectionMisc mFilterSectionMisc;
+    private final BFilterSectionMisc mFilterSectionMisc;
     private final GradeHManager mHManager = GradeHManager.getInstance();
     private final GradeManagerBase mManager;
     private final GradeVManager mVManager = GradeVManager.getInstance();
@@ -46,7 +46,7 @@ public class GradeFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionMeas = new FilterSectionMeas(config);
-        mFilterSectionMisc = new FilterSectionMisc();
+        mFilterSectionMisc = new BFilterSectionMisc();
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionDate);
