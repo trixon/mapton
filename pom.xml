@@ -392,9 +392,9 @@
     </profiles>
 
     <properties>
-        <jackson.version>2.19.1</jackson.version>
+        <jackson.version>2.19.2</jackson.version>
         <brandingToken>mapton</brandingToken>
         <mapton.version>3.2.0-SNAPSHOT</mapton.version>
-        <geotools.version>33.1</geotools.version>
+        <geotools.version>33.2</geotools.version>
     </properties>
 </project>
