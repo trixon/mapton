@@ -27,6 +27,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.tools.Borders;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.control.RangeSliderPane;
+import se.trixon.almond.util.fx.control.SliderPane;
 
 /**
  *
@@ -45,8 +47,10 @@ public abstract class MBaseFilterSection {
     private final CheckedTab mCheckedTab;
     private double mMaxWidth = FxHelper.getUIScaled(500);
     private SessionManager mSessionManager;
+    private final String mTitle;
 
     public MBaseFilterSection(String title) {
+        mTitle = title;
         mCheckedTab = new CheckedTab(title, null);
     }
 
@@ -76,8 +80,16 @@ public abstract class MBaseFilterSection {
         return mCheckedTab;
     }
 
+    public String getTitle() {
+        return mTitle;
+    }
+
     public boolean inRange(double value, DoubleProperty minProperty, DoubleProperty maxProperty) {
         return value >= minProperty.get() && value <= maxProperty.get();
+    }
+
+    public boolean inRange(double value, double min, double max) {
+        return value >= min && value <= max;
     }
 
     public void initSession(SessionManager sessionManager) {
@@ -127,6 +139,22 @@ public abstract class MBaseFilterSection {
 
     public boolean validateCheck(IndexedCheckModel checkModel, Object o) {
         return checkModel.isEmpty() || checkModel.isChecked(o);
+    }
+
+    public boolean validateRangeSliderPane(RangeSliderPane rangeSliderPane, double value) {
+        if (rangeSliderPane.selectedProperty().get()) {
+            return inRange(value, rangeSliderPane.minProperty(), rangeSliderPane.maxProperty());
+        } else {
+            return true;
+        }
+    }
+
+    public boolean validateSliderPane(SliderPane sliderPane, double value) {
+        if (sliderPane.selectedProperty().get()) {
+            return value >= sliderPane.valueProperty().get();
+        } else {
+            return true;
+        }
     }
 
     public Node wrapInTitleBorder(String title, Node node) {
