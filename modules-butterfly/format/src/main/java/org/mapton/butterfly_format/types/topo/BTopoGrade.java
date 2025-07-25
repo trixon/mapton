@@ -15,17 +15,15 @@
  */
 package org.mapton.butterfly_format.types.topo;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.DoubleStream;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import org.apache.commons.lang3.ObjectUtils;
@@ -42,22 +40,29 @@ import org.mapton.butterfly_format.types.BXyzPoint;
  */
 public class BTopoGrade extends BXyzPoint {
 
-    private static final String DATE_PATTERN = "YYYY-'W'ww";
+//    private static final String DATE_PATTERN = "YYYY-'W'ww";
+    private static final String DATE_PATTERN = "yyyy-MM-dd";
     private final BAxis mAxis;
     private final TreeMap<LocalDate, BTopoGradeObservation> mCommonObservations = new TreeMap<>();
     private transient Ext mExt;
     private final BTopoControlPoint mP1;
     private final BTopoControlPoint mP2;
-    private final DateTimeFormatter mWeeklyAvgFormatterFrom = new DateTimeFormatterBuilder()
-            .appendPattern(DATE_PATTERN)
-            .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.getValue())
-            .toFormatter(Locale.getDefault());
+//    private final DateTimeFormatter mWeeklyAvgFormatterFrom = new DateTimeFormatterBuilder()
+//            .appendPattern(DATE_PATTERN)
+//            .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.getValue())
+//            .toFormatter(Locale.getDefault());
+    private final DateTimeFormatter mWeeklyAvgFormatterFrom = DateTimeFormatter.ofPattern(DATE_PATTERN, Locale.getDefault());
     private final DateTimeFormatter mWeeklyAvgFormatterTo = DateTimeFormatter.ofPattern(DATE_PATTERN, Locale.getDefault());
 
     public BTopoGrade(BAxis axis, BTopoControlPoint p1, BTopoControlPoint p2) {
         mAxis = axis;
-        mP1 = p1;
-        mP2 = p2;
+        if (p1.getZeroZ() < p2.getZeroZ()) {
+            mP1 = p1;
+            mP2 = p2;
+        } else {
+            mP1 = p2;
+            mP2 = p1;
+        }
 
         setName("%s → %s".formatted(p1.getName(), p2.getName()));
 
@@ -162,15 +167,32 @@ public class BTopoGrade extends BXyzPoint {
         for (var entry : weekToObservations.entrySet()) {
             var yyyyww = entry.getKey();
             var observations = entry.getValue();
-            var x = observations.stream().mapToDouble(o -> o.getX()).average().getAsDouble();
-            var y = observations.stream().mapToDouble(o -> o.getY()).average().getAsDouble();
-            var z = observations.stream().mapToDouble(o -> o.getZ()).average().getAsDouble();
+//            var x = observations.stream().mapToDouble(o -> o.getX()).average().getAsDouble();
+//            var y = observations.stream().mapToDouble(o -> o.getY()).average().getAsDouble();
+//            var z = observations.stream().mapToDouble(o -> o.getZ()).average().getAsDouble();
+
+            double x = getMedian(observations.stream().mapToDouble(o -> o.getX()));
+            double y = getMedian(observations.stream().mapToDouble(o -> o.getY()));
+            double z = getMedian(observations.stream().mapToDouble(o -> o.getZ()));
             var point3D = new Point3D(x, y, z);
 
             map1.put(LocalDate.parse(yyyyww, mWeeklyAvgFormatterFrom), point3D);
         }
 
         return map1;
+    }
+
+    private double getMedian(DoubleStream stream) {
+        var values = stream.sorted().toArray();
+        int length = values.length;
+
+        if (length == 0) {
+            throw new IllegalArgumentException("Stream is empty");
+        } else if (length % 2 == 1) {
+            return values[length / 2];
+        } else {
+            return (values[length / 2 - 1] + values[length / 2]) / 2.0;
+        }
     }
 
     public class Ext extends BXyzPoint.Ext<BTopoGradeObservation> {
