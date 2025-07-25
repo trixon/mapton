@@ -331,7 +331,11 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     }
 
     public void setTitle(T p, Color color) {
-        mChart.setTitle(p.getName());
+        setTitle(p.getName(), color);
+    }
+
+    public void setTitle(String title, Color color) {
+        mChart.setTitle(title);
         if (color == Color.RED || color == Color.GREEN) {
             color = color.darker();
         }

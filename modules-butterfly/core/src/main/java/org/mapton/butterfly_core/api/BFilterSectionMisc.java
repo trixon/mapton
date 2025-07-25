@@ -45,9 +45,9 @@ import se.trixon.almond.util.fx.control.SliderPane;
  *
  * @author Patrik Karlström
  */
-public class FilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection {
+public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(FilterSectionMisc.class);
+    private final ResourceBundle mBundle = NbBundle.getBundle(BFilterSectionMisc.class);
     private final CheckBox mClusterCheckbox = new CheckBox("Autokluster");
     private RangeSliderPane mDeltaHRangeSlider;
     private RangeSliderPane mDeltaRRangeSlider;
@@ -56,7 +56,7 @@ public class FilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection {
     private final CheckBox mInvertCheckbox = new CheckBox();
     private final GridPane mRoot = new GridPane(columnGap, rowGap);
 
-    public FilterSectionMisc() {
+    public BFilterSectionMisc() {
         super(Dict.MISCELLANEOUS.toString());
         mDistanceMeasure = (DistanceMeasure) (double[] a, double[] b) -> {
             var plane = Math.hypot(b[1] - a[1], b[0] - a[0]);
@@ -165,7 +165,7 @@ public class FilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection {
         });
     }
 
-    public void initListeners(FilterSectionMiscProvider filter) {
+    public void initListeners(BFilterSectionMiscProvider filter) {
         filter.invertProperty().bind(invertSelectionProperty());
     }
 

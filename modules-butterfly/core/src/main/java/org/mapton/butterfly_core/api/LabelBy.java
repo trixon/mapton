@@ -54,6 +54,7 @@ public class LabelBy {
     public static final String MEAS_COUNT = Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower());
     public static final String MEAS_COUNT_ALL = "%s (%s)".formatted(MEAS_COUNT, Dict.ALL.toLower());
     public static final String MEAS_COUNT_SELECTION = "%s (%s)".formatted(MEAS_COUNT, Dict.SELECTION.toLower());
+    public static final String PLANE_DIFFERENTIAL = "%s, differential".formatted(Dict.Geometry.PLANE);
     public static final String PLANE_NAME = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.NAME.toLower());
     public static final String PLANE_PERCENT = "%s, %%".formatted(Dict.Geometry.PLANE);
     public static final String PLANE_VALUE = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.VALUE.toLower());

@@ -21,15 +21,15 @@ import javafx.beans.property.SimpleBooleanProperty;
  *
  * @author Patrik Karlström
  */
-public interface FilterSectionMiscProvider {
+public interface BFilterSectionMiscProvider {
 
-    public default FilterSectionMisc getSection() {
+    public default BFilterSectionMisc getSection() {
         return null;
     }
 
     public SimpleBooleanProperty invertProperty();
 
-    public default void setFilterSection(FilterSectionMisc filterSection) {
+    public default void setFilterSection(BFilterSectionMisc filterSection) {
 
     }
 
