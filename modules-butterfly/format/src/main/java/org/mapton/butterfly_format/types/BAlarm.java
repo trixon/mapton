@@ -16,7 +16,9 @@
 package org.mapton.butterfly_format.types;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
@@ -222,6 +224,15 @@ public class BAlarm extends BBase {
             }
         }
 
+        public List<Range<Double>> getRanges() {
+            var list = new ArrayList<Range<Double>>();
+            list.add(mRange0);
+            list.add(mRange1);
+            list.add(mRange2);
+
+            return list.stream().filter(r -> r != null).toList();
+        }
+
         public int getRatioLevel(Double value) {
             value = MathHelper.round(value, 6);//Get rid of things like -0.004999999999999005
 
@@ -246,6 +257,15 @@ public class BAlarm extends BBase {
 
         public Range<Double> getRatioRange2() {
             return mRatioRange2;
+        }
+
+        public List<Range<Double>> getRatioRanges() {
+            var list = new ArrayList<Range<Double>>();
+            list.add(mRatioRange0);
+            list.add(mRatioRange1);
+            list.add(mRatioRange2);
+
+            return list.stream().filter(r -> r != null).toList();
         }
 
         public void populateRanges() {
