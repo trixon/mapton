@@ -23,7 +23,7 @@ import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPoint.PointElement;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
-import org.mapton.butterfly_core.api.FilterSectionMisc;
+import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbPreferences;
 
@@ -36,7 +36,7 @@ public class ExtensoFilterPopOver extends BaseTabbedFilterPopOver {
     private final ExtensoFilter mFilter;
     private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
-    private final FilterSectionMisc mFilterSectionMisc;
+    private final BFilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final ExtensoManager mManager = ExtensoManager.getInstance();
 
@@ -44,7 +44,7 @@ public class ExtensoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
-        mFilterSectionMisc = new FilterSectionMisc();
+        mFilterSectionMisc = new BFilterSectionMisc();
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
