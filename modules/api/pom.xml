@@ -281,7 +281,7 @@
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>3.3.5</version>
+            <version>3.4.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -314,7 +314,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolbox</artifactId>
-            <version>21.0.21</version>
+            <version>21.0.25</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -349,22 +349,22 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-pdf-layout</artifactId>
-            <version>7.4.2</version>
+            <version>8.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.helger.font</groupId>
             <artifactId>ph-fonts-api</artifactId>
-            <version>5.0.4</version>
+            <version>6.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.helger.font</groupId>
             <artifactId>ph-fonts-open-sans</artifactId>
-            <version>5.0.4</version>
+            <version>6.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.helger.font</groupId>
             <artifactId>ph-fonts-roboto</artifactId>
-            <version>5.0.4</version>
+            <version>6.0.0</version>
         </dependency>
 
         <!--Jackson-->

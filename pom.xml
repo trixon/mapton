@@ -365,7 +365,7 @@
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
-                <version>1.21.1</version>
+                <version>1.21.2</version>
             </dependency>
             <dependency>
                 <groupId>com.drewnoakes</groupId>
@@ -376,7 +376,7 @@
     </dependencyManagement>
 
     <repositories>
-<!--        <repository>
+        <!--        <repository>
             <id>mapton</id>
             <url>https://mapton.org/repo/maven/</url>
         </repository>-->
