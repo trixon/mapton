@@ -235,6 +235,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
     public abstract class Ext<T extends BXyzPointObservation> extends BBasePoint.Ext<T> {
 
+        private transient final DeltaFirst deltaFirst = new DeltaFirst();
         private transient final DeltaRolling deltaRolling = new DeltaRolling();
         private transient final DeltaZero deltaZero = new DeltaZero();
         private transient Double mFrequenceHighBuffer;
@@ -340,6 +341,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                 o.ext().setAccuY(accumulatedReplacementsY);
                 o.ext().setAccuZ(accumulatedReplacementsZ);
             }
+        }
+
+        public DeltaFirst deltaFirst() {
+            return deltaFirst;
         }
 
         public DeltaRolling deltaRolling() {
@@ -626,6 +631,14 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
         }
 
+        public long getFirstMeasurementAge(ChronoUnit chronoUnit) {
+            if (getDateFirst() != null) {
+                return chronoUnit.between(getDateFirst().toLocalDate(), LocalDate.now());
+            } else {
+                return -1L;
+            }
+        }
+
         public long getZeroToLatestMeasurementAge(ChronoUnit chronoUnit) {
             if (getDateZero() != null) {
                 return chronoUnit.between(getDateZero(), getDateLatest());
@@ -647,8 +660,8 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
             public String getDelta(int decimals, int factor) {
                 return StringHelper.joinNonNulls(", ",
-                        getDelta1(decimals, factor),
-                        getDelta2(decimals, factor),
+                        getDelta1(decimals, factor, true),
+                        getDelta2(decimals, factor, true),
                         getDelta3(decimals, factor)
                 );
             }
@@ -678,28 +691,29 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
 
             public String getDelta1(int decimals) {
-                return getDelta1(decimals, 1);
+                return getDelta1(decimals, 1, false);
             }
 
-            public String getDelta1(int decimals, int factor) {
+            public String getDelta1(int decimals, int factor, boolean usePrefix) {
                 var delta = getDelta1();
                 if (delta == null) {
                     return null;
                 } else {
-                    return StringHelper.round(delta * factor, decimals, "Δ1d ", "", true);
+                    var prefix = usePrefix ? "Δ1d " : "";
+                    return StringHelper.round(delta * factor, decimals, prefix, "", true);
                 }
             }
 
             public String getDelta1d2d(int decimals, int factor) {
                 return switch (dimension) {
                     case _1d ->
-                        getDelta1(decimals, factor);
+                        getDelta1(decimals, factor, true);
                     case _2d ->
-                        getDelta2(decimals, factor);
+                        getDelta2(decimals, factor, true);
                     default ->
                         StringHelper.joinNonNulls(", ",
-                        getDelta1(decimals, factor),
-                        getDelta2(decimals, factor)
+                        getDelta1(decimals, factor, true),
+                        getDelta2(decimals, factor, true)
                         );
                 };
             }
@@ -709,15 +723,16 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
 
             public String getDelta2(int decimals) {
-                return getDelta2(decimals, 1);
+                return getDelta2(decimals, 1, false);
             }
 
-            public String getDelta2(int decimals, int factor) {
+            public String getDelta2(int decimals, int factor, boolean usePrefix) {
                 var delta = getDelta2();
                 if (delta == null) {
                     return null;
                 } else {
-                    return StringHelper.round(delta * factor, decimals, "Δ2d ", "", true);
+                    var prefix = usePrefix ? "Δ2d " : "";
+                    return StringHelper.round(delta * factor, decimals, prefix, "", true);
                 }
             }
 
@@ -774,6 +789,60 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             public String getDeltaZAbsolute(int decimals) {
                 var delta = getDeltaZ();
                 return delta == null ? null : StringHelper.round(Math.abs(delta), decimals, "ΔZ=", "", false);
+            }
+        }
+
+        public class DeltaFirst extends Delta {
+
+            @Override
+            public Double getDeltaX() {
+                var observations = getObservationsTimeFiltered();
+                if (observations == null || observations.isEmpty()) {
+                    return null;
+                }
+
+                var firstMeasured = observations.getFirst().getMeasuredX();
+                var lastMeasured = observations.getLast().getMeasuredX();
+
+                if (ObjectUtils.allNotNull(firstMeasured, lastMeasured)) {
+                    return lastMeasured - firstMeasured;
+                } else {
+                    return null;
+                }
+            }
+
+            @Override
+            public Double getDeltaY() {
+                var observations = getObservationsTimeFiltered();
+                if (observations == null || observations.isEmpty()) {
+                    return null;
+                }
+
+                var firstMeasured = observations.getFirst().getMeasuredY();
+                var lastMeasured = observations.getLast().getMeasuredY();
+
+                if (ObjectUtils.allNotNull(firstMeasured, lastMeasured)) {
+                    return lastMeasured - firstMeasured;
+                } else {
+                    return null;
+                }
+            }
+
+            @Override
+            public Double getDeltaZ() {
+                var observations = getObservationsTimeFiltered();
+                if (observations == null || observations.isEmpty()) {
+                    return null;
+                }
+
+                var firstMeasured = observations.getFirst().getMeasuredZ();
+                var lastMeasured = observations.getLast().getMeasuredZ();
+
+                if (ObjectUtils.allNotNull(firstMeasured, lastMeasured)) {
+                    return lastMeasured - firstMeasured;
+                } else {
+                    return null;
+                }
             }
         }
 
