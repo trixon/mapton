@@ -88,6 +88,7 @@ public class VibrationPropertiesBuilder extends BPropertiesBuilder<BAcousticVibr
                 NA,
                 NA,
                 NA,
+                NA,
                 NA
         );
 

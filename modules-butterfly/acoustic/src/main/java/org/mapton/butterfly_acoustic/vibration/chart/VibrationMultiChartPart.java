@@ -112,7 +112,6 @@ public class VibrationMultiChartPart extends BMultiChartPart {
 
         pointList.removeAll(pointsToExclude);
         pointList.sort((o1, o2) -> Double.compare(o1.getValue("DistanceToBlast"), o2.getValue("DistanceToBlast")));
-//        sortPointList(pointList);
 
         return pointList;
     }
