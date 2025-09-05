@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.logging.Logger;
 import org.mapton.butterfly_format.jackson.DimensionSerializer;
 import org.mapton.butterfly_format.jackson.LocalDateTimeSerializer;
 import org.mapton.butterfly_format.types.BDimension;
@@ -36,6 +37,10 @@ import org.mapton.butterfly_format.types.BDimension;
 public abstract class ExportToCsv {
 
     public ExportToCsv() {
+    }
+
+    public Logger getLogger() {
+        return Logger.getLogger(getClass().getName());
     }
 
     public void writeCsv(File destDir, String basename, Class clazz, List list) throws IOException {
@@ -60,5 +65,6 @@ public abstract class ExportToCsv {
         var schema = mapper.schemaFor(clazz).withHeader().withQuoteChar('"');
         var file = new File(destDir, basename + ".csv");
         mapper.writerFor(clazz).with(schema).writeValues(file).writeAll(list);
+        getLogger().info("%d items exported".formatted(list.size()));
     }
 }
