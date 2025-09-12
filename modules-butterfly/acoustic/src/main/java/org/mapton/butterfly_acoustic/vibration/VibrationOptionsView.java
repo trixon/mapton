@@ -93,9 +93,10 @@ public class VibrationOptionsView extends BOptionsView {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.Vibration.pointBy", mPointScb.selectedIndexProperty());
-        sessionManager.register("options.Vibration.labelBy", labelByIdProperty());
-        sessionManager.register("options.Vibration.checkedGraphics", mGraphicSccb.checkedStringProperty());
+        sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
+        sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
+        sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
+        initSession(sessionManager);
 
         restoreLabelFromId(VibrationLabelBy.class, DEFAULT_LABEL_BY);
     }
