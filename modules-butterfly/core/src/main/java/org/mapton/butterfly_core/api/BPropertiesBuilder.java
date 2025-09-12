@@ -135,6 +135,7 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
         map.put(getCatKeyNum(CAT_MEAS, SDict.ROLLING.toString()), p.getRollingFormula());
         map.put(getCatKeyNum(CAT_MEAS, delta + SDict.ROLLING.toString()), params.deltaRolling);
         map.put(getCatKeyNum(CAT_MEAS, delta + Dict.REFERENCE.toString()), params.deltaZero);
+        map.put(getCatKeyNum(CAT_MEAS, delta + Dict.FIRST.toString()), params.deltaFirst);
         map.put(getCatKeyNum(CAT_MEAS, "N"), StringHelper.round(p.getZeroY(), 3));
         map.put(getCatKeyNum(CAT_MEAS, "E"), StringHelper.round(p.getZeroX(), 3));
         map.put(getCatKeyNum(CAT_MEAS, "H"), StringHelper.round(p.getZeroZ(), 3));
@@ -155,7 +156,8 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
             String alarmPercent,
             String alarmLevelAge,
             String deltaRolling,
-            String deltaZero) {
+            String deltaZero,
+            String deltaFirst) {
 
     }
 

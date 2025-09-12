@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Objects;
@@ -67,6 +68,13 @@ public class LabelBy {
         return "ERROR";
     }
 
+    public static String alarmDifferential(BXyzPoint p, BComponent component, int level) {
+        if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
+            return ext.getAlarmRatios(component, level);
+        }
+        return "ERROR";
+    }
+
     public static String alarmHName(BXyzPoint p) {
         return p.getAlarm1Id();
     }
@@ -101,6 +109,55 @@ public class LabelBy {
         if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
             return ext.getAlarmPercentString(ext);
         }
+        return "ERROR";
+    }
+
+    public static String dateAlarmLevelChange(BXyzPoint p) {
+        if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
+            Integer currentLevel = ext.getAlarmLevel(ext.getObservationFilteredLast());
+            Integer prevLevel = null;
+            LocalDateTime firstWithCurrenLevelDate = null;
+
+            for (var o : ext.getObservationsTimeFiltered().reversed()) {
+                prevLevel = ext.getAlarmLevel(o);
+                if (!Objects.equals(prevLevel, currentLevel)) {
+                    break;
+                }
+                firstWithCurrenLevelDate = o.getDate();
+            }
+            String result = null;
+            if (firstWithCurrenLevelDate != null) {
+                result = "%s (%d)".formatted(firstWithCurrenLevelDate.toLocalDate().toString(), prevLevel);
+            }
+
+            return Objects.toString(result, DEFAULT_DATE_IF_NULL);
+        }
+
+        return "ERROR";
+    }
+
+    public static String dateAlarmLevelChangeDays(BXyzPoint p) {
+        if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
+            Integer currentLevel = ext.getAlarmLevel(ext.getObservationFilteredLast());
+            Integer prevLevel = null;
+            LocalDateTime firstWithCurrenLevelDate = null;
+
+            for (var o : ext.getObservationsTimeFiltered().reversed()) {
+                prevLevel = ext.getAlarmLevel(o);
+                if (!Objects.equals(prevLevel, currentLevel)) {
+                    break;
+                }
+                firstWithCurrenLevelDate = o.getDate();
+            }
+            String result = null;
+            if (firstWithCurrenLevelDate != null) {
+                var days = ChronoUnit.DAYS.between(firstWithCurrenLevelDate, LocalDateTime.now());
+                result = "%d (%d)".formatted(days, prevLevel);
+            }
+
+            return Objects.toString(result, DEFAULT_DATE_IF_NULL);
+        }
+
         return "ERROR";
     }
 

@@ -20,14 +20,18 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.RigidShape;
+import gov.nasa.worldwind.render.SurfaceCircle;
 import gov.nasa.worldwind.render.airspaces.Polygon;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BBase;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -78,6 +82,29 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
 
     public PlotLimiter getPlotLimiter() {
         return mPlotLimiter;
+    }
+
+    public void plot(U p, Position position, ArrayList<AVListImpl> mapObjects) {
+    }
+
+    public void plot(U p, U selectedItem, Position position, ArrayList<AVListImpl> mapObjects, BOptionsView optionsView) {
+        if (optionsView.isPlotSelected()) {
+            if (p.equals(selectedItem)) {
+                plot(p, position, mapObjects);
+            } else if (selectedItem != null && optionsView.getDistanceSliderPane().selectedProperty().get()) {
+                var llP = BCoordinatrix.toLatLon((BXyzPoint) p);
+                var llS = BCoordinatrix.toLatLon((BXyzPoint) selectedItem);
+                if (llP.distance(llS) <= optionsView.getDistanceSliderPane().valueProperty().doubleValue()) {
+                    plot(p, position, mapObjects);
+                }
+            }
+        } else {
+            plot(p, position, mapObjects);
+        }
+
+        if (optionsView.isPlotDebt()) {
+            plotDebt((BXyzPoint) p, position);
+        }
     }
 
     public void plotAxis(BBase p, Position position, double length) {
@@ -237,5 +264,21 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
         } else {
             return false;
         }
+    }
+
+    protected void plotDebt(BXyzPoint p, Position position) {
+        var debt = p.extOrNull().getMeasurementUntilNext(ChronoUnit.DAYS);
+        if (p.getFrequency() == 0 || debt >= 0) {
+            return;
+        }
+
+        var opacity = 0.2 + Math.abs(debt) / 42.0;
+        var attrs = new BasicShapeAttributes();
+        attrs.setDrawOutline(false);
+        attrs.setDrawInterior(true);
+        attrs.setInteriorOpacity(Math.min(1.0, opacity));
+        attrs.setInteriorMaterial(Material.BLACK);
+        var circle = new SurfaceCircle(attrs, position, 1.8, 100);
+        addRenderable(circle, false, null, null);
     }
 }

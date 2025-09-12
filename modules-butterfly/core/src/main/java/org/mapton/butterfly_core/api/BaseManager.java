@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ListChangeListener;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MBaseDataManager;
@@ -29,6 +30,7 @@ import org.mapton.api.MSearchProviderManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -39,9 +41,9 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
 
-    private final BooleanProperty mDisabledSearchProperty = new SimpleBooleanProperty(true);
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
+    private final BooleanProperty mDisabledSearchProperty = new SimpleBooleanProperty(true);
 
     public BaseManager(Class<T> typeParameterClass) {
         super(typeParameterClass);
@@ -62,6 +64,10 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
         });
     }
 
+    public BooleanProperty disabledSearchProperty() {
+        return mDisabledSearchProperty;
+    }
+
     public Callable<List<String>> getCopyNamesCallable() {
         return () -> {
             return getTimeFilteredItems().stream().map(p -> p.getName()).toList();
@@ -72,10 +78,6 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
         return () -> {
             return MSearchProviderManager.getInstance().getUrl(getSelectedItem().getExternalSysId(), URLEncoder.encode(getSelectedItem().getExternalSysKey(), "UTF-8"));
         };
-    }
-
-    public BooleanProperty disabledSearchProperty() {
-        return mDisabledSearchProperty;
     }
 
     @Override
@@ -113,6 +115,27 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
     }
 
     public abstract void load(Butterfly butterfly);
+
+    public void registerLayerBundle(LayerBundle layerBundle, BOptionsView optionsView) {
+        selectedItemProperty().addListener((p, o, n) -> {
+            if (optionsView.isPlotSelected()) {
+                layerBundle.repaint();
+            }
+        });
+
+        getTimeFilteredItems().addListener((ListChangeListener.Change<? extends T> c) -> {
+            layerBundle.repaint();
+        });
+
+        layerBundle.getParentLayer().addPropertyChangeListener("Enabled", pce -> {
+            boolean enabled = layerBundle.getParentLayer().isEnabled();
+            updateTemporal(enabled);
+
+            if (enabled) {
+                layerBundle.repaint();
+            }
+        });
+    }
 
     @Override
     protected MLatLonBox getTimeFilteredExtents() {

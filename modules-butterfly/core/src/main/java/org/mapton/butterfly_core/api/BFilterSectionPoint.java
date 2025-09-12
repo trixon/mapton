@@ -38,6 +38,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import static org.mapton.butterfly_core.api.BFilterSectionPoint.PointElement.*;
+import org.mapton.butterfly_format.types.BComponent;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
@@ -57,6 +58,7 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 public class BFilterSectionPoint extends MBaseFilterSection {
 
     private final SessionCheckComboBox<String> mAlarmNameSccb;
+    private final SessionCheckComboBox<AlarmFlags> mAlarmStatSccb;
     private final RangeSliderPane mAltitudeRangeSlider = new RangeSliderPane("Z", -100.0, 100.0, false);
     private final ResourceBundle mBundle = NbBundle.getBundle(getClass());
     private final SessionCheckComboBox<String> mCategorySccb;
@@ -92,6 +94,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mFrequencySccb = new SessionCheckComboBox<>();
         mDefaultFrequencySccb = new SessionCheckComboBox<>();
         mDefaultFrequencyStatSccb = new SessionCheckComboBox<>();
+        mAlarmStatSccb = new SessionCheckComboBox<>();
         mIntenseFrequencySccb = new SessionCheckComboBox<>();
         mIntenseFrequencyStatSccb = new SessionCheckComboBox<>();
         mCategorySccb = new SessionCheckComboBox<>();
@@ -131,6 +134,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     public void disable(PointElement... elements) {
         var map = new HashMap<PointElement, Node>();
         map.put(ALARM, mAlarmNameSccb);
+        map.put(ALARM_STAT, mAlarmStatSccb);
         map.put(ALTITUDE, mAltitudeRangeSlider);
         map.put(CATEGORY, mCategorySccb);
         map.put(FREQUENCY_DEFAULT, mDefaultFrequencySccb);
@@ -160,6 +164,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     && validateCheck(mGroupSccb.getCheckModel(), p.getGroup())
                     && validateCheck(mCategorySccb.getCheckModel(), p.getCategory())
                     && validateAlarmName(p, mAlarmNameSccb.getCheckModel())
+                    && validateAlarmFlags(p, mAlarmStatSccb.getCheckModel())
                     && validateCheck(mFrequencySccb.getCheckModel(), p.getFrequency())
                     && validateCheck(mDefaultFrequencySccb.getCheckModel(), p.getFrequencyDefault())
                     && validateDefaultFregFlags(p, mDefaultFrequencyStatSccb.getCheckModel())
@@ -198,6 +203,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                 mGroupSccb.getCheckModel(),
                 mCategorySccb.getCheckModel(),
                 mAlarmNameSccb.getCheckModel(),
+                mAlarmStatSccb.getCheckModel(),
                 mFrequencySccb.getCheckModel(),
                 mDefaultFrequencySccb.getCheckModel(),
                 mDefaultFrequencyStatSccb.getCheckModel(),
@@ -397,6 +403,53 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     private void init() {
     }
 
+    private boolean validateAlarmFlags(BXyzPoint p, IndexedCheckModel<AlarmFlags> checkModel) {
+        if (checkModel.isEmpty()) {
+            return true;
+        }
+
+        var set1 = true;
+        var nset1 = true;
+        var set2 = true;
+        var nset2 = true;
+        var diffset = true;
+        var diffnset = true;
+
+        var a1 = p.extOrNull().getAlarm(BComponent.HEIGHT);
+        var a2 = p.extOrNull().getAlarm(BComponent.PLANE);
+
+        if (checkModel.isChecked(AlarmFlags.SET_1)) {
+            set1 = a1 != null;
+        }
+
+        if (checkModel.isChecked(AlarmFlags.NOT_SET_1)) {
+            nset1 = a1 == null;
+        }
+
+        if (checkModel.isChecked(AlarmFlags.SET_2)) {
+            set2 = a2 != null;
+        }
+
+        if (checkModel.isChecked(AlarmFlags.NOT_SET_2)) {
+            nset2 = a2 == null;
+        }
+
+        if (checkModel.isChecked(AlarmFlags.SET_DIFF)) {
+            diffset = a1 != null && a1.getRatio1() != null;
+        }
+
+        if (checkModel.isChecked(AlarmFlags.NOT_SET_DIFF)) {
+            diffnset = a1 == null || a1.getRatio1() == null;
+        }
+
+        return set1
+                && nset1
+                && set2
+                && nset2
+                && diffset
+                && diffnset;
+    }
+
     private boolean validateAltitude(BXyzPoint p) {
         try {
             var z = p.getZeroZ();
@@ -418,6 +471,26 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         private final String mTitle;
 
         private DefaultFreqFlags(String title) {
+            mTitle = title;
+        }
+
+        @Override
+        public String toString() {
+            return mTitle;
+        }
+
+    }
+
+    public enum AlarmFlags {
+        SET_1("Har larm 1"),
+        SET_2("Har larm 2"),
+        NOT_SET_1("Saknar larm 1"),
+        NOT_SET_2("Saknar larm 2"),
+        SET_DIFF("Har diff"),
+        NOT_SET_DIFF("Saknar diff");
+        private final String mTitle;
+
+        private AlarmFlags(String title) {
             mTitle = title;
         }
 
@@ -450,6 +523,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
     public enum PointElement {
         ALARM,
+        ALARM_STAT,
         ALTITUDE,
         CATEGORY,
         FORMULA_ROLLING,
@@ -487,6 +561,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mGroupSccb,
                     mCategorySccb,
                     mAlarmNameSccb,
+                    mAlarmStatSccb,
                     mOperatorSccb,
                     mOriginSccb,
                     mUnitSccb,
@@ -523,6 +598,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
         public void initSession(SessionManager sessionManager) {
             sessionManager.register("filter.checkedAlarmName", mAlarmNameSccb.checkedStringProperty());
+            sessionManager.register("filter.checkedAlarmStat", mAlarmStatSccb.checkedStringProperty());
             sessionManager.register("filter.checkedCategory", mCategorySccb.checkedStringProperty());
             sessionManager.register("filter.checkedFrequency", mFrequencySccb.checkedStringProperty());
             sessionManager.register("filter.checkedDefaultFrequency", mDefaultFrequencySccb.checkedStringProperty());
@@ -567,6 +643,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mGroupSccb,
                     mCategorySccb,
                     mAlarmNameSccb,
+                    mAlarmStatSccb,
                     mOperatorSccb,
                     mOriginSccb,
                     mUnitSccb,
@@ -595,6 +672,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             mSparseSccb.setTitle("Formel, utglesning");
 
             mDefaultFrequencySccb.setTitle("Frekvens, standard");
+            mAlarmStatSccb.setTitle("Larm, status");
+            mAlarmStatSccb.getItems().setAll(AlarmFlags.values());
             mDefaultFrequencyStatSccb.setTitle("Status, standard");
             mDefaultFrequencyStatSccb.getItems().setAll(DefaultFreqFlags.values());
 
@@ -619,7 +698,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mFrequencySccb,
                     mDefaultFrequencySccb,
                     mIntenseFrequencySccb,
-                    mMeasurementModeSccb,
+                    mAlarmNameSccb,
                     mGroupSccb,
                     mOriginSccb,
                     mUnitSccb,
@@ -631,11 +710,11 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             dummyLabel.prefHeightProperty().bind(mMeasurementModeSccb.heightProperty());
 
             var rightBox = new VBox(rowGap,
-                    mAlarmNameSccb,
+                    mMeasurementModeSccb,
                     mMeasNextSccb,
                     mDefaultFrequencyStatSccb,
                     mIntenseFrequencyStatSccb,
-                    dummyLabel,
+                    mAlarmStatSccb,
                     mCategorySccb,
                     mOperatorSccb,
                     mUnitDiffSccb,
