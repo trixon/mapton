@@ -91,9 +91,10 @@ public class GroundwaterOptionsView extends BOptionsView {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.groundwater.pointBy", mPointScb.selectedIndexProperty());
-        sessionManager.register("options.groundwater.labelBy", labelByIdProperty());
-        sessionManager.register("options.groundwater.checkedGraphics", mGraphicSccb.checkedStringProperty());
+        sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
+        sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
+        sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
+        initSession(sessionManager);
 
         restoreLabelFromId(GroundwaterLabelBy.class, DEFAULT_LABEL_BY);
     }

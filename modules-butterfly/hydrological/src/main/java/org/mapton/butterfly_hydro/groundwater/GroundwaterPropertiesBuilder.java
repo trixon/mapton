@@ -51,6 +51,7 @@ public class GroundwaterPropertiesBuilder extends BPropertiesBuilder<BHydroGroun
                 null,
                 null,
                 null,
+                null,
                 null
         );
         propertyMap.putAll(populateMeas(p, measParams));
