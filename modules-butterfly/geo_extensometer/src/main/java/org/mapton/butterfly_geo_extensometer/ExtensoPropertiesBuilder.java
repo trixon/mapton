@@ -98,6 +98,7 @@ public class ExtensoPropertiesBuilder extends BPropertiesBuilder<BGeoExtensomete
                 NA,
                 NA,
                 NA,
+                NA,
                 NA
         );
 

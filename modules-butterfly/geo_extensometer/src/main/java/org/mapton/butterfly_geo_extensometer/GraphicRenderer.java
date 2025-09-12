@@ -45,14 +45,15 @@ import org.mapton.worldwind.api.WWHelper;
  *
  * @author Patrik Karlström
  */
-public class GraphicRenderer {
+public class GraphicRenderer extends GraphicRendererBase {
 
     private final ExtensoAttributeManager mAttributeManager = ExtensoAttributeManager.getInstance();
     private final IndexedCheckModel<GraphicRendererItem> mCheckModel;
     private final RenderableLayer mLayer;
     private ArrayList<AVListImpl> mMapObjects;
 
-    public GraphicRenderer(RenderableLayer layer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+        super(layer, passiveLayer);
         mLayer = layer;
         mCheckModel = checkModel;
     }

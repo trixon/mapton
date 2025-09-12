@@ -20,7 +20,6 @@ import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
-import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
@@ -49,7 +48,7 @@ public class ExtensoLayerBundle extends BfLayerBundle {
         init();
         initRepaint();
         mOptionsView = new ExtensoOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getComponentCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getComponentCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -76,22 +75,8 @@ public class ExtensoLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BGeoExtensometer> c) -> {
-            repaint();
-        });
-
-        mLayer.addPropertyChangeListener("Enabled", pce -> {
-            boolean enabled = mLayer.isEnabled();
-            mManager.updateTemporal(enabled);
-
-            if (enabled) {
-                repaint();
-            }
-        });
-
-        mOptionsView.labelByProperty().addListener((p, o, n) -> {
-            repaint();
-        });
+        mOptionsView.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mOptionsView);
     }
 
     private void initRepaint() {
@@ -123,7 +108,8 @@ public class ExtensoLayerBundle extends BfLayerBundle {
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(extenso, position, labelPlacemark));
-                        mGraphicRenderer.plot(extenso, position, mapObjects);
+
+                        mGraphicRenderer.plot(extenso, mManager.getSelectedItem(), position, mapObjects, mOptionsView);
                     }
 
                     var leftClickRunnable = (Runnable) () -> {
