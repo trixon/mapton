@@ -26,6 +26,7 @@ import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.shared.ColorBy;
 import static org.mapton.butterfly_topo.shared.ColorBy.FREQUENCY;
@@ -150,6 +151,14 @@ public class TopoAttributeManager extends BaseAttributeManager {
     }
 
     public BasicShapeAttributes getComponentVector3dAttributes(BTopoControlPoint p) {
+        return getComponentVector3dAttributes(TopoHelper.getAlarmLevel(p));
+    }
+
+    public BasicShapeAttributes getComponentVector3dAttributes(BTopoGrade p) {
+        return getComponentVector3dAttributes(TopoHelper.getAlarmLevel(p));
+    }
+
+    public BasicShapeAttributes getComponentVector3dAttributes(int alarmLevel) {
         if (mComponentVector3dAttributes == null) {
             mComponentVector3dAttributes = new BasicShapeAttributes[4];
             for (int i = 0; i < 4; i++) {
@@ -162,7 +171,7 @@ public class TopoAttributeManager extends BaseAttributeManager {
             }
         }
 
-        return mComponentVector3dAttributes[TopoHelper.getAlarmLevel(p) + 1];
+        return mComponentVector3dAttributes[alarmLevel + 1];
     }
 
     public BasicShapeAttributes getComponentVectorAlarmAttributes(int level) {
@@ -187,6 +196,10 @@ public class TopoAttributeManager extends BaseAttributeManager {
     }
 
     public BasicShapeAttributes getComponentVectorCurrentAttributes(BTopoControlPoint p) {
+        return getComponentVectorCurrentAttributes(TopoHelper.getAlarmLevel(p));
+    }
+
+    public BasicShapeAttributes getComponentVectorCurrentAttributes(int alarmLevel) {
         if (mComponentVectorCurrentAttributes == null) {
             mComponentVectorCurrentAttributes = new BasicShapeAttributes[4];
 
@@ -200,7 +213,7 @@ public class TopoAttributeManager extends BaseAttributeManager {
             }
         }
 
-        return mComponentVectorCurrentAttributes[TopoHelper.getAlarmLevel(p) + 1];
+        return mComponentVectorCurrentAttributes[alarmLevel + 1];
     }
 
     public BasicShapeAttributes getComponentVectorCurrentHeightAttributes(BTopoControlPoint p) {

@@ -197,7 +197,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
                 + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * mScale3dH;
 
         var currentPosition = WWHelper.positionFromPosition(zeroPosition, z);
-        plotLabel(currentPosition, p.ext().deltaZero().getDelta1(0, 1000));
+        plotLabel(currentPosition, p.ext().deltaZero().getDelta1(0, 1000, true));
     }
 
     private void plot1dVectorTrend(BTopoControlPoint p, Position position) {
