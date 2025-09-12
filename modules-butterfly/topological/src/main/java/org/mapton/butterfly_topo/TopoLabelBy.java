@@ -50,6 +50,9 @@ public enum TopoLabelBy implements LabelBy.Operations {
     ALARM_H_DIFFERENTIAL(LabelBy.CAT_ALARM, LabelBy.HEIGHT_DIFFERENTIAL, p -> {
         return LabelBy.alarmDifferential(p, BComponent.HEIGHT);
     }),
+    ALARM_H_DIFFERENTIAL_2(LabelBy.CAT_ALARM, LabelBy.HEIGHT_DIFFERENTIAL + " (%s)".formatted("gräns"), p -> {
+        return LabelBy.alarmDifferential(p, BComponent.HEIGHT, 2);
+    }),
     ALARM_P_NAME(LabelBy.CAT_ALARM, LabelBy.PLANE_NAME, p -> {
         return LabelBy.alarmPName(p);
     }),
@@ -82,6 +85,14 @@ public enum TopoLabelBy implements LabelBy.Operations {
     }),
     DATE_VALIDITY(LabelBy.CAT_DATE, "%s - %s".formatted(Dict.FROM.toString(), Dict.TO.toString()), p -> {
         return LabelBy.dateValidity(p);
+    }),
+    DATE_ALARM_LEVEL_CHANGED(LabelBy.CAT_DATE, SDict.ALARM_LEVEL.toString(), p -> {
+
+        return LabelBy.dateAlarmLevelChange(p);
+    }),
+    DATE_ALARM_LEVEL_CHANGED_DAYS(LabelBy.CAT_DATE, SDict.ALARM_LEVEL.toString() + " (dagar)", p -> {
+
+        return LabelBy.dateAlarmLevelChangeDays(p);
     }),
     MISC_GROUP(LabelBy.CAT_MISC, Dict.GROUP.toString(), p -> {
         return LabelBy.miscGroup(p);
@@ -152,18 +163,54 @@ public enum TopoLabelBy implements LabelBy.Operations {
     MEAS_NEED_FREQ(LabelBy.CAT_MEAS, "%s (%s)".formatted(Dict.NEED.toString(), SDict.FREQUENCY.toString()), p -> {
         return LabelBy.measNeedFreq(p);
     }),
-    VALUE_DELTA_ZERO(LabelBy.CAT_VALUE, "Δ₀", p -> {
+    VALUE_DELTA_FIRST(LabelBy.CAT_VALUE, "@Första Δ", p -> {
+        return p.ext().deltaFirst().getDelta1d2d(0, 1000);
+    }),
+    VALUE_DELTA_FIRST_1D(LabelBy.CAT_VALUE, "@Första Δ1d", p -> {
+        return p.ext().deltaFirst().getDelta1(0, 1000, false);
+    }),
+    VALUE_DELTA_FIRST_1D_DAYS(LabelBy.CAT_VALUE, "@Första Δ1d (dagar)", p -> {
+        var daysSinceMeasurement = p.ext().getFirstMeasurementAge(ChronoUnit.DAYS);
+
+        return "%s (%d)".formatted(p.ext().deltaFirst().getDelta1(0, 1000, false), daysSinceMeasurement);
+    }),
+    VALUE_DELTA_FIRST_2D(LabelBy.CAT_VALUE, "@Första Δ2d", p -> {
+        return p.ext().deltaFirst().getDelta2(0, 1000, false);
+    }),
+    VALUE_DELTA_FIRST_2D_DAYS(LabelBy.CAT_VALUE, "@Första Δ2d (dagar)", p -> {
+        var daysSinceMeasurement = p.ext().getFirstMeasurementAge(ChronoUnit.DAYS);
+
+        return "%s (%d)".formatted(p.ext().deltaFirst().getDelta2(0, 1000, false), daysSinceMeasurement);
+    }),
+    VALUE_DELTA_ZERO(LabelBy.CAT_VALUE, "@Noll Δ", p -> {
         return p.ext().deltaZero().getDelta1d2d(0, 1000);
     }),
-    VALUE_DELTA_ZERO_1D(LabelBy.CAT_VALUE, "Δ1d₀", p -> {
-        return p.ext().deltaZero().getDelta1(0, 1000);
+    VALUE_DELTA_ZERO_1D(LabelBy.CAT_VALUE, "@Noll Δ1d", p -> {
+        return p.ext().deltaZero().getDelta1(0, 1000, false);
     }),
-    VALUE_DELTA_ZERO_1D_DAYS(LabelBy.CAT_VALUE, "Δ1d₀ (dagar)", p -> {
+    VALUE_DELTA_ZERO_1D_DAYS(LabelBy.CAT_VALUE, "@Noll Δ1d (dagar)", p -> {
         var daysSinceMeasurement = p.ext().getZeroMeasurementAge(ChronoUnit.DAYS);
 
-        return "%s (%d)".formatted(p.ext().deltaZero().getDelta1(0, 1000), daysSinceMeasurement);
+        return "%s (%d)".formatted(p.ext().deltaZero().getDelta1(0, 1000, false), daysSinceMeasurement);
     }),
-    VALUE_DELTA_LATEST_1D(LabelBy.CAT_VALUE, "Δ1dₛₑₙₐₛₜₑ (dagar)", p -> {
+    VALUE_DELTA_ZERO_2D(LabelBy.CAT_VALUE, "@Noll Δ2d", p -> {
+        return p.ext().deltaZero().getDelta2(0, 1000, false);
+    }),
+    VALUE_DELTA_ZERO_2D_DAYS(LabelBy.CAT_VALUE, "@Noll Δ2d (dagar)", p -> {
+        var daysSinceMeasurement = p.ext().getZeroMeasurementAge(ChronoUnit.DAYS);
+
+        return "%s (%d)".formatted(p.ext().deltaZero().getDelta2(0, 1000, false), daysSinceMeasurement);
+    }),
+    VALUE_DELTA_ROLLING(LabelBy.CAT_VALUE, "@Rullande Δ", p -> {
+        return p.ext().deltaRolling().getDelta1d2d(3);
+    }),
+    VALUE_DELTA_ROLLING_1D(LabelBy.CAT_VALUE, "@Rullande Δ1d", p -> {
+        return p.ext().deltaRolling().getDelta1(3);
+    }),
+    VALUE_DELTA_ROLLING_2D(LabelBy.CAT_VALUE, "@Rullande Δ2d", p -> {
+        return p.ext().deltaRolling().getDelta2(3);
+    }),
+    VALUE_DELTA_LATEST_1D(LabelBy.CAT_VALUE, "@2 senaste Δ1d (dagar)", p -> {
         if (p.getDimension() == BDimension._2d) {
             return ":";
         }
@@ -187,7 +234,7 @@ public enum TopoLabelBy implements LabelBy.Operations {
 
         return "%s (%d)".formatted(StringHelper.round(delta, 3), daysSinceMeasurement);
     }),
-    VALUE_DELTA_LATEST_1D_ZERO(LabelBy.CAT_VALUE, "Δ1dₛₑₙₐₛₜₑ (Δ1d₀)", p -> {
+    VALUE_DELTA_LATEST_1D_ZERO(LabelBy.CAT_VALUE, "@2 senaste Δ1d (Δ1d₀)", p -> {
         if (p.getDimension() == BDimension._2d) {
             return ":";
         }
@@ -209,15 +256,7 @@ public enum TopoLabelBy implements LabelBy.Operations {
 
         return "%s (%.3f)".formatted(StringHelper.round(delta, 3), p.ext().deltaZero().getDelta1());
     }),
-    VALUE_DELTA_ZERO_2D(LabelBy.CAT_VALUE, "Δ2d₀", p -> {
-        return p.ext().deltaZero().getDelta2(0, 1000);
-    }),
-    VALUE_DELTA_ZERO_2D_DAYS(LabelBy.CAT_VALUE, "Δ2d₀ (dagar)", p -> {
-        var daysSinceMeasurement = p.ext().getZeroMeasurementAge(ChronoUnit.DAYS);
-
-        return "%s (%d)".formatted(p.ext().deltaZero().getDelta2(0, 1000), daysSinceMeasurement);
-    }),
-    VALUE_DELTA_LATEST_2D(LabelBy.CAT_VALUE, "Δ2dₛₑₙₐₛₜₑ (dagar)", p -> {
+    VALUE_DELTA_LATEST_2D(LabelBy.CAT_VALUE, "@2 senaste Δ2d (dagar)", p -> {
         if (p.getDimension() == BDimension._1d) {
             return ":";
         }
@@ -241,7 +280,7 @@ public enum TopoLabelBy implements LabelBy.Operations {
 
         return "%s (%d)".formatted(StringHelper.round(delta, 3), daysSinceMeasurement);
     }),
-    VALUE_DELTA_LATEST_2D_ZERO(LabelBy.CAT_VALUE, "Δ2dₛₑₙₐₛₜₑ (Δ2d₀)", p -> {
+    VALUE_DELTA_LATEST_2D_ZERO(LabelBy.CAT_VALUE, "@2 senaste Δ2d (Δ2d₀)", p -> {
         if (p.getDimension() == BDimension._1d) {
             return ":";
         }
@@ -262,15 +301,6 @@ public enum TopoLabelBy implements LabelBy.Operations {
         }
 
         return "%s (%.3f)".formatted(StringHelper.round(delta, 3), p.ext().deltaZero().getDelta2());
-    }),
-    VALUE_DELTA_ROLLING(LabelBy.CAT_VALUE, "Δᵣ", p -> {
-        return p.ext().deltaRolling().getDelta1d2d(3);
-    }),
-    VALUE_DELTA_ROLLING_1D(LabelBy.CAT_VALUE, "Δ1dᵣ", p -> {
-        return p.ext().deltaRolling().getDelta1(3);
-    }),
-    VALUE_DELTA_ROLLING_2D(LabelBy.CAT_VALUE, "Δ2dᵣ", p -> {
-        return p.ext().deltaRolling().getDelta2(3);
     }),
     VALUE_Z(LabelBy.CAT_VALUE, "Z", p -> {
         return LabelBy.valueZeroZ(p);

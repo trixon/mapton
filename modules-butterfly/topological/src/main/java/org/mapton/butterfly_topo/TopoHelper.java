@@ -21,6 +21,7 @@ import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
+import org.mapton.butterfly_format.types.topo.BTopoGradeDiff;
 
 /**
  *
@@ -94,9 +95,9 @@ public class TopoHelper {
 
     public static Color getAlarmColorAwt(BTopoGrade p) {
         if (p.getAxis() == BAxis.HORIZONTAL) {
-            return ButterflyHelper.getAlarmColorAwt(getAlarmLevelHeight(p));
+            return ButterflyHelper.getAlarmColorAwt(getAlarmLevelHorizontal(p));
         } else {
-            return ButterflyHelper.getAlarmColorAwt(getAlarmLevelPlane(p));
+            return ButterflyHelper.getAlarmColorAwt(getAlarmLevelVertical(p));
         }
     }
 
@@ -117,7 +118,7 @@ public class TopoHelper {
     }
 
     public static javafx.scene.paint.Color getAlarmColorHeightFx(BTopoGrade p) {
-        return ButterflyHelper.getAlarmColorFx(getAlarmLevelHeight(p));
+        return ButterflyHelper.getAlarmColorFx(getAlarmLevelHorizontal(p));
     }
 
     public static Color getAlarmColorPlaneAwt(BTopoControlPoint p) {
@@ -125,18 +126,26 @@ public class TopoHelper {
     }
 
     public static javafx.scene.paint.Color getAlarmColorPlaneFx(BTopoGrade p) {
-        return ButterflyHelper.getAlarmColorFx(getAlarmLevelPlane(p));
+        return ButterflyHelper.getAlarmColorFx(getAlarmLevelVertical(p));
     }
 
     public static javafx.scene.paint.Color getAlarmColorPlaneFx(BTopoControlPoint p) {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevelPlane(p));
     }
 
+    public static int getAlarmLevel(BTopoGrade p, BTopoGradeDiff diff) {
+        if (p.getAxis() == BAxis.HORIZONTAL) {
+            return getAlarmLevelHorizontal(p, diff);
+        } else {
+            return getAlarmLevelVertical(p, diff);
+        }
+    }
+
     public static int getAlarmLevel(BTopoGrade p) {
         if (p.getAxis() == BAxis.HORIZONTAL) {
-            return getAlarmLevelHeight(p);
+            return getAlarmLevelHorizontal(p);
         } else {
-            return getAlarmLevelPlane(p);
+            return getAlarmLevelVertical(p);
         }
     }
 
@@ -144,20 +153,28 @@ public class TopoHelper {
         return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
     }
 
-    public static int getAlarmLevelHeight(BTopoGrade p) {
-        return p.ext().getAlarmLevelHeight(Math.abs(p.ext().getDiff().getZQuota()));
-    }
-
     public static int getAlarmLevelHeight(BTopoControlPoint p) {
         return p.ext().getAlarmLevelHeight(p.ext().getObservationFilteredLast());
     }
 
-    public static int getAlarmLevelPlane(BTopoGrade p) {
-        return p.ext().getAlarmLevelPlane(Math.abs(p.ext().getDiff().getRQuota()));
+    public static int getAlarmLevelHorizontal(BTopoGrade p, BTopoGradeDiff diff) {
+        return p.ext().getAlarmLevelHeight(Math.abs(diff.getZQuota()));
+    }
+
+    public static int getAlarmLevelHorizontal(BTopoGrade p) {
+        return getAlarmLevelHorizontal(p, p.ext().getDiff());
     }
 
     public static int getAlarmLevelPlane(BTopoControlPoint p) {
         return p.ext().getAlarmLevelPlane(p.ext().getObservationFilteredLast());
+    }
+
+    public static int getAlarmLevelVertical(BTopoGrade p, BTopoGradeDiff diff) {
+        return p.ext().getAlarmLevelPlane(Math.abs(diff.getRQuota()));
+    }
+
+    public static int getAlarmLevelVertical(BTopoGrade p) {
+        return getAlarmLevelVertical(p, p.ext().getDiff());
     }
 
     public static Material getAlarmMaterial(BTopoControlPoint p) {
