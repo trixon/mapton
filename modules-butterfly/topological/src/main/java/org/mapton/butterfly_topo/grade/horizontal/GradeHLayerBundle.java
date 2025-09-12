@@ -21,9 +21,9 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
@@ -85,26 +85,8 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
     }
 
     private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoGrade> c) -> {
-            repaint();
-        });
-
-        mLayer.addPropertyChangeListener("Enabled", pce -> {
-            boolean enabled = mLayer.isEnabled();
-            mManager.updateTemporal(enabled);
-
-            if (enabled) {
-                repaint();
-            }
-        });
-
-        mOptionsView.labelByProperty().addListener((p, o, n) -> {
-            repaint();
-        });
-
-        mOptionsView.plotPointProperty().addListener((p, o, n) -> {
-            repaint();
-        });
+        mOptionsView.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mOptionsView);
     }
 
     private void initRepaint() {
@@ -144,7 +126,19 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
                             mapObjects.add(labelPlacemark);
                             mapObjects.add(plotPin(p, position, labelPlacemark));
 //                    mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
-                            mGraphicRenderer.plot(p, position, mapObjects);
+                            if (mOptionsView.isPlotSelected()) {
+                                if (p.equals(mManager.getSelectedItem())) {
+                                    mGraphicRenderer.plot(p, position, mapObjects);
+                                } else if (mManager.getSelectedItem() != null && mOptionsView.getDistanceSliderPane().selectedProperty().get()) {
+                                    var llP = BCoordinatrix.toLatLon(p);
+                                    var llS = BCoordinatrix.toLatLon(mManager.getSelectedItem());
+                                    if (llP.distance(llS) <= mOptionsView.getDistanceSliderPane().valueProperty().doubleValue()) {
+                                        mGraphicRenderer.plot(p, position, mapObjects);
+                                    }
+                                }
+                            } else {
+                                mGraphicRenderer.plot(p, position, mapObjects);
+                            }
 
                             var leftClickRunnable = (Runnable) () -> {
                                 mManager.setSelectedItemAfterReset(p);

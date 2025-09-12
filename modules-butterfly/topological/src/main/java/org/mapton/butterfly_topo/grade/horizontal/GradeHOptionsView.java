@@ -106,9 +106,10 @@ public class GradeHOptionsView extends BOptionsView {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.gradeH.labelBy", labelByIdProperty());
-        sessionManager.register("options.gradeH.checkedGraphics", mGraphicSccb.checkedStringProperty());
-        sessionManager.register("options.gradeH.pointBy", mPointScb.selectedIndexProperty());
+        sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
+        sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
+        sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
+        initSession(sessionManager);
 
         restoreLabelFromId(GradeHLabelBy.class, DEFAULT_LABEL_BY);
     }

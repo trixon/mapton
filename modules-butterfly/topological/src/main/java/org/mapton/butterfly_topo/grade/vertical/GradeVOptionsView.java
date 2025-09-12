@@ -29,8 +29,6 @@ import org.mapton.butterfly_topo.grade.vertical.graphics.GraphicItem;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.control.SliderPane;
-import se.trixon.almond.util.fx.session.SessionCheckBox;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
 
@@ -42,16 +40,13 @@ public class GradeVOptionsView extends BOptionsView {
 
     private static final GradeVLabelBy DEFAULT_LABEL_BY = GradeVLabelBy.NAME;
     private static final GradePointBy DEFAULT_POINT_BY = GradePointBy.PIN;
-    private final SliderPane mDistanceSliderPane;
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final BooleanProperty mPlotPointProperty = new SimpleBooleanProperty();
-    private final SessionCheckBox mPlotSelectedScbx = new SessionCheckBox("Plotta bara valt objekt");
     private final SessionComboBox<GradePointBy> mPointScb = new SessionComboBox<>();
 
     public GradeVOptionsView(GradeVLayerBundle layerBundle) {
         super(layerBundle, NbBundle.getMessage(GradeManagerBase.class, "grade_v"));
         setDefaultId(DEFAULT_LABEL_BY);
-        mDistanceSliderPane = new SliderPane("...plus de inom (m)", 50.0, false);
         createUI();
         initListeners();
         initSession();
@@ -61,24 +56,12 @@ public class GradeVOptionsView extends BOptionsView {
         return mGraphicSccb.getCheckModel();
     }
 
-    public SliderPane getDistanceSliderPane() {
-        return mDistanceSliderPane;
-    }
-
     public GradePointBy getPointBy() {
         return mPointScb.valueProperty().get();
     }
 
-    public boolean isPlotSelected() {
-        return mPlotSelectedScbx.isSelected();
-    }
-
     public BooleanProperty plotPointProperty() {
         return mPlotPointProperty;
-    }
-
-    public BooleanProperty plotSelectedProperty() {
-        return mPlotSelectedScbx.selectedProperty();
     }
 
     private void createUI() {
@@ -102,11 +85,8 @@ public class GradeVOptionsView extends BOptionsView {
         gp.addRow(row++, mLabelMenuButton);
         gp.addRow(row++, graphicLabel);
         gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
-        gp.addRow(row++, mPlotSelectedScbx);
-        gp.addRow(row++, mDistanceSliderPane);
         gp.setPadding(FxHelper.getUIScaledInsets(8));
         FxHelper.autoSizeRegionHorizontal(mPointScb, mLabelMenuButton, mGraphicSccb);
-        mDistanceSliderPane.disableProperty().bind(mPlotSelectedScbx.selectedProperty().not());
 
         setCenter(gp);
     }
@@ -121,11 +101,10 @@ public class GradeVOptionsView extends BOptionsView {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.gradeV.labelBy", labelByIdProperty());
-        sessionManager.register("options.gradeV.checkedGraphics", mGraphicSccb.checkedStringProperty());
-        sessionManager.register("options.gradeV.pointBy", mPointScb.selectedIndexProperty());
-        sessionManager.register("options.gradeV.plotSelected", mPlotSelectedScbx.selectedProperty());
-        mDistanceSliderPane.initSession("options.gradeV.Distance", sessionManager);
+        sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
+        sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
+        sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
+        initSession(sessionManager);
 
         restoreLabelFromId(GradeVLabelBy.class, DEFAULT_LABEL_BY);
     }

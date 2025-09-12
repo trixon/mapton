@@ -27,7 +27,6 @@ import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.SurfaceCircle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BCoordinatrix;
@@ -92,27 +91,13 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
     }
 
     private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
-            repaint();
-        });
-
-        mLayer.addPropertyChangeListener("Enabled", pce -> {
-            boolean enabled = mLayer.isEnabled();
-            mManager.updateTemporal(enabled);
-
-            if (enabled) {
-                repaint();
-            }
-        });
-
         mOptionsView.colorByProperty().addListener((p, o, n) -> {
             mAttributeManager.setColorBy(n);
             repaint();
         });
 
-        mOptionsView.labelByProperty().addListener((p, o, n) -> {
-            repaint();
-        });
+        mOptionsView.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mOptionsView);
     }
 
     private void initRepaint() {
@@ -165,8 +150,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
                         mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
                         mapObjects.addAll(plotIndicators(p, position));
 
-                        mGraphicRenderer.plot(p, position, mapObjects);
-
+                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptionsView);
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);
                         };
@@ -234,9 +218,13 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
         if (labelBy == TopoLabelBy.NONE) {
             return null;
         } else {
-            var label = labelBy.getLabel(p);
-            p.setValue(BKey.PIN_NAME, label);
-            var placemark = createPlacemark(position, label, mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
+            var placemark = createPlacemark(position, "", mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
+            Runnable task = () -> {
+                var label = labelBy.getLabel(p);
+                p.setValue(BKey.PIN_NAME, label);
+                placemark.setLabelText(label);
+            };
+            Thread.ofVirtual().start(task);
 
             return placemark;
         }

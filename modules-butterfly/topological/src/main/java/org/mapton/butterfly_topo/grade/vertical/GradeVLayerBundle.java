@@ -22,8 +22,6 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.stream.DoubleStream;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BCoordinatrix;
@@ -86,43 +84,8 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
     }
 
     private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoGrade> c) -> {
-            repaint();
-        });
-
-        mLayer.addPropertyChangeListener("Enabled", pce -> {
-            boolean enabled = mLayer.isEnabled();
-            mManager.updateTemporal(enabled);
-
-            if (enabled) {
-                repaint();
-            }
-        });
-
-        mOptionsView.labelByProperty().addListener((p, o, n) -> {
-            repaint();
-        });
-
-        mOptionsView.plotPointProperty().addListener((p, o, n) -> {
-            repaint();
-        });
-
-        mOptionsView.plotSelectedProperty().addListener((p, o, n) -> {
-            repaint();
-        });
-
-        mOptionsView.getDistanceSliderPane().selectedProperty().addListener((p, o, n) -> {
-            repaint();
-        });
-        mOptionsView.getDistanceSliderPane().valueProperty().addListener((p, o, n) -> {
-            repaint();
-        });
-
-        mManager.selectedItemProperty().addListener((ObservableValue<? extends BTopoGrade> observable, BTopoGrade oldValue, BTopoGrade newValue) -> {
-            if (mOptionsView.isPlotSelected()) {
-                repaint();
-            }
-        });
+        mOptionsView.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mOptionsView);
     }
 
     private void initRepaint() {

@@ -163,11 +163,12 @@ public class TopoOptionsView extends BOptionsView implements MRunnable {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.pointBy", mPointScb.selectedIndexProperty());
-        sessionManager.register("options.colorBy", mColorScb.selectedIndexProperty());
-        sessionManager.register("options.labelBy", labelByIdProperty());
-        sessionManager.register("options.checkedGraphics", mGraphicSccb.checkedStringProperty());
-        sessionManager.register("options.checkedIndicators", mIndicatorSccb.checkedStringProperty());
+        sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
+        sessionManager.register(getKeyOptions("colorBy"), mColorScb.selectedIndexProperty());
+        sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
+        sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
+        sessionManager.register(getKeyOptions("checkedIndicators"), mIndicatorSccb.checkedStringProperty());
+        initSession(sessionManager);
 
         restoreLabelFromId(TopoLabelBy.class, DEFAULT_LABEL_BY);
     }
