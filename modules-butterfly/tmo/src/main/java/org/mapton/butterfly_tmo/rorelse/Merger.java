@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_tmo.api.RorelseManager;
@@ -63,6 +64,7 @@ public class Merger {
             p.setCategory(prefix + "Dubb");
             p.setDimension(BDimension._1d);
             p.setFrequency(99);
+            p.setMeasurementMode(BMeasurementMode.MANUAL);
 //            p.setDateRolling(LocalDate.now());
 //            p.setDateZero(LocalDate.now());
 
