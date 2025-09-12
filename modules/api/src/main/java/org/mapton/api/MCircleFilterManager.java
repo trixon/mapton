@@ -39,6 +39,18 @@ public class MCircleFilterManager {
         return mListeners.add(r);
     }
 
+    public MLatLon getLatLon() {
+        return mLatLon;
+    }
+
+    public Double getRadius() {
+        return mRadius;
+    }
+
+    public boolean isSet() {
+        return ObjectUtils.allNotNull(mLatLon, mRadius);
+    }
+
     public boolean isWithinCircle(Double lat, Double lon) {
         if (ObjectUtils.anyNull(lat, lon)) {
             return false;

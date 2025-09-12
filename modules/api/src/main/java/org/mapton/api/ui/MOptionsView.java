@@ -44,4 +44,30 @@ public abstract class MOptionsView extends BorderPane {
         return NbBundle.getBundle(getClass());
     }
 
+    /**
+     *
+     * <p>
+     * @return a key with simple class name as prefix
+     */
+    public String getKey(String key) {
+        return "%s.%s".formatted(getClass().getSimpleName(), key);
+    }
+
+    /**
+     *
+     * <p>
+     * @return a key with simple class name and filter as prefix
+     */
+    public String getKeyFilter(String key) {
+        return "%s.filter.%s".formatted(getClass().getSimpleName(), key);
+    }
+
+    /**
+     *
+     * <p>
+     * @return a key with simple class name and options as prefix
+     */
+    public String getKeyOptions(String key) {
+        return "%s.options.%s".formatted(getClass().getSimpleName(), key);
+    }
 }
