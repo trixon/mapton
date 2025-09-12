@@ -59,7 +59,8 @@ public class StrainPropertiesBuilder extends BPropertiesBuilder<BStructuralStrai
                 p.ext().getAlarmPercentString(p.ext()),
                 p.ext().getAlarmLevelAge(),
                 p.ext().deltaRolling().getDelta(3),
-                p.ext().deltaZero().getDelta(3)
+                p.ext().deltaZero().getDelta(3),
+                p.ext().deltaFirst().getDelta(3)
         );
         propertyMap.putAll(populateMeas(p, measParams));
 //******************************************************************************
