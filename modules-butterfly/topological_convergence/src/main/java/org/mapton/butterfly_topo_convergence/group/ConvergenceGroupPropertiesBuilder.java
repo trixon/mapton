@@ -59,7 +59,8 @@ public class ConvergenceGroupPropertiesBuilder extends BPropertiesBuilder<BTopoC
                 null,
                 p.ext().getAlarmLevelAge(),
                 p.ext().deltaRolling().getDelta(3),
-                p.ext().deltaZero().getDelta(3)
+                p.ext().deltaZero().getDelta(3),
+                p.ext().deltaFirst().getDelta(3)
         );
         var measMap = populateMeas(p, measParams);
         removeByIndices(measMap, 3, 4, 6, 9, 10, 11, 12, 13);

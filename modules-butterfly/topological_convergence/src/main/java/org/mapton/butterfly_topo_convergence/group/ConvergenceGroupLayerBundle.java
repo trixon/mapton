@@ -21,7 +21,6 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.awt.Color;
 import java.util.ArrayList;
-import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
@@ -80,22 +79,8 @@ public class ConvergenceGroupLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoConvergenceGroup> c) -> {
-            repaint();
-        });
-
-        mLayer.addPropertyChangeListener("Enabled", pce -> {
-            boolean enabled = mLayer.isEnabled();
-            mManager.updateTemporal(enabled);
-
-            if (enabled) {
-                repaint();
-            }
-        });
-
-        mOptionsView.labelByProperty().addListener((p, o, n) -> {
-            repaint();
-        });
+        mOptionsView.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mOptionsView);
     }
 
     private void initRepaint() {
@@ -129,7 +114,7 @@ public class ConvergenceGroupLayerBundle extends BfLayerBundle {
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(position, labelPlacemark));
 
-                        mGraphicRenderer.plot(p, position, mapObjects);
+                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptionsView);
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);
                         };

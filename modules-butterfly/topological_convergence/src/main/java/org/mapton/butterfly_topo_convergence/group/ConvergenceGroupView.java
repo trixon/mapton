@@ -15,13 +15,16 @@
  */
 package org.mapton.butterfly_topo_convergence.group;
 
-import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javafx.collections.ObservableList;
 import javafx.scene.layout.Pane;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
+import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.Mapton;
@@ -31,8 +34,11 @@ import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BMeasurementMode;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_topo.api.TopoManager;
+import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -43,6 +49,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class ConvergenceGroupView {
 
+    private final DistanceMeasure mDistanceMeasure;
     private final ConvergenceGroupFilter mFilter = new ConvergenceGroupFilter();
     private final ConvergenceGroupFilterPopOver mFilterPopOver = new ConvergenceGroupFilterPopOver(mFilter);
     private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "topo.convergence");
@@ -51,8 +58,20 @@ public class ConvergenceGroupView {
     private final TopoManager mTopoManager = TopoManager.getInstance();
 
     public ConvergenceGroupView() {
-        var createAction = new Action(Dict.ADD.toString(), actionEvent -> createGroup());
+        mDistanceMeasure = (DistanceMeasure) (double[] a, double[] b) -> {
+            var plane = Math.hypot(b[1] - a[1], b[0] - a[0]);
+            var height = Math.abs(b[2] - a[2]);
+            if (height < 1.0) {
+                return Double.MAX_VALUE;
+            } else {
+                return plane;
+            }
+        };
+
+        var createAction = new Action(Dict.ADD.toString(), actionEvent -> createGroup(mTopoManager.getTimeFilteredItems()));
         createAction.setGraphic(MaterialIcon._Content.ADD.getImageView(Mapton.getIconSizeToolBarInt()));
+        var create2Action = new Action(Dict.ADD.toString(), actionEvent -> createGroups());
+        create2Action.setGraphic(MaterialIcon._Content.ADD_CIRCLE_OUTLINE.getImageView(Mapton.getIconSizeToolBarInt()));
 
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
@@ -85,8 +104,7 @@ public class ConvergenceGroupView {
         return mListForm.getView();
     }
 
-    private void createGroup() {
-        var items = mTopoManager.getTimeFilteredItems();
+    private void createGroup(ObservableList<BTopoControlPoint> items) {
         if (items.isEmpty()) {
             return;
         }
@@ -108,7 +126,24 @@ public class ConvergenceGroupView {
         g.setButterfly(p.getButterfly());
         g.setDimension(BDimension._3d);
         g.setFrequency(0);
+        g.setMeasurementMode(BMeasurementMode.UNDEFINED);
         ButterflyManager.getInstance().calculateLatLons(new ArrayList<>(List.of(g)));
         mManager.add(g);
+    }
+
+    private void createGroups() {
+        var epsilon = 2.5;
+        var minPoints = 1;
+        var dbscan = new DBSCANClusterer<BTopoControlPoint>(epsilon, minPoints, mDistanceMeasure);
+        var filteredPoints = mTopoManager.getTimeFilteredItems().stream()
+                //                .filter(p -> p.getDimension() == BDimension._3d)
+                .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                .toList();
+
+        if (filteredPoints.isEmpty()) {
+            return;
+        }
+        var clusters = dbscan.cluster(filteredPoints);
+
     }
 }

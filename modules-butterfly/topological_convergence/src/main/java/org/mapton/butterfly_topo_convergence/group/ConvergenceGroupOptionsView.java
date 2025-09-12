@@ -93,9 +93,10 @@ public class ConvergenceGroupOptionsView extends BOptionsView {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.convergence.group.pointBy", mPointScb.selectedIndexProperty());
-        sessionManager.register("options.convergence.group.labelBy", labelByIdProperty());
-        sessionManager.register("options.convergence.group.checkedGraphics", mGraphicSccb.checkedStringProperty());
+        sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
+        sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
+        sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
+        initSession(sessionManager);
 
         restoreLabelFromId(ConvergenceGroupLabelBy.class, DEFAULT_LABEL_BY);
     }
