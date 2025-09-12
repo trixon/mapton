@@ -93,9 +93,10 @@ public class CrackOptionsView extends BOptionsView {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.measPoint.pointBy", mPointScb.selectedIndexProperty());
-        sessionManager.register("options.measPoint.labelBy", labelByIdProperty());
-        sessionManager.register("options.measPoint.checkedGraphics", mGraphicSccb.checkedStringProperty());
+        sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
+        sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
+        sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
+        initSession(sessionManager);
 
         restoreLabelFromId(CrackLabelBy.class, DEFAULT_LABEL_BY);
     }
