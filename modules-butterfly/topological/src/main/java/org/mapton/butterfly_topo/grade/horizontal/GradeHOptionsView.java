@@ -109,7 +109,7 @@ public class GradeHOptionsView extends BOptionsView {
         sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
         sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
         sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
-        initSession(sessionManager);
+        initSession(sessionManager, false);
 
         restoreLabelFromId(GradeHLabelBy.class, DEFAULT_LABEL_BY);
     }

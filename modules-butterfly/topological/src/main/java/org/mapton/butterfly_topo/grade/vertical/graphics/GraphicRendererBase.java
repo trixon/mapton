@@ -19,6 +19,7 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import java.util.HashMap;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoAttributeManager;
 import org.mapton.butterfly_topo.api.TopoManager;
@@ -44,6 +45,13 @@ public abstract class GraphicRendererBase extends org.mapton.butterfly_topo.grap
 
     public GraphicRendererBase(RenderableLayer layer, RenderableLayer passiveLayer) {
         super(layer, passiveLayer);
+    }
+
+    public void plotLabel(BTopoGrade p, Position position) {
+        if (sCheckModel.isChecked(GraphicItem.LABEL) && !sLabeledPoints.contains(p)) {
+            sLabeledPoints.add(p);
+            plotLabel(position, p.getValue(BKey.PIN_NAME));
+        }
     }
 
 //    protected boolean isPlotLimitReached(BStructuralStrainGaugePoint p, Object key, Position position) {

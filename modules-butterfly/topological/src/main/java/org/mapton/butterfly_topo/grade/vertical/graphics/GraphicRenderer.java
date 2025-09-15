@@ -92,6 +92,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         mPlottedConnectors.clear();
         mPlottedNames.clear();
         mPlottedPoints.clear();
+        clearLabeledPoints(BTopoGrade.class);
     }
 
     private void plotBearing(BTopoGrade p, Position position) {
@@ -185,6 +186,8 @@ public class GraphicRenderer extends GraphicRendererBase {
         var groundPath = new Path(WWHelper.positionFromPosition(position, 0), position);
         groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
         addRenderable(groundPath, true, null, sMapObjects);
+
+        plotLabel(p, position);
     }
 
     private void plotRefPoint(BTopoControlPoint p, double baseSize, Position pos) {

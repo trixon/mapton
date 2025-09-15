@@ -16,6 +16,7 @@
 package org.mapton.butterfly_topo.grade.horizontal;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -90,8 +91,16 @@ public class GradeHManager extends GradeManagerBase {
                 }
             }
         }
+
+        Comparator<BTopoGrade> c1 = (o1, o2)
+                -> Integer.valueOf(o1.ext().getAlarmLevelHeight(Math.abs(o1.ext().getDiff().getZQuota())))
+                        .compareTo(o2.ext().getAlarmLevelHeight(Math.abs(o2.ext().getDiff().getZQuota())));
+        Comparator<BTopoGrade> c2 = (o1, o2)
+                -> Double.valueOf(Math.abs(o1.ext().getDiff().getZQuota()))
+                        .compareTo(Math.abs(o2.ext().getDiff().getZQuota()));
+
         var gradesLim = gradesAll.stream()
-                .sorted((o1, o2) -> Double.valueOf(Math.abs(o2.ext().getDiff().getZQuota())).compareTo(Math.abs(o1.ext().getDiff().getZQuota())))
+                .sorted(c1.reversed().thenComparing(c2.reversed()))
                 .limit(1000)
                 .collect(Collectors.toCollection(ArrayList::new));
 

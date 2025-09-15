@@ -27,6 +27,7 @@ import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.butterfly_format.types.BAxis;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoHelper;
@@ -35,6 +36,7 @@ import org.openide.util.NbBundle;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.control.RangeSliderPane;
 import se.trixon.almond.util.fx.control.SliderPane;
+import se.trixon.almond.util.fx.session.SessionCheckBox;
 
 /**
  *
@@ -53,6 +55,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
     private final SliderPane mGradeHorizontalSlider;
     private final SliderPane mGradeVerticalSlider;
     private final MeasFilterUI mMeasFilterUI;
+    private final SessionCheckBox mSharedAlarmsScbx = new SessionCheckBox("Enbart par med samma larm");
 
     public FilterSectionMeas(GradeFilterConfig config) {
         super(SDict.MEASUREMENTS.toString());
@@ -131,6 +134,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
     public void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
         List.of(
                 selectedProperty(),
+                mSharedAlarmsScbx.selectedProperty(),
                 mGradeHorizontalSlider.selectedProperty(),
                 mGradeHorizontalSlider.valueProperty(),
                 mGradeVerticalSlider.selectedProperty(),
@@ -154,6 +158,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
         sessionManager.register("filter.section.meas", selectedProperty());
+        sessionManager.register("filter.grade.sharedAlarm", mSharedAlarmsScbx.selectedProperty());
         mDeltaHRangeSlider.initSession("DeltaH" + mConfig.getKeyPrefix(), sessionManager);
         mDeltaRRangeSlider.initSession("DeltaR" + mConfig.getKeyPrefix(), sessionManager);
         mDabbaHRangeSlider.initSession("DabbaH" + mConfig.getKeyPrefix(), sessionManager);
@@ -185,7 +190,16 @@ public class FilterSectionMeas extends MBaseFilterSection {
                     && validateRangeSliderPane(mDeltaRRangeSlider, p.getDistancePlane())
                     && validateSliderPane(mGradeHorizontalSlider, Math.abs(p.ext().getDiff().getZPerMille()))
                     && validateSliderPane(mGradeVerticalSlider, Math.abs(p.ext().getDiff().getRPerMille()))
-                    && mFilterMeasAlarmLevel.filter(p);
+                    && mFilterMeasAlarmLevel.filter(p)
+                    && validateSharedAlarm(p);
+        } else {
+            return true;
+        }
+    }
+
+    private boolean validateSharedAlarm(BTopoGrade p) {
+        if (mSharedAlarmsScbx.isSelected()) {
+            return p.getP1().ext().getAlarm(BComponent.HEIGHT) == p.getP2().ext().getAlarm(BComponent.HEIGHT);
         } else {
             return true;
         }
@@ -215,7 +229,8 @@ public class FilterSectionMeas extends MBaseFilterSection {
             );
 
             var rightBox = new VBox(rowGap,
-                    mFilterMeasAlarmLevel.getRootBordered()
+                    mFilterMeasAlarmLevel.getRootBordered(),
+                    mSharedAlarmsScbx
             );
 
             if (mDimension != BDimension._1d) {

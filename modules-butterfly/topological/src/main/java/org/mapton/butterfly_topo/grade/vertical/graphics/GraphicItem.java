@@ -24,9 +24,10 @@ import se.trixon.almond.util.SDict;
  */
 public enum GraphicItem {
     PIN(Dict.PIN.toString(), Integer.MAX_VALUE),
+    LABEL("\t— %s".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
     POINTS(SDict.POINTS.toString(), Integer.MAX_VALUE),
     VALUE(Dict.VALUE.toString(), Integer.MAX_VALUE),
-    VALUE_TRACE(Dict.VALUE.toString() + ", historik", Integer.MAX_VALUE),
+    VALUE_TRACE("\t— Historik", Integer.MAX_VALUE),
     BEARING(Dict.BEARING.toString(), Integer.MAX_VALUE),
     INDICATOR("Indikator", Integer.MAX_VALUE),
     TRACE(SDict.TRACE.toString(), Integer.MAX_VALUE);
