@@ -29,6 +29,7 @@ limitations under the License.
         <folder name="Groups">
             <folder name="MapGroup">
                 <file name="TopoTopComponent.wstcgrp" url="TopoTopComponentWstcgrp.xml"/>
+                <file name="DistanceTopComponent.wstcgrp" url="DistanceTopComponentWstcgrp.xml"/>
                 <file name="GradeHTopComponent.wstcgrp" url="GradeHTopComponentWstcgrp.xml"/>
                 <file name="GradeVTopComponent.wstcgrp" url="GradeVTopComponentWstcgrp.xml"/>
             </folder>
