@@ -85,7 +85,7 @@ public class GradeDManager extends GradeManagerBase {
             var p1 = mTopoManager.getItemForKey(entry.getKey());
             for (var n2 : entry.getValue()) {
                 var p2 = mTopoManager.getItemForKey(n2);
-                var grade = new BTopoGrade(BAxis.HORIZONTAL, p1, p2);
+                var grade = new BTopoGrade(BAxis.RESULTANT, p1, p2);
                 if (grade.getCommonObservations().size() > 1 && Math.abs(grade.ext().getDiff().getZQuota()) >= MIN_GRADE_H) {
                     gradesAll.add(grade);
                 }
@@ -93,14 +93,11 @@ public class GradeDManager extends GradeManagerBase {
         }
 
         Comparator<BTopoGrade> c1 = (o1, o2)
-                -> Integer.valueOf(o1.ext().getAlarmLevelHeight(Math.abs(o1.ext().getDiff().getZQuota())))
-                        .compareTo(o2.ext().getAlarmLevelHeight(Math.abs(o2.ext().getDiff().getZQuota())));
-        Comparator<BTopoGrade> c2 = (o1, o2)
-                -> Double.valueOf(Math.abs(o1.ext().getDiff().getZQuota()))
-                        .compareTo(Math.abs(o2.ext().getDiff().getZQuota()));
+                -> Double.valueOf(o1.ext().getDiff().getPartialDiff3d())
+                        .compareTo(o2.ext().getDiff().getPartialDiff3d());
 
         var gradesLim = gradesAll.stream()
-                .sorted(c1.reversed().thenComparing(c2.reversed()))
+                .sorted(c1.reversed())
                 .limit(1000)
                 .collect(Collectors.toCollection(ArrayList::new));
 

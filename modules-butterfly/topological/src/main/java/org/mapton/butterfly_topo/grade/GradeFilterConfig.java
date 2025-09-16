@@ -15,7 +15,7 @@
  */
 package org.mapton.butterfly_topo.grade;
 
-import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BAxis;
 
 /**
  *
@@ -23,23 +23,26 @@ import org.mapton.butterfly_format.types.BDimension;
  */
 public class GradeFilterConfig {
 
-    private BDimension mDimension = BDimension._1d;
+    private BAxis mAxis = BAxis.VERTICAL;
     private String mKeyPrefix;
     private double mMaxDabbaH = 500.0;
     private double mMaxDabbaR = 500.0;
     private double mMaxDeltaH = 50.0;
     private double mMaxDeltaR = 100.0;
+    private double mMaxDeltaD = 100.0;
     private double mMaxGradeHorizontal = 20.0;
     private double mMaxGradeVertical = 20.0;
     private double mMinDabbaH;
     private double mMinDabbaR;
     private double mMinDeltaH;
     private double mMinDeltaR;
+    private double mMinDeltaD;
+    private double mMinGradeDistance = 0.0;
     private double mMinGradeHorizontal = 0.0;
     private double mMinGradeVertical = 0.0;
 
-    public BDimension getDimension() {
-        return mDimension;
+    public BAxis getAxis() {
+        return mAxis;
     }
 
     public String getKeyPrefix() {
@@ -52,6 +55,10 @@ public class GradeFilterConfig {
 
     public double getMaxDabbaR() {
         return mMaxDabbaR;
+    }
+
+    public double getMaxDeltaD() {
+        return mMaxDeltaD;
     }
 
     public double getMaxDeltaH() {
@@ -78,12 +85,20 @@ public class GradeFilterConfig {
         return mMinDabbaR;
     }
 
+    public double getMinDeltaD() {
+        return mMinDeltaD;
+    }
+
     public double getMinDeltaH() {
         return mMinDeltaH;
     }
 
     public double getMinDeltaR() {
         return mMinDeltaR;
+    }
+
+    public double getMinGradeDistance() {
+        return mMinGradeDistance;
     }
 
     public double getMinGradeHorizontal() {
@@ -94,8 +109,8 @@ public class GradeFilterConfig {
         return mMinGradeVertical;
     }
 
-    public void setDimension(BDimension dimension) {
-        this.mDimension = dimension;
+    public void setAxis(BAxis axis) {
+        this.mAxis = axis;
     }
 
     public void setKeyPrefix(String keyPrefix) {
@@ -108,6 +123,10 @@ public class GradeFilterConfig {
 
     public void setMaxDabbaR(double maxDabbaR) {
         this.mMaxDabbaR = maxDabbaR;
+    }
+
+    public void setMaxDeltaD(double maxDeltaD) {
+        this.mMaxDeltaD = maxDeltaD;
     }
 
     public void setMaxDeltaH(double maxDeltaH) {
@@ -134,12 +153,20 @@ public class GradeFilterConfig {
         this.mMinDabbaR = minDabbaR;
     }
 
+    public void setMinDeltaD(double minDeltaD) {
+        this.mMinDeltaD = minDeltaD;
+    }
+
     public void setMinDeltaH(double minDeltaH) {
         this.mMinDeltaH = minDeltaH;
     }
 
     public void setMinDeltaR(double minDeltaR) {
         this.mMinDeltaR = minDeltaR;
+    }
+
+    public void setMinGradeDistance(double minGradeDistance) {
+        this.mMinGradeDistance = minGradeDistance;
     }
 
     public void setMinGradeHorizontal(double minGradeHorizontal) {

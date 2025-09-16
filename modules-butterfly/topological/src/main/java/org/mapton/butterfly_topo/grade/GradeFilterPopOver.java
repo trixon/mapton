@@ -22,7 +22,6 @@ import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_topo.grade.distance.GradeDManager;
 import org.mapton.butterfly_topo.grade.horizontal.GradeHManager;
 import org.mapton.butterfly_topo.grade.vertical.GradeVManager;
@@ -38,13 +37,19 @@ public class GradeFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionDate mFilterSectionDate;
     private final FilterSectionMeas mFilterSectionMeas;
     private final BFilterSectionMisc mFilterSectionMisc;
-    private final GradeDManager mDManager = GradeDManager.getInstance();
-    private final GradeHManager mHManager = GradeHManager.getInstance();
     private final GradeManagerBase mManager;
-    private final GradeVManager mVManager = GradeVManager.getInstance();
 
     public GradeFilterPopOver(Class clazz, GradeFilter filter, GradeFilterConfig config) {
-        mManager = config.getDimension() == BDimension._1d ? mHManager : mVManager;
+        switch (config.getAxis()) {
+            case HORIZONTAL:
+                mManager = GradeHManager.getInstance();
+                break;
+            case VERTICAL:
+                mManager = GradeVManager.getInstance();
+                break;
+            default:
+                mManager = GradeDManager.getInstance();
+        }
 
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionMeas = new FilterSectionMeas(config);

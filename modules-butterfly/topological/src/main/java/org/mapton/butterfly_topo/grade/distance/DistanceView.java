@@ -20,7 +20,7 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_topo.grade.GradeFilter;
 import org.mapton.butterfly_topo.grade.GradeFilterConfig;
 import org.mapton.butterfly_topo.grade.GradeFilterPopOver;
@@ -39,10 +39,10 @@ public class DistanceView extends GradeView {
         mFilter = new GradeFilter(mManager);
         var config = new GradeFilterConfig();
         config.setKeyPrefix("_1");
-        config.setMinGradeHorizontal(10.0);
+        config.setMinGradeDistance(200.0);
         config.setMaxDeltaH(10.0);
         config.setMaxDeltaR(GradeDManager.MAX_RADIAL_DISTANCE);
-        config.setDimension(BDimension._1d);
+        config.setAxis(BAxis.RESULTANT);
 
         mFilterPopOver = new GradeFilterPopOver(getClass(), mFilter, config);
         mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "gradeD");

@@ -20,9 +20,9 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
-import org.mapton.butterfly_topo.TopoHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -60,10 +60,11 @@ class DistanceListCell extends ListCell<BTopoGrade> {
 
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
-        mDesc1Label.setText("%.1f mm/m".formatted(gradeDiff.getZPerMille()));
-        mDesc2Label.setText("ΔH=%.1f m, ΔP=%.1f m, ∂iH=%.1f mm".formatted(p.getDistanceHeight(),
-                p.getDistancePlane(),
-                gradeDiff.getPartialDiffZ() * 1000
+        mDesc1Label.setText("%.1f mm".formatted(gradeDiff.getPartialDiff3d()));
+        mDesc2Label.setText("Δ=%.1f m, ΔH=%.1f m, ΔP=%.1f m".formatted(
+                p.getDistance3d(),
+                p.getDistanceHeight(),
+                p.getDistancePlane()
         ));
         mDesc3Label.setText("%s (%d)".formatted(p.getPeriod(), p.getCommonObservations().size()));
 
@@ -99,7 +100,8 @@ class DistanceListCell extends ListCell<BTopoGrade> {
         }
 
         public void update(BTopoGrade p) {
-            mHeightShape.setFill(TopoHelper.getAlarmColorHeightFx(p));
+//            mHeightShape.setFill(TopoHelper.getAlarmColorHeightFx(p));
+            mHeightShape.setFill(Color.BLUE);
             mHeightShape.setVisible(true);
         }
 

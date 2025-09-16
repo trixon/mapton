@@ -86,8 +86,13 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
         if (color == Color.RED || color == Color.GREEN) {
             color = color.darker();
         }
-        var value = p.getAxis() == BAxis.HORIZONTAL ? p.getDistancePlane() : p.getDistanceHeight();
-        var label = p.getAxis() == BAxis.HORIZONTAL ? "P" : "H";
+
+        var value = p.getAxis() == BAxis.HORIZONTAL ? p.getDistancePlane()
+                : p.getAxis() == BAxis.VERTICAL ? p.getDistanceHeight()
+                : p.getDistance3d();
+        var label = p.getAxis() == BAxis.HORIZONTAL ? "P"
+                : p.getAxis() == BAxis.VERTICAL ? "H"
+                : "3d";
         var title = "%s :: Δ%s=%.1fm".formatted(p.getName(), label, value);
         setTitle(title, color);
 
@@ -103,7 +108,7 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
                 ratio = StringUtils.defaultIfBlank(ratio, "?");
                 alarmText = "%s, %+.1f".formatted(ratio, p.ext().getDiff().getZPerMille());
             }
-        } else {
+        } else if (p.getAxis() == BAxis.VERTICAL) {
             if (!StringUtils.isBlank(p.getP1().getAlarm2Id())) {
                 var ratio = p.getP1().ext().getAlarm(BComponent.PLANE).getRatio2s();
                 ratio = StringUtils.defaultIfBlank(ratio, "?");
@@ -121,7 +126,11 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
 
         var plot = (XYPlot) mChart.getPlot();
         resetPlot(plot);
-
+        var label = "mm/m";
+        if (p.getAxis() == BAxis.RESULTANT) {
+            label = "mm";
+        }
+        plot.getRangeAxis().setLabel(label);
         plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
         p.getCommonObservations().entrySet().forEach(entry -> {
             var date = entry.getKey();
@@ -138,6 +147,11 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
             if (p.getAxis() == BAxis.VERTICAL) {
                 mTimeSeriesV.add(minute, gradeDiff.getRPerMille());
                 mMinMaxCollection.add(gradeDiff.getRPerMille());
+            }
+
+            if (p.getAxis() == BAxis.RESULTANT) {
+                mTimeSeriesV.add(minute, gradeDiff.getPartialDiff3d());
+                mMinMaxCollection.add(gradeDiff.getPartialDiff3d());
             }
         });
 

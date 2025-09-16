@@ -20,7 +20,7 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_topo.grade.GradeFilter;
 import org.mapton.butterfly_topo.grade.GradeFilterConfig;
 import org.mapton.butterfly_topo.grade.GradeFilterPopOver;
@@ -43,7 +43,7 @@ public class GradeVView extends GradeView {
         config.setMinDeltaH(GradeVManager.MIN_VERTICAL_DISTANCE);
         config.setMinGradeVertical(5.0);
         config.setMinGradeHorizontal(10.0);
-        config.setDimension(BDimension._3d);
+        config.setAxis(BAxis.VERTICAL);
 
         mFilterPopOver = new GradeFilterPopOver(getClass(), mFilter, config);
         mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "gradeV");

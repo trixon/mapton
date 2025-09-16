@@ -48,6 +48,7 @@ public class DistancePropertiesBuilder extends PropertiesBuilder<BTopoGrade> {
         propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower())), p.ext().getNumOfCommonObservations());
         propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(Dict.Time.DAYS.toLower())), p.ext().getNumOfCommonDays());
         propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getNumOfDaysSinceLast());
+        propertyMap.put(getCatKey(cat1, mBundle.getString("filterDeltaD")), MathHelper.convertDoubleToString(p.getDistance3d(), 2));
         propertyMap.put(getCatKey(cat1, mBundle.getString("filterDeltaH")), MathHelper.convertDoubleToString(p.getDistanceHeight(), 2));
         propertyMap.put(getCatKey(cat1, mBundle.getString("filterDeltaR")), MathHelper.convertDoubleToString(p.getDistancePlane(), 2));
         propertyMap.put(getCatKey(cat1, mBundle.getString("filterDabbaH")), "%.1f".formatted(p.ext().getDiff().getPartialDiffZ() * 1000));
@@ -55,18 +56,18 @@ public class DistancePropertiesBuilder extends PropertiesBuilder<BTopoGrade> {
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHDeg")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleDeg(), 0));
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHGon")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleGon(), 0));
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHRad")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleRad(), 4));
-        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHPerMille")), MathHelper.convertDoubleToString(p.ext().getDiff().getZPerMille(), 1));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeD")), MathHelper.convertDoubleToString(p.ext().getDiff().getPartialDiff3d(), 1));
 
         var component = p.getAxis() == BAxis.HORIZONTAL ? BComponent.HEIGHT : BComponent.PLANE;
         var alarm = p.getP1().ext().getAlarm(component);
-        try {
-            propertyMap.put(getCatKey(cat1, "%s".formatted(SDict.ALARM.toString())), alarm.getId());
-            propertyMap.put(getCatKey(cat1, "%s %d".formatted(SDict.ALARM.toString(), 1)), alarm.getRatio1s());
-            propertyMap.put(getCatKey(cat1, "%s %d".formatted(SDict.ALARM.toString(), 2)), alarm.getRatio2s());
-
-        } catch (Exception e) {
-            //nvm
-        }
+//        try {
+//            propertyMap.put(getCatKey(cat1, "%s".formatted(SDict.ALARM.toString())), alarm.getId());
+//            propertyMap.put(getCatKey(cat1, "%s %d".formatted(SDict.ALARM.toString(), 1)), alarm.getRatio1s());
+//            propertyMap.put(getCatKey(cat1, "%s %d".formatted(SDict.ALARM.toString(), 2)), alarm.getRatio2s());
+//
+//        } catch (Exception e) {
+//            //nvm
+//        }
 
         return propertyMap;
     }
