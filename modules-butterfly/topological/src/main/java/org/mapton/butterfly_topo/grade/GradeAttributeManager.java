@@ -31,6 +31,7 @@ import org.mapton.butterfly_topo.TopoHelper;
  */
 public class GradeAttributeManager extends BaseAttributeManager {
 
+    private BasicShapeAttributes mComponentDistancePathAttributes;
     private BasicShapeAttributes mGroundCylinderAttributes;
     private BasicShapeAttributes mGroundPathAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
@@ -40,6 +41,24 @@ public class GradeAttributeManager extends BaseAttributeManager {
     }
 
     private GradeAttributeManager() {
+    }
+
+    public BasicShapeAttributes getComponentDistancePathAttributes(BTopoGrade p) {
+        if (mComponentDistancePathAttributes == null) {
+            mComponentDistancePathAttributes = new BasicShapeAttributes();
+            mComponentDistancePathAttributes.setDrawOutline(true);
+            mComponentDistancePathAttributes.setOutlineMaterial(Material.LIGHT_GRAY);
+            mComponentDistancePathAttributes.setEnableLighting(false);
+            mComponentDistancePathAttributes.setOutlineWidth(1.5);
+        }
+
+        var attrs = new BasicShapeAttributes(mComponentDistancePathAttributes);
+        attrs.setOutlineMaterial(TopoHelper.getGradeDistanceMaterial(p));
+        if (p.ext().getDiff().getPartialDiffDistance() >= 0) {
+            attrs.setOutlineStippleFactor(3);
+        }
+
+        return attrs;
     }
 
     public BasicShapeAttributes getGradeVectorAttributes(BTopoGrade p) {

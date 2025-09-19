@@ -19,13 +19,13 @@ import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.PointPlacemark;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
-import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoBaseLayerBundle;
 import org.mapton.butterfly_topo.grade.GradeAttributeManager;
@@ -174,7 +174,7 @@ public class DistanceLayerBundle extends TopoBaseLayerBundle {
     }
 
     private PointPlacemark plotPin(BTopoGrade p, Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes(p, BComponent.HEIGHT);
+        var attrs = mAttributeManager.getPinAttributes(Color.MAGENTA);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

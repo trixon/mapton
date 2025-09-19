@@ -43,6 +43,7 @@ import se.trixon.almond.util.fx.session.SessionCheckBox;
  */
 public class FilterSectionMeas extends MBaseFilterSection {
 
+    private final BAxis mAxis;
     private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
     private final GradeFilterConfig mConfig;
     private final RangeSliderPane mDabbaHRangeSlider;
@@ -51,12 +52,12 @@ public class FilterSectionMeas extends MBaseFilterSection {
     private final RangeSliderPane mDeltaHRangeSlider;
     private final RangeSliderPane mDeltaRRangeSlider;
     private final BSubFilterMeasAlarmLevel<BTopoGrade> mFilterMeasAlarmLevel;
+    private final RangeSliderPane mGradeDistanceRangeSlider;
     private final SliderPane mGradeDistanceSlider;
     private final SliderPane mGradeHorizontalSlider;
     private final SliderPane mGradeVerticalSlider;
     private final MeasFilterUI mMeasFilterUI;
     private final SessionCheckBox mSharedAlarmsScbx = new SessionCheckBox("Enbart par med samma larm");
-    private final BAxis mAxis;
 
     public FilterSectionMeas(GradeFilterConfig config) {
         super(SDict.MEASUREMENTS.toString());
@@ -68,7 +69,8 @@ public class FilterSectionMeas extends MBaseFilterSection {
         mDeltaRRangeSlider = new RangeSliderPane(mBundle.getString("filterDeltaR"), 0.0, mConfig.getMaxDeltaR());
         mDabbaHRangeSlider = new RangeSliderPane(mBundle.getString("filterDabbaH"), 0.0, mConfig.getMaxDabbaH());
         mDabbaRRangeSlider = new RangeSliderPane(mBundle.getString("filterDabbaR"), 0.0, mConfig.getMaxDabbaR());
-        mGradeDistanceSlider = new SliderPane(mBundle.getString("filterGradeD"), mConfig.getMinGradeDistance());
+        mGradeDistanceSlider = new SliderPane(mBundle.getString("filterGradeDMin"), mConfig.getMinGradeDistance());
+        mGradeDistanceRangeSlider = new RangeSliderPane(mBundle.getString("filterGradeD"), -mConfig.getMinGradeDistance(), mConfig.getMinGradeDistance());
         mGradeHorizontalSlider = new SliderPane(mBundle.getString("filterGradeHPerMille"), mConfig.getMinGradeHorizontal());
         mGradeVerticalSlider = new SliderPane(mBundle.getString("filterGradeVPerMille"), mConfig.getMinGradeVertical());
         mFilterMeasAlarmLevel = new BSubFilterMeasAlarmLevel();
@@ -121,6 +123,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
         mGradeVerticalSlider.clear();
         mGradeHorizontalSlider.clear();
         mGradeDistanceSlider.clear();
+        mGradeDistanceRangeSlider.clear();
         mFilterMeasAlarmLevel.clear();
     }
 
@@ -152,6 +155,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
                 mDeltaRRangeSlider,
                 mDeltaHRangeSlider,
                 mDabbaHRangeSlider,
+                mGradeDistanceRangeSlider,
                 mDabbaRRangeSlider
         ).forEach(rangeSlider -> {
             rangeSlider.selectedProperty().addListener(changeListener);
@@ -175,6 +179,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
         mGradeVerticalSlider.initSession("GradeV" + mConfig.getKeyPrefix(), sessionManager);
         mGradeHorizontalSlider.initSession("GradeH" + mConfig.getKeyPrefix(), sessionManager);
         mGradeDistanceSlider.initSession("GradeD" + mConfig.getKeyPrefix(), sessionManager);
+        mGradeDistanceRangeSlider.initSession("DabbaD" + mConfig.getKeyPrefix(), sessionManager);
 
         mFilterMeasAlarmLevel.initSession(sessionManager);
     }
@@ -199,8 +204,9 @@ public class FilterSectionMeas extends MBaseFilterSection {
                     && validateRangeSliderPane(mDeltaDRangeSlider, p.getDistance3d())
                     && validateRangeSliderPane(mDeltaHRangeSlider, p.getDistanceHeight())
                     && validateRangeSliderPane(mDeltaRRangeSlider, p.getDistancePlane())
+                    && validateRangeSliderPane(mGradeDistanceRangeSlider, p.ext().getDiff().getPartialDiffDistance())
                     && validateSliderPane(mGradeHorizontalSlider, Math.abs(p.ext().getDiff().getZPerMille()))
-                    && validateSliderPane(mGradeDistanceSlider, Math.abs(p.ext().getDiff().getPartialDiff3d()))
+                    && validateSliderPane(mGradeDistanceSlider, Math.abs(p.ext().getDiff().getPartialDiffDistanceAbs()))
                     && validateSliderPane(mGradeVerticalSlider, Math.abs(p.ext().getDiff().getRPerMille()))
                     && mFilterMeasAlarmLevel.filter(p)
                     && validateSharedAlarm(p);
@@ -256,6 +262,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
                     break;
                 case RESULTANT:
                     leftBox.getChildren().removeAll(mGradeHorizontalSlider, mDabbaHRangeSlider);
+                    leftBox.getChildren().add(mGradeDistanceRangeSlider);
                     leftBox.getChildren().add(mGradeDistanceSlider);
                     mFilterMeasAlarmLevel.getRootBordered().setDisable(true);
                     break;

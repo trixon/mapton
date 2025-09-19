@@ -114,14 +114,14 @@ public class GradeVManager extends GradeManagerBase {
                                 .compareTo(Math.abs(o2.ext().getDiff().getRQuota()));
                 grades.sort(c1.reversed().thenComparing(c2.reversed()));
 
-                grades.forEach(t -> {
-                    var first = BCoordinatrix.toLatLon(t.getP1());
-                    var second = BCoordinatrix.toLatLon(t.getP2());
+                grades.forEach(g -> {
+                    var first = BCoordinatrix.toLatLon(g.getP1());
+                    var second = BCoordinatrix.toLatLon(g.getP2());
                     var d = first.distance(second);
                     var b = first.getBearing(second);
                     var mid = first.getDestinationPoint(b, d * .5);
-                    t.setLat(mid.getLatitude());
-                    t.setLon(mid.getLongitude());
+                    g.setLat(mid.getLatitude());
+                    g.setLon(mid.getLongitude());
                 });
 
                 FxHelper.runLater(() -> {

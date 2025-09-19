@@ -37,7 +37,6 @@ import se.trixon.almond.util.fx.FxHelper;
 public class GradeDManager extends GradeManagerBase {
 
     public static final Double MAX_RADIAL_DISTANCE = 50.0;
-    public static final Double MIN_GRADE_H = 0.000005;
     public static final Double MIN_RADIAL_DISTANCE = 0.050;
     private final DistancePropertiesBuilder mPropertiesBuilder = new DistancePropertiesBuilder();
 
@@ -86,15 +85,15 @@ public class GradeDManager extends GradeManagerBase {
             for (var n2 : entry.getValue()) {
                 var p2 = mTopoManager.getItemForKey(n2);
                 var grade = new BTopoGrade(BAxis.RESULTANT, p1, p2);
-                if (grade.getCommonObservations().size() > 1 && Math.abs(grade.ext().getDiff().getZQuota()) >= MIN_GRADE_H) {
+                if (grade.getCommonObservations().size() > 1 && true) {
                     gradesAll.add(grade);
                 }
             }
         }
 
         Comparator<BTopoGrade> c1 = (o1, o2)
-                -> Double.valueOf(o1.ext().getDiff().getPartialDiff3d())
-                        .compareTo(o2.ext().getDiff().getPartialDiff3d());
+                -> Double.valueOf(o1.ext().getDiff().getPartialDiffDistanceAbs())
+                        .compareTo(o2.ext().getDiff().getPartialDiffDistanceAbs());
 
         var gradesLim = gradesAll.stream()
                 .sorted(c1.reversed())

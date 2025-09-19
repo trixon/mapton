@@ -27,16 +27,16 @@ public class GradeFilterConfig {
     private String mKeyPrefix;
     private double mMaxDabbaH = 500.0;
     private double mMaxDabbaR = 500.0;
+    private double mMaxDeltaD = 50.0;
     private double mMaxDeltaH = 50.0;
     private double mMaxDeltaR = 100.0;
-    private double mMaxDeltaD = 100.0;
     private double mMaxGradeHorizontal = 20.0;
     private double mMaxGradeVertical = 20.0;
     private double mMinDabbaH;
     private double mMinDabbaR;
+    private double mMinDeltaD;
     private double mMinDeltaH;
     private double mMinDeltaR;
-    private double mMinDeltaD;
     private double mMinGradeDistance = 0.0;
     private double mMinGradeHorizontal = 0.0;
     private double mMinGradeVertical = 0.0;

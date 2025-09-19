@@ -20,6 +20,8 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import java.util.HashMap;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
+import org.mapton.butterfly_topo.TopoAttributeManager;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.grade.GradeAttributeManager;
 
 /**
@@ -31,6 +33,8 @@ public abstract class GraphicRendererBase extends org.mapton.butterfly_topo.grap
     protected static IndexedCheckModel<GraphicItem> sCheckModel;
     protected static HashMap<BTopoGrade, Position[]> sPointToPositionMap = new HashMap<>();
     protected final GradeAttributeManager mAttributeManager = GradeAttributeManager.getInstance();
+    protected final TopoAttributeManager mTopoAttributeManager = TopoAttributeManager.getInstance();
+    protected final TopoManager mTopoManager = TopoManager.getInstance();
 
     static {
         for (var renderItem : GraphicItem.values()) {
@@ -40,6 +44,11 @@ public abstract class GraphicRendererBase extends org.mapton.butterfly_topo.grap
 
     public GraphicRendererBase(RenderableLayer layer, RenderableLayer passiveLayer) {
         super(layer, passiveLayer);
+    }
+
+    protected boolean isPlotLimitReached(BTopoGrade p, Object key, Position position) {
+        return false;
+//        return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty(), sMapObjects);
     }
 
 //    protected boolean isPlotLimitReached(BStructuralStrainGaugePoint p, Object key, Position position) {

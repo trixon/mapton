@@ -18,8 +18,6 @@ package org.mapton.butterfly_topo.grade.distance;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import org.mapton.api.ui.forms.PropertiesBuilder;
-import org.mapton.butterfly_format.types.BAxis;
-import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
 import org.openide.util.NbBundle;
@@ -53,21 +51,7 @@ public class DistancePropertiesBuilder extends PropertiesBuilder<BTopoGrade> {
         propertyMap.put(getCatKey(cat1, mBundle.getString("filterDeltaR")), MathHelper.convertDoubleToString(p.getDistancePlane(), 2));
         propertyMap.put(getCatKey(cat1, mBundle.getString("filterDabbaH")), "%.1f".formatted(p.ext().getDiff().getPartialDiffZ() * 1000));
         propertyMap.put(getCatKey(cat1, mBundle.getString("filterDabbaR")), "%.1f".formatted(p.ext().getDiff().getPartialDiffR() * 1000));
-//        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHDeg")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleDeg(), 0));
-//        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHGon")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleGon(), 0));
-//        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHRad")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleRad(), 4));
-        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeD")), MathHelper.convertDoubleToString(p.ext().getDiff().getPartialDiff3d(), 1));
-
-        var component = p.getAxis() == BAxis.HORIZONTAL ? BComponent.HEIGHT : BComponent.PLANE;
-        var alarm = p.getP1().ext().getAlarm(component);
-//        try {
-//            propertyMap.put(getCatKey(cat1, "%s".formatted(SDict.ALARM.toString())), alarm.getId());
-//            propertyMap.put(getCatKey(cat1, "%s %d".formatted(SDict.ALARM.toString(), 1)), alarm.getRatio1s());
-//            propertyMap.put(getCatKey(cat1, "%s %d".formatted(SDict.ALARM.toString(), 2)), alarm.getRatio2s());
-//
-//        } catch (Exception e) {
-//            //nvm
-//        }
+        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeD")), MathHelper.convertDoubleToString(p.ext().getDiff().getPartialDiffDistance(), 0));
 
         return propertyMap;
     }

@@ -16,14 +16,18 @@
 package org.mapton.butterfly_topo.grade.distance.graphic;
 
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum GraphicItem {
-    HOR_INDICATOR("H %s".formatted(Dict.INDICATORS.toLower()), Integer.MAX_VALUE),
-    VER_INDICATOR("V %s".formatted(Dict.INDICATORS.toLower()), Integer.MAX_VALUE),
+    POINTS(SDict.POINTS.toString(), Integer.MAX_VALUE),
+    VECTOR_3D(SDict.VECTOR_3D.toString(), Integer.MAX_VALUE),
+    VECTOR_3D_CONNECTOR("\t— anslutning", Integer.MAX_VALUE),
+    TRACE_1D(SDict.TRACE_1D.toString(), 10_000),
+    VERTICAL_INDICATOR("D %s".formatted(Dict.INDICATORS.toLower()), Integer.MAX_VALUE),
     NAME(Dict.NAME.toString(), Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;

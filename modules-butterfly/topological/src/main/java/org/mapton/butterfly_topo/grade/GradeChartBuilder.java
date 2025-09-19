@@ -43,6 +43,7 @@ import se.trixon.almond.util.Dict;
 public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
 
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
+    private final TimeSeries mTimeSeriesD = new TimeSeries("Avstånd");
     private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HORIZONTAL.toString());
     private final TimeSeries mTimeSeriesV = new TimeSeries(Dict.Geometry.VERTICAL.toString());
 
@@ -123,6 +124,7 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
     public void updateDataset(BTopoGrade p) {
         mTimeSeriesH.clear();
         mTimeSeriesV.clear();
+        mTimeSeriesD.clear();
 
         var plot = (XYPlot) mChart.getPlot();
         resetPlot(plot);
@@ -150,8 +152,8 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
             }
 
             if (p.getAxis() == BAxis.RESULTANT) {
-                mTimeSeriesV.add(minute, gradeDiff.getPartialDiff3d());
-                mMinMaxCollection.add(gradeDiff.getPartialDiff3d());
+                mTimeSeriesD.add(minute, gradeDiff.getPartialDiffDistance());
+                mMinMaxCollection.add(gradeDiff.getPartialDiffDistance());
             }
         });
 
@@ -167,6 +169,10 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
             renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesV.getKey()), Color.BLUE);
         }
 
+        if (!mTimeSeriesD.isEmpty()) {
+            getDataset().addSeries(mTimeSeriesD);
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesD.getKey()), Color.GREEN.darker());
+        }
     }
 
     private void plotAlarmIndicators(BTopoGrade p) {

@@ -39,7 +39,7 @@ public class DistanceView extends GradeView {
         mFilter = new GradeFilter(mManager);
         var config = new GradeFilterConfig();
         config.setKeyPrefix("_1");
-        config.setMinGradeDistance(200.0);
+        config.setMinGradeDistance(50.0);
         config.setMaxDeltaH(10.0);
         config.setMaxDeltaR(GradeDManager.MAX_RADIAL_DISTANCE);
         config.setAxis(BAxis.RESULTANT);
