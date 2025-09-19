@@ -34,9 +34,12 @@ import org.controlsfx.tools.Borders;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.ui.forms.DateRangePane;
 import org.mapton.api.ui.forms.MBaseFilterSection;
+import static org.mapton.api.ui.forms.MBaseFilterSection.GAP_H;
+import static org.mapton.api.ui.forms.MBaseFilterSection.GAP_V;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionComboBox;
 import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
@@ -57,10 +60,9 @@ public class FilterSectionMeas extends MBaseFilterSection {
     private final MeasFilterUI mMeasFilterUI;
 
     public FilterSectionMeas() {
-        super("Mätningar");
+        super(SDict.MEASUREMENTS.toString());
         mMeasFilterUI = new MeasFilterUI();
-        init();
-        setContent(mMeasFilterUI.getBaseBox());
+        setContent(mMeasFilterUI.getRoot());
     }
 
     @Override
@@ -79,13 +81,9 @@ public class FilterSectionMeas extends MBaseFilterSection {
             return;
         }
 
-        map.put("MÄTNINGAR", ".");
+        map.put(SDict.MEASUREMENTS.toString(), ".");
         map.put("Period " + Dict.FROM.toString(), levelPeriodDateLowProperty().get() != null ? levelPeriodDateLowProperty().get().toString() : "");
         map.put("Period " + Dict.TO.toString(), levelPeriodDateHighProperty().get() != null ? levelPeriodDateHighProperty().get().toString() : "");
-    }
-
-    public GridPane getRoot() {
-        return mMeasFilterUI.getBaseBox();
     }
 
     @Override
@@ -145,9 +143,6 @@ public class FilterSectionMeas extends MBaseFilterSection {
         sessionManager.register("filter.DatePeriodHigh", mLeverPeriodDateRangePane.highStringProperty());
     }
 
-    private void init() {
-    }
-
     private SimpleObjectProperty<LocalDate> levelPeriodDateHighProperty() {
         return mLeverPeriodDateRangePane.highDateProperty();
     }
@@ -198,28 +193,14 @@ public class FilterSectionMeas extends MBaseFilterSection {
     public class MeasFilterUI {
 
         private Node mBaseBorderBox;
-        private GridPane mBaseBox;
+        private GridPane mRoot;
 
         public MeasFilterUI() {
             createUI();
         }
 
-        public Node getBaseBorderBox() {
-            if (mBaseBorderBox == null) {
-                mBaseBorderBox = Borders.wrap(mBaseBox)
-                        .etchedBorder()
-                        .title("Grunddata")
-                        .innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding)
-                        .outerPadding(0)
-                        .raised()
-                        .build()
-                        .build();
-            }
-            return mBaseBorderBox;
-        }
-
-        public GridPane getBaseBox() {
-            return mBaseBox;
+        public GridPane getRoot() {
+            return mRoot;
         }
 
         public void onShownFirstTime() {
@@ -236,9 +217,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
             levelPeriodGridPane.addRow(1, mLevelPeriodAllSds, mLevelPeriodDirectionScb);
             FxHelper.autoSizeColumn(levelPeriodGridPane, 2);
 
-//            int rowGap = FxHelper.getUIScaled(12);
-//            mBaseBox = new GridPane(rowGap, rowGap);
-            mBaseBox = new GridPane();
+            mRoot = new GridPane();
             double borderInnerPadding = FxHelper.getUIScaled(8.0);
             double topBorderInnerPadding = FxHelper.getUIScaled(0.0);
 
@@ -261,14 +240,14 @@ public class FilterSectionMeas extends MBaseFilterSection {
             );
 
             int row = 1;
-            mBaseBox.addRow(row++, leftBox, rightBox);
+            mRoot.addRow(row++, leftBox, rightBox);
 
             var spinners = new Spinner[]{mLevelPeriodAllSds};
             FxHelper.setEditable(true, spinners);
             FxHelper.autoCommitSpinners(spinners);
             FxHelper.autoSizeRegionHorizontal(mLevelPeriodDirectionScb);
 
-            FxHelper.autoSizeColumn(mBaseBox, 2);
+            FxHelper.autoSizeColumn(mRoot, 2);
             FxHelper.bindWidthForChildrens(leftBox, rightBox);
 
             mLevelPeriodDirectionScb.disableProperty().bind(mLevelPeriodCheckbox.selectedProperty().not().or(mLevelPeriodAllSds.valueProperty().isEqualTo(0.0)));
