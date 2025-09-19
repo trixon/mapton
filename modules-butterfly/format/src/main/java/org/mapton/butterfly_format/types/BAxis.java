@@ -20,5 +20,5 @@ package org.mapton.butterfly_format.types;
  * @author Patrik Karlström
  */
 public enum BAxis {
-    HORIZONTAL, VERTICAL;
+    HORIZONTAL, VERTICAL, RESULTANT;
 }

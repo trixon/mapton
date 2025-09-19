@@ -32,6 +32,9 @@ import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
+import static org.mapton.butterfly_format.types.BDimension._1d;
+import static org.mapton.butterfly_format.types.BDimension._2d;
+import static org.mapton.butterfly_format.types.BDimension._3d;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
@@ -70,10 +73,16 @@ public class BTopoGrade extends BXyzPoint {
         var map2 = createObservationMap(p2);
 
         for (var entry : map1.entrySet()) {
-            if (map2.containsKey(entry.getKey())) {
-                mCommonObservations.put(entry.getKey(), new BTopoGradeObservation(this, map1.get(entry.getKey()), map2.get(entry.getKey())));
+            LocalDate date = entry.getKey();
+            if (map2.containsKey(date)) {
+                var gradeObservation = new BTopoGradeObservation(this, map1.get(date), map2.get(date));
+                gradeObservation.setDate(date.atStartOfDay());
+                mCommonObservations.put(date, gradeObservation);
             }
         }
+
+        recalc1(p1);
+        recalc2(p2);
     }
 
     @Override
@@ -91,6 +100,10 @@ public class BTopoGrade extends BXyzPoint {
 
     public TreeMap<LocalDate, BTopoGradeObservation> getCommonObservations() {
         return mCommonObservations;
+    }
+
+    public double getDistance3d() {
+        return Math.hypot(getDistanceHeight(), getDistancePlane());
     }
 
     public double getDistanceHeight() {
@@ -192,6 +205,78 @@ public class BTopoGrade extends BXyzPoint {
             return values[length / 2];
         } else {
             return (values[length / 2 - 1] + values[length / 2]) / 2.0;
+        }
+    }
+
+    private void recalc1(BTopoControlPoint p) {
+        for (var o : p.ext().getObservationsTimeFiltered()) {
+            if (mCommonObservations.containsKey(o.getDate().toLocalDate())) {
+                var oo = mCommonObservations.get(o.getDate().toLocalDate());
+                switch (p.getDimension()) {
+                    case _1d:
+                        oo.setCoordinate1(new Point3D(
+                                0.0,
+                                0.0,
+                                o.getMeasuredZ() - o.ext().getAccuZ()
+                        ));
+
+                        break;
+                    case _2d:
+                        oo.setCoordinate1(new Point3D(
+                                o.getMeasuredX() - o.ext().getAccuX(),
+                                o.getMeasuredY() - o.ext().getAccuY(),
+                                0.0
+                        ));
+
+                        break;
+                    case _3d:
+                        oo.setCoordinate1(new Point3D(
+                                o.getMeasuredX() - o.ext().getAccuX(),
+                                o.getMeasuredY() - o.ext().getAccuY(),
+                                o.getMeasuredZ() - o.ext().getAccuZ()
+                        ));
+
+                        break;
+                    default:
+                        throw new AssertionError();
+                }
+            }
+        }
+    }
+
+    private void recalc2(BTopoControlPoint p) {
+        for (var o : p.ext().getObservationsTimeFiltered()) {
+            if (mCommonObservations.containsKey(o.getDate().toLocalDate())) {
+                var oo = mCommonObservations.get(o.getDate().toLocalDate());
+                switch (p.getDimension()) {
+                    case _1d:
+                        oo.setCoordinate2(new Point3D(
+                                0.0,
+                                0.0,
+                                o.getMeasuredZ() - o.ext().getAccuZ()
+                        ));
+
+                        break;
+                    case _2d:
+                        oo.setCoordinate2(new Point3D(
+                                o.getMeasuredX() - o.ext().getAccuX(),
+                                o.getMeasuredY() - o.ext().getAccuY(),
+                                0.0
+                        ));
+
+                        break;
+                    case _3d:
+                        oo.setCoordinate2(new Point3D(
+                                o.getMeasuredX() - o.ext().getAccuX(),
+                                o.getMeasuredY() - o.ext().getAccuY(),
+                                o.getMeasuredZ() - o.ext().getAccuZ()
+                        ));
+
+                        break;
+                    default:
+                        throw new AssertionError();
+                }
+            }
         }
     }
 

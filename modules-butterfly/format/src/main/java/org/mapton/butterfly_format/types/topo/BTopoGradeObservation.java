@@ -25,13 +25,23 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
 public class BTopoGradeObservation extends BXyzPointObservation {
 
     private final BTopoGrade mGrade;
-    private Point3D mPoint3d1;
-    private Point3D mPoint3d2;
+    private final Point3D mPoint3d1;
+    private final Point3D mPoint3d2;
+    private Point3D mCoordinate1;
+    private Point3D mCoordinate2;
 
     public BTopoGradeObservation(BTopoGrade grade, Point3D point3d1, Point3D point3d2) {
         mGrade = grade;
         mPoint3d1 = point3d1;
         mPoint3d2 = point3d2;
+    }
+
+    public Point3D getCoordinate1() {
+        return mCoordinate1;
+    }
+
+    public Point3D getCoordinate2() {
+        return mCoordinate2;
     }
 
     public Point3D getPoint3d1() {
@@ -42,8 +52,12 @@ public class BTopoGradeObservation extends BXyzPointObservation {
         return mPoint3d2;
     }
 
-    public void setPoint3d1(Point3D point3d1) {
-        mPoint3d1 = point3d1;
+    public void setCoordinate1(Point3D coordinate1) {
+        mCoordinate1 = coordinate1;
+    }
+
+    public void setCoordinate2(Point3D coordinate2) {
+        mCoordinate2 = coordinate2;
     }
 
 }
