@@ -50,7 +50,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
     private final ResourceBundle mBundle = NbBundle.getBundle(BFilterSectionMisc.class);
     private final CheckBox mClusterCheckbox = new CheckBox("Autokluster");
     private RangeSliderPane mDeltaHRangeSlider;
-    private RangeSliderPane mDeltaRRangeSlider;
+//    private RangeSliderPane mDeltaRRangeSlider;
     private SliderPane mDeltaRSlider;
     private final DistanceMeasure mDistanceMeasure;
     private final CheckBox mInvertCheckbox = new CheckBox();
@@ -150,8 +150,8 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
 //                getDateFromToCheckModel()
 //        ).forEach(cm -> cm.getCheckedItems().addListener(listChangeListener));
         List.of(
-                mDeltaHRangeSlider,
-                mDeltaRRangeSlider
+                mDeltaHRangeSlider
+        //                mDeltaRRangeSlider
         ).forEach(rangeSlider -> {
             rangeSlider.selectedProperty().addListener(changeListener);
             rangeSlider.maxProperty().addListener(changeListener);
@@ -172,10 +172,11 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
     @Override
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
-        mDeltaHRangeSlider.initSession("xxDeltaH", sessionManager);
-        mDeltaRRangeSlider.initSession("xxDeltaR", sessionManager);
-        mDeltaRSlider.initSession("xxyDeltaR", sessionManager);
+        mDeltaHRangeSlider.initSession(getKeyFilter("DistanceH"), sessionManager);
+//        mDeltaRRangeSlider.initSession(getKeyFilter("DeltaR"), sessionManager);
+        mDeltaRSlider.initSession(getKeyFilter("DistanceR"), sessionManager);
 
+        sessionManager.register("filter.autocluster", mClusterCheckbox.selectedProperty());
         sessionManager.register("filter.invert", invertSelectionProperty());
     }
 
@@ -196,7 +197,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
 
     private void createUI() {
         mDeltaHRangeSlider = new RangeSliderPane("Höjd, intervall", 0, 20);
-        mDeltaRRangeSlider = new RangeSliderPane("Plan, intervall", 0, 20);
+//        mDeltaRRangeSlider = new RangeSliderPane("Plan, intervall", 0, 20);
         mDeltaRSlider = new SliderPane("Plan, maxavstånd", 20);
 
         int row = 0;
@@ -206,7 +207,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         mRoot.addRow(row++, mDeltaHRangeSlider);
 
         mDeltaHRangeSlider.disableProperty().bind(mClusterCheckbox.selectedProperty().not());
-        mDeltaRRangeSlider.disableProperty().bind(mClusterCheckbox.selectedProperty().not());
+//        mDeltaRRangeSlider.disableProperty().bind(mClusterCheckbox.selectedProperty().not());
         mDeltaRSlider.disableProperty().bind(mClusterCheckbox.selectedProperty().not());
     }
 

@@ -136,6 +136,11 @@ public class BOptionsView extends MOptionsView {
         mLabelByIdProperty.set(labelBy.name());
     }
 
+    protected void initSession(SessionManager sessionManager, boolean enableDebt) {
+        initSession(sessionManager);
+        mPlotDebtScbx.setDisable(!enableDebt);
+    }
+
     protected void initSession(SessionManager sessionManager) {
         mBottomBox.setDisable(false);
         sessionManager.register(getKeyOptions("plotDebt"), mPlotDebtScbx.selectedProperty());
