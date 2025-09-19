@@ -31,8 +31,9 @@ import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
-import org.mapton.butterfly_core.api.FilterSectionMisc;
+import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.fx.FxHelper;
@@ -51,7 +52,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
     private final FilterSectionMeas mFilterSectionMeas;
-    private final FilterSectionMisc mFilterSectionMisc;
+    private final BFilterSectionMisc<BTopoControlPoint> mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final TopoManager mManager = TopoManager.getInstance();
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
@@ -62,13 +63,14 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMeas = new FilterSectionMeas();
-        mFilterSectionMisc = new FilterSectionMisc();
+        mFilterSectionMisc = new BFilterSectionMisc();
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
         mFilter.setFilterSection(mFilterSectionDisruptor);
         mFilter.setFilterSection(mFilterSectionMeas);
+        mFilter.setFilterSection(mFilterSectionMisc);
 
         setFilter(filter);
         createUI();
@@ -158,6 +160,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
                 mFilterSectionPoint.getTab(),
                 mFilterSectionDate.getTab(),
                 mFilterSectionMeas.getTab(),
+                mFilterSectionMisc.getTab(),
                 mFilterSectionDisruptor.getTab()
         );
 

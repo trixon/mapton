@@ -189,6 +189,26 @@ public class TopoHelper {
         return ButterflyHelper.getAlarmMaterial(getAlarmLevelPlane(p));
     }
 
+    public static Color getGradeDistanceColor(BTopoGrade p) {
+        var gradeDiff = p.ext().getDiff();
+        var dZ = gradeDiff.getPartialDiffDistance() / 1000.0;
+        if (dZ < 0) {
+            return sVerticalNegColors[getColorIndex(sVerticalNegMaterials.length, 0.025, dZ)];
+        } else {
+            return sVerticalPosColors[getColorIndex(sVerticalPosMaterials.length, 0.025, dZ)];
+        }
+    }
+
+    public static Material getGradeDistanceMaterial(BTopoGrade p) {
+        var gradeDiff = p.ext().getDiff();
+        var dZ = gradeDiff.getPartialDiffDistance() / 1000.0;
+        if (dZ < 0) {
+            return sVerticalNegMaterials[getColorIndex(sVerticalNegMaterials.length, 0.025, dZ)];
+        } else {
+            return sVerticalPosMaterials[getColorIndex(sVerticalPosMaterials.length, 0.025, dZ)];
+        }
+    }
+
     public static Color getVerticalColor(BTopoControlPoint p) {
         var dZ = p.ext().deltaZero().getDelta1();
         if (dZ == null) {

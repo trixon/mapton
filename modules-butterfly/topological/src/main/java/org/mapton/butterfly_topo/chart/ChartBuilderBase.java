@@ -71,7 +71,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoControlPoint
     public void setTitle(BTopoControlPoint p) {
         setTitle(p, TopoHelper.getAlarmColorAwt(p));
 
-        var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
+        var dateFirst = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredFirstDate()), "");
         var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
         var date = "(%s) → %s".formatted(dateFirst, dateLast);
         getLeftSubTextTitle().setText(date);
