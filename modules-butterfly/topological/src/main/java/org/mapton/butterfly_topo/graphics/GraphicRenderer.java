@@ -79,7 +79,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         super.reset();
         sPointToPositionMap.clear();
         mGroupRenderer.reset();
-        sLabeledPoints.clear();
+        clearLabeledPoints(BTopoControlPoint.class);
     }
 
     private void plotBearing(BTopoControlPoint p, Position position) {

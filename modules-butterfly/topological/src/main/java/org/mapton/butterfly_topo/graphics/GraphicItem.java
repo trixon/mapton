@@ -24,8 +24,8 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
-    LABEL("\t%s".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
     PIN(Dict.PIN.toString(), Integer.MAX_VALUE),
+    LABEL("\t— %s".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
     CLUSTER_DEFORMATION("Kluster, deformation", Integer.MAX_VALUE),
     CLUSTER_DEFORMATION_PLANE_ALTITUDES("Kluster, deformation plan på olika höjder", Integer.MAX_VALUE),
     CLUSTER_DEFORMATION_PLANE_ALTITUDES_LABEL("\tEtikett: Avstånd och bäring", Integer.MAX_VALUE),
@@ -37,9 +37,9 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     CIRCLE_VERTICAL_DIRECTION("Färgskala, vertikalrörelse", Integer.MAX_VALUE),
     TRACE_1D(SDict.TRACE_1D.toString(), 10_000),
     VECTOR_1D(SDict.VECTOR_1D.toString(), 100),
-    VECTOR_1D_ALARM("\t— %s (%s)".formatted(SDict.VECTOR_1D.toString(), SDict.ALARM_LEVEL.toLower()), 100),
-    VECTOR_1D_LABEL("\t— %s (%s)".formatted(SDict.VECTOR_1D.toString(), Dict.LABEL.toLower()), 100),
-    VECTOR_1D_TREND("\t— %s (%s)".formatted(SDict.VECTOR_1D.toString(), Dict.TRENDS.toLower()), 100),
+    VECTOR_1D_ALARM("\t— %s".formatted(SDict.ALARM_LEVEL.toString()), 100),
+    VECTOR_1D_LABEL("\t— %s".formatted(Dict.LABEL.toString()), 100),
+    VECTOR_1D_TREND("\t— %s".formatted(Dict.TRENDS.toString()), 100),
     //    TRACE_2D(SDict.TRACE_2D.toString()),
     //    VECTOR_2D(SDict.VECTOR_2D.toString()),
     TRACE_3D(SDict.TRACE_3D.toString(), Integer.MAX_VALUE),

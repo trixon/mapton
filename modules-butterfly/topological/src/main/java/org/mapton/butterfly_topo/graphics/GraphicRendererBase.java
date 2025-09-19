@@ -35,6 +35,7 @@ import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_core.api.sos.ScalePlot1dHSosi;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoAttributeManager;
 import org.mapton.butterfly_topo.TopoLayerBundle;
@@ -49,7 +50,7 @@ import se.trixon.almond.util.MathHelper;
 public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicItem, BTopoControlPoint> {
 
     protected static IndexedCheckModel<GraphicItem> sCheckModel;
-    protected static final HashSet<BTopoControlPoint> sLabeledPoints = new HashSet<>();
+    protected static final HashSet<BXyzPoint> sLabeledPoints = new HashSet<>();
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
@@ -58,6 +59,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
     protected Integer mScale1dH;
     protected Integer mScale3dH;
     protected Integer mScale3dP;
+    protected final TopoAttributeManager mTopoAttributeManager = TopoAttributeManager.getInstance();
 
     static {
         for (var renderItem : GraphicItem.values()) {
@@ -67,6 +69,14 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
 
     public GraphicRendererBase(RenderableLayer layer, RenderableLayer passiveLayer) {
         super(layer, passiveLayer, sPlotLimiter);
+    }
+
+    public void clearLabeledPoints() {
+        sLabeledPoints.clear();
+    }
+
+    public void clearLabeledPoints(Class<? extends BXyzPoint> cls) {
+        sLabeledPoints.removeAll(sLabeledPoints.stream().filter(p -> cls.isInstance(p)).toList());
     }
 
     public void initScales() {
