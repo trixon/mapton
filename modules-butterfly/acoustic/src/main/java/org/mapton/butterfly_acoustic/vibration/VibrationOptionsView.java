@@ -96,7 +96,7 @@ public class VibrationOptionsView extends BOptionsView {
         sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
         sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
         sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
-        initSession(sessionManager);
+        initSession(sessionManager, false);
 
         restoreLabelFromId(VibrationLabelBy.class, DEFAULT_LABEL_BY);
     }

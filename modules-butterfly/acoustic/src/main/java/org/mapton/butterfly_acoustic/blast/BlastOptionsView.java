@@ -96,7 +96,7 @@ public class BlastOptionsView extends BOptionsView {
         sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
         sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
         sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
-        initSession(sessionManager);
+        initSession(sessionManager, false);
 
         restoreLabelFromId(BlastLabelBy.class, DEFAULT_LABEL_BY);
     }
