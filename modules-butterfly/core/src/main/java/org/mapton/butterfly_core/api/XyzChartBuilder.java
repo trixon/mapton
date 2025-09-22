@@ -60,7 +60,6 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MinMaxCollection;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -78,6 +77,8 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     private ChartPanel mChartPanel;
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private TextTitle mLeftSubTextTitle;
+    private Integer mRecentDays;
+    private Integer mRecentDaysDefault;
     private TextTitle mRightSubTextTitle;
 
     public static void addMarker(XYPlot plot, Minute minute, String string, Color color) {
@@ -214,8 +215,20 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         return mLeftSubTextTitle;
     }
 
+    public Integer getRecentDays() {
+        return mRecentDays;
+    }
+
+    public Integer getRecentDaysDefault() {
+        return mRecentDaysDefault;
+    }
+
     public TextTitle getRightSubTextTitle() {
         return mRightSubTextTitle;
+    }
+
+    public boolean isCompleteView() {
+        return mRecentDaysDefault == null;
     }
 
     public void plotAlarmIndicator(BComponent component, double value, Color color) {
@@ -237,19 +250,23 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     }
 
     public void plotAlarmIndicators(BXyzPoint p) {
+        plotAlarmIndicators(p, 1);
+    }
+
+    public void plotAlarmIndicators(BXyzPoint p, int factor) {
         if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
             var ha = ext.getAlarm(BComponent.HEIGHT);
             if (ha != null) {
                 var range0 = ha.ext().getRange0();
                 if (range0 != null) {
-                    plotAlarmIndicator(BComponent.HEIGHT, range0.getMinimum(), Color.YELLOW);
-                    plotAlarmIndicator(BComponent.HEIGHT, range0.getMaximum(), Color.YELLOW);
+                    plotAlarmIndicator(BComponent.HEIGHT, range0.getMinimum() * factor, Color.YELLOW);
+                    plotAlarmIndicator(BComponent.HEIGHT, range0.getMaximum() * factor, Color.YELLOW);
                 }
 
                 var range1 = ha.ext().getRange1();
                 if (range1 != null) {
-                    plotAlarmIndicator(BComponent.HEIGHT, range1.getMinimum(), Color.RED);
-                    plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum(), Color.RED);
+                    plotAlarmIndicator(BComponent.HEIGHT, range1.getMinimum() * factor, Color.RED);
+                    plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum() * factor, Color.RED);
                 }
             }
 
@@ -258,17 +275,17 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                 var range0 = pa.ext().getRange0();
                 if (range0 != null) {
                     if (!Precision.equals(range0.getMinimum(), 0.0)) {
-                        plotAlarmIndicator(BComponent.PLANE, range0.getMinimum(), Color.YELLOW);
+                        plotAlarmIndicator(BComponent.PLANE, range0.getMinimum() * factor, Color.YELLOW);
                     }
-                    plotAlarmIndicator(BComponent.PLANE, range0.getMaximum(), Color.YELLOW);
+                    plotAlarmIndicator(BComponent.PLANE, range0.getMaximum() * factor, Color.YELLOW);
                 }
 
                 var range1 = pa.ext().getRange1();
                 if (range1 != null) {
                     if (!Precision.equals(range1.getMinimum(), 0.0)) {
-                        plotAlarmIndicator(BComponent.PLANE, range1.getMinimum(), Color.RED);
+                        plotAlarmIndicator(BComponent.PLANE, range1.getMinimum() * factor, Color.RED);
                     }
-                    plotAlarmIndicator(BComponent.PLANE, range1.getMaximum(), Color.RED);
+                    plotAlarmIndicator(BComponent.PLANE, range1.getMaximum() * factor, Color.RED);
                 }
             }
         }
@@ -325,6 +342,14 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         rangeAxis.setRange(mMinMaxCollection.getMin() * margin, mMinMaxCollection.getMax() * margin);
     }
 
+    public void setRecentDays(Integer recentDays) {
+        mRecentDays = recentDays;
+    }
+
+    public void setRecentDaysDefault(Integer recentDaysDefault) {
+        mRecentDaysDefault = recentDaysDefault;
+    }
+
     @Override
     public void setTitle(T p) {
         mChart.setTitle(p.getName());
@@ -335,7 +360,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     }
 
     public void setTitle(String title, Color color) {
-        mChart.setTitle(title);
+        mChart.setTitle(isCompleteView() ? title : "Senaste %d dygnen".formatted(mRecentDays));
         if (color == Color.RED || color == Color.GREEN) {
             color = color.darker();
         }
@@ -345,7 +370,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     protected void initChart(String valueAxisLabel, String decimalPattern) {
         mChart = ChartFactory.createTimeSeriesChart(
                 "",
-                Dict.DATE.toString(),
+                "",
                 Objects.toString(valueAxisLabel, "m"),
                 mDataset,
                 true,
