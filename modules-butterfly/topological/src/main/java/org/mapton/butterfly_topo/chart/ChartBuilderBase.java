@@ -15,17 +15,16 @@
  */
 package org.mapton.butterfly_topo.chart;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
-import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoHelper;
 import se.trixon.almond.util.DateHelper;
@@ -41,10 +40,9 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoControlPoint
     protected Minute mSubSetZeroMinute;
     protected final TimeSeries mTimeSeries1d = new TimeSeries(Dict.Geometry.HEIGHT);
     protected final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
-    protected final TimeSeries mTimeSeries3d = new TimeSeries("3d");
 
     public ChartBuilderBase() {
-        initChart(null, null);
+        initChart("mm", "0");
     }
 
     @Override
@@ -53,13 +51,22 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoControlPoint
             return null;
         }
         var callable = (Callable<ChartPanel>) () -> {
+            var frequency = p.getFrequency();
+            if (!isCompleteView() && frequency != null) {
+                if (frequency > 2) {
+                    setRecentDays(getRecentDaysDefault() * 4);
+                } else {
+                    setRecentDays(getRecentDaysDefault());
+                }
+            }
+
             setTitle(p);
             var plot = (XYPlot) mChart.getPlot();
             updateDataset(p);
-
-            setDateRangeNullNow(plot, p, mDateNull);
+            var date = isCompleteView() ? mDateNull : Date.from(Instant.now().minus(getRecentDays(), ChronoUnit.DAYS));
+            setDateRangeNullNow(plot, p, date);
             plot.clearRangeMarkers();
-            plotAlarmIndicators(p);
+            plotAlarmIndicators(p, 1000);
 
             return getChartPanel();
         };
@@ -71,39 +78,14 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoControlPoint
     public void setTitle(BTopoControlPoint p) {
         setTitle(p, TopoHelper.getAlarmColorAwt(p));
 
-        var dateFirst = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredFirstDate()), "");
-        var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
-        var date = "(%s) → %s".formatted(dateFirst, dateLast);
-        getLeftSubTextTitle().setText(date);
-
-        var sb = new StringBuilder();
-        if (!StringUtils.isBlank(p.getAlarm1Id())) {
-            sb.append("H ").append(p.getAlarm1Id());
-            if (!StringUtils.isBlank(p.getAlarm2Id())) {
-                sb.append(", ");
-            }
+        if (isCompleteView()) {
+            var dateFirst = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredFirstDate()), "");
+            var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
+            var date = "(%s) → %s".formatted(dateFirst, dateLast);
+            getLeftSubTextTitle().setText(date);
         }
 
-        if (!StringUtils.isBlank(p.getAlarm2Id())) {
-            sb.append("P ").append(p.getAlarm2Id());
-        }
-
-        String hAlarm = "";
-        if (p.getDimension() != BDimension._2d) {
-            hAlarm = "H " + AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p);
-            if (p.getDimension() == BDimension._3d) {
-                hAlarm = hAlarm + ", ";
-            }
-        }
-
-        String pAlarm = "";
-        if (p.getDimension() != BDimension._1d) {
-            pAlarm = "P " + AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p);
-        }
-
-        String delta = p.ext().deltaZero().getDelta(3);
-
-        var rightTitle = "%s%s: %s".formatted(hAlarm, pAlarm, delta);
-        getRightSubTextTitle().setText(rightTitle);
+        String delta = p.ext().deltaZero().getDelta1d2d(0, 1000);
+        getRightSubTextTitle().setText(delta);
     }
 }

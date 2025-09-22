@@ -28,8 +28,8 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
  */
 public class ChartAggregate {
 
-    private final ChartBuilderDelta mBuilderDelta = new ChartBuilderDelta(false);
-    private final ChartBuilderDelta mBuilderDeltaAvg = new ChartBuilderDelta(true);
+    private final ChartBuilderDelta mBuilderDeltaAvg = new ChartBuilderDelta(true, null);
+    private final ChartBuilderDeltaSplit mBuilderDeltaSplit = new ChartBuilderDeltaSplit();
     private final ChartBuilderTrend mBuilderTrend1d;
     private final ChartBuilderTrend mBuilderTrend2d;
     private final JTabbedPane mTabbedPane;
@@ -53,7 +53,7 @@ public class ChartAggregate {
             synchronized (mTabbedPane) {
                 mTabbedPane.removeAll();
                 if (p.ext().getObservationsTimeFiltered().size() > 1) {
-                    mTabbedPane.add("Delta", mBuilderDelta.build(p).call());
+                    mTabbedPane.add("Delta", mBuilderDeltaSplit.build(p).call());
                     mTabbedPane.add("Delta (avg)", mBuilderDeltaAvg.build(p).call());
                     if (p.getDimension() != BDimension._2d) {
                         mTabbedPane.add("Trend 1d", mBuilderTrend1d.build(p).call());
