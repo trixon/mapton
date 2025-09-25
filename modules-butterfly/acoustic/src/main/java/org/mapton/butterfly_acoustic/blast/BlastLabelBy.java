@@ -41,6 +41,11 @@ public enum BlastLabelBy implements LabelBy.Operations {
 
         return date;
     }),
+    MISC_DATE_TIME(LabelBy.CAT_MISC, Dict.DATE.toString() + " & tid", p -> {
+        var date = Objects.toString(DateHelper.toDateTimeString(p.getDateLatest()), "-");
+
+        return date;
+    }),
     MISC_AGE(LabelBy.CAT_MISC, Dict.AGE.toString(), p -> {
         return String.valueOf(p.ext().getMeasurementAge(ChronoUnit.DAYS));
     }),

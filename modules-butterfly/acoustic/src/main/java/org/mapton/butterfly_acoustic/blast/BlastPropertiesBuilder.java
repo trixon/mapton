@@ -38,7 +38,7 @@ public class BlastPropertiesBuilder extends PropertiesBuilder<BAcousticBlast> {
 
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
-        var date = Objects.toString(DateHelper.toDateString(p.getDateLatest()), "-");
+        var date = Objects.toString(DateHelper.toDateTimeString(p.getDateLatest()), "-");
 
         propertyMap.put(getCatKey(cat1, "Ext.id"), p.getExternalId());
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());

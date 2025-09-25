@@ -50,7 +50,7 @@ class BlastListCell extends ListCell<BAcousticBlast> {
 
     private void addContent(BAcousticBlast blast) {
         setText(null);
-        var date = Objects.toString(DateHelper.toDateString(blast.getDateLatest()), "-");
+        var date = Objects.toString(DateHelper.toDateTimeString(blast.getDateLatest()), "-");
         mNameLabel.setText(blast.getName());
         mDateLabel.setText("%s %s".formatted(date, blast.getComment()));
         mGroupLabel.setText(blast.getGroup());
