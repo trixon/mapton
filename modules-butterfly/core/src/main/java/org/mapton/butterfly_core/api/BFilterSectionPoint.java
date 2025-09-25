@@ -337,6 +337,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
         var eq = true;
         var neq = true;
+        var eqdefault = true;
+        var neqdefault = true;
         var set = true;
         var nset = true;
         var paramset = true;
@@ -348,6 +350,14 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
         if (checkModel.isChecked(IntenseFreqFlags.NOT_EQUALS)) {
             neq = ObjectUtils.compare(p.getFrequency(), p.getFrequencyHigh()) != 0;
+        }
+
+        if (checkModel.isChecked(IntenseFreqFlags.EQUALS_DEF)) {
+            eqdefault = ObjectUtils.compare(p.getFrequencyDefault(), p.getFrequencyHigh()) == 0;
+        }
+
+        if (checkModel.isChecked(IntenseFreqFlags.NOT_EQUALS_DEF)) {
+            neqdefault = ObjectUtils.compare(p.getFrequencyDefault(), p.getFrequencyHigh()) != 0;
         }
 
         if (checkModel.isChecked(IntenseFreqFlags.SET)) {
@@ -368,6 +378,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
         return eq
                 && neq
+                && eqdefault
+                && neqdefault
                 && set
                 && nset
                 && paramset
@@ -504,6 +516,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     public enum IntenseFreqFlags {
         EQUALS("= %s".formatted(SDict.FREQUENCY.toString())),
         NOT_EQUALS("≠ %s".formatted(SDict.FREQUENCY.toString())),
+        EQUALS_DEF("= %s".formatted("Standardfrekvens")),
+        NOT_EQUALS_DEF("≠ %s".formatted("Standardfrekvens")),
         SET("Har hög frekvens"),
         NOT_SET("Saknar hög frekvens"),
         PARAM_SET("Har hög frekvensparameter"),
