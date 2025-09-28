@@ -239,9 +239,6 @@
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
-                    <installerOsSolaris>false</installerOsSolaris>
-                    <installerOsMacosx>false</installerOsMacosx>
-                    <installerLicenseFile>../LICENSE</installerLicenseFile>
                     <etcConfFile>src/main/resources/mapton.conf</etcConfFile>
                     <finalName>mapton-${mapton.version}</finalName>
                     <additionalArguments>-J-Xmx4g</additionalArguments>
@@ -364,7 +361,7 @@
                 <dependency>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-structural-crack</artifactId>
-                </dependency>                
+                </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-structural-load</artifactId>

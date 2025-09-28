@@ -242,7 +242,7 @@ public class AnalyticSurfaceLegend implements Renderable {
             y += offset.getY();
         }
 
-        TextRenderer tr = OGLTextRenderer.getOrCreateTextRenderer(dc.getTextRendererCache(), font);
+        var tr = OGLTextRenderer.getOrCreateTextRenderer(dc.getTextRendererCache(), font);
         if (tr == null) {
             return;
         }
