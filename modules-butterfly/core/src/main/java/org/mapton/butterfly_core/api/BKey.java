@@ -25,5 +25,7 @@ public class BKey {
     public static final String PIN_HOTSPOT = "pin.hotspot";
     public static final String PIN_NAME = "pin.name";
     public static final String PIN_URL = "pin.url";
+    public static final String TRENDS_H = "trendsH";
+    public static final String TRENDS_P = "trendsP";
 
 }

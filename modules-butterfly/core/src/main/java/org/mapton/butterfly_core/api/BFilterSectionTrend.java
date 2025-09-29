@@ -16,6 +16,7 @@
 package org.mapton.butterfly_core.api;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -24,10 +25,10 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.lang3.ArrayUtils;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
@@ -70,17 +71,22 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
     }
 
     public boolean filter(BXyzPoint p) {
+        var valid1d = true;
+        var valid2d = true;
         if (isSelected()) {
-            var valid = true;
-//                    && validateSliderPane(mGradeDistanceSlider, Math.abs(p.ext().getDiff().getPartialDiffDistanceAbs()))
-
-            return valid;
-        } else {
-            return true;
+            if (m1dDimensionSection.isActivated() && p.getDimension() != BDimension._2d) {
+                valid1d = validate1d(p);
+            }
+            if (m2dDimensionSection.isActivated() && p.getDimension() != BDimension._1d) {
+                valid2d = validate2d(p);
+            }
         }
+
+        return valid1d && valid2d;
     }
 
     public void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
+        System.out.println("initListeners ARG");
         List.of(
                 selectedProperty()
         ).forEach(propertyBase -> propertyBase.addListener(changeListener));
@@ -90,11 +96,13 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
     }
 
     public void initListeners(BFilterSectionTrendProvider filter) {
+        System.out.println("initListeners");
     }
 
     @Override
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
+        sessionManager.register(getKeyFilter("section"), selectedProperty());
         m1dDimensionSection.initSession(sessionManager);
         m2dDimensionSection.initSession(sessionManager);
     }
@@ -122,33 +130,47 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         FxHelper.autoSizeColumn(mRoot, 2);
     }
 
-    public enum TrendPeriods {
-        WEEK("1 vecka"),
-        MONTH("1 månad"),
-        QUARTER("3 månader"),
-        HALF_YEAR("6 månader"),
-        YEAR("1 år"),
-        NULL("Nollmätning"),
-        FIRST("Första");
-        private final String mTitle;
+    private boolean validate1d(BXyzPoint p) {
+        if (m1dDimensionSection.mTrendAbsoluteSliderPane.isSelected()) {
+            return validateAbsolute(p, BKey.TRENDS_H, m1dDimensionSection.mTrend1Scb, m1dDimensionSection.mTrendAbsoluteSliderPane);
+        } else {
+            return true;
+        }
+    }
 
-        private TrendPeriods(String title) {
-            mTitle = title;
+    private boolean validate2d(BXyzPoint p) {
+        if (m2dDimensionSection.mTrendAbsoluteSliderPane.isSelected()) {
+            return validateAbsolute(p, BKey.TRENDS_P, m2dDimensionSection.mTrend1Scb, m2dDimensionSection.mTrendAbsoluteSliderPane);
+        } else {
+            return true;
+        }
+    }
+
+    private boolean validateAbsolute(BXyzPoint p, String key, SessionComboBox<BTrendPeriod> scb, SliderPane sliderPane) {
+        HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(key);
+        if (map == null) {
+            return false;
         }
 
-        @Override
-        public String toString() {
-            return mTitle;
+        var trend = map.get(scb.getValue());
+        if (trend == null) {
+            return false;
         }
 
+        var value = TrendHelper.getMmPerYear(trend);
+        if (value == null) {
+            return false;
+        }
+
+        return validateSliderPaneGtEq(sliderPane, Math.abs(value));
     }
 
     class DimensionSection extends BorderPane {
 
         private final SessionCheckBox mActiveScbx;
         private final BDimension mDimension;
-        private final SessionComboBox<TrendPeriods> mTrend1Scb;
-        private final SessionComboBox<TrendPeriods> mTrend2Scb;
+        private final SessionComboBox<BTrendPeriod> mTrend1Scb;
+        private final SessionComboBox<BTrendPeriod> mTrend2Scb;
         private final SliderPane mTrendAbsoluteSliderPane = new SliderPane("Minsta årshastighet (mm/år)", 200, true, true, 1d);
         private final SliderPane mTrendCompareSliderPane = new SliderPane("Jämförelse", 300d, true, true, 1d);
 
@@ -156,9 +178,8 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             mDimension = dimension;
             mActiveScbx = new SessionCheckBox(mDimension.getName() + "d");
             mTrend1Scb = new SessionComboBox<>();
-            mTrend1Scb.getItems().setAll(TrendPeriods.values());
+            mTrend1Scb.getItems().setAll(BTrendPeriod.values());
             mTrend2Scb = new SessionComboBox<>();
-            //            mTrend2Scb.getSelectionModel().select(2);
             createUI();
             mTrend1Scb.getSelectionModel().select(0);
             loadTrend2();
@@ -227,19 +248,36 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             sessionManager.register(getKeyFilter(mode + "period2"), mTrend2Scb.selectedIndexProperty());
         }
 
+        private boolean isActivated() {
+            return mActiveScbx.isSelected();
+        }
+
         private void load() {
             mTrend1Scb.load();
             mTrend2Scb.load();
         }
 
         private void loadTrend2() {
-            mTrend2Scb.getItems().setAll(ArrayUtils.removeElement(TrendPeriods.values(), mTrend1Scb.getValue()));
+            mTrend2Scb.getItems().clear();
+            var afterSelected = false;
+            for (var period : BTrendPeriod.values()) {
+                if (afterSelected) {
+                    mTrend2Scb.getItems().add(period);
+                }
+                if (!afterSelected && period == mTrend1Scb.getValue()) {
+                    afterSelected = true;
+                }
+            }
+//
             mTrend2Scb.getSelectionModel().selectFirst();
         }
 
         private void reset() {
             mTrend1Scb.getSelectionModel().selectFirst();
             mTrend2Scb.getSelectionModel().selectFirst();
+            mActiveScbx.setSelected(false);
+            mTrendAbsoluteSliderPane.setSelected(false);
+            mTrendCompareSliderPane.setSelected(false);
         }
     }
 }

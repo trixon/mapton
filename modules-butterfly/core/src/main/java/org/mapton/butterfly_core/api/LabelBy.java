@@ -17,6 +17,7 @@ package org.mapton.butterfly_core.api;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import javafx.beans.property.SimpleObjectProperty;
@@ -26,7 +27,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_format.types.BBase;
+import org.mapton.butterfly_format.types.BBaseControlPoint;
+import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BComponent;
+import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import se.trixon.almond.util.Dict;
@@ -46,6 +51,7 @@ public class LabelBy {
     public static final String CAT_MEAS = SDict.MEASUREMENTS.toString();
     public static final String CAT_MISC = Dict.MISCELLANEOUS.toString();
     public static final String CAT_ROOT = "";
+    public static final String CAT_TREND = "Trend";
     public static final String CAT_VALUE = Dict.VALUE.toString();
     public static final String DIMENS_FREQ = "%s & %s".formatted(SDict.DIMENSION.toString(), SDict.FREQUENCY.toString());
     public static final String HEIGHT_DIFFERENTIAL = "%s, differential".formatted(Dict.Geometry.HEIGHT);
@@ -237,7 +243,7 @@ public class LabelBy {
         return "%s (%s)".formatted(measNeed(p), miscFrequency(p));
     }
 
-    public static String miscCategory(BXyzPoint p) {
+    public static String miscCategory(BBaseControlPoint p) {
         return Objects.toString(p.getCategory(), "NODATA");
     }
 
@@ -265,7 +271,7 @@ public class LabelBy {
         return p.getFrequencyHighParam();
     }
 
-    public static String miscGroup(BXyzPoint p) {
+    public static String miscGroup(BBasePoint p) {
         return Objects.toString(p.getGroup(), "NODATA");
     }
 
@@ -273,7 +279,7 @@ public class LabelBy {
         return Objects.toString(p.getOperator(), "NODATA");
     }
 
-    public static String miscOrigin(BXyzPoint p) {
+    public static String miscOrigin(BBase p) {
         return Objects.toString(p.getOrigin(), "NODATA");
     }
 
@@ -313,6 +319,22 @@ public class LabelBy {
                 menuButton.getItems().add(entry.getValue());
             }
         }
+    }
+
+    public static String trend(BXyzPoint p, BTrendPeriod period, String key) {
+        var result = "-";
+        HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(key);
+        if (map != null) {
+            var trend = map.get(period);
+            if (trend != null) {
+                var value = TrendHelper.getMmPerYear(trend);
+                if (value != null) {
+                    result = "%.1f".formatted(value);
+                }
+            }
+        }
+
+        return result;
     }
 
     public static String valueZeroZ(BXyzPoint p) {
