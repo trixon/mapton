@@ -47,6 +47,8 @@ import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
+import org.mapton.butterfly_core.api.BFilterSectionTrend;
+import org.mapton.butterfly_core.api.BFilterSectionTrendProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
@@ -71,6 +73,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
+        BFilterSectionTrendProvider,
         BFilterSectionDisruptorProvider {
 
     IndexedCheckModel<AlarmLevelFilter> mAlarmLevelCheckModel;
@@ -88,6 +91,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private FilterSectionMeas mFilterSectionMeas;
     private BFilterSectionMisc mFilterSectionMisc;
     private BFilterSectionPoint mFilterSectionPoint;
+    private BFilterSectionTrend mFilterSectionTrend;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TopoManager mManager = TopoManager.getInstance();
     private final SimpleBooleanProperty mMeasAlarmLevelAgeProperty = new SimpleBooleanProperty();
@@ -305,6 +309,12 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     }
 
     @Override
+    public void setFilterSection(BFilterSectionTrend filterSection) {
+        mFilterSectionTrend = filterSection;
+        mFilterSectionTrend.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> {
@@ -324,6 +334,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
+                .filter(p -> mFilterSectionTrend.filter(p))
                 .filter(p -> {
                     if (mSectionMeasProperty.get()) {
                         return validateAlarm(p)
@@ -391,6 +402,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         map.put(SDict.DIMENSION.toString(), makeInfoDimension());
         mFilterSectionDate.createInfoContent(map);
         mFilterSectionDisruptor.createInfoContent(map);
+        mFilterSectionTrend.createInfoContent(map);
 
         try {
             map.put(mFilterSectionMeas.getTab().getText().toUpperCase(Locale.ROOT), ".");
