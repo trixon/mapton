@@ -208,6 +208,26 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     @Override
+    public Double getViewAltitude() {
+        return mMap.getView().getEyePosition().getAltitude();
+    }
+
+    @Override
+    public Double getViewHeading() {
+        return mMap.getView().getHeading().getDegrees();
+    }
+
+    @Override
+    public Double getViewPitch() {
+        return mMap.getView().getPitch().getDegrees();
+    }
+
+    @Override
+    public Double getViewRoll() {
+        return mMap.getView().getRoll().getDegrees();
+    }
+
+    @Override
     public double getZoom() {
         return toGlobalZoom();
     }
@@ -301,6 +321,15 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     @Override
+    public void panTo(double altitude, MLatLon latLon) {
+        if (isInitialized() && SystemHelper.age(mZoomEpoch) > 1000) {
+            mMap.getView().goTo(WWHelper.positionFromLatLon(latLon), altitude);
+//            mMap.getView().stopMovement();
+//            mMap.getView().stopAnimations();
+        }
+    }
+
+    @Override
     public void panTo(MLatLon latLon) {
         if (!isInitialized()) {
             return;
@@ -320,6 +349,26 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void refreshUI() {
+    }
+
+    @Override
+    public void setViewAltitude(Double viewAltitude) {
+        //mMap.getView().setEyePosition(WWHelper.positionFromPosition(mMap.getView().getCurrentEyePosition(), viewAltitude));
+    }
+
+    @Override
+    public void setViewHeading(Double viewHeading) {
+        mMap.getView().setHeading(Angle.fromDegrees(viewHeading));
+    }
+
+    @Override
+    public void setViewPitch(Double viewPitch) {
+        mMap.getView().setPitch(Angle.fromDegrees(viewPitch));
+    }
+
+    @Override
+    public void setViewRoll(Double viewRoll) {
+        mMap.getView().setRoll(Angle.fromDegrees(viewRoll));
     }
 
     private void fitToBounds(Sector sector) {

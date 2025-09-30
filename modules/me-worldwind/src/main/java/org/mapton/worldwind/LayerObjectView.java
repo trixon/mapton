@@ -55,6 +55,7 @@ import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MActivatable;
 import org.mapton.api.MDict;
 import org.mapton.api.MKey;
+import org.mapton.api.MRunnable;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.worldwind.api.LayerBundle;
@@ -296,10 +297,22 @@ public class LayerObjectView extends BorderPane implements MActivatable {
     }
 
     private void initListeners() {
+        var runOnceChecker = new HashSet<MRunnable>();
+
         mTreeView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
             try {
                 var layerBundle = (LayerBundle) getSelectedTreeItem().getValue().getValue("layerBundle");
-                Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES, layerBundle.getOptionsView());
+                var optionsView = layerBundle.getOptionsView();
+                Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES, optionsView);
+                if (optionsView instanceof MRunnable r) {
+                    FxHelper.runLaterDelayed(75, () -> {
+                        if (!runOnceChecker.contains(r)) {
+                            runOnceChecker.add(r);
+                            r.runOnce();
+                        }
+                        r.run();
+                    });
+                }
             } catch (Exception e) {
                 mLayerPropertiesAction.setDisabled(true);
             }

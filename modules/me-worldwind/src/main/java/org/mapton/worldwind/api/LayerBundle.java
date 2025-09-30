@@ -222,19 +222,11 @@ public abstract class LayerBundle {
 
         if (mInitialized) {
             sActivePaintersSet.add(mPainter);
-            new Thread(() -> {
-                if (delay > -1) {
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        //nvm
-                        Thread.currentThread().interrupt();
-                    }
-                }
+            Thread.ofVirtual().name(getClass().getName() + "->repaint").start(() -> {
                 mPainter.run();
                 LayerBundleManager.getInstance().redraw();
                 sActivePaintersSet.remove(mPainter);
-            }, getClass().getName() + "->repaint").start();
+            });
         }
     }
 

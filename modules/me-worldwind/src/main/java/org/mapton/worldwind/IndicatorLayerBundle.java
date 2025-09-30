@@ -16,11 +16,16 @@
 package org.mapton.worldwind;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Renderable;
+import gov.nasa.worldwind.render.airspaces.BasicAirspaceAttributes;
+import gov.nasa.worldwind.render.airspaces.PartialCappedCylinder;
 import java.util.ArrayList;
+import org.mapton.api.MCircleFilterManager;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
+import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 
@@ -30,6 +35,8 @@ import se.trixon.almond.util.GlobalStateChangeEvent;
  */
 public class IndicatorLayerBundle extends LayerBundle {
 
+    private final MCircleFilterManager mCircleFilterManager = MCircleFilterManager.getInstance();
+    private final PartialCappedCylinder mCircleFilterRenderer = new PartialCappedCylinder();
     private GlobalStateChangeEvent mGsce;
     private final RenderableLayer mLayer = new RenderableLayer();
 
@@ -50,6 +57,13 @@ public class IndicatorLayerBundle extends LayerBundle {
         mLayer.setName(Dict.INDICATORS.toString());
         mLayer.setPickEnabled(false);
         setParentLayer(mLayer);
+
+        var attrs = new BasicAirspaceAttributes();
+        attrs.setInteriorMaterial(Material.RED);
+        attrs.setInteriorOpacity(0.3);
+        attrs.setOutlineMaterial(Material.RED);
+        attrs.setOutlineWidth(10);
+        mCircleFilterRenderer.setAttributes(attrs);
     }
 
     private void initListeners() {
@@ -57,6 +71,20 @@ public class IndicatorLayerBundle extends LayerBundle {
             mGsce = gsce;
             repaint(0);
         }, MKey.INDICATOR_LAYER_LOAD);
+
+        mCircleFilterManager.addListener(() -> {
+            if (mCircleFilterManager.isSet()) {
+                var latlon = mCircleFilterManager.getLatLon();
+                var radius = mCircleFilterManager.getRadius();
+                mCircleFilterRenderer.setCenter(WWHelper.positionFromLatLon(latlon));
+                mCircleFilterRenderer.setRadii(radius * 1.5, radius * 100);
+                mCircleFilterRenderer.setAltitudes(0.0, 0.25);
+
+                mLayer.addRenderable(mCircleFilterRenderer);
+            } else {
+                mLayer.removeRenderable(mCircleFilterRenderer);
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -76,6 +104,10 @@ public class IndicatorLayerBundle extends LayerBundle {
                         mLayer.addRenderable(renderable);
                     }
                 }
+            }
+
+            if (mCircleFilterManager.isSet()) {
+                mLayer.addRenderable(mCircleFilterRenderer);
             }
 
             setDragEnabled(false);
