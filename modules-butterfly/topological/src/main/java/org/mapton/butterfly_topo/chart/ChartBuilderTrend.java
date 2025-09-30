@@ -109,7 +109,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
             plot(p, "Första", startDateFirst, LocalDateTime.MIN, Color.BLACK, index++, null);
         }
 
-        plot(p, "Nolla", startDateZero, LocalDateTime.MIN, Color.MAGENTA, index++, null);
+        plot(p, "Noll", startDateZero, LocalDateTime.MIN, Color.MAGENTA, index++, null);
         plot(p, "6m", startDateMinus6m, startDateZero, Color.CYAN, index++, null);
         plot(p, "3m", startDateMinus3m, startDateZero, Color.YELLOW, index++, null);
         plot(p, "1m", startDateMinus1m, startDateZero, Color.ORANGE, index++, null);

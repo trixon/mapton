@@ -18,17 +18,16 @@ package org.mapton.butterfly_topo;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import org.jfree.data.time.Hour;
 import org.jfree.data.time.Minute;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import static org.mapton.butterfly_topo.api.TopoManager.KEY_TRENDS_H;
-import static org.mapton.butterfly_topo.api.TopoManager.KEY_TRENDS_P;
 import org.mapton.ce_jfreechart.api.ChartHelper;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -46,6 +45,7 @@ public class TopoTrendsBuilder extends BTrendsBuilder<BTopoControlPoint> {
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
+        propertyMap.put(getCatKey(cat1, "REFERENSDATUM"), DateHelper.toDateString(p.getDateLatest().toLocalDate()));
         if (p.getDimension() != BDimension._2d) {
             populate(p, BComponent.HEIGHT, cat1, propertyMap);
         }
@@ -56,27 +56,18 @@ public class TopoTrendsBuilder extends BTrendsBuilder<BTopoControlPoint> {
         return propertyMap;
     }
 
-    private LinkedHashMap<String, String> populate(HashMap<String, TrendHelper.Trend> map) {
+    private LinkedHashMap<String, String> populate(HashMap<BTrendPeriod, TrendHelper.Trend> map) {
         var resultMap = new LinkedHashMap<String, String>();
-        var titleMap = Map.of(
-                "1w", "1 vecka",
-                "1m", "1 månad",
-                "3m", "3 månader",
-                "6m", "6 månader",
-                "z", "nollmätning",
-                "f", "första"
-        );
-
         var now = LocalDateTime.now();
         if (map != null) {
             var startMinute = new Minute(0, new Hour());
-            for (var key : List.of("1w", "1m", "3m", "6m", "z", "f")) {
+            for (var key : BTrendPeriod.values()) {
                 var trend = map.get(key);
                 if (trend != null && !trend.startMinute().getDay().equals(startMinute.getDay())) {
                     var val1 = trend.function().getValue(ChartHelper.convertToMinute(now.plusYears(1)).getFirstMillisecond());
                     var val2 = trend.function().getValue(ChartHelper.convertToMinute(now).getFirstMillisecond());
                     var speed = "%+.1f mm/år (%d)".formatted((val1 - val2) * 1000, trend.numOfMeas());
-                    resultMap.put(titleMap.get(key), speed);
+                    resultMap.put(key.getTitle(), speed);
                     startMinute = trend.startMinute();
                 }
             }
@@ -86,7 +77,7 @@ public class TopoTrendsBuilder extends BTrendsBuilder<BTopoControlPoint> {
     }
 
     private void populate(BTopoControlPoint p, BComponent component, String cat1, LinkedHashMap<String, Object> propertyMap) {
-        var trendKey = component == BComponent.HEIGHT ? KEY_TRENDS_H : KEY_TRENDS_P;
+        var trendKey = component == BComponent.HEIGHT ? BKey.TRENDS_H : BKey.TRENDS_P;
         for (var entry : populate(p.getValue(trendKey)).entrySet()) {
             var key = entry.getKey();
             var val = entry.getValue();

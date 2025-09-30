@@ -28,13 +28,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.butterfly_topo.TopoLayerBundle;
-import org.mapton.butterfly_topo.api.TopoManager;
 import static org.mapton.butterfly_topo.graphics.GraphicRendererBase.sMapObjects;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.mapton.worldwind.api.WWHelper;
@@ -201,7 +202,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
     }
 
     private void plot1dVectorTrend(BTopoControlPoint p, Position position) {
-        HashMap<String, TrendHelper.Trend> map = p.getValue(TopoManager.KEY_TRENDS_H);
+        HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(BKey.TRENDS_H);
         var zeroZ = p.getZeroZ();
         if (ObjectUtils.anyNull(map, zeroZ)) {
             return;
@@ -216,7 +217,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
             var key = entry.getKey();
             var material = entry.getValue();
             var trend = map.get(key);
-            if (trend == null || entry.getKey().equalsIgnoreCase("f")) {
+            if (trend == null || entry.getKey() == BTrendPeriod.FIRST) {
                 continue;
             }
 

@@ -31,11 +31,12 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_topo.api.TopoManager;
 import static org.mapton.butterfly_topo.graphics.GraphicRendererBase.sMapObjects;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -45,20 +46,20 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class GraphicRendererTrend extends GraphicRendererBase {
 
-    public static final Map<Integer, String> mIndexToIntervalMap = Map.of(
-            0, "z",
-            1, "6m",
-            2, "3m",
-            3, "1m",
-            4, "1w"
+    public static final Map<Integer, BTrendPeriod> mIndexToIntervalMap = Map.of(
+            0, BTrendPeriod.ZERO,
+            1, BTrendPeriod.HALF_YEAR,
+            2, BTrendPeriod.QUARTER,
+            3, BTrendPeriod.MONTH,
+            4, BTrendPeriod.WEEK
     );
-    public static final Map<String, Material> mIntervalToMaterialMap = Map.of(
-            "1w", Material.RED,
-            "1m", Material.ORANGE,
-            "3m", Material.YELLOW,
-            "6m", Material.CYAN,
-            "z", Material.MAGENTA,
-            "f", Material.BLACK);
+    public static final Map<BTrendPeriod, Material> mIntervalToMaterialMap = Map.of(
+            BTrendPeriod.WEEK, Material.RED,
+            BTrendPeriod.MONTH, Material.ORANGE,
+            BTrendPeriod.QUARTER, Material.YELLOW,
+            BTrendPeriod.HALF_YEAR, Material.CYAN,
+            BTrendPeriod.ZERO, Material.MAGENTA,
+            BTrendPeriod.FIRST, Material.BLACK);
     private double mAltitude;
     private final double maxRadius = 10.0;
 
@@ -90,11 +91,11 @@ public class GraphicRendererTrend extends GraphicRendererBase {
     }
 
     private void plotTrendPie(BTopoControlPoint p, Position position, BDimension dimension, GraphicItem graphicItem) {
-        HashMap<String, TrendHelper.Trend> map;
+        HashMap<BTrendPeriod, TrendHelper.Trend> map;
         if (graphicItem == GraphicItem.TREND_1D_PIE) {
-            map = p.getValue(TopoManager.KEY_TRENDS_H);
+            map = p.getValue(BKey.TRENDS_H);
         } else {
-            map = p.getValue(TopoManager.KEY_TRENDS_P);
+            map = p.getValue(BKey.TRENDS_P);
         }
 
         if ((map == null || isPlotLimitReached(p, graphicItem, position))
@@ -152,9 +153,8 @@ public class GraphicRendererTrend extends GraphicRendererBase {
         final var height = 25.0;
         mAltitude = height * .5;
         var minRadius = 0.1;
-
-        List.of("1w", "1m", "3m", "6m", "z", "f").forEach(key -> {
-            HashMap<String, TrendHelper.Trend> map = p.getValue(component == BComponent.HEIGHT ? TopoManager.KEY_TRENDS_H : TopoManager.KEY_TRENDS_P);
+        for (var key : BTrendPeriod.values()) {
+            HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(component == BComponent.HEIGHT ? BKey.TRENDS_H : BKey.TRENDS_P);
             var radius = minRadius;
             double speed = 0.0;
             if (map != null) {
@@ -222,7 +222,6 @@ public class GraphicRendererTrend extends GraphicRendererBase {
             }
 
             mAltitude = mAltitude + height;
-
-        });
+        }
     }
 }
