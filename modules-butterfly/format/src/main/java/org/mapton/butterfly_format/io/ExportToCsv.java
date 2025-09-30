@@ -63,8 +63,12 @@ public abstract class ExportToCsv {
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
         var schema = mapper.schemaFor(clazz).withHeader().withQuoteChar('"');
+        var objectWriter = mapper.writer(schema);
         var file = new File(destDir, basename + ".csv");
-        mapper.writerFor(clazz).with(schema).writeValues(file).writeAll(list);
-        getLogger().info("%d items exported".formatted(list.size()));
+        try (var sequenceWriter = objectWriter.writeValues(file)) {
+            sequenceWriter.writeAll(list);
+        }
+
+        getLogger().info("%d items exported\t%s".formatted(list.size(), file.getName()));
     }
 }
