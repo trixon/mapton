@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
@@ -75,7 +76,7 @@ public class DistanceLayerBundle extends TopoBaseLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_DistanceAction(), SDict.TOPOGRAPHY.toString(), "DistanceTopComponent");
+        initCommons(Mapton.addWarning(Bundle.CTL_DistanceAction(), 2), SDict.TOPOGRAPHY.toString(), "DistanceTopComponent");
 
         mLayer.setMaxActiveAltitude(16000);
         mSurfaceLayer.setMaxActiveAltitude(16000);

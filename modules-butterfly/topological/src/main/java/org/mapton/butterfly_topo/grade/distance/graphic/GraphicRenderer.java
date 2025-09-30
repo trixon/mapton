@@ -238,7 +238,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         var radius = 1.0;
         var height = Math.abs(z) * 2;
         position = WWHelper.positionFromPosition(position, height / 2.0);
-
+        height = Math.max(height, 0.1);
         RigidShape shape;
         if (z > 0) {
             shape = new Box(position, radius, height, radius);
