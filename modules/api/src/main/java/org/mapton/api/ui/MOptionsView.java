@@ -47,6 +47,7 @@ public abstract class MOptionsView extends BorderPane {
     /**
      *
      * <p>
+     * @param key
      * @return a key with simple class name as prefix
      */
     public String getKey(String key) {
@@ -56,15 +57,7 @@ public abstract class MOptionsView extends BorderPane {
     /**
      *
      * <p>
-     * @return a key with simple class name and filter as prefix
-     */
-    public String getKeyFilter(String key) {
-        return "%s.filter.%s".formatted(getClass().getSimpleName(), key);
-    }
-
-    /**
-     *
-     * <p>
+     * @param key
      * @return a key with simple class name and options as prefix
      */
     public String getKeyOptions(String key) {

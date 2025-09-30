@@ -23,7 +23,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.tools.Borders;
 import se.trixon.almond.util.fx.FxHelper;
@@ -68,6 +68,26 @@ public abstract class MBaseFilterSection {
         return mCheckedTab.getContent();
     }
 
+    /**
+     *
+     * <p>
+     * @param key
+     * @return a key with simple class name as prefix
+     */
+    public String getKey(String key) {
+        return "%s.%s".formatted(getClass().getSimpleName(), key);
+    }
+
+    /**
+     *
+     * <p>
+     * @param key
+     * @return a key with simple class name and filter as prefix
+     */
+    public String getKeyFilter(String key) {
+        return "%s.filter.%s".formatted(getClass().getSimpleName(), key);
+    }
+
     public double getMaxWidth() {
         return mMaxWidth;
     }
@@ -105,7 +125,7 @@ public abstract class MBaseFilterSection {
     }
 
     public String makeInfo(String s, String empty) {
-        return StringUtils.equalsIgnoreCase(s, empty) ? "" : s;
+        return Strings.CS.equals(s, empty) ? "" : s;
     }
 
     public String makeInfoInteger(ObservableList<Integer> list) {
@@ -152,6 +172,24 @@ public abstract class MBaseFilterSection {
     public boolean validateSliderPane(SliderPane sliderPane, double value) {
         if (sliderPane.selectedProperty().get()) {
             return value >= sliderPane.valueProperty().get();
+        } else {
+            return true;
+        }
+    }
+
+    public boolean validateSliderPaneGtEq(SliderPane sliderPane, double value) {
+        if (sliderPane.selectedProperty().get()) {
+            var limit = sliderPane.valueProperty().get();
+            return value >= limit;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean validateSliderPaneLtEq(SliderPane sliderPane, double value) {
+        if (sliderPane.selectedProperty().get()) {
+            var limit = sliderPane.valueProperty().get();
+            return value <= limit;
         } else {
             return true;
         }

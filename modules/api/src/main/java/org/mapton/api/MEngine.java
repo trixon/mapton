@@ -226,6 +226,22 @@ public abstract class MEngine {
 
     public abstract Node getStyleView();
 
+    public Double getViewAltitude() {
+        return .0;
+    }
+
+    public Double getViewHeading() {
+        return .0;
+    }
+
+    public Double getViewPitch() {
+        return .0;
+    }
+
+    public Double getViewRoll() {
+        return .0;
+    }
+
     public double getZoom() {
         Mapton.getLog().i(getClass().getSimpleName(), "getZoom not implemented");
         return 0.2;
@@ -302,6 +318,10 @@ public abstract class MEngine {
         Mapton.getLog().i(getClass().getSimpleName(), "panTo(Zoom) not implemented");
     }
 
+    public void panTo(double zoom, MLatLon latLon) {
+        Mapton.getLog().i(getClass().getSimpleName(), "panTo(Zoom) not implemented");
+    }
+
     /**
      * Used to re-parent SwingNodes
      */
@@ -347,6 +367,18 @@ public abstract class MEngine {
 
     public void setStatusProgress(double progress) {
         Mapton.getGlobalState().put(KEY_STATUS_PROGRESS, progress);
+    }
+
+    public void setViewAltitude(Double viewAltitude) {
+    }
+
+    public void setViewHeading(Double viewHeading) {
+    }
+
+    public void setViewPitch(Double viewPitch) {
+    }
+
+    public void setViewRoll(Double viewRoll) {
     }
 
     public void swapStyle() {

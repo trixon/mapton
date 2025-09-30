@@ -114,6 +114,16 @@ public class Mapton {
         };
     }
 
+    public static String addWarning(String s, int count) {
+        if (count <= 0) {
+            return s;
+        } else if (s == null) {
+            return null;
+        } else {
+            return s + " " + "💀".repeat(count);
+        }
+    }
+
     public static void applyHtmlCss(WebView webView, String filename) {
         WEB_ENGINE_TO_STYLE.put(webView.getEngine(), filename);
         applyHtmlCss(webView.getEngine(), filename);
