@@ -35,7 +35,7 @@ import se.trixon.almond.util.MathHelper;
     "name",
     "description"
 })
-public class BAlarm extends BBase {
+public class BAlarm extends BBasePoint {
 
     private String description;
     private String id;
@@ -162,6 +162,7 @@ public class BAlarm extends BBase {
         private Range<Double> mRatioRange0 = null;
         private Range<Double> mRatioRange1 = null;
         private Range<Double> mRatioRange2 = null;
+        private final ArrayList<BXyzPoint> mPoints = new ArrayList<>();
 
         public Ext() {
         }
@@ -178,6 +179,10 @@ public class BAlarm extends BBase {
             } else {
                 return 2;
             }
+        }
+
+        public ArrayList<BXyzPoint> getPoints() {
+            return mPoints;
         }
 
         public Range<Double> getRange(int rangeIndex) {

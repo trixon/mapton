@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly_format.io.ImportFromCsv;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAreaActivity;
@@ -312,6 +313,14 @@ public class Butterfly {
 
         for (var a : mAlarms) {
             a.ext().populateRanges();
+            a.ext().getPoints().clear();
+            for (ArrayList<? extends BXyzPoint> list : List.of(mTopoControlPoints)) {
+                for (var p : list) {
+                    if (Strings.CS.equalsAny(a.getId(), p.getAlarm1Id(), p.getAlarm2Id())) {
+                        a.ext().getPoints().add(p);
+                    }
+                }
+            }
         }
 
         for (var p : mHydroGroundwaterPoints) {
@@ -332,7 +341,11 @@ public class Butterfly {
         structural().postLoad();
         topo().postLoad();
         geotechnical().postLoad();
-        populateMonmon();
+        try {
+            populateMonmon();
+        } catch (Exception e) {
+//            System.err.println(e.getMessage());
+        }
     }
 
     private void calcFreqHighBuffer(BXyzPoint p) {
