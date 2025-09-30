@@ -39,28 +39,36 @@ public abstract class QuickNavAction implements ActionListener {
 
     protected void get() {
         var quickNav = mGson.fromJson(mOptions.get(PREFIX + mId), QuickNav.class);
-
         if (quickNav != null) {
-            Mapton.getEngine().panTo(new MLatLon(quickNav.lat, quickNav.lon), quickNav.zoom);
+            var engine = Mapton.getEngine();
+//            if (quickNav.altitude != 0) {
+//                engine.panTo(quickNav.altitude, new MLatLon(quickNav.lat, quickNav.lon));
+//            } else {
+//                engine.panTo(new MLatLon(quickNav.lat, quickNav.lon), quickNav.zoom);
+//            }
+            engine.setViewHeading(quickNav.heading);
+            engine.setViewPitch(quickNav.pitch);
+//            engine.setViewRoll(quickNav.roll);
+            engine.panTo(quickNav.altitude, new MLatLon(quickNav.lat, quickNav.lon));
         }
     }
 
     protected void set() {
-        var latLon = Mapton.getEngine().getCenter();
-        var quickNav = new QuickNav(latLon.getLatitude(), latLon.getLongitude(), Mapton.getEngine().getZoom());
+        var engine = Mapton.getEngine();
+        var latLon = engine.getCenter();
+        var quickNav = new QuickNav(
+                latLon.getLatitude(),
+                latLon.getLongitude(),
+                engine.getZoom(),
+                engine.getViewAltitude(),
+                engine.getViewHeading(),
+                engine.getViewPitch(),
+                engine.getViewRoll()
+        );
         mOptions.put(PREFIX + mId, mGson.toJson(quickNav));
     }
 
-    public class QuickNav {
+    public record QuickNav(double lat, double lon, double zoom, double altitude, double heading, double pitch, double roll) {
 
-        private double lat;
-        private double lon;
-        private double zoom;
-
-        public QuickNav(double lat, double lon, double zoom) {
-            this.lat = lat;
-            this.lon = lon;
-            this.zoom = zoom;
-        }
     }
 }
