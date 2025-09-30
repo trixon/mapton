@@ -321,9 +321,9 @@ public class LabelBy {
         }
     }
 
-    public static String trend(BXyzPoint p, BTrendPeriod period, String key) {
+    public static String trend(BXyzPoint p, BTrendPeriod period, BComponent component) {
         var result = "-";
-        HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(key);
+        HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(component == BComponent.HEIGHT ? BKey.TRENDS_H : BKey.TRENDS_P);
         if (map != null) {
             var trend = map.get(period);
             if (trend != null) {
