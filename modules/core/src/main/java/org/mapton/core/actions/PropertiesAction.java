@@ -31,7 +31,7 @@ import org.openide.util.NbBundle;
         displayName = "#CTL_PropertiesAction"
 )
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "D-T"),
+    @ActionReference(path = "Shortcuts", name = "D-E"),
     @ActionReference(path = "Menu/MapTools", position = 1400)
 })
 @NbBundle.Messages({

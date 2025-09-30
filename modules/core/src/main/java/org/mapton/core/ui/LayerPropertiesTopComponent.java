@@ -50,7 +50,7 @@ import se.trixon.almond.util.fx.control.LogPanel;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "properties", openAtStartup = false, position = 200)
+@TopComponent.Registration(mode = "topLeft", openAtStartup = false, position = 0)
 public final class LayerPropertiesTopComponent extends MTopComponent {
 
     public LayerPropertiesTopComponent() {
