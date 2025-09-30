@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.tools.Borders;
@@ -47,6 +49,8 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
 
     private final ResourceBundle mBundle = NbBundle.getBundle(BFilterSectionTrend.class);
     private TrendComponent mHeightComponent;
+    private SessionComboBox<BTrendPeriod> mPeriodAbsScb;
+    private SessionComboBox<BTrendPeriod> mPeriodRelScb;
     private TrendComponent mPlaneComponent;
     private final GridPane mRoot = new GridPane(columnGap, rowGap);
 
@@ -55,6 +59,8 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
 
         createUI();
         setContent(mRoot);
+        mPeriodAbsScb.getSelectionModel().select(0);
+        loadPeriodRelative();
     }
 
     @Override
@@ -104,8 +110,14 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
     }
 
     public void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
+        mPeriodAbsScb.valueProperty().addListener((p, o, n) -> {
+            loadPeriodRelative();
+        });
+
         List.of(
-                selectedProperty()
+                selectedProperty(),
+                mPeriodAbsScb.getSelectionModel().selectedItemProperty(),
+                mPeriodRelScb.getSelectionModel().selectedItemProperty()
         ).forEach(propertyBase -> propertyBase.addListener(changeListener));
 
         mHeightComponent.initListeners(changeListener, listChangeListener);
@@ -120,11 +132,15 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
         sessionManager.register(getKeyFilter("section"), selectedProperty());
+        sessionManager.register(getKeyFilter("period1"), mPeriodAbsScb.selectedIndexProperty());
+        sessionManager.register(getKeyFilter("period2"), mPeriodRelScb.selectedIndexProperty());
         mHeightComponent.initSession(sessionManager);
         mPlaneComponent.initSession(sessionManager);
     }
 
     public void load() {
+        mPeriodAbsScb.load();
+        mPeriodRelScb.load();
         mHeightComponent.load();
         mPlaneComponent.load();
     }
@@ -137,14 +153,36 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
     public void reset(PropertiesConfiguration filterConfig) {
         mHeightComponent.reset();
         mPlaneComponent.reset();
+        mPeriodAbsScb.getSelectionModel().selectFirst();
+        mPeriodRelScb.getSelectionModel().selectFirst();
     }
 
     private void createUI() {
+        mPeriodAbsScb = new SessionComboBox<>();
+        mPeriodAbsScb.getItems().setAll(BTrendPeriod.values());
+        mPeriodRelScb = new SessionComboBox<>();
         mHeightComponent = new TrendComponent(BComponent.HEIGHT);
         mPlaneComponent = new TrendComponent(BComponent.PLANE);
         int row = 0;
+        mRoot.addRow(row++, new VBox(new Label("Period"), mPeriodAbsScb), new VBox(new Label("Differensperiod"), mPeriodRelScb));
         mRoot.addRow(row++, mHeightComponent, mPlaneComponent);
         FxHelper.autoSizeColumn(mRoot, 2);
+        FxHelper.autoSizeRegionHorizontal(mPeriodAbsScb, mPeriodRelScb);
+    }
+
+    private void loadPeriodRelative() {
+        mPeriodRelScb.getItems().clear();
+        var afterSelected = false;
+        for (var period : BTrendPeriod.values()) {
+            if (afterSelected) {
+                mPeriodRelScb.getItems().add(period);
+            }
+            if (!afterSelected && period == mPeriodAbsScb.getValue()) {
+                afterSelected = true;
+            }
+        }
+
+        mPeriodRelScb.getSelectionModel().selectFirst();
     }
 
     private boolean validateAbs(BXyzPoint p, TrendComponent trendComponent) {
@@ -153,7 +191,7 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             return false;
         }
 
-        var trend = map.get(trendComponent.mAbsPeriodScb.getValue());
+        var trend = map.get(mPeriodAbsScb.getValue());
         if (trend == null) {
             return false;
         }
@@ -168,8 +206,8 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
 
     private boolean validateRel(BXyzPoint p, TrendComponent trendComponent) {
         var slider = trendComponent.mRelSliderPane;
-        var begPeriod = trendComponent.mRelPeriodScb.getValue();
-        var endPeriod = trendComponent.mAbsPeriodScb.getValue();
+        var begPeriod = mPeriodRelScb.getValue();
+        var endPeriod = mPeriodAbsScb.getValue();
 
         HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(trendComponent.getKey());
         if (map == null) {
@@ -198,22 +236,15 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
 
     class TrendComponent extends BorderPane {
 
-        private final SessionComboBox<BTrendPeriod> mAbsPeriodScb;
         private final SliderPane mAbsSliderPane = new SliderPane("Årshastighet (mm/år)", 100, true, true, 1d);
         private final SessionCheckBox mActiveScbx;
         private final BComponent mComponent;
-        private final SessionComboBox<BTrendPeriod> mRelPeriodScb;
-        private final SliderPane mRelSliderPane = new SliderPane("Differens", -100, 100d, true, true, 1d);
+        private final SliderPane mRelSliderPane = new SliderPane("Differens (period-differensperiod)", -100, 100d, true, true, 1d);
 
         public TrendComponent(BComponent component) {
             mComponent = component;
             mActiveScbx = new SessionCheckBox(mComponent.getDimension().getName() + "d");
-            mAbsPeriodScb = new SessionComboBox<>();
-            mAbsPeriodScb.getItems().setAll(BTrendPeriod.values());
-            mRelPeriodScb = new SessionComboBox<>();
             createUI();
-            mAbsPeriodScb.getSelectionModel().select(0);
-            loadTrend2();
         }
 
         private void clear() {
@@ -222,21 +253,19 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         }
 
         private void createUI() {
-            setTop(mActiveScbx);
+//            setTop(mActiveScbx);
             int rowGap = FxHelper.getUIScaled(8);
 
             var gp = new GridPane(rowGap, rowGap);
             int col = 0;
             gp.addColumn(col++,
                     mAbsSliderPane,
-                    mAbsPeriodScb,
-                    mRelSliderPane,
-                    mRelPeriodScb
+                    mRelSliderPane
             );
 
             var borderNode = Borders.wrap(gp)
                     .etchedBorder()
-                    //.title(mDimension.getName() + "d")
+                    .title(mComponent.getDimension().getName() + "d")
                     .innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding)
                     .outerPadding(FxHelper.getUIScaled(6.0), 0, 0, 0)
                     .raised()
@@ -245,11 +274,7 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
 
             borderNode.disableProperty().bind(mActiveScbx.selectedProperty().not());
             FxHelper.autoSizeColumn(gp, 1);
-            FxHelper.autoSizeRegionHorizontal(mAbsPeriodScb, mRelPeriodScb);
             setCenter(borderNode);
-
-            mAbsPeriodScb.disableProperty().bind(mAbsSliderPane.selectedProperty().not().and(mRelSliderPane.selectedProperty().not()));
-            mRelPeriodScb.disableProperty().bind(mRelSliderPane.selectedProperty().not());
         }
 
         private String getKey() {
@@ -257,20 +282,12 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         }
 
         private void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
-            mAbsPeriodScb.valueProperty().addListener((p, o, n) -> {
-                if (mRelSliderPane.isSelected()) {
-                    loadTrend2();
-                }
-            });
-
             List.of(
                     mActiveScbx.selectedProperty(),
                     mAbsSliderPane.selectedProperty(),
                     mAbsSliderPane.valueProperty(),
                     mRelSliderPane.selectedProperty(),
-                    mRelSliderPane.valueProperty(),
-                    mAbsPeriodScb.getSelectionModel().selectedItemProperty(),
-                    mRelPeriodScb.getSelectionModel().selectedItemProperty()
+                    mRelSliderPane.valueProperty()
             ).forEach(propertyBase -> propertyBase.addListener(changeListener));
         }
 
@@ -279,8 +296,6 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             sessionManager.register(getKeyFilter(mode + "active"), mActiveScbx.selectedProperty());
             mAbsSliderPane.initSession(getKeyFilter(mode + "valueAbsolute"), sessionManager);
             mRelSliderPane.initSession(getKeyFilter(mode + "valueCompare"), sessionManager);
-            sessionManager.register(getKeyFilter(mode + "period1"), mAbsPeriodScb.selectedIndexProperty());
-            sessionManager.register(getKeyFilter(mode + "period2"), mRelPeriodScb.selectedIndexProperty());
         }
 
         private boolean isActivated() {
@@ -292,32 +307,13 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         }
 
         private boolean isActivatedRel() {
-            return isActivated() && mRelSliderPane.isSelected() && !mRelPeriodScb.getItems().isEmpty();
+            return isActivated() && mRelSliderPane.isSelected() && !mPeriodRelScb.getItems().isEmpty();
         }
 
         private void load() {
-            mAbsPeriodScb.load();
-            mRelPeriodScb.load();
-        }
-
-        private void loadTrend2() {
-            mRelPeriodScb.getItems().clear();
-            var afterSelected = false;
-            for (var period : BTrendPeriod.values()) {
-                if (afterSelected) {
-                    mRelPeriodScb.getItems().add(period);
-                }
-                if (!afterSelected && period == mAbsPeriodScb.getValue()) {
-                    afterSelected = true;
-                }
-            }
-//
-            mRelPeriodScb.getSelectionModel().selectFirst();
         }
 
         private void reset() {
-            mAbsPeriodScb.getSelectionModel().selectFirst();
-            mRelPeriodScb.getSelectionModel().selectFirst();
             mActiveScbx.setSelected(false);
             mAbsSliderPane.setSelected(false);
             mRelSliderPane.setSelected(false);
