@@ -38,6 +38,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.locationtech.jts.geom.Coordinate;
@@ -155,7 +156,7 @@ public class RulerTab extends Tab {
         mMeasureTool.addPropertyChangeListener(propertyChangeEvent -> {
             final String propertyName = propertyChangeEvent.getPropertyName();
 
-            if (StringUtils.equalsAny(propertyName, MeasureTool.EVENT_POSITION_ADD, MeasureTool.EVENT_POSITION_REMOVE, MeasureTool.EVENT_POSITION_REPLACE)) {
+            if (Strings.CS.equalsAny(propertyName, MeasureTool.EVENT_POSITION_ADD, MeasureTool.EVENT_POSITION_REMOVE, MeasureTool.EVENT_POSITION_REPLACE)) {
                 updatePoints();
             } else if (propertyName.equals(MeasureTool.EVENT_ARMED)) {
                 var cursor = Cursor.getDefaultCursor();
@@ -291,13 +292,13 @@ public class RulerTab extends Tab {
         }
 
         String wkt;
-        if (StringUtils.equalsAny(mMeasureTool.getMeasureShapeType(), MeasureTool.SHAPE_LINE, MeasureTool.SHAPE_PATH)) {
+        if (Strings.CS.equalsAny(mMeasureTool.getMeasureShapeType(), MeasureTool.SHAPE_LINE, MeasureTool.SHAPE_PATH)) {
             wkt = mGeometryFactory.createLineString(coordinates).toString();
         } else {
             wkt = mGeometryFactory.createPolygon(coordinates).toString();
         }
 
-        if (!StringUtils.equals(mStoredWkt, wkt)) {
+        if (!Strings.CS.equals(mStoredWkt, wkt)) {
             mStoredWkt = wkt;
             Mapton.getGlobalState().put(MKey.RULER_WKT, wkt);
         }

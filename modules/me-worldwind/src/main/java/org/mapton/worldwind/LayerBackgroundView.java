@@ -38,6 +38,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
@@ -294,7 +295,7 @@ public class LayerBackgroundView extends BorderPane {
                         .forEachOrdered(s -> {
                             var menuItem = new RadioMenuItem(s.getName());
                             menuItem.setToggleGroup(toggleGroup);
-                            menuItem.setSelected(StringUtils.equalsIgnoreCase(mPreferences.get(getKey(), null), s.getId()));
+                    menuItem.setSelected(Strings.CI.equals(mPreferences.get(getKey(), null), s.getId()));
                             menuItem.setOnAction(actionEvent -> {
                                 mPreferences.put(getKey(), s.getId());
                                 load();

@@ -21,7 +21,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.TransferMode;
 import javafx.scene.text.Font;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.MDataSource;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -80,7 +80,7 @@ public class DataSourceTab extends Tab {
                 if (mDropExts == null) {
                     append(file);
                 } else {
-                    if (StringUtils.equalsAnyIgnoreCase(FilenameUtils.getExtension(file.getName()), mDropExts)) {
+                    if (Strings.CI.equalsAny(FilenameUtils.getExtension(file.getName()), mDropExts)) {
                         append(file);
                     }
                 }

@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import javafx.geometry.Point3D;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.time.FastDateFormat;
 import se.trixon.almond.util.ext.GrahamScan;
 
@@ -336,16 +337,16 @@ public abstract class MKmlCreator {
     }
 
     private String cleanNS2(String kmlString) {
-        kmlString = StringUtils.replace(kmlString, "xmlns:ns2=", "xmlns=");
-        kmlString = StringUtils.replace(kmlString, "<ns2:", "<");
-        kmlString = StringUtils.replace(kmlString, "</ns2:", "</");
+        kmlString = Strings.CS.replace(kmlString, "xmlns:ns2=", "xmlns=");
+        kmlString = Strings.CS.replace(kmlString, "<ns2:", "<");
+        kmlString = Strings.CS.replace(kmlString, "</ns2:", "</");
 
         return kmlString;
     }
 
     private String cleanSpace(String kmlString) {
-        kmlString = StringUtils.replace(kmlString, "        ", "\t");
-        kmlString = StringUtils.replace(kmlString, "    ", "\t");
+        kmlString = Strings.CS.replace(kmlString, "        ", "\t");
+        kmlString = Strings.CS.replace(kmlString, "    ", "\t");
 
         return kmlString;
     }

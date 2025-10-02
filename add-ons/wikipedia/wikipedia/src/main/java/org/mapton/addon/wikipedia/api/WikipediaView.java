@@ -35,6 +35,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.MasterDetailPane;
 import org.jsoup.Jsoup;
 import static org.mapton.addon.wikipedia.Module.LOG_TAG;
@@ -190,9 +191,9 @@ public final class WikipediaView extends BorderPane {
                 Image image = mImageCache.computeIfAbsent(thumbnail, k -> new Image(article.getThumbnail(), mMaxSize, mMaxSize, true, true, true));
                 String dim;
                 final String lowerCaseThumbnail = thumbnail.toLowerCase();
-                if (StringUtils.containsIgnoreCase(lowerCaseThumbnail, ".jpg/")) {
+                if (Strings.CI.contains(lowerCaseThumbnail, ".jpg/")) {
                     dim = StringUtils.substringBetween(lowerCaseThumbnail, ".jpg/", "px-");
-                } else if (StringUtils.containsIgnoreCase(lowerCaseThumbnail, ".png/")) {
+                } else if (Strings.CI.contains(lowerCaseThumbnail, ".png/")) {
                     dim = StringUtils.substringBetween(lowerCaseThumbnail, ".png/", "px-");
                 } else {
                     dim = StringUtils.substringBetween(lowerCaseThumbnail, ".svg/", "px-");

@@ -18,7 +18,7 @@ package org.mapton.poi_trv_ti;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.mapton.api.MPoi;
@@ -170,7 +170,7 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                     if ( //                        (weatherStation.getRoadNumberNumeric() != null && weatherStation.getRoadNumberNumeric() > 0)
                             //                        (weatherStation.isActive() != null && !weatherStation.isActive())
                             (weatherStation.isDeleted() != null && weatherStation.isDeleted())
-                            || StringUtils.endsWith(weatherStation.getName(), " Fjärryta")) {
+                            || Strings.CS.endsWith(weatherStation.getName(), " Fjärryta")) {
                         continue;
                     }
 

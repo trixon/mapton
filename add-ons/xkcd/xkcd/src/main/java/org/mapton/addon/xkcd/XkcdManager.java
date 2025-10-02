@@ -16,7 +16,7 @@
 package org.mapton.addon.xkcd;
 
 import java.io.IOException;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jsoup.Jsoup;
@@ -112,7 +112,7 @@ public class XkcdManager {
 
         Elements metaTags = doc.getElementsByTag("meta");
         for (Element metaTag : metaTags) {
-            if (StringUtils.equalsIgnoreCase(metaTag.attr("property"), "og:url")) {
+            if (Strings.CI.equals(metaTag.attr("property"), "og:url")) {
                 mUrl = metaTag.attr("content");
                 mIndex = Integer.parseInt(mUrl.replaceAll("\\D+", ""));
             }

@@ -28,7 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.openide.modules.Places;
 
 /**
@@ -50,7 +50,7 @@ public class Db {
 
     private Db() {
         mDbFile = new File(Places.getUserDirectory(), "mapton_02" + DB_POSTFIX);
-        mConnString = "jdbc:h2:%s;DEFRAG_ALWAYS=true".formatted(StringUtils.removeEnd(mDbFile.getAbsolutePath(), DB_POSTFIX));
+        mConnString = "jdbc:h2:%s;DEFRAG_ALWAYS=true".formatted(Strings.CS.removeEnd(mDbFile.getAbsolutePath(), DB_POSTFIX));
         mSpec = new DbSpec();
         init();
     }

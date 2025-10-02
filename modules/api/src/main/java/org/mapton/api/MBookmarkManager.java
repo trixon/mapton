@@ -39,7 +39,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.mapton.api.db.DbBaseManager;
@@ -130,7 +130,7 @@ public class MBookmarkManager extends DbBaseManager {
 
     public synchronized void dbDelete(String category) throws ClassNotFoundException, SQLException {
         for (MBookmark bookmark : mItemsProperty.get()) {
-            if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+            if (Strings.CS.startsWith(bookmark.getCategory(), category)) {
                 mDb.delete(mTable, mId, bookmark.getId());
             }
         }
@@ -336,7 +336,7 @@ public class MBookmarkManager extends DbBaseManager {
         ArrayList<MLatLon> latLons = new ArrayList<>();
 
         mItemsProperty.get().stream()
-                .filter((bookmark) -> (StringUtils.startsWith(bookmark.getCategory(), category)))
+                .filter((bookmark) -> (Strings.CS.startsWith(bookmark.getCategory(), category)))
                 .forEachOrdered((bookmark) -> {
                     latLons.add(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()));
                 });

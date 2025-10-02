@@ -25,7 +25,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.openide.util.Exceptions;
 
 /**
@@ -77,7 +77,7 @@ public class MFileWatcher {
                     var oldValue = mFileToDigest.get(file);
                     try {
                         var newValue = mDigestUtils.digestAsHex(file);
-                        if (!StringUtils.equals(newValue, oldValue)) {
+                        if (!Strings.CS.equals(newValue, oldValue)) {
                             mFileToDigest.put(file, newValue);
                             fileWatcherListener.onFileChange(file);
                         }

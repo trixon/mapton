@@ -16,7 +16,7 @@
 package org.mapton.worldwind.api;
 
 import java.util.ArrayList;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.MKey;
 import org.mapton.api.MWmsStyle;
 import org.mapton.api.Mapton;
@@ -82,7 +82,7 @@ public abstract class MapStyle {
         }
 
         for (MapStyle mapStyle : styles) {
-            if (StringUtils.equals(mapStyle.getId(), id)) {
+            if (Strings.CS.equals(mapStyle.getId(), id)) {
                 return mapStyle;
             }
         }

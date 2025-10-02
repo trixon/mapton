@@ -25,7 +25,7 @@ import java.util.Comparator;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import javafx.beans.property.SimpleObjectProperty;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 import se.trixon.almond.util.fx.control.DateSelectionMode;
 
@@ -119,7 +119,7 @@ public class MTemporalManager {
         var subSet = new ConcurrentHashMap<String, MTemporalRange>();
 
         for (var key : mRanges.keySet()) {
-            if (StringUtils.startsWith(key, prefix)) {
+            if (Strings.CS.startsWith(key, prefix)) {
                 subSet.put(key, mRanges.get(key));
             }
         }
@@ -188,7 +188,7 @@ public class MTemporalManager {
     public synchronized void removeAll(String prefix) {
         var keys = new ArrayList<String>();
         for (var key : mRanges.keySet()) {
-            if (StringUtils.startsWith(key, prefix)) {
+            if (Strings.CS.startsWith(key, prefix)) {
                 keys.add(key);
             }
         }

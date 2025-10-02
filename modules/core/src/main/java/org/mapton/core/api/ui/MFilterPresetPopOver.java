@@ -25,7 +25,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
@@ -67,7 +67,7 @@ public class MFilterPresetPopOver extends MPopOver {
         createUI();
         try {
             var presets = Arrays.stream(mPreferences.childrenNames())
-                    .sorted((o1, o2) -> StringUtils.compareIgnoreCase(o1, o2))
+                    .sorted((o1, o2) -> Strings.CI.compare(o1, o2))
                     .map(s -> {
                         return new DefaultEditableListItem(s);
                     })
@@ -166,7 +166,7 @@ public class MFilterPresetPopOver extends MPopOver {
             item.setName(panel.getPresetName());
             if (!getItems().contains(item)) {
                 getItems().add(item);
-                getItems().sort((o1, o2) -> StringUtils.compareIgnoreCase(o1.getName(), o2.getName()));
+                getItems().sort((o1, o2) -> Strings.CI.compare(o1.getName(), o2.getName()));
             }
             try {
                 mPreferences.node(item.getName()).removeNode();

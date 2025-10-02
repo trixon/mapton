@@ -32,6 +32,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MCommandBoxItem;
@@ -198,9 +199,9 @@ public class CommandBoxView extends BorderPane {
 
         private void addContent(Action action) {
             String text = action.getText();
-            if (StringUtils.endsWith(text, ")<")) {
+            if (Strings.CS.endsWith(text, ")<")) {
                 setText(StringUtils.substringBefore(text, " ("));
-                setTooltip(new Tooltip(StringUtils.removeEnd(text, "<")));
+                setTooltip(new Tooltip(Strings.CS.removeEnd(text, "<")));
             } else {
                 setText(text);
             }

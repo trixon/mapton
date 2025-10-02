@@ -18,6 +18,7 @@ package org.mapton.api;
 import java.time.LocalDate;
 import javafx.util.Pair;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 /**
  *
@@ -45,7 +46,7 @@ public class MDateFormula {
         var now = LocalDate.now();
         var startDate = LocalDate.MIN;
         var endDate = LocalDate.MAX;
-        if (StringUtils.equalsIgnoreCase(mode, "L")) {
+        if (Strings.CI.equals(mode, "L")) {
             var value = Integer.parseInt(items[1]);
             var unit = items[2];
             endDate = now;
@@ -61,7 +62,7 @@ public class MDateFormula {
                 default ->
                     throw new AssertionError();
             }
-        } else if (StringUtils.equalsIgnoreCase(mode, "C")) {
+        } else if (Strings.CI.equals(mode, "C")) {
             var unit = items[1];
             switch (unit) {
                 case "M" ->
@@ -72,7 +73,7 @@ public class MDateFormula {
                     throw new AssertionError();
             }
             endDate = now;
-        } else if (StringUtils.equalsIgnoreCase(mode, "P")) {
+        } else if (Strings.CI.equals(mode, "P")) {
             var unit = items[1];
             switch (unit) {
                 case "M" -> {

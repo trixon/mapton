@@ -28,9 +28,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.tools.Borders;
-import se.trixon.almond.nbp.FileChooserHelper;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MCrsManager;
 import org.mapton.api.MDict;
@@ -43,6 +42,7 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.FileChooserHelper;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
@@ -102,7 +102,7 @@ public class ExportPanel extends FxDialogPanel {
             mExporterComboBox.getItems().setAll(getExportProviders());
             var first = getExportProviders().getFirst();
             var exporter = getExportProviders().stream()
-                    .filter(e -> StringUtils.equals(e.getName(), mPreferences.get("activeExporter", "")))
+                    .filter(e -> Strings.CS.equals(e.getName(), mPreferences.get("activeExporter", "")))
                     .findFirst().orElse(null);
             mExporterComboBox.getSelectionModel().select(exporter != null ? exporter : first);
         }
@@ -182,7 +182,7 @@ public class ExportPanel extends FxDialogPanel {
 
             if (file == null) {
                 return file;
-            } else if (!StringUtils.equalsIgnoreCase(FilenameUtils.getExtension(file.getName()), filter.getExtensions()[0])) {
+            } else if (!Strings.CI.equals(FilenameUtils.getExtension(file.getName()), filter.getExtensions()[0])) {
                 var s = "%s.%s".formatted(file.getAbsolutePath(), filter.getExtensions()[0]);
                 return new File(s);
             }

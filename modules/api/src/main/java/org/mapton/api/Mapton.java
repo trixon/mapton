@@ -34,6 +34,7 @@ import javafx.scene.web.WebView;
 import javafx.util.Duration;
 import javax.swing.JComponent;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.glyphfont.FontAwesome;
@@ -137,7 +138,7 @@ public class Mapton {
         var file = InstalledFileLocator.getDefault().locate(path, codeNameBase, false);
 
         if (isNightMode()) {
-            path = StringUtils.replace(path, ".css", "_dark.css");
+            path = Strings.CS.replace(path, ".css", "_dark.css");
             var darkFile = InstalledFileLocator.getDefault().locate(path, codeNameBase, false);
             file = darkFile.isFile() ? darkFile : file;
         }
@@ -217,7 +218,7 @@ public class Mapton {
     public static synchronized MEngine getEngine() {
         for (var mapEngine : Lookup.getDefault().lookupAll(MEngine.class)) {
             try {
-                if (StringUtils.equalsIgnoreCase(mapEngine.getName(), options().getEngine())) {
+                if (Strings.CI.equals(mapEngine.getName(), options().getEngine())) {
                     mapEngine.initEngine();
 
                     return mapEngine;
@@ -339,8 +340,8 @@ public class Mapton {
     }
 
     public static String replaceSubstring(String s) {
-        if (StringUtils.contains(s, ":::REPLACEME:::")) {
-            s = StringUtils.remove(s, ":::REPLACEME");
+        if (Strings.CS.contains(s, ":::REPLACEME:::")) {
+            s = Strings.CS.remove(s, ":::REPLACEME");
             var id = StringUtils.substringBetween(s, ":::");
             var replacer = Lookup.getDefault().lookupAll(MReplacer.class)
                     .stream()
@@ -351,7 +352,7 @@ public class Mapton {
                 return s;
             } else {
                 var replacement = replacer.get().getValue();
-                s = StringUtils.replace(s, ":::" + id + ":::", replacement);
+                s = Strings.CS.replace(s, ":::" + id + ":::", replacement);
 
                 return s;
             }

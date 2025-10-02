@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MKey;
 import org.mapton.api.MWmsStyle;
@@ -50,7 +51,7 @@ public class LayerMapStyleManager extends MBaseDataManager<MapStyle> {
     }
 
     public MapStyle getById(String id) {
-        return getAllItems().stream().filter(s -> StringUtils.equalsIgnoreCase(id, s.getId())).findAny().orElse(null);
+        return getAllItems().stream().filter(s -> Strings.CI.equals(id, s.getId())).findAny().orElse(null);
     }
 
     @Override

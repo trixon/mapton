@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 /**
  *
@@ -67,7 +67,7 @@ public abstract class PropertiesBuilder<T> {
             var entry = iterator.next();
             var key = entry.getKey();
             for (var value : values) {
-                if (key != null && StringUtils.containsIgnoreCase(key, value)) {
+                if (key != null && Strings.CI.contains(key, value)) {
                     iterator.remove();
                     break;
                 }
@@ -81,7 +81,7 @@ public abstract class PropertiesBuilder<T> {
             var entry = iterator.next();
             var key = entry.getKey();
             for (var value : values) {
-                if (key != null && StringUtils.startsWithIgnoreCase(key, value)) {
+                if (key != null && Strings.CI.startsWith(key, value)) {
                     iterator.remove();
                     break;
                 }
@@ -94,7 +94,7 @@ public abstract class PropertiesBuilder<T> {
         while (iterator.hasNext()) {
             var entry = iterator.next();
             Object value = entry.getValue();
-            if (value != null && StringUtils.equalsAnyIgnoreCase(value.toString(), values)) {
+            if (value != null && Strings.CI.equalsAny(value.toString(), values)) {
                 iterator.remove();
             }
         }
@@ -106,7 +106,7 @@ public abstract class PropertiesBuilder<T> {
             var entry = iterator.next();
             Object value = entry.getValue();
             for (var value1 : values) {
-                if (value != null && StringUtils.containsIgnoreCase(value.toString(), value1)) {
+                if (value != null && Strings.CI.contains(value.toString(), value1)) {
                     iterator.remove();
                     break;
                 }
@@ -120,7 +120,7 @@ public abstract class PropertiesBuilder<T> {
             var entry = iterator.next();
             Object value = entry.getValue();
             for (var value1 : values) {
-                if (value != null && StringUtils.startsWithIgnoreCase(value.toString(), value1)) {
+                if (value != null && Strings.CI.startsWith(value.toString(), value1)) {
                     iterator.remove();
                     break;
                 }

@@ -16,6 +16,7 @@
 package org.mapton.api.ui.forms;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 /**
  *
@@ -24,13 +25,13 @@ import org.apache.commons.lang3.StringUtils;
 public class FormHelper {
 
     public static Double ltGtToNegPos(String s) {
-        s = StringUtils.replace(s, ",", ".");
+        s = Strings.CS.replace(s, ",", ".");
 
-        if (StringUtils.equalsIgnoreCase(s, "= 0")) {
+        if (Strings.CI.equals(s, "= 0")) {
             return 0d;
-        } else if (StringUtils.startsWith(s, "<")) {
+        } else if (Strings.CS.startsWith(s, "<")) {
             return Double.parseDouble(StringUtils.substringAfter(s, " ")) * -1;
-        } else if (StringUtils.startsWith(s, ">")) {
+        } else if (Strings.CS.startsWith(s, ">")) {
             return Double.valueOf(StringUtils.substringAfter(s, " "));
         } else {
             return Double.valueOf(s);
@@ -43,7 +44,7 @@ public class FormHelper {
         if (value == 0) {
             return "= 0";
         } else if (value < 0) {
-            return StringUtils.replace(s, "-", "<= ");
+            return Strings.CS.replace(s, "-", "<= ");
         } else {
             return ">= " + s;
         }
@@ -55,7 +56,7 @@ public class FormHelper {
         if (value == 0) {
             return "= 0";
         } else if (value < 0) {
-            return StringUtils.replace(s, "-", "<= ");
+            return Strings.CS.replace(s, "-", "<= ");
         } else {
             return ">= " + s;
         }

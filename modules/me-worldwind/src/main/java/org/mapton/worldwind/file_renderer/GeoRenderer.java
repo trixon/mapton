@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import javafx.geometry.Point2D;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.MCoordinateFile;
 import org.mapton.api.MLatLon;
 import org.mapton.api.file_opener.GeoCoordinateFileOpener;
@@ -125,7 +126,7 @@ public class GeoRenderer extends CoordinateFileRendererWW {
         for (int i = 0; i < geoLine.getPoints().size(); i++) {
             var geoPoint = geoLine.getPoints().get(i);
             var p = mCooTrans.toWgs84(geoPoint.getX(), geoPoint.getY());
-            if (!StringUtils.equalsIgnoreCase(geoPoint.getSpecialCode(), "R")) {
+            if (!Strings.CI.equals(geoPoint.getSpecialCode(), "R")) {
                 straightPositions.add(Position.fromDegrees(p.getY(), p.getX(), elevation));
             } else {
                 if (!straightPositions.isEmpty()) {
@@ -248,7 +249,7 @@ public class GeoRenderer extends CoordinateFileRendererWW {
             }
 
             for (var geoPoint : geoLine.getPoints()) {
-                if (StringUtils.equalsIgnoreCase(geoPoint.getSpecialCode(), "C")) {
+                if (Strings.CI.equals(geoPoint.getSpecialCode(), "C")) {
                     geoPoints.add(geoPoint);
                 }
 
@@ -258,7 +259,7 @@ public class GeoRenderer extends CoordinateFileRendererWW {
                     positions.add(Position.fromDegrees(p.getY(), p.getX(), elevation));
                 }
 
-                if (StringUtils.equalsIgnoreCase(geoPoint.getSpecialCode(), "R")) {
+                if (Strings.CI.equals(geoPoint.getSpecialCode(), "R")) {
                     ordinaryLine = false;
                 }
             }
@@ -284,10 +285,10 @@ public class GeoRenderer extends CoordinateFileRendererWW {
                 var p = mCooTrans.toWgs84(geoPoint.getX(), geoPoint.getY());
                 var position = Position.fromDegrees(p.getY(), p.getX());
 
-                if (StringUtils.equalsIgnoreCase(geoPoint.getSpecialCode(), "C")) {
-                    String remark = StringUtils.replace(geoPoint.getRemark(), "_", " ");
+                if (Strings.CI.equals(geoPoint.getSpecialCode(), "C")) {
+                    String remark = Strings.CS.replace(geoPoint.getRemark(), "_", " ");
                     var raw = StringUtils.split(remark, " ");
-                    var raw2 = StringUtils.replace(raw[0], ",", ".");
+                    var raw2 = Strings.CS.replace(raw[0], ",", ".");
                     double r = Double.parseDouble(raw2);
 
                     var cappedCylinder = new CappedCylinder(position, r);

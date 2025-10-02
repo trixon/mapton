@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MCoordinateFileInput;
 import org.mapton.api.MCoordinateFileOpener;
@@ -59,7 +59,7 @@ class FileOpenerItemListCell extends ListCell<MCoordinateFileInput> {
         mItem = item;
         mCoordinateFileOpenerComboBox.setValue(item.getCoordinateFileOpener());
 
-        if (StringUtils.equalsAnyIgnoreCase(mExt, "grid", "kml", "kmz")) {
+        if (Strings.CI.equalsAny(mExt, "grid", "kml", "kmz")) {
             mCooTransComboBox.setValue(MCooTrans.getCooTrans("WGS 84"));
         } else {
             mCooTransComboBox.setValue(item.getCooTrans());
@@ -98,7 +98,7 @@ class FileOpenerItemListCell extends ListCell<MCoordinateFileInput> {
             }
         });
 
-        if (StringUtils.equalsAnyIgnoreCase(mExt, "grid", "kml", "kmz")) {
+        if (Strings.CI.equalsAny(mExt, "grid", "kml", "kmz")) {
             mCooTransComboBox.setDisable(true);
         }
 

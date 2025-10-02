@@ -41,6 +41,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MArea;
 import org.mapton.api.MAreaFilterManager;
@@ -153,7 +154,7 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
     }
 
     public String makeInfo(String s, String empty) {
-        return StringUtils.equalsIgnoreCase(s, empty) ? "" : s;
+        return Strings.CI.equals(s, empty) ? "" : s;
     }
 
     public String makeInfoInteger(ObservableList<Integer> list) {

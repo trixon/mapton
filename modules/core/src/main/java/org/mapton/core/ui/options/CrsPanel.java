@@ -32,7 +32,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.mapton.api.MCrsManager;
@@ -193,9 +193,9 @@ final class CrsPanel extends javax.swing.JPanel {
                 dov = crs.getDomainOfValidity().getDescription().toString(Locale.getDefault());
             }
 
-            return StringUtils.containsIgnoreCase(crs.toWKT(), filterText)
-                    || StringUtils.containsIgnoreCase(crs.getName().toString(), filterText)
-                    || StringUtils.containsIgnoreCase(dov, filterText);
+            return Strings.CI.contains(crs.toWKT(), filterText)
+                    || Strings.CI.contains(crs.getName().toString(), filterText)
+                    || Strings.CI.contains(dov, filterText);
         }
 
         @SuppressWarnings("unchecked")

@@ -38,7 +38,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.mapton.api.MDict;
@@ -278,7 +278,7 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
             mPrecipitationTile.setUnit(hasValue ? "mm/h" : "");
 
             String description = precipitation.getAmountName();
-            if (StringUtils.equalsAnyIgnoreCase(precipitation.getType(), "Hagel", "Underkylt regn")) {
+            if (Strings.CI.equalsAny(precipitation.getType(), "Hagel", "Underkylt regn")) {
                 description = precipitation.getType();
             }
             mPrecipitationTile.setDescription(getMessage(description));

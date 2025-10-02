@@ -17,7 +17,7 @@ package org.mapton.core.ui.news;
 
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 public class NewsView extends HBox {
 
@@ -25,8 +25,8 @@ public class NewsView extends HBox {
     private final AppNewsSection mStaticNewsSection = new AppNewsSection();
 
     public NewsView() {
-        var displayDynamic = StringUtils.equalsIgnoreCase(System.getProperty("mapton.news.dynamic", "false"), "true");
-        var displayStatic = StringUtils.equalsIgnoreCase(System.getProperty("mapton.news.static", "true"), "true");
+        var displayDynamic = Strings.CI.equals(System.getProperty("mapton.news.dynamic", "false"), "true");
+        var displayStatic = Strings.CI.equals(System.getProperty("mapton.news.static", "true"), "true");
 
         if (displayDynamic) {
             getChildren().add(mDynamicNewsSection);

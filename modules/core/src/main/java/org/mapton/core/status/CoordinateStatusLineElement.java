@@ -19,7 +19,7 @@ import java.awt.Component;
 import java.awt.Font;
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MEngine;
 import org.mapton.api.MOptions;
@@ -98,7 +98,7 @@ public class CoordinateStatusLineElement implements StatusLineElementProvider {
                         //nvm
                     }
 
-                    mLabel.setText(StringUtils.removeStart(text, ", , "));
+                    mLabel.setText(Strings.CS.removeStart(text, ", , "));
                 }
             } else {
                 mLabel.setText("");

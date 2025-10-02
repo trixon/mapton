@@ -34,6 +34,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.Mapton;
 import org.mapton.api.report.MSplitNavSettings.TitleMode;
@@ -317,7 +318,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
                 break;
 
             case NAME_WITH_PARENT:
-                if (StringUtils.contains(item.getParent(), "/")) {
+                if (Strings.CS.contains(item.getParent(), "/")) {
                     titlePrefix = StringUtils.substringAfterLast(item.getParent(), "/");
                 } else {
                     titlePrefix = item.getParent();

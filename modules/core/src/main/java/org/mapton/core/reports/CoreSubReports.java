@@ -15,7 +15,7 @@
  */
 package org.mapton.core.reports;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.Mapton;
 import org.mapton.api.report.MSubReport;
 import org.mapton.api.report.MSubReports;
@@ -37,7 +37,7 @@ public class CoreSubReports extends MSubReports {
     public void subInit() {
         Lookup.getDefault().lookupAll(MSubReport.class).stream()
                 .sorted(getComparator())
-                .filter(subReport -> (StringUtils.equals(subReport.getCategory(), Mapton.LOG_TAG)))
+                .filter(subReport -> (Strings.CS.equals(subReport.getCategory(), Mapton.LOG_TAG)))
                 .forEachOrdered(subReport -> {
                     getListView().getItems().add(subReport);
                 });

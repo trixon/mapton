@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
 import java.util.TreeSet;
 import javafx.application.Platform;
 import javax.swing.SwingUtilities;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
@@ -104,14 +104,14 @@ public class BookmarkEditor {
 
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 String newCategory = categoryPanel.getCategory();
-                if (!StringUtils.equals(category, newCategory)) {
+                if (!Strings.CS.equals(category, newCategory)) {
                     var timestamp = new Timestamp(System.currentTimeMillis());
 
                     TreeSet<String> bookmarkNames = new TreeSet<>();
                     for (var bookmark : mManager.getItems()) {
-                        if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+                        if (Strings.CS.startsWith(bookmark.getCategory(), category)) {
                             String oldCategory = bookmark.getCategory();
-                            bookmark.setCategory(StringUtils.replaceOnce(bookmark.getCategory(), category, newCategory));
+                            bookmark.setCategory(Strings.CS.replaceOnce(bookmark.getCategory(), category, newCategory));
                             bookmark.setTimeModified(timestamp);
                             try {
                                 mManager.dbUpdate(bookmark);
@@ -150,7 +150,7 @@ public class BookmarkEditor {
                 var timestamp = new Timestamp(System.currentTimeMillis());
 
                 for (var bookmark : mManager.getItems()) {
-                    if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+                    if (Strings.CS.startsWith(bookmark.getCategory(), category)) {
                         bookmark.setColor(color);
                         bookmark.setTimeModified(timestamp);
                         try {
@@ -182,7 +182,7 @@ public class BookmarkEditor {
                 var timestamp = new Timestamp(System.currentTimeMillis());
 
                 for (var bookmark : mManager.getItems()) {
-                    if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+                    if (Strings.CS.startsWith(bookmark.getCategory(), category)) {
                         bookmark.setZoom(zoom);
                         bookmark.setTimeModified(timestamp);
                         try {

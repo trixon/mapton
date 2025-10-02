@@ -31,6 +31,7 @@ import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TreeItem;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.CheckModel;
 import org.controlsfx.control.CheckTreeView;
 import org.locationtech.jts.geom.Coordinate;
@@ -99,7 +100,7 @@ public class MAreaFilterManager {
     }
 
     public void clearByPrefix(String prefix) {
-        getItems().removeAll(getItems().stream().filter(area -> StringUtils.startsWith(area.getKey(), prefix)).toList());
+        getItems().removeAll(getItems().stream().filter(area -> Strings.CS.startsWith(area.getKey(), prefix)).toList());
     }
 
     public ObservableList<TreeItem<MArea>> getCheckedItems() {

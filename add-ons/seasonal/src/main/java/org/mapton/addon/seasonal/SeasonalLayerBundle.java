@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.mapton.api.MKey;
 import org.mapton.api.MSimpleObjectStorageManager;
@@ -71,7 +71,7 @@ public class SeasonalLayerBundle extends LayerBundle {
         final String today = FastDateFormat.getInstance("yyyyMMdd").format(new Date(System.currentTimeMillis()));
         if (ArrayUtils.contains(fettisdagar, today)) {
             refresh(new MardiGrasRenderer(mLayer));
-        } else if (Arrays.stream(halloween).anyMatch(s -> StringUtils.endsWith(today, s))) {
+        } else if (Arrays.stream(halloween).anyMatch(s -> Strings.CS.endsWith(today, s))) {
             refresh(new HalloweenRenderer(mLayer));
         }
     }

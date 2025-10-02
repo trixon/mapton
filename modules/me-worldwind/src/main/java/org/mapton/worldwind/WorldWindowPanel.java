@@ -68,6 +68,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.MDict;
 import org.mapton.api.MKey;
 import static org.mapton.api.MKey.*;
@@ -481,7 +482,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private void updateOverlays() {
         getLayers().removeAll(getLayers().stream().filter(layer -> {
             var s = Objects.toString(layer.getValue(ModuleOptions.KEY_MAP_OVERLAYS), "");
-            return StringUtils.equalsIgnoreCase(s, "1");
+            return Strings.CI.equals(s, "1");
         }).toList());
 
         var storedOverlays = StringUtils.split(mOptions.get(ModuleOptions.KEY_MAP_OVERLAYS, ""), ",");

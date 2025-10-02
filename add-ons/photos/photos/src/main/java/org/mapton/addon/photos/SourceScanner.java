@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.addon.photos.api.MapoCollection;
 import org.mapton.addon.photos.api.MapoPhoto;
 import org.mapton.addon.photos.api.MapoSource;
@@ -225,11 +226,11 @@ public class SourceScanner {
             if (mExcludePatterns != null) {
                 for (var excludePattern : mExcludePatterns) {
                     if (IOCase.SYSTEM.isCaseSensitive()) {
-                        if (StringUtils.contains(dir.toString(), excludePattern)) {
+                        if (Strings.CS.contains(dir.toString(), excludePattern)) {
                             return FileVisitResult.SKIP_SUBTREE;
                         }
                     } else {
-                        if (StringUtils.containsIgnoreCase(dir.toString(), excludePattern)) {
+                        if (Strings.CI.contains(dir.toString(), excludePattern)) {
                             return FileVisitResult.SKIP_SUBTREE;
                         }
                     }
@@ -253,7 +254,7 @@ public class SourceScanner {
                         boolean exclude = false;
                         if (mExcludePatterns != null) {
                             for (var excludePattern : mExcludePatterns) {
-                                if (StringUtils.contains(file.getAbsolutePath(), excludePattern)) {
+                                if (Strings.CS.contains(file.getAbsolutePath(), excludePattern)) {
                                     exclude = true;
                                     break;
                                 }

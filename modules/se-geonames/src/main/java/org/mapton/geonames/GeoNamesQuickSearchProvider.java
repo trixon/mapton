@@ -15,7 +15,7 @@
  */
 package org.mapton.geonames;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.MLatLon;
 import org.mapton.api.Mapton;
 import org.mapton.geonames.api.CountryManager;
@@ -34,7 +34,7 @@ public class GeoNamesQuickSearchProvider implements SearchProvider {
     @Override
     public void evaluate(SearchRequest request, SearchResponse response) {
         for (Geoname g : GeonamesManager.getInstance().getGeonames()) {
-            if (StringUtils.containsIgnoreCase(String.join("/", g.getAsciiName(), g.getName(), g.getAlternateNames(), CountryManager.getInstance().getCodeNameMap().getOrDefault(g.getCountryCode(), "")), request.getText())) {
+            if (Strings.CI.contains(String.join("/", g.getAsciiName(), g.getName(), g.getAlternateNames(), CountryManager.getInstance().getCodeNameMap().getOrDefault(g.getCountryCode(), "")), request.getText())) {
                 if (!response.addResult(() -> {
                     Mapton.getEngine().panTo(new MLatLon(g.getLatitude(), g.getLongitude()), 0.5);
                 }, g.getName())) {

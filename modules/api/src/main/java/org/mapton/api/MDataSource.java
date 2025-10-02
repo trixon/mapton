@@ -21,7 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.prefs.Preferences;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.openide.util.NbPreferences;
 
 /**
@@ -46,8 +46,8 @@ public class MDataSource {
         var content = sPreferences.get(key, defaultContent);
         var absolutePath = file.getAbsolutePath();
 
-        if (!StringUtils.containsIgnoreCase(content, absolutePath)) {
-            var addRow = !content.isEmpty() && !StringUtils.endsWith(content, "\n");
+        if (!Strings.CI.contains(content, absolutePath)) {
+            var addRow = !content.isEmpty() && !Strings.CS.endsWith(content, "\n");
             var prefix = addRow ? "\n" : "";
 
             sPreferences.put(key, content + prefix + absolutePath + "\n");

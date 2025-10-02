@@ -26,7 +26,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MCoordinateFileInput;
 import org.mapton.api.MCoordinateFileOpener;
@@ -78,7 +78,7 @@ public class ExtTab extends Tab {
         mCooTransComboBox.setItems(mCooTransComboBox.getItems().sorted());
         mCooTransComboBox.getSelectionModel().select(MOptions.getInstance().getMapCooTrans());
 
-        if (StringUtils.equalsAnyIgnoreCase(mExt, "grid", "kml", "kmz")) {
+        if (Strings.CI.equalsAny(mExt, "grid", "kml", "kmz")) {
             mCooTransComboBox.setValue(MCooTrans.getCooTrans("WGS 84"));
             mCooTransComboBox.setDisable(true);
         }

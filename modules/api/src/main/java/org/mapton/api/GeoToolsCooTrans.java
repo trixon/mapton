@@ -16,7 +16,7 @@
 package org.mapton.api;
 
 import javafx.geometry.Point2D;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.geometry.Position;
 import org.geotools.api.referencing.FactoryException;
@@ -109,7 +109,7 @@ public class GeoToolsCooTrans implements MCooTrans {
 
     @Override
     public String getName() {
-        return StringUtils.removeStart(mTargetCrs.getName().toString(), "EPSG:");
+        return Strings.CS.removeStart(mTargetCrs.getName().toString(), "EPSG:");
     }
 
     public CoordinateReferenceSystem getProjectedCrs() {
