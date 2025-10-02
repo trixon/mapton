@@ -105,8 +105,19 @@
 
         <!-- Other -->
         <dependency>
-            <groupId>com.github.pcmehlitz</groupId>
-            <artifactId>worldwind-pcm</artifactId>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt-main</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all-main</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>earth.worldwind</groupId>
+            <artifactId>wwj-ce</artifactId>
+            <version>2.3.1</version>
         </dependency>
     </dependencies>
     <properties>
