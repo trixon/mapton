@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+export JAVA_HOME="$APPDIR/usr/lib/jre/"
+exec "$APPDIR/usr/bin/mapton" --jdkhome "$APPDIR/usr/lib/jre" "$@"
+disown
+exit 0

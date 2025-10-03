@@ -1,7 +1,7 @@
 name: mapton
 title: Mapton
-base: core22
-version: '3.1.0'
+base: core24
+version: 'REPLACE_WITH_VERSION'
 summary: Some kind of map application
 description: |
     **Mapton is an open-source map application** for Linux, MacOS and Windows that lets you explore the world.
@@ -33,7 +33,8 @@ description: |
     https://twitter.com/mapton_app
 
 grade: stable
-architectures: [ amd64 ]
+platforms:
+    amd64:
 confinement: strict
 icon: snap/gui/mapton.png
 license: Apache-2.0
@@ -59,9 +60,9 @@ parts:
       - mapton
     plugin: nil
     override-prime: |
+      craftctl default
         sed -i 's/${HOME}\/.${APPNAME}/${SNAP_USER_COMMON}\/.mapton/' /root/prime/mapton/bin/mapton
         sed -i 's/${HOME}\/.cache\/${APPNAME}/${SNAP_USER_COMMON}\/.cache\/mapton/' /root/prime/mapton/bin/mapton
-        rm -r /root/prime/mapton/platform/modules/lib/i386
-        rm -r /root/prime/mapton/platform/modules/lib/x86
-        rm /root/prime/mapton/platform/lib/*.dll
-        rm /root/prime/mapton/platform/lib/*.exe
+
+lint:
+  ignore: [library]

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Mapton
+Comment=Some kind of map application
+Exec=mapton %F
+Icon=org.mapton.Mapton
+Terminal=false
+Categories=Education;
+StartupNotify=true
+StartupWMClass=Mapton
+
