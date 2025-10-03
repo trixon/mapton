@@ -19,7 +19,7 @@
         <dependency>
             <groupId>se.trixon.netbeans-platform</groupId>
             <artifactId>runtime-container</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>27</version>
             <type>pom</type>
         </dependency>
         <dependency>
