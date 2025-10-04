@@ -74,7 +74,7 @@ public class ModuleOptions extends OptionsBase {
     static final boolean DEFAULT_MAP_GLOBE = true;
     static final double DEFAULT_MAP_OPACITY = 1.0;
     static final int DEFAULT_MAP_PROJECTION = 1;
-    static final String DEFAULT_MAP_STYLE = "at.eox.osm";
+    static final String DEFAULT_MAP_STYLE = "com.microsoft.ve-a";
     static final String DEFAULT_MASK_COLOR = "ffffff";
     static final float DEFAULT_MASK_OPACITY = 0.5f;
 
