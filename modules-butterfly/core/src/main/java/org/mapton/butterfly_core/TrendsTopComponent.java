@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui;
+package org.mapton.butterfly_core;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -53,7 +53,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "properties", openAtStartup = false, position = 100)
+@TopComponent.Registration(mode = "topLeft", openAtStartup = false, position = 100)
 public final class TrendsTopComponent extends MTopComponent {
 
     public TrendsTopComponent() {
