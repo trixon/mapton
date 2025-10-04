@@ -49,14 +49,11 @@
         <module>modules/api</module>
         <module>modules/core</module>
         <module>modules/editors</module>
-        <module>modules/google-maps</module>
         <module>modules/maintenance</module>
         <module>modules/poi-ww</module>
         <module>modules/reports</module>
 
         <!--Map engines-->
-        <module>modules/me-gmapsfx</module>
-        <module>modules/me-jxmapviewer2</module>
         <module>modules/me-worldwind</module>
 
         <!--POI providers-->
@@ -69,13 +66,11 @@
         <!--Search engines-->
         <module>modules/se-bookmarks</module>
         <module>modules/se-geonames</module>
-        <module>modules/se-google</module>
         <module>modules/se-nominatim</module>
         <module>modules/se-poi</module>
 
         <!--WMS-->
         <module>modules/wms-bing</module>
-        <module>modules/wms-eox</module>
         <module>modules/wms-gothenburg</module>
         <module>modules/wms-lantmateriet</module>
         <module>modules/wms-nasa</module>
@@ -91,8 +86,6 @@
         <module>add-ons/notes/notes</module>
         <module>add-ons/photos/photos</module>
         <module>add-ons/seasonal</module>
-        <module>add-ons/wikipedia/wikipedia-ww</module>
-        <module>add-ons/wikipedia/wikipedia</module>
         <module>add-ons/xkcd/xkcd</module>
 
         <!--POI data sources-->
@@ -163,11 +156,6 @@
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>datasources</artifactId>
-                <version>${mapton.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mapton</groupId>
-                <artifactId>google-maps</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>

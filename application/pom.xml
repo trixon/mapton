@@ -57,23 +57,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>google-maps</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>maintenance</artifactId>
         </dependency>
 
         <!--Mapton/Map engines-->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>me-gmapsfx</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>me-jxmapviewer2</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>me-worldwind</artifactId>
@@ -111,11 +98,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>se-google</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>se-nominatim</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -125,11 +107,6 @@
         </dependency>
 
         <!--Mapton/WMS sources-->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>wms-eox</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wms-bing</artifactId>
@@ -204,16 +181,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-xkcd</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-wikipedia</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-wikipedia-ww</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
