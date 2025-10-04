@@ -7,7 +7,7 @@
         <version>25.09x</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>api</artifactId>
+    <artifactId>mapton-api</artifactId>
     <packaging>nbm</packaging>
     <build>
         <plugins>

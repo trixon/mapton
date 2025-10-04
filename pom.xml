@@ -100,12 +100,12 @@
             <!-- Mapton -->
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>api</artifactId>
+                <artifactId>mapton-api</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>core</artifactId>
+                <artifactId>mapton-core</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>

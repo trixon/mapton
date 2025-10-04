@@ -102,11 +102,11 @@
         <!-- Mapton -->
         <dependency>
             <groupId>org.mapton</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>mapton-api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>mapton-core</artifactId>
         </dependency>
 
         <!-- Trixon -->

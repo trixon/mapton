@@ -7,7 +7,7 @@
         <version>25.09x</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>core</artifactId>
+    <artifactId>mapton-core</artifactId>
     <packaging>nbm</packaging>
     <build>
         <plugins>
@@ -160,7 +160,7 @@
         <!-- Mapton -->
         <dependency>
             <groupId>org.mapton</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>mapton-api</artifactId>
         </dependency>
 
         <!-- Trixon -->
