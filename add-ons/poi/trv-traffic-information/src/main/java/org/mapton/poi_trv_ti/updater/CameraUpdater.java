@@ -46,7 +46,7 @@ public class CameraUpdater extends BaseUpdater {
             }
         });
 
-        setAutoUpdateInterval(FREQ_1_WEEK);
+        setAutoUpdateInterval(FREQ_1_HOUR);
         initAutoUpdater();
     }
 

@@ -38,21 +38,20 @@ import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
-import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.mapton.api.MDict;
 import org.mapton.api.MGenericLoader;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.trv_traffic_information.road.weatherstation.v1.WeatherStation;
+import se.trixon.trv_traffic_information.road.weathermeasurepoint.v2_1.Observation;
+import se.trixon.trv_traffic_information.road.weathermeasurepoint.v2_1.WeatherMeasurepoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class WeatherView extends BorderPane implements MGenericLoader<WeatherStation> {
+public class WeatherView extends BorderPane implements MGenericLoader<WeatherMeasurepoint> {
 
     private static final double TILE_HEIGHT = FxHelper.getUIScaled(150.0);
     private static final double TILE_WIDTH = FxHelper.getUIScaled(150.0);
@@ -75,27 +74,22 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
     }
 
     @Override
-    public void load(WeatherStation weatherStation) {
+    public void load(WeatherMeasurepoint weatherMeasurepoint) {
         FxHelper.runLater(() -> {
-            var measurement = weatherStation.getMeasurement();
-
-            mTitleLabel.setText("%s %d, %s".formatted(
-                    MDict.ROAD.toString(),
-                    weatherStation.getRoadNumberNumeric(),
-                    weatherStation.getName()
-            ));
+            var observation = weatherMeasurepoint.getObservation();
+            mTitleLabel.setText(weatherMeasurepoint.getName());
 
             var time = "NODATA";
-            if (measurement != null) {
-                var offsetDateTime = OffsetDateTime.parse(measurement.getMeasureTime().toString());
+            if (observation != null) {
+                var offsetDateTime = OffsetDateTime.parse(observation.getSample().toString());
                 var measLocalDateTime = offsetDateTime.atZoneSameInstant(mZoneOffset).toLocalDateTime();
                 time = measLocalDateTime.format(mDtf);
 
-                loadTemperature(weatherStation);
-                loadPreciptation(weatherStation);
-                loadHumidity(weatherStation);
-                loadWind(weatherStation);
-                loadImage(weatherStation);
+                loadTemperature(observation);
+                loadPreciptation(observation);
+                loadHumidity(observation);
+                loadWind(observation);
+                loadImage(weatherMeasurepoint);
             } else {
                 mAirTemperatureTile.setValue(999);
                 setTooltipText(mAirTemperatureTile, "");
@@ -219,14 +213,14 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
         System.out.println("-".repeat(20));
     }
 
-    private void debug(WeatherStation weatherStation) {
+    private void debug(WeatherMeasurepoint weatherMeasurepoint) {
         System.out.println("*".repeat(80));
 //        debug(weatherStation);
-//        debug(weatherStation.getMeasurement());
-//        debug(weatherStation.getMeasurement().getAir());
-        debug(weatherStation.getMeasurement().getPrecipitation());
-//        debug(weatherStation.getMeasurement().getRoad());
-//        debug(weatherStation.getMeasurement().getWind());
+//        debug(weatherStation.getObservation());
+//        debug(weatherStation.getObservation().getAir());
+//        debug(weatherMeasurepoint.getObservation().getPrecipitation());
+//        debug(weatherStation.getObservation().getRoad());
+//        debug(weatherStation.getObservation().getWind());
     }
 
     private Image getImageForIconId(String iconId) {
@@ -250,66 +244,73 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
         }
     }
 
-    private void loadHumidity(WeatherStation weatherStation) {
+    private void loadHumidity(Observation observation) {
         try {
-            mAirHumidityTile.setValue(weatherStation.getMeasurement().getAir().getRelativeHumidity());
+            var value = observation.getAir().getRelativeHumidity().getValue().getValue().doubleValue();
+            mAirHumidityTile.setValue(value);
         } catch (NullPointerException e) {
             mAirHumidityTile.setValue(-1);
         }
     }
 
-    private void loadImage(WeatherStation weatherStation) {
-        String url = mManager.getCameraGroupToPhotoUrl().getOrDefault(weatherStation.getId(), null);
+    private void loadImage(WeatherMeasurepoint weatherMeasurepoint) {
+        String url = mManager.getCameraGroupToPhotoUrl().getOrDefault(weatherMeasurepoint.getId(), null);
         var image = url != null ? new Image(url) : mNullImage;
 
         mCameraImageTile.setImage(image);
     }
 
-    private void loadPreciptation(WeatherStation weatherStation) {
-        var precipitation = weatherStation.getMeasurement().getPrecipitation();
+    private void loadPreciptation(Observation observation) {
+        var precipitation = observation.getAggregated30Minutes().getPrecipitation();
+//        var precipType = observation.getWeather().getPrecipitation();
+        var amount = precipitation.getTotalWaterEquivalent().getValue().getValue();
+        var hasValue = amount != null;
 
         try {
-            final Float amount = precipitation.getAmount();
-            var hasValue = amount != null;
-            if (amount != null) {
-                mPrecipitationTile.setValue(amount);
+            if (hasValue) {
+                mPrecipitationTile.setValue(amount.doubleValue());
             }
             mPrecipitationTile.setValueVisible(hasValue);
             mPrecipitationTile.setUnit(hasValue ? "mm/h" : "");
 
-            String description = precipitation.getAmountName();
-            if (Strings.CI.equalsAny(precipitation.getType(), "Hagel", "Underkylt regn")) {
-                description = precipitation.getType();
-            }
-            mPrecipitationTile.setDescription(getMessage(description));
+//            if (Strings.CI.equalsAny(precipitation.getType(), "Hagel", "Underkylt regn")) {
+//                description = precipitation.getType();
+//            }
+            mPrecipitationTile.setDescription(getMessage(WeatherHelper.getPrecipType(precipitation)));
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
 
         mPrecipitationTile.setImage(getImageForIconId(mManager.getIconUrl(precipitation)));
-        setTooltipText(mPrecipitationTile, precipitation);
+        setTooltipText(mPrecipitationTile, "precipitation");
     }
 
-    private void loadTemperature(WeatherStation weatherStation) {
-        var measurement = weatherStation.getMeasurement();
-        var hasValue = measurement.getAir() != null;
+    private void loadTemperature(Observation observation) {
+        var hasValue = observation.getAir() != null;
         if (hasValue) {
-            mAirTemperatureTile.setValue(measurement.getAir().getTemp());
+            mAirTemperatureTile.setValue(observation.getAir().getTemperature().getValue().getValue().doubleValue());
         }
 
         mAirTemperatureTile.setValueVisible(hasValue);
         mAirTemperatureTile.setUnit(hasValue ? "°C" : "");
-        setTooltipText(mAirTemperatureTile, measurement.getAir());
+        setTooltipText(mAirTemperatureTile, observation.getAir());
     }
 
-    private void loadWind(WeatherStation weatherStation) {
-        var wind = weatherStation.getMeasurement().getWind();
-        if (wind != null) {
-            var hasValue = wind.getForce() != null;
+    private void loadWind(Observation observation) {
+        var windCondition = observation.getWind().getFirst();
+        if (windCondition != null) {
+            var hasValue = windCondition.getSpeed() != null;
             if (hasValue) {
-                mWindTile.setValue(wind.getForce());
-                mWindTile.setDescription("%s: %.1f m/s".formatted("Max", wind.getForceMax()));
-                mWindTile.setImage(getImageForIconId(mManager.getIconUrl(wind)));
+                var speed = windCondition.getSpeed().getValue().getValue().doubleValue();
+                mWindTile.setValue(speed);
+                mWindTile.setImage(getImageForIconId(mManager.getIconUrl(windCondition)));
+                var windAgg = observation.getAggregated30Minutes().getWind();
+                try {
+                    var speedMax = windAgg.getSpeedMax().getValue().getValue().doubleValue();
+                    mWindTile.setDescription("%s: %.1f m/s".formatted("Max", speedMax));
+                } catch (Exception e) {
+                    //
+                }
             } else {
                 mWindTile.setValue(-1);
                 mWindTile.setDescription("");
@@ -320,7 +321,7 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
             mWindTile.setUnit(hasValue ? "m/s" : "");
         }
 
-        setTooltipText(mWindTile, wind);
+        setTooltipText(mWindTile, "wind");
     }
 
     private void setTooltipText(Tile tile, Object o) {

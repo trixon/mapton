@@ -28,10 +28,11 @@ import org.mapton.api.MServiceKeyManager;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.Direction;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.trv_traffic_information.TrafficInformation;
-import se.trixon.trv_traffic_information.road.weatherstation.v1.Precipitation;
-import se.trixon.trv_traffic_information.road.weatherstation.v1.Wind;
+import se.trixon.trv_traffic_information.road.weathermeasurepoint.v2_1.PrecipitationConditionAggregated;
+import se.trixon.trv_traffic_information.road.weathermeasurepoint.v2_1.WindCondition;
 
 /**
  *
@@ -42,10 +43,11 @@ public class TrafficInformationManager {
     private final File mCacheDir;
     private final ConcurrentHashMap<String, String> mCameraGroupToPhotoUrl = new ConcurrentHashMap<>();
     private HashMap<File, Long> mFileToTimestamp = new HashMap<>();
-    private List<se.trixon.trv_traffic_information.road.camera.v1.RESULT> mResultsCamera;
+    private List<se.trixon.trv_traffic_information.road.camera.v1_1.RESULT> mResultsCamera;
     private List<se.trixon.trv_traffic_information.road.parking.v1_4.RESULT> mResultsParking;
     private List<se.trixon.trv_traffic_information.road.trafficsafetycamera.v1.RESULT> mResultsTrafficSafetyCamera;
-    private List<se.trixon.trv_traffic_information.road.weatherstation.v1.RESULT> mResultsWeatherStation;
+    private List<se.trixon.trv_traffic_information.road.weathermeasurepoint.v2_1.RESULT> mResultsWeatherMeasurepoint;
+    private List<se.trixon.trv_traffic_information.road.weatherobservation.v2_1.RESULT> mResultsWeatherObservation;
     private HashMap<Service, File> mServiceToFile = new HashMap<>();
     private final TrafficInformation mTrafficInformation;
 
@@ -76,62 +78,93 @@ public class TrafficInformationManager {
         return mServiceToFile.computeIfAbsent(service, k -> new File(mCacheDir, service.getFilename()));
     }
 
-    public String getIconUrl(Wind wind) {
-        return "%s%s.png".formatted(SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), wind.getDirectionIconId());
+    public String getIconUrl(WindCondition windCondition) {
+        var azimuth = windCondition.getDirection().getValue().getValue();
+        var direction = Direction.fromAzimuth(azimuth);
+
+        return "%swind%s.png".formatted(SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), direction.getShortName());
     }
 
-    public String getIconUrl(Precipitation precipitation) {
-        String basename = "NoData";
-        switch (precipitation.getAmountName()) {
-            case "Givare saknas/Fel på givare":
-                break;
-            case "Lätt regn":
-                basename = "LightRain";
-                break;
-            case "Måttligt regn":
-                basename = "ModerateRain";
-                break;
-            case "Kraftigt regn":
-                basename = "HeavyRain";
-                break;
-            case "Lätt snöblandat regn":
-                basename = "LightSleet";
-                break;
-            case "Måttligt snöblandat regn":
-                basename = "ModerateSleet";
-                break;
-            case "Kraftigt snöblandat regn":
-                basename = "HeavySleet";
-                break;
-            case "Lätt snöfall":
-                basename = "LightSnow";
-                break;
-            case "Måttligt snöfall":
-                basename = "ModerateSnow";
-                break;
-            case "Kraftigt snöfall":
-                basename = "HeavySnow";
-                break;
-            case "Annan nederbördstyp":
-                basename = "NoData";
-                break;
+    public String getIconUrl(PrecipitationConditionAggregated precipitation) {
+        var basename = "NoData";
+        basename = "NoPrecipitation";
+        var total = 2 * precipitation.getTotalWaterEquivalent().getValue().getValue().doubleValue();
 
-            case "Ingen nederbörd":
-                basename = "NoPrecipitation";
-                break;
+        if (total > 0) {
+            var rain = precipitation.getRain().isValue();
+            var snow = precipitation.getSnow().isValue();
+            String type = "";
+            if (rain && snow) {
+                type = "Sleet";
+            } else if (rain) {
+                type = "Rain";
+            } else if (snow) {
+                type = "Snow";
+            }
 
-            case "Okänd nederbördstyp":
-                basename = "NoData";
-                break;
-
-            default:
-                throw new AssertionError();
+            String amount = null;
+            if (total > 4) {
+                amount = "Heavy";
+            } else if (total > 0.5) {
+                amount = "Moderate";
+            } else {
+                amount = "Light";
+            }
+            basename = amount + type;
         }
 
         return "%sprecipitation%s.png".formatted(SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), basename);
+
+//        precipitation.
+//        switch (precipitation.toString()) {
+//            case "Givare saknas/Fel på givare":
+//                break;
+//            case "Lätt regn":
+//                basename = "LightRain";
+//                break;
+//            case "Måttligt regn":
+//                basename = "ModerateRain";
+//                break;
+//            case "Kraftigt regn":
+//                basename = "HeavyRain";
+//                break;
+//            case "Lätt snöblandat regn":
+//                basename = "LightSleet";
+//                break;
+//            case "Måttligt snöblandat regn":
+//                basename = "ModerateSleet";
+//                break;
+//            case "Kraftigt snöblandat regn":
+//                basename = "HeavySleet";
+//                break;
+//            case "Lätt snöfall":
+//                basename = "LightSnow";
+//                break;
+//            case "Måttligt snöfall":
+//                basename = "ModerateSnow";
+//                break;
+//            case "Kraftigt snöfall":
+//                basename = "HeavySnow";
+//                break;
+//            case "Annan nederbördstyp":
+//                basename = "NoData";
+//                break;
+//
+//            case "Ingen nederbörd":
+//                basename = "NoPrecipitation";
+//                break;
+//
+//            case "Okänd nederbördstyp":
+//                basename = "NoData";
+//                break;
+//
+//            default:
+//                throw new AssertionError();
+//        }
+//
     }
 
-    public List<se.trixon.trv_traffic_information.road.camera.v1.RESULT> getResultsCamera() {
+    public List<se.trixon.trv_traffic_information.road.camera.v1_1.RESULT> getResultsCamera() {
         File file = getFile(Service.CAMERA);
         if (file.exists()) {
             if (isOutOfDate(mResultsCamera, file)) {
@@ -197,15 +230,15 @@ public class TrafficInformationManager {
         return mResultsTrafficSafetyCamera;
     }
 
-    public List<se.trixon.trv_traffic_information.road.weatherstation.v1.RESULT> getResultsWeatherStation() {
-        File file = getFile(Service.WEATHER_STATION);
+    public List<se.trixon.trv_traffic_information.road.weathermeasurepoint.v2_1.RESULT> getResultsWeatherMeasurepoint() {
+        var file = getFile(Service.WEATHER_MEASUREPOINT);
         if (file.exists()) {
-            if (isOutOfDate(mResultsWeatherStation, file)) {
+            if (isOutOfDate(mResultsWeatherMeasurepoint, file)) {
                 try {
-                    mResultsWeatherStation = mTrafficInformation.road().getWeatherStationResults(file);
+                    mResultsWeatherMeasurepoint = mTrafficInformation.road().getWeatherMeasurepointResults(file);
                     mFileToTimestamp.put(file, file.lastModified());
                 } catch (IOException | InterruptedException | JAXBException ex) {
-                    mResultsWeatherStation = new ArrayList<>();
+                    mResultsWeatherMeasurepoint = new ArrayList<>();
                     Exceptions.printStackTrace(ex);
                     if (ex instanceof InterruptedException) {
                         Thread.currentThread().interrupt();
@@ -213,10 +246,32 @@ public class TrafficInformationManager {
                 }
             }
         } else {
-            mResultsWeatherStation = new ArrayList<>();
+            mResultsWeatherMeasurepoint = new ArrayList<>();
         }
 
-        return mResultsWeatherStation;
+        return mResultsWeatherMeasurepoint;
+    }
+
+    public List<se.trixon.trv_traffic_information.road.weatherobservation.v2_1.RESULT> getResultsWeatherObservation() {
+        var file = getFile(Service.WEATHER_OBSERVATION);
+        if (file.exists()) {
+            if (isOutOfDate(mResultsWeatherObservation, file)) {
+                try {
+                    mResultsWeatherObservation = mTrafficInformation.road().getWeatherObservationResults(file);
+                    mFileToTimestamp.put(file, file.lastModified());
+                } catch (IOException | InterruptedException | JAXBException ex) {
+                    mResultsWeatherObservation = new ArrayList<>();
+                    Exceptions.printStackTrace(ex);
+                    if (ex instanceof InterruptedException) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+        } else {
+            mResultsWeatherObservation = new ArrayList<>();
+        }
+
+        return mResultsWeatherObservation;
     }
 
     public TrafficInformation getTrafficInformation() {
@@ -237,7 +292,8 @@ public class TrafficInformationManager {
         CAMERA("camera.xml"),
         PARKING("parking.xml"),
         TRAFFIC_SAFETY_CAMERA("traffic_safety_camera.xml"),
-        WEATHER_STATION("weather_station.xml");
+        WEATHER_MEASUREPOINT("weather_measurepoint.xml"),
+        WEATHER_OBSERVATION("weather_observation.xml");
         private final String mFilename;
 
         private Service(String filename) {

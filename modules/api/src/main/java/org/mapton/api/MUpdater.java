@@ -31,6 +31,7 @@ import se.trixon.almond.util.SystemHelper;
 public abstract class MUpdater {
 
     public static final Duration FREQ_10_MINUTES = Duration.minutes(10);
+    public static final Duration FREQ_1_HOUR = Duration.hours(1);
     public static final Duration FREQ_1_MINUTE = Duration.minutes(1);
     public static final Duration FREQ_1_WEEK = Duration.hours(168);
     public static final Duration FREQ_2_HOURS = Duration.hours(2);

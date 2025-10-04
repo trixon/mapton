@@ -61,7 +61,7 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
         addCameras(pois);
         addParking(pois);
         addTrafficSafetyCameras(pois);
-        addWeatherStations(pois);
+        addWeatherMeasurepoints(pois);
 
         return pois;
     }
@@ -160,9 +160,9 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
         });
     }
 
-    private void addWeatherStations(ArrayList<MPoi> pois) {
-        mManager.getResultsWeatherStation().forEach(result -> {
-            for (var weatherStation : result.getWeatherStation()) {
+    private void addWeatherMeasurepoints(ArrayList<MPoi> pois) {
+        mManager.getResultsWeatherMeasurepoint().forEach(result -> {
+            for (var weatherStation : result.getWeatherMeasurepoint()) {
                 if (weatherStation.getGeometry() == null) {
                     continue;
                 }
@@ -185,16 +185,22 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
 
                     var style = new MPoiStyle();
                     poi.setStyle(style);
-                    var measurement = weatherStation.getMeasurement();
-                    if (weatherStation.isActive()) {
-                        style.setLabelText("%.0f°".formatted(measurement.getAir().getTemp()));
-                        style.setImageUrl(mManager.getIconUrl(measurement.getPrecipitation()));
-                        try {
-                            poi.setDescription("%s %s".formatted(
-                                    measurement.getPrecipitation().getAmount(),
-                                    measurement.getPrecipitation().getAmountName()
-                            ));
-                        } catch (Exception e) {
+                    var observation = weatherStation.getObservation();
+                    if (!weatherStation.isDeleted()) {
+                        var air = observation.getAir();
+                        if (air != null) {
+
+                            var temperature = air.getTemperature().getValue().getValue();
+                            style.setLabelText("%.0f°".formatted(temperature));
+                            var precipitation = observation.getAggregated30Minutes().getPrecipitation();
+                            style.setImageUrl(mManager.getIconUrl(precipitation));
+                            try {
+                                poi.setDescription("%.1f %s".formatted(
+                                        2 * precipitation.getTotalWaterEquivalent().getValue().getValue().doubleValue(),
+                                        WeatherHelper.getPrecipType(precipitation)
+                                ));
+                            } catch (Exception e) {
+                            }
                         }
                     } else {
                         style.setLabelText("NODATA");

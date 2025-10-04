@@ -27,18 +27,18 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MUpdater.class)
-public class WeatherStationUpdater extends BaseUpdater {
+public class WeatherMeasurepointUpdater extends BaseUpdater {
 
-    public WeatherStationUpdater() {
-        setFile(mManager.getFile(Service.WEATHER_STATION));
-        setComment("Weather observations");
+    public WeatherMeasurepointUpdater() {
+        setFile(mManager.getFile(Service.WEATHER_MEASUREPOINT));
+        setComment("Weather measure points");
 
         setRunnable(() -> {
             //TODO Check if poi category is visible
             // ...and layer too? no...?
             if (true) {
                 try {
-                    mTrafficInformation.road().getWeatherStationResults(null, null, mManager.getFile(Service.WEATHER_STATION));
+                    mTrafficInformation.road().getWeatherMeasurepointResults(null, null, mManager.getFile(Service.WEATHER_MEASUREPOINT));
                     refreshPoiManager();
                 } catch (IOException | InterruptedException | JAXBException ex) {
                     mPrint.err(ex.getMessage());
@@ -58,6 +58,6 @@ public class WeatherStationUpdater extends BaseUpdater {
 
     @Override
     public String getName() {
-        return "Weather Station";
+        return "Weather measure points";
     }
 }
