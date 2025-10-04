@@ -19,7 +19,6 @@ import javafx.scene.Scene;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
@@ -43,9 +42,8 @@ import se.trixon.almond.util.Dict;
         preferredID = "NewsTopComponent"
 )
 @ActionID(category = "Mapton", id = "org.mapton.core.ui.news.NewsTopComponent")
-@ActionReferences({
-    //    @ActionReference(path = "Shortcuts", name = "D-0"),
-    @ActionReference(path = "Menu/Tools", position = 11)
+@ActionReferences({ //    @ActionReference(path = "Shortcuts", name = "D-0"),
+//    @ActionReference(path = "Menu/Tools", position = 11)
 })
 @NbBundle.Messages({
     "CTL_NewsAction=&News"
