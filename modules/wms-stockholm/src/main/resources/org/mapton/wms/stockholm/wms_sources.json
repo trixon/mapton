@@ -13,6 +13,9 @@
         "layers": {
             "p_1003060": "se.stockholm.orto_1995"
         },
+        "overlays": [
+            "se.stockholm.orto_1995"
+        ],
         "name": "Stockholms stads SBK",
         "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_1995"
     },
@@ -30,6 +33,9 @@
         "layers": {
             "p_1002830": "se.stockholm.orto_2006"
         },
+        "overlays": [
+            "se.stockholm.orto_2006"
+        ],
         "name": "Stockholms stads SBK",
         "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2006"
     },
@@ -47,6 +53,9 @@
         "layers": {
             "p_1003000": "se.stockholm.orto_2009"
         },
+        "overlays": [
+            "se.stockholm.orto_2009"
+        ],
         "name": "Stockholms stads SBK",
         "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2009"
     },
@@ -64,6 +73,9 @@
         "layers": {
             "p_1003020": "se.stockholm.orto_2010"
         },
+        "overlays": [
+            "se.stockholm.orto_2010"
+        ],
         "name": "Stockholms stads SBK",
         "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2010"
     },
@@ -78,6 +90,9 @@
             }
         },
         "enabled": true,
+        "overlays": [
+            "se.stockholm.orto_2012"
+        ],
         "layers": {
             "p_1003040": "se.stockholm.orto_2012"
         },
@@ -98,6 +113,9 @@
         "layers": {
             "p_1003050": "se.stockholm.orto_2014"
         },
+        "overlays": [
+            "se.stockholm.orto_2014"
+        ],
         "name": "Stockholms stads SBK",
         "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2014"
     },
@@ -115,6 +133,9 @@
         "layers": {
             "p_1002820": "se.stockholm.orto_2015"
         },
+        "overlays": [
+            "se.stockholm.orto_2015"
+        ],
         "name": "Stockholms stads SBK",
         "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2015"
     },
@@ -132,6 +153,9 @@
         "layers": {
             "p_1002630": "se.stockholm.orto_2016"
         },
+        "overlays": [
+            "se.stockholm.orto_2016"
+        ],
         "name": "Stockholms stads SBK",
         "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2016"
     },
@@ -149,6 +173,9 @@
         "layers": {
             "p_1002980": "se.stockholm.orto_2017"
         },
+        "overlays": [
+            "se.stockholm.orto_2017"
+        ],
         "name": "Stockholms stads SBK",
         "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2017"
     },
@@ -166,6 +193,9 @@
         "layers": {
             "p_1003070": "se.stockholm.orto_2018"
         },
+        "overlays": [
+            "se.stockholm.orto_2018"
+        ],
         "name": "Stockholms stads SBK",
         "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2018?"
     },
@@ -183,6 +213,9 @@
         "layers": {
             "p_1003080": "se.stockholm.orto_2019"
         },
+        "overlays": [
+            "se.stockholm.orto_2019"
+        ],
         "name": "Stockholms stads SBK",
         "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2019?"
     },
@@ -200,6 +233,9 @@
         "layers": {
             "p_1003090": "se.stockholm.orto_2020"
         },
+        "overlays": [
+            "se.stockholm.orto_2020"
+        ],
         "name": "Stockholms stads SBK",
         "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2020?"
     }
