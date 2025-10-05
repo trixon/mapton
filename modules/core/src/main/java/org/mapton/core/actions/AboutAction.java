@@ -34,7 +34,7 @@ public final class AboutAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         var c = Initializer.class;
-        var pomInfo = new PomInfo(Initializer.class, "org.mapton", "core");
+        var pomInfo = new PomInfo(Initializer.class, "org.mapton", "mapton-core");
         var aboutModel = new AboutModel(SystemHelper.getBundle(c, "about"), SystemHelper.getResourceAsImageIcon(c, "logo.png"));
         aboutModel.setAppDate(ModuleHelper.getBuildTime(c));
         aboutModel.setAppVersion(pomInfo.getVersion());
