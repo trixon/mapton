@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mapton</groupId>
         <artifactId>mapton-parent</artifactId>
-        <version>25.10</version>
+        <version>25.10x</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>wms-gothenburg</artifactId>

@@ -20,7 +20,7 @@ limitations under the License.
     <parent>
         <groupId>org.mapton</groupId>
         <artifactId>butterfly-parent</artifactId>
-        <version>25.10</version>
+        <version>25.10x</version>
     </parent>
     <artifactId>butterfly-structural-strain</artifactId>
     <packaging>nbm</packaging>
