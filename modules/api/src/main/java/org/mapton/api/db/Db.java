@@ -56,7 +56,7 @@ public class Db {
     }
 
     public void addMissingColumn(String table, String col, String type, String after) throws SQLException {
-        try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try (var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             String sql = "ALTER TABLE IF EXISTS %s ADD COLUMN IF NOT EXISTS %s %s AFTER %s;".formatted(
                     table,
                     col,
@@ -68,36 +68,9 @@ public class Db {
         }
     }
 
-//    public void connectionCommit() throws ClassNotFoundException, SQLException {
-//        getConnection().commit();
-//    }
-//    public void connectionOpen() throws ClassNotFoundException, SQLException {
-//        if (mConnection != null && !mConnection.isClosed()) {
-//            connectionCommit();
-//            //mConnection.close();
-//        }
-//
-//        Class.forName("org.h2.Driver");
-//        mConnection = DriverManager.getConnection(mConnString);
-//        mConnection.setAutoCommit(false);
-//        //LOGGER.log(Level.INFO, "JDBC Connect: {0}", mConnString);
-//    }
-//    public boolean connectionRollback() {
-//        try {
-//            getConnection().rollback();
-//            LOGGER.fine("JDBC Rollback");
-//        } catch (SQLException ex) {
-//            LOGGER.log(Level.SEVERE, "JDBC Rollback failed: {0}", ex.getMessage());
-//            return false;
-//        }
-//
-//        return true;
-//    }
-//
     public boolean create(DbTable table, boolean replace, DbConstraint... constraints) {
         boolean tableCreated;
-
-        try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try (var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             if (table.getConstraints().isEmpty()) {
                 for (var constraint : constraints) {
                     table.addConstraint(constraint);
@@ -123,7 +96,7 @@ public class Db {
     }
 
     public void delete(DbTable table, DbColumn column, Long id) throws ClassNotFoundException, SQLException {
-        try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try (var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             String sql = "DELETE FROM %s WHERE %s=%d;".formatted(table.getName(), column.getName(), id);
             System.out.println(sql);
             statement.execute(sql);
@@ -131,7 +104,7 @@ public class Db {
     }
 
     public void drop(DbTable table, boolean cascade) throws ClassNotFoundException, SQLException {
-        try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try (var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             String sql = "DROP TABLE IF EXISTS %s %s;".formatted(table.getName(), cascade ? "CASCADE" : "");
             //System.out.println(sql);
             statement.execute(sql);
@@ -139,7 +112,7 @@ public class Db {
     }
 
     public void dropAllObjects() throws ClassNotFoundException, SQLException {
-        try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try (var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             String sql = "DROP ALL OBJECTS;";
             System.out.println(sql);
             statement.execute(sql);
@@ -158,15 +131,12 @@ public class Db {
                 }
             }
         } catch (ClassNotFoundException | SQLException ex) {
-            LOGGER.severe("Database may be already in use: Possible solutions: close all other connection(s); use the server mode [90020-196]");
+            LOGGER.severe(ex.getMessage());
         }
 
         return mAutoCommitConnection;
     }
 
-//    public Connection getConnection() {
-//        return mConnection;
-//    }
     public File getDbFile() {
         return mDbFile;
     }
@@ -176,7 +146,7 @@ public class Db {
     }
 
     public void truncate(DbTable table) throws ClassNotFoundException, SQLException {
-        try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try (var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             String sql = "TRUNCATE TABLE %s;".formatted(table.getName());
             //System.out.println(sql);
             statement.execute(sql);
