@@ -27,10 +27,7 @@ description: |
     * Files - Plot kml files
     * Photos - Plot geotagged images
     * Population visualizer - Look at the world population
-    * Wikipedia - Find and read geotagged articles
     * XKCD - View the amazing XKCD strip
-
-    https://twitter.com/mapton_app
 
 grade: stable
 platforms:
