@@ -25,7 +25,7 @@ import org.openide.util.NbBundle;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core.actions.TrendsAction"
+        id = "org.mapton.butterfly_core.actions.TrendsAction"
 )
 @ActionRegistration(
         displayName = "#CTL_TrendsAction"

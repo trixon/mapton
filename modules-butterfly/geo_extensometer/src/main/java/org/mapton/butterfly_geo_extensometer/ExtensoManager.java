@@ -124,7 +124,7 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
                 var minLastDate = LocalDateTime.MAX;
                 for (var p : ext.getPoints()) {
                     var last = p.ext().getDateLatest();
-                    if (last.isBefore(minLastDate) && p.getFrequency() > 0) {
+                    if (last != null && last.isBefore(minLastDate) && p.getFrequency() > 0) {
                         minLastDate = last;
                     }
                     var dates = new TreeSet<LocalDateTime>(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());

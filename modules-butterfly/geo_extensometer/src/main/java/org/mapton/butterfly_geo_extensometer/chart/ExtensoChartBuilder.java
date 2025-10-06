@@ -25,7 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
@@ -113,8 +113,8 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
         if (extenso.ext().getReferencePoint() != null) {
             var p = extenso.ext().getReferencePoint();
             var name = p.getName();
-            name = StringUtils.removeStartIgnoreCase(name, extenso.getName());
-            name = StringUtils.removeStartIgnoreCase(name, "-");
+            name = Strings.CI.removeStart(name, extenso.getName());
+            name = Strings.CI.removeStart(name, "-");
             var series = new TimeSeries(name);
             for (var o : p.ext().getObservationsTimeFiltered()) {
                 if (o.getDate().isAfter(startDate)) {
@@ -171,8 +171,8 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
 
         for (var p : extenso.getPoints()) {
             var name = p.getName();
-            name = StringUtils.removeStartIgnoreCase(name, extenso.getName());
-            name = StringUtils.removeStartIgnoreCase(name, "-");
+            name = Strings.CI.removeStart(name, extenso.getName());
+            name = Strings.CI.removeStart(name, "-");
             var series = new TimeSeries(name);
             p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> o.getDate().isAfter(startDate))

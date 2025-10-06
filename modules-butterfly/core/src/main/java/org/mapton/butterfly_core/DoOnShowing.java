@@ -33,9 +33,14 @@ public class DoOnShowing implements Runnable {
     @Override
     public void run() {
         if (mOptions.isFirstRun()) {
+            Almond.openTopComponent("LayerPropertiesTopComponent");
+            Almond.openTopComponent("TrendsTopComponent");
             Almond.openTopComponent("PoiTopComponent");
             Almond.openTopComponent("LayerTopComponent");
+            Almond.openTopComponent("AreaTopComponent");
             Almond.openTopComponent("PropertiesTopComponent");
+            Almond.openTopComponent("ChartTopComponent");
+            Almond.openTopComponent("TopoTopComponent");
         }
 
         ButterflyHelper.refreshTitle();

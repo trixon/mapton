@@ -186,7 +186,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
                     var attrs = new BasicShapeAttributes();
                     attrs.setInteriorOpacity(0.75);
                     attrs.setDrawOutline(false);
-                    attrs.setInteriorMaterial(mIntervalToMaterialMap.get(key));
+                    attrs.setInteriorMaterial(mIntervalToMaterialMap.getOrDefault(key, Material.GRAY));
                     attrs.setEnableLighting(true);
                     shape.setAttributes(attrs);
                     addRenderable(shape, true, graphicItem, sMapObjects);
@@ -204,7 +204,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
                     airspace.setAltitudes(mAltitude - height / 2, mAltitude + height / 2);
                     var attrs = new BasicAirspaceAttributes();
                     attrs.setInteriorOpacity(0.75);
-                    attrs.setInteriorMaterial(mIntervalToMaterialMap.get(key));
+                    attrs.setInteriorMaterial(mIntervalToMaterialMap.getOrDefault(key, Material.GRAY));
 
                     airspace.setAttributes(attrs);
                     addRenderable(airspace, true, graphicItem, sMapObjects);

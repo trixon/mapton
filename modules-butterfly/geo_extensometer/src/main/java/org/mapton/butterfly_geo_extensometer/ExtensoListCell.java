@@ -88,7 +88,8 @@ class ExtensoListCell extends ListCell<BGeoExtensometer> {
         mAlarmIndicatorBox.getChildren().clear();
         for (var p : ext.getPoints()) {
             Shape shape;
-            if (Math.abs(p.ext().getDelta()) > 0.2) {
+            var delta = p.ext().getDelta();
+            if (delta != null && Math.abs(delta) > 0.2) {
                 var polygon = new Polygon();
                 polygon.getPoints().addAll(new Double[]{
                     SIZE / 2, 0.0,
@@ -96,11 +97,10 @@ class ExtensoListCell extends ListCell<BGeoExtensometer> {
                     0.0, SIZE
                 });
 
-                if (p.ext().getDelta() < 0) {
+                if (delta < 0) {
                     polygon.setRotate(180);
                 }
                 shape = polygon;
-
             } else {
                 shape = new Circle(SIZE / 2);
             }
@@ -109,10 +109,11 @@ class ExtensoListCell extends ListCell<BGeoExtensometer> {
                 alarmColor = new Color(alarmColor.getRed(), alarmColor.getGreen(), alarmColor.getBlue(), 0.4);
             }
             shape.setFill(alarmColor);
-            var percentH = (p.ext().getDelta() / p.getLimit3() / 10.0);
+            var safeDelta = delta == null ? 666.0 : delta;
+            var percentH = (safeDelta / p.getLimit3() / 10.0);
             var tooltip = new Tooltip("%s\r%.2f mm\r%.0f%% av %.1f mm".formatted(
                     p.getName(),
-                    p.ext().getDelta(),
+                    safeDelta,
                     percentH,
                     p.getLimit3() * 1000
             ));

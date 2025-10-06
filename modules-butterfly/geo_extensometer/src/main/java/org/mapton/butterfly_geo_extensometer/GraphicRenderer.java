@@ -163,7 +163,8 @@ public class GraphicRenderer extends GraphicRendererBase {
             var pyramid = new Pyramid(p, shapeSize * 1.0, shapeSize);
             pyramid.setAttributes(attrs);
             point.setValue(Position.class, p);
-            if (lastObservation.ext().getDelta() < 0) {
+            var delta = lastObservation.ext().getDelta();
+            if (delta != null && delta < 0) {
                 pyramid.setRoll(Angle.POS180);
             }
 

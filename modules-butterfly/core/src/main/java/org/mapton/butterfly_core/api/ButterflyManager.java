@@ -259,6 +259,18 @@ public class ButterflyManager {
         calculateLatLons(butterfly.topo().getControlPoints());
         calculateLatLons(butterfly.topo().getConvergenceGroups());
 
+        for (var alarm : butterfly.getAlarms()) {
+            var points = alarm.ext().getPoints();
+
+            if (!points.isEmpty()) {
+                try {
+                    alarm.setLat(points.stream().mapToDouble(p -> p.getLat()).average().getAsDouble());
+                    alarm.setLon(points.stream().mapToDouble(p -> p.getLon()).average().getAsDouble());
+                } catch (Exception e) {
+                }
+            }
+        }
+
         calculateLatLonsTmo(butterfly.tmo().getGrundvatten());
         calculateLatLonsTmo(butterfly.tmo().getInfiltration());
         calculateLatLonsTmo(butterfly.tmo().getRorelse());

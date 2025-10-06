@@ -30,6 +30,7 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.ui.forms.MBaseFilterSection;
+import org.mapton.butterfly_format.types.BTrendDirection;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BTrendPeriod;
@@ -48,6 +49,7 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
 public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(BFilterSectionTrend.class);
+    private final SessionComboBox<BTrendDirection> mDirectionScb = new SessionComboBox<>();
     private TrendComponent mHeightComponent;
     private SessionComboBox<BTrendPeriod> mPeriodAbsScb;
     private SessionComboBox<BTrendPeriod> mPeriodRelScb;
@@ -59,7 +61,7 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
 
         createUI();
         setContent(mRoot);
-        mPeriodAbsScb.getSelectionModel().select(0);
+        mPeriodAbsScb.getSelectionModel().selectFirst();
         loadPeriodRelative();
     }
 
@@ -68,6 +70,8 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         super.clear();
         mHeightComponent.clear();
         mPlaneComponent.clear();
+        mPeriodAbsScb.getSelectionModel().selectFirst();
+        mDirectionScb.getSelectionModel().selectFirst();
     }
 
     @Override
@@ -104,7 +108,8 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             }
         }
 
-        var valid = validAbs1d && validAbs2d && validRel1d && validRel2d;
+        var valid = validAbs1d && validAbs2d && validRel1d && validRel2d
+                && validateVerticalDirection(p);
 
         return valid;
     }
@@ -116,6 +121,7 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
 
         List.of(
                 selectedProperty(),
+                mDirectionScb.valueProperty(),
                 mPeriodAbsScb.getSelectionModel().selectedItemProperty(),
                 mPeriodRelScb.getSelectionModel().selectedItemProperty()
         ).forEach(propertyBase -> propertyBase.addListener(changeListener));
@@ -134,6 +140,7 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         sessionManager.register(getKeyFilter("section"), selectedProperty());
         sessionManager.register(getKeyFilter("period1"), mPeriodAbsScb.selectedIndexProperty());
         sessionManager.register(getKeyFilter("period2"), mPeriodRelScb.selectedIndexProperty());
+        sessionManager.register(getKeyFilter("trendDirection"), mDirectionScb.selectedIndexProperty());
         mHeightComponent.initSession(sessionManager);
         mPlaneComponent.initSession(sessionManager);
     }
@@ -143,6 +150,7 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         mPeriodRelScb.load();
         mHeightComponent.load();
         mPlaneComponent.load();
+        mDirectionScb.load();
     }
 
     @Override
@@ -163,9 +171,12 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         mPeriodRelScb = new SessionComboBox<>();
         mHeightComponent = new TrendComponent(BComponent.HEIGHT);
         mPlaneComponent = new TrendComponent(BComponent.PLANE);
+        mDirectionScb.getItems().setAll(BTrendDirection.values());
+
         int row = 0;
         mRoot.addRow(row++, new VBox(new Label("Period"), mPeriodAbsScb), new VBox(new Label("Differensperiod"), mPeriodRelScb));
         mRoot.addRow(row++, mHeightComponent, mPlaneComponent);
+        mRoot.addRow(row++, new VBox(new Label("Riktning"), mDirectionScb), new VBox(new Label("")));
         FxHelper.autoSizeColumn(mRoot, 2);
         FxHelper.autoSizeRegionHorizontal(mPeriodAbsScb, mPeriodRelScb);
     }
@@ -231,6 +242,50 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             return validateSliderPaneLtEq(slider, diff);
         } else {
             return validateSliderPaneGtEq(slider, diff);
+        }
+    }
+
+    private boolean validateVerticalDirection(BXyzPoint p) {
+        if (mDirectionScb.getValue() == BTrendDirection.EITHER) {
+            return true;
+        }
+        if (p.getDimension() == BDimension._2d) {
+            return false;
+        }
+        var dZ = p.extOrNull().deltaZero().getDelta1();
+        if (dZ == null) {
+            return false;
+        }
+        HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(BKey.TRENDS_H);
+        if (map == null) {
+            return false;
+        }
+
+        var trend = map.get(mPeriodAbsScb.getValue());
+        if (trend == null) {
+            return false;
+        }
+
+        var value = TrendHelper.getMmPerYear(trend);
+        if (value == null) {
+            return false;
+        }
+
+        var posTrend = value >= 0d;
+        var posDelta = dZ >= 0d;
+        var closeToZero = Math.abs(value) < 0.1;
+
+        switch (mDirectionScb.getValue()) {
+            case CONVERGENT:
+                return posTrend != posDelta;
+            case DIVERGENT:
+                return posTrend == posDelta;
+            case TRIVIAL:
+                return Math.abs(value) < 2 && !closeToZero;
+            case COLINEAR:
+                return closeToZero;
+            default:
+                throw new AssertionError();
         }
     }
 

@@ -16,9 +16,14 @@
 package org.mapton.butterfly_core.api;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 import org.jfree.data.function.LineFunction2D;
 import org.jfree.data.statistics.Regression;
+import org.jfree.data.time.Day;
 import org.jfree.data.time.Hour;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
@@ -81,7 +86,7 @@ public class TrendHelper {
         return null;
     }
 
-    public static Trend createTrend(BXyzPoint p, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function) throws IllegalArgumentException {
+    public static Trend createTrend(BXyzPoint p, boolean dayliMean, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function) throws IllegalArgumentException {
         var timeSeries = new TimeSeries("-");
 
         if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
@@ -93,7 +98,25 @@ public class TrendHelper {
         }
 
         var dataset = new TimeSeriesCollection();
-        dataset.addSeries(timeSeries);
+        if (dayliMean) {
+            var dailyValues = new HashMap<Day, ArrayList<Double>>();
+            var dailyMedians = new TimeSeries("-");
+            for (int i = 0; i < timeSeries.getItemCount(); i++) {
+                var period = ((Minute) timeSeries.getTimePeriod(i)).getDay();
+                var value = timeSeries.getValue(i).doubleValue();
+                dailyValues.computeIfAbsent(period, k -> new ArrayList<>()).add(value);
+            }
+
+            for (var entry : dailyValues.entrySet()) {
+                var values = entry.getValue();
+                Collections.sort(values);
+                dailyMedians.add(entry.getKey(), calculateMedian(values));
+            }
+            dataset.addSeries(dailyMedians);
+        } else {
+            dataset.addSeries(timeSeries);
+        }
+
         var coefficients = Regression.getOLSRegression(dataset, 0);
 
         return new Trend(
@@ -114,6 +137,15 @@ public class TrendHelper {
         }
 
         return null;
+    }
+
+    private static double calculateMedian(List<Double> values) {
+        int size = values.size();
+        if (size % 2 == 0) {
+            return (values.get(size / 2 - 1) + values.get(size / 2)) / 2.0;
+        } else {
+            return values.get(size / 2);
+        }
     }
 
     private TrendHelper() {

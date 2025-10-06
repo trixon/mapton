@@ -4,7 +4,7 @@
     <folder name="Windows2">
         <folder name="Groups">
             <folder name="MapGroup">
-                <file name="TrendsTopComponent.wstcgrp" url="ui/TrendsTopComponentWstcgrp.xml"/>
+                <file name="TrendsTopComponent.wstcgrp" url="TrendsTopComponentWstcgrp.xml"/>
             </folder>
         </folder>
     </folder>

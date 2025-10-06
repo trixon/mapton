@@ -111,5 +111,9 @@ limitations under the License.
         <!--Trixon-->
 
         <!--Other-->
+        <dependency>
+            <groupId>se.trixon.almond</groupId>
+            <artifactId>almond-nbp-core</artifactId>
+        </dependency>
     </dependencies>
 </project>

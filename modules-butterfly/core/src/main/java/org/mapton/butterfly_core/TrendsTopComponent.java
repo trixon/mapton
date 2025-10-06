@@ -45,7 +45,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  * Generic Property TopComponent
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.core.ui//Trends//EN",
+        dtd = "-//org.mapton.butterfly-core//Trends//EN",
         autostore = false
 )
 @TopComponent.Description(

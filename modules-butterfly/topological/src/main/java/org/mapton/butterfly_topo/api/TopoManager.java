@@ -252,7 +252,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     }
 
     private void populateTrend(BTopoControlPoint p, String mode, BTrendPeriod period, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function) {
-        var trend = TrendHelper.createTrend(p, startDate, endDate, function);
+        var trend = TrendHelper.createTrend(p, true, startDate, endDate, function);
         HashMap<BTrendPeriod, Trend> map = (HashMap<BTrendPeriod, Trend>) p.getValue(mode, new HashMap<>());
         map.put(period, trend);
         p.setValue(mode, map);

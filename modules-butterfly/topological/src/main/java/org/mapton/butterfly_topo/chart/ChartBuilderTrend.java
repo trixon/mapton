@@ -127,7 +127,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         TrendHelper.Trend trend;
         try {
             if (percentile == null) {
-                trend = TrendHelper.createTrend(p, startDate, endDate, mFunction);
+                trend = TrendHelper.createTrend(p, true, startDate, endDate, mFunction);
             } else {
                 trend = TrendHelper.createTrend(p, startDate, endDate, mFunction, percentile);
             }
