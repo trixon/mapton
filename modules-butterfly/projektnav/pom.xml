@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mapton</groupId>
         <artifactId>butterfly-parent</artifactId>
-        <version>25.09x</version>
+        <version>25.10</version>
     </parent>
     <artifactId>butterfly-projektnav</artifactId>
     <packaging>nbm</packaging>
