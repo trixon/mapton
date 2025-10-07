@@ -107,7 +107,9 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         plotBlasts(plot, p, firstDate, lastDate, true);
     }
 
-    public static void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDate, boolean plotLabel) {
+    public static void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDateNOTUSED, boolean plotLabel) {
+        //TODO Remove lastDate parameter is everything looks ok
+        var lastDate = LocalDate.now().plusDays(1);
         var distanceLimitDefault = 40.0;
         if (p instanceof BXyzPoint xyz && xyz.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext && ext.getFrequenceHighBuffer() != null) {
             distanceLimitDefault = ext.getFrequenceHighBuffer();
