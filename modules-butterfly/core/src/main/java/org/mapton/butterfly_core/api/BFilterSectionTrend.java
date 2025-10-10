@@ -39,7 +39,6 @@ import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.SliderPane;
-import se.trixon.almond.util.fx.session.SessionCheckBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
 
 /**
@@ -282,7 +281,7 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
                 return posTrend == posDelta;
             case TRIVIAL:
                 return Math.abs(value) < 2 && !closeToZero;
-            case COLINEAR:
+            case PARALLEL:
                 return closeToZero;
             default:
                 throw new AssertionError();
@@ -292,13 +291,11 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
     class TrendComponent extends BorderPane {
 
         private final SliderPane mAbsSliderPane = new SliderPane("Årshastighet (mm/år)", 100, true, true, 1d);
-        private final SessionCheckBox mActiveScbx;
         private final BComponent mComponent;
         private final SliderPane mRelSliderPane = new SliderPane("Differens (period-differensperiod)", -100, 100d, true, true, 1d);
 
         public TrendComponent(BComponent component) {
             mComponent = component;
-            mActiveScbx = new SessionCheckBox(mComponent.getDimension().getName() + "d");
             createUI();
         }
 
@@ -308,7 +305,6 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         }
 
         private void createUI() {
-//            setTop(mActiveScbx);
             int rowGap = FxHelper.getUIScaled(8);
 
             var gp = new GridPane(rowGap, rowGap);
@@ -327,7 +323,6 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
                     .build()
                     .build();
 
-            borderNode.disableProperty().bind(mActiveScbx.selectedProperty().not());
             FxHelper.autoSizeColumn(gp, 1);
             setCenter(borderNode);
         }
@@ -338,7 +333,6 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
 
         private void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
             List.of(
-                    mActiveScbx.selectedProperty(),
                     mAbsSliderPane.selectedProperty(),
                     mAbsSliderPane.valueProperty(),
                     mRelSliderPane.selectedProperty(),
@@ -348,28 +342,22 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
 
         private void initSession(SessionManager sessionManager) {
             String mode = mComponent.getDimension().getName() + "_";
-            sessionManager.register(getKeyFilter(mode + "active"), mActiveScbx.selectedProperty());
             mAbsSliderPane.initSession(getKeyFilter(mode + "valueAbsolute"), sessionManager);
             mRelSliderPane.initSession(getKeyFilter(mode + "valueCompare"), sessionManager);
         }
 
-        private boolean isActivated() {
-            return mActiveScbx.isSelected();
-        }
-
         private boolean isActivatedAbs() {
-            return isActivated() && mAbsSliderPane.isSelected();
+            return mAbsSliderPane.isSelected();
         }
 
         private boolean isActivatedRel() {
-            return isActivated() && mRelSliderPane.isSelected() && !mPeriodRelScb.getItems().isEmpty();
+            return mRelSliderPane.isSelected() && !mPeriodRelScb.getItems().isEmpty();
         }
 
         private void load() {
         }
 
         private void reset() {
-            mActiveScbx.setSelected(false);
             mAbsSliderPane.setSelected(false);
             mRelSliderPane.setSelected(false);
         }
