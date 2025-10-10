@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Patrik Karlström.
+ * Copyright 2025 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,25 @@
  */
 package org.mapton.butterfly_core.api;
 
+import javafx.scene.control.Tab;
+import javafx.scene.control.TableView;
+
 /**
  *
  * @author Patrik Karlström
  */
-public class BKey {
+public class BMeasurementTab extends Tab {
 
-    public static final String OBJECT_MEASUREMENTS = "object.measurements";
-    public static final String PIN_COLOR = "pin.color";
-    public static final String PIN_HOTSPOT = "pin.hotspot";
-    public static final String PIN_NAME = "pin.name";
-    public static final String PIN_URL = "pin.url";
-    public static final String TRENDS_H = "trendsH";
-    public static final String TRENDS_P = "trendsP";
+    private final TableView mTableView;
+
+    public BMeasurementTab(String title, TableView tableView) {
+        setText(title);
+        mTableView = tableView;
+        setContent(tableView);
+    }
+
+    public TableView getTableView() {
+        return mTableView;
+    }
 
 }

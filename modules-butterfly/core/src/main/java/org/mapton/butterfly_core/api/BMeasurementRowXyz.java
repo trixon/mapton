@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Patrik Karlström.
+ * Copyright 2025 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,28 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.time.LocalDateTime;
+
 /**
  *
  * @author Patrik Karlström
  */
-public class BKey {
-
-    public static final String OBJECT_MEASUREMENTS = "object.measurements";
-    public static final String PIN_COLOR = "pin.color";
-    public static final String PIN_HOTSPOT = "pin.hotspot";
-    public static final String PIN_NAME = "pin.name";
-    public static final String PIN_URL = "pin.url";
-    public static final String TRENDS_H = "trendsH";
-    public static final String TRENDS_P = "trendsP";
+public record BMeasurementRowXyz(
+        LocalDateTime date,
+        Double n,
+        Double e,
+        Double h,
+        Double delta1d,
+        Double delta2d,
+        Integer percent1d,
+        Integer percent2d,
+        int alarmLevel1d,
+        int alarmLevel2d,
+        String instrument,
+        String oprerator,
+        String comment,
+        boolean codeReplacement,
+        boolean codeZero
+        ) {
 
 }
