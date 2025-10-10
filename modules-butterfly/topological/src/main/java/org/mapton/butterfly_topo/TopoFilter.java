@@ -326,6 +326,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
 
                     return validateFreeText(p.getName(), p.getCategory(), p.getGroup(), p.getAlarm1Id(), p.getAlarm2Id(), nameH, nameP);
                 })
+                .filter(p -> p.isVisible())
                 .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
