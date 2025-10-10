@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,6 +32,8 @@ import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BKey;
+import org.mapton.butterfly_core.api.BMeasurementReport;
+import org.mapton.butterfly_core.api.BMeasurementTab;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_core.api.TrendHelper;
@@ -46,6 +49,7 @@ import org.mapton.butterfly_topo.TopoPropertiesBuilder;
 import org.mapton.butterfly_topo.TopoTrendsBuilder;
 import org.mapton.butterfly_topo.chart.ChartAggregate;
 import org.mapton.butterfly_topo.chart.MultiChartAggregate;
+import org.mapton.butterfly_topo.table.StandardMeasurementPopulator;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -61,6 +65,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     private double mMinimumZscaled = 0.0;
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
     private final TopoPropertiesBuilder mPropertiesBuilder = new TopoPropertiesBuilder();
+    private final StandardMeasurementPopulator mStandardMeasurementPopulator = new StandardMeasurementPopulator();
     private final TopoTrendsBuilder mTrendsBuilder = new TopoTrendsBuilder();
 
     public static TopoManager getInstance() {
@@ -82,6 +87,18 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             return mMultiChartAggregate.build(selectedObject);
         } else {
             return mChartAggregate.build(selectedObject);
+        }
+    }
+
+    @Override
+    public Object getObjectMeasurements(BTopoControlPoint p) {
+        if (p == null) {
+            return null;
+        } else {
+            mStandardMeasurementPopulator.populate(p);
+            var tabs = List.of(new BMeasurementTab("Standard", mStandardMeasurementPopulator.getTableView()));
+            var measurementReport = new BMeasurementReport(p, tabs);
+            return measurementReport;
         }
     }
 
