@@ -20,11 +20,11 @@ package org.mapton.butterfly_format.types;
  * @author Patrik Karlström
  */
 public enum BTrendDirection {
-    EITHER("—"),
+    EITHER("*"),
     DIVERGENT("Divergent"),
     CONVERGENT("Konvergent"),
     TRIVIAL("Trivial"),
-    COLINEAR("Kolinjär");
+    PARALLEL("Parallell");
     private final String mName;
 
     private BTrendDirection(String name) {

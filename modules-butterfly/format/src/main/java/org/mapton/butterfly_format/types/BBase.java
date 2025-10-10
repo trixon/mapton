@@ -35,9 +35,10 @@ public abstract class BBase {
     private String meta;
     private String name;
     private String origin;
-    private transient final HashMap<Object, Object> values = new HashMap<>();
-    private String unitDiff;
     private String unit;
+    private String unitDiff;
+    private transient final HashMap<Object, Object> values = new HashMap<>();
+    private Boolean visible;
 
     public Double getAzimuth() {
         return azimuth;
@@ -104,6 +105,14 @@ public abstract class BBase {
         return values;
     }
 
+    public Boolean isVisible() {
+        if (visible == null) {
+            visible = true;
+        }
+
+        return visible;
+    }
+
     public void setAzimuth(Double azimuth) {
         this.azimuth = azimuth;
     }
@@ -154,6 +163,10 @@ public abstract class BBase {
 
     public Object setValue(Object key, Object value) {
         return values.put(key, value);
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
     }
 
     @Override
