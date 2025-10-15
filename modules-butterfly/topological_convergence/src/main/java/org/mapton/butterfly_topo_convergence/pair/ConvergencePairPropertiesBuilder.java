@@ -42,7 +42,7 @@ public class ConvergencePairPropertiesBuilder extends PropertiesBuilder<BTopoCon
 
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getConvergenceGroup().getName());
-        propertyMap.put(getCatKey(cat1, "Gränsvärde (grupp)"), p.getConvergenceGroup().getLimit());
+        propertyMap.put(getCatKey(cat1, "Gränsvärde (grupp)"), 0.002);
         propertyMap.put(getCatKey(cat1, "P1"), p.getP1().getName());
         propertyMap.put(getCatKey(cat1, "P2"), p.getP2().getName());
         propertyMap.put(getCatKey(cat1, Dict.FIRST.toString()), firstDate);

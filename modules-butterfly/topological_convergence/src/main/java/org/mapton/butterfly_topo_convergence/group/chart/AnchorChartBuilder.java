@@ -104,7 +104,7 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
 
         for (var o : p.getObservations()) {
             var minute = ChartHelper.convertToMinute(o.getDate());
-            mTimeSeriesDeltaZ.add(minute, o.getDeltaDeltaZComparedToFirst());
+//            mTimeSeriesDeltaZ.add(minute, o.getDeltaDeltaZComparedToFirst());
         }
 
         getDataset().addSeries(mTimeSeriesDeltaZ);
@@ -118,7 +118,7 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
         var plot = (XYPlot) mChart.getPlot();
         var firstDate = pair.getObservations().getFirst().getDate().toLocalDate();
         var lastDate = pair.getObservations().getLast().getDate().toLocalDate();
-        var series = pair.getConvergenceGroup().ext2().getAnchorPoint() == p ? mTimeSeriesAnchor : mTimeSeriesPoint;
+        var series = pair.getConvergenceGroup().ext().getAnchorPoint() == p ? mTimeSeriesAnchor : mTimeSeriesPoint;
         p.ext().getObservationsAllRaw().stream()
                 .filter(o -> DateHelper.isBetween(
                 firstDate,

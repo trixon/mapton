@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.ObjectUtils;
@@ -29,10 +28,10 @@ import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.BBaseControlPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
+import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo_convergence.group.ConvergenceGroupPropertiesBuilder;
 import org.mapton.butterfly_topo_convergence.group.chart.ConvergenceGroupChartBuilder;
@@ -46,6 +45,7 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
 
     private final ConvergenceGroupChartBuilder mChartBuilder = new ConvergenceGroupChartBuilder();
     private final ConvergenceGroupPropertiesBuilder mPropertiesBuilder = new ConvergenceGroupPropertiesBuilder();
+    private Runnable mFilterReloadRunnable;
 
     public static ConvergenceGroupManager getInstance() {
         return Holder.INSTANCE;
@@ -59,10 +59,8 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
         }, TopoManager.KEY_TOPO_POINTS_LOADED);
     }
 
-    public void add(BTopoConvergenceGroup group) {
-        var butterfly = group.getButterfly();
-        butterfly.topo().getConvergenceGroups().add(group);
-        load2(butterfly);
+    public void activatefilterPopoverLoad(Runnable r) {
+        mFilterReloadRunnable = r;
     }
 
     @Override
@@ -72,17 +70,13 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
 
     @Override
     public Object getObjectProperties(BTopoConvergenceGroup selectedObject) {
-        if (selectedObject != null) {
-            System.out.println(selectedObject.ext2().getAnchorPoint());
-            selectedObject.ext2().getProjected2dCoordinates();
-        }
         return mPropertiesBuilder.build(selectedObject);
     }
 
     public double getOffset() {
         var offset = 0d;
         for (var g : getTimeFilteredItems()) {
-            var o = g.ext2().getControlPoints().stream()
+            var o = g.ext().getControlPoints().stream()
                     .map(p -> p.getZeroZ())
                     .mapToDouble(Double::doubleValue).min().orElse(0);
             offset = FastMath.min(o, offset);
@@ -106,36 +100,47 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
         try {
             initAllItems(butterfly.topo().getConvergenceGroups());
             initObjectToItemMap();
+            var groupToObservations = butterfly.topo().getConvergenceObservations().stream()
+                    .collect(Collectors.groupingBy(o -> o.getName()));
 
+            var dates = new TreeSet<LocalDateTime>();
             for (var g : butterfly.topo().getConvergenceGroups()) {
                 g.ext().getObservationsAllRaw().clear();
                 var controlPoints = Arrays.stream(StringUtils.split(g.getRef(), ","))
                         .map(s -> butterfly.topo().getControlPointByName(s))
                         .filter(p -> p != null)
                         .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
-                        //.filter(p -> !StringUtils.endsWithIgnoreCase(p.getName(), "P00"))
-                        .filter(p -> {
-                            g.ext2().getObservationsAllRaw().addAll(p.ext().getObservationsAllRaw());
-                            return true;
-                        })
                         .collect(Collectors.toCollection(ArrayList::new));
 
-                g.ext2().setControlPoints(controlPoints);
-                var uniqueObservations = new ArrayList<BTopoControlPointObservation>();
-                var dateSet = new HashSet<LocalDateTime>();
-                for (var o : g.ext2().getObservationsAllRaw()) {
-                    if (!dateSet.contains(o.getDate())) {
-                        dateSet.add(o.getDate());
-                        uniqueObservations.add(o);
+                g.ext().setControlPoints(controlPoints);
+                var pairToObservations = groupToObservations.get(g.getName()).stream()
+                        .collect(Collectors.groupingBy(item -> item.getP1Name() + "::" + item.getP2Name(), Collectors.toCollection(ArrayList::new)));
+
+                var pairs = new ArrayList<BTopoConvergencePair>();
+                int n = controlPoints.size();
+                var offset = 10.0;//TODO Calculate it?
+
+                for (int i = 0; i < n; i++) {
+                    for (int j = i + 1; j < n; j++) {
+                        var pair = new BTopoConvergencePair(g, controlPoints.get(i), controlPoints.get(j), offset);
+                        var observations = pairToObservations.getOrDefault(pair.getP1().getName() + "::" + pair.getP2().getName(), new ArrayList<>());
+                        for (var o : observations) {
+                            o.ext().setParent(g);
+                            dates.add(o.getDate());
+                            if (o.isZeroMeasurement()) {
+                                g.ext().setStoredZeroDateTime(o.getDate());
+                            }
+                        }
+                        pair.setObservations(observations);
+                        pairs.add(pair);
                     }
                 }
-                uniqueObservations.sort(Comparator.comparing(BBaseControlPointObservation::getDate));
-                g.ext().setObservationsAllRaw(uniqueObservations);
-                g.ext2().setObservationsAllRaw(uniqueObservations);
+                g.ext().getPairs().clear();
+                g.ext().getPairs().addAll(pairs);
             }
 
             for (var g : butterfly.topo().getConvergenceGroups()) {
-                var maxPoint = g.ext2().getControlPointsWithoutAnchor().stream()
+                var maxPoint = g.ext().getControlPointsWithoutAnchor().stream()
                         .max(Comparator.comparingDouble(BTopoControlPoint::getZeroZ));
 
                 maxPoint.ifPresent(p -> {
@@ -146,23 +151,21 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
                     g.setLon(p.getLon());
                 });
 
-                var observations = g.ext().getObservationsAllRaw();
-                if (!observations.isEmpty()) {
-                    g.ext().setDateFirst(observations.getFirst().getDate());
-                    g.setDateLatest(observations.getLast().getDate());
-                } else {
-                    g.ext().setDateFirst(LocalDateTime.MIN);
-                }
+                var maxObservationsPerDate = groupToObservations.get(g.getName()).stream()
+                        .collect(Collectors.groupingBy(BTopoConvergenceObservation::getDate))
+                        .values()
+                        .stream()
+                        .flatMap(entry -> entry.stream()
+                        .max(Comparator.comparingDouble(value -> Math.abs(value.getMeasuredX())))
+                        .stream())
+                        .collect(Collectors.toList());
 
+                g.ext().getObservationsAllRaw().addAll(maxObservationsPerDate);
+                var minDate = maxObservationsPerDate.stream().map(gg -> gg.getDate()).min(LocalDateTime::compareTo);
+                var maxDate = maxObservationsPerDate.stream().map(gg -> gg.getDate()).max(LocalDateTime::compareTo);
+                g.ext().setDateFirst(minDate.orElse(LocalDateTime.MIN));
+                maxDate.ifPresent(date -> g.setDateLatest(date));
                 g.ext().setDateLatest(g.getDateLatest());
-//                g.ext().setObservationsAllRaw(observations);
-                g.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(g));
-                for (var o : g.ext().getObservationsAllRaw()) {
-                    if (o.isZeroMeasurement()) {
-                        g.ext().setStoredZeroDateTime(o.getDate());
-                        break;
-                    }
-                }
             }
 
             var origins = getAllItems()
@@ -171,11 +174,6 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
                     .stream()
                     .collect(Collectors.toCollection(ArrayList<String>::new));
             setValue("origins", origins);
-
-            var dates = new TreeSet<LocalDateTime>();
-            getAllItems().stream().forEachOrdered(p -> {
-                dates.addAll(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());
-            });
 
             if (!dates.isEmpty()) {
                 setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
@@ -186,6 +184,8 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
+
+        mFilterReloadRunnable.run();
     }
 
     @Override
@@ -212,9 +212,7 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
             var timeFilteredObservations = g.ext().getObservationsAllRaw().stream()
                     .filter(o -> getTemporalManager().isValid(o.getDate()))
                     .collect(Collectors.toCollection(ArrayList::new));
-
             g.ext().setObservationsTimeFiltered(timeFilteredObservations);
-            //g.ext().calculateObservations(timeFilteredObservations);
         });
 
         setItemsTimeFiltered(timeFilteredItems);

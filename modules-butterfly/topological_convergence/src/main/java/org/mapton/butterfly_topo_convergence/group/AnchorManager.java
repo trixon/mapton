@@ -15,8 +15,6 @@
  */
 package org.mapton.butterfly_topo_convergence.group;
 
-import org.mapton.butterfly_topo_convergence.group.chart.AnchorChartBuilder;
-import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import gov.nasa.worldwind.render.Ellipsoid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,6 +33,8 @@ import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePairObservation;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
+import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
+import org.mapton.butterfly_topo_convergence.group.chart.AnchorChartBuilder;
 import org.mapton.butterfly_topo_convergence.pair.PairHelper;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -130,8 +130,8 @@ public class AnchorManager extends BaseManager<BTopoConvergencePair> {
 
         for (var group : mGroupManager.getTimeFilteredItems()) {
             var existingPairs = new HashSet<String>();
-            for (var p1 : group.ext2().getControlPoints()) {
-                for (var p2 : group.ext2().getControlPoints()) {
+            for (var p1 : group.ext().getControlPoints()) {
+                for (var p2 : group.ext().getControlPoints()) {
                     if (p1 == p2 || existingPairs.contains("%s-%s".formatted(p2.getName(), p1.getName()))) {
                         continue;
                     }
@@ -180,7 +180,7 @@ public class AnchorManager extends BaseManager<BTopoConvergencePair> {
             }
 
             observations.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
-            pair.setObservations(observations);
+//            pair.setObservations(observations);
         }
 
         initAllItems(pairs);

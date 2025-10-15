@@ -20,11 +20,17 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_topo.TopoHelper;
 import se.trixon.almond.util.StringHelper;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -33,7 +39,6 @@ import se.trixon.almond.util.StringHelper;
 class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
 
     private final Label mDesc1Label = new Label();
-
     private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
     private final Label mDesc4Label = new Label();
@@ -42,6 +47,7 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
     private final String mStyleMono = "-fx-font-family: monospace;";
     private final Tooltip mTooltip = new Tooltip();
     private VBox mVBox;
+    private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
 
     public ConvergenceGroupListCell() {
         createUI();
@@ -58,35 +64,15 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
     }
 
     private void addContent(BTopoConvergenceGroup g) {
-//        setText(null);
-//        var header = group.getName();
-//        if (StringUtils.isNotBlank(group.getStatus())) {
-//            header = "%s [%s]".formatted(header, group.getStatus());
-//        }
-//
-//        mNameLabel.setText(header);
-//        try {
-//            var maxD = group.ext2().getMaxDeltaDistanceOverTime();
-//            var maxL = group.ext2().getMaxDeltaROverTime();
-//            var maxH = group.ext2().getMaxDeltaZOverTime();
-//
-//            mDesc2Label.setText("ΔL=%.3f (%s)".formatted(maxD.getDeltaDistanceOverTime(), maxD.ext().getShortName()));
-//            mDesc3Label.setText("ΔP=%.3f (%s)".formatted(maxL.getDeltaROverTime(), maxL.ext().getShortName()));
-//            mDesc4Label.setText("ΔH=%.3f (%s)".formatted(maxH.getDeltaZOverTime(), maxH.ext().getShortName()));
-//
-//        } catch (Exception e) {
-//        }
-//        setGraphic(mVBox);
         setText(null);
+        mTooltip.setText(Strings.CS.replace(g.getComment(), "\\n", "\r"));
+
         var header = g.getName();
         if (StringUtils.isNotBlank(g.getStatus())) {
             header = "%s [%s]".formatted(header, g.getStatus());
         }
 
-        var alarms = StringHelper.getJoinedUnique(", ",
-                StringUtils.removeEndIgnoreCase(g.getAlarm1Id(), "_h"),
-                StringUtils.removeEndIgnoreCase(g.getAlarm2Id(), "_p")
-        );
+        var alarms = g.getAlarm1Id();
         var sign = "⇐";
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(g.getCategory(), "NOVALUE"), alarms);
         var dateSB = new StringBuilder(StringHelper.toString(g.getDateLatest() == null ? null : g.getDateLatest().toLocalDate(), "NOVALUE"));
@@ -98,27 +84,22 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
             }
         }
 
-        var dateRolling = StringHelper.toString(g.getDateRolling(), "NOVALUE");
-        var desc3 = "%s: %s".formatted(dateRolling, g.ext2().getNumOfObservations());
-
         var dateZero = StringHelper.toString(g.getDateZero(), "NOVALUE");
-        var desc4 = "%s: %d/%d".formatted(dateZero, g.ext().getNumOfObservationsFiltered(), g.ext().getNumOfObservations());
 
-//        mAlarmIndicator.update(g);
+        mAlarmIndicator.update(g);
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
-        mDesc2Label.setText(dateSB.toString());
-        mDesc3Label.setText(desc3);
-        mDesc4Label.setText(desc4);
+        mDesc2Label.setText(Strings.CI.remove(g.getRef(), g.getName()));
+        mDesc3Label.setText(dateSB.toString());
+        mDesc4Label.setText(dateZero);
 
-        mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + g.getName()));
-        mTooltip.setText("TODO");
         setGraphic(mVBox);
     }
 
     private void clearContent() {
         setText(null);
         setGraphic(null);
+        mTooltip.setText("");
     }
 
     private void createUI() {
@@ -131,14 +112,36 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
                 mDesc4Label
         );
 
-//        mHeaderLabel.setGraphic(mAlarmIndicator);
-//        mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
+        mHeaderLabel.setGraphic(mAlarmIndicator);
+        mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
         mVBox.getChildren().stream()
                 .filter(c -> c instanceof Control)
                 .map(c -> (Control) c)
                 .forEach(o -> o.setTooltip(mTooltip));
 
         mTooltip.setShowDelay(Duration.seconds(2));
+    }
+
+    private class AlarmIndicator extends HBox {
+
+        private static final double SIZE = FxHelper.getUIScaled(12);
+        private Circle mResultantShape;
+
+        public AlarmIndicator() {
+            super(SIZE / 4);
+            createUI();
+        }
+
+        public void update(BTopoConvergenceGroup p) {
+            mResultantShape.setFill(TopoHelper.getAlarmColorFx(p));
+        }
+
+        private void createUI() {
+            mResultantShape = new Circle(SIZE / 2);
+            var hPane = new StackPane(mResultantShape);
+
+            getChildren().setAll(hPane);
+        }
     }
 
 }

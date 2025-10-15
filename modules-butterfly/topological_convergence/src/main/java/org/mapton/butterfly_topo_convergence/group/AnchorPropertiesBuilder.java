@@ -22,7 +22,6 @@ import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -43,7 +42,7 @@ public class AnchorPropertiesBuilder extends PropertiesBuilder<BTopoConvergenceP
 
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getConvergenceGroup().getName());
-        propertyMap.put(getCatKey(cat1, "Gränsvärde (grupp)"), p.getConvergenceGroup().getLimit());
+        propertyMap.put(getCatKey(cat1, "Gränsvärde (grupp)"), 666);
         propertyMap.put(getCatKey(cat1, "P1"), p.getP1().getName());
         propertyMap.put(getCatKey(cat1, "P2"), p.getP2().getName());
         propertyMap.put(getCatKey(cat1, Dict.FIRST.toString()), firstDate);
@@ -64,8 +63,8 @@ public class AnchorPropertiesBuilder extends PropertiesBuilder<BTopoConvergenceP
         );
         propertyMap.put(getCatKey(cat1, "Delta 1"), desc2);
         propertyMap.put(getCatKey(cat1, "Delta 2"), desc3);
-        var dz = StringHelper.round(p.getObservations().getLast().getDeltaDeltaZComparedToFirst(), 3);
-        propertyMap.put(getCatKey(cat1, "Delta Z"), dz);
+//        var dz = StringHelper.round(p.getObservations().getLast().getDeltaDeltaZComparedToFirst(), 3);
+        propertyMap.put(getCatKey(cat1, "Delta Z"), 666);
 
         return propertyMap;
     }

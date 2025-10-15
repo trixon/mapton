@@ -75,11 +75,11 @@ public class ConvergenceGroupChartBuilder2 extends ChartBuilder<BTopoConvergence
     @Override
     public void updateDataset(BTopoConvergenceGroup p) {
         mDataset.removeAllSeries();
-        var title = p.ext2().getControlPointsWithoutAnchor().stream()
+        var title = p.ext().getControlPointsWithoutAnchor().stream()
                 .map(pp -> pp.getName())
                 .collect(Collectors.joining(", "));
         var series = new XYSeries(title);
-        p.ext2().getProjected2dCoordinates().forEach(pp -> series.add(pp.getX(), pp.getY()));
+        //p.ext().getProjected2dCoordinates().forEach(pp -> series.add(pp.getX(), pp.getY()));
         mDataset.addSeries(series);
     }
 

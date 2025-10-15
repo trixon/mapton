@@ -15,18 +15,17 @@
  */
 package org.mapton.butterfly_topo_convergence.group.chart;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.time.MovingAverage;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -36,13 +35,11 @@ import se.trixon.almond.util.DateHelper;
  */
 public class ConvergenceGroupChartBuilder extends XyzChartBuilder<BTopoConvergenceGroup> {
 
-    private final TimeSeries mTimeSeriesX = new TimeSeries("Mätning");
-
     public ConvergenceGroupChartBuilder() {
-        initChart("mm/m", "0.0");
+        initChart("mm", "0.0");
 
         var plot = (XYPlot) mChart.getPlot();
-        plot.getRangeAxis().setVisible(false);
+//        plot.getRangeAxis().setVisible(false);
     }
 
     @Override
@@ -55,13 +52,12 @@ public class ConvergenceGroupChartBuilder extends XyzChartBuilder<BTopoConvergen
             setTitle(p);
             updateDataset(p);
             var plot = (XYPlot) mChart.getPlot();
-            setDateRangeNullNow(plot, p, mDateNull);
+            if (mDateNull != null) {
+                setDateRangeNullNow(plot, p, mDateNull);
+            }
 
             plot.clearRangeMarkers();
-
-            var rangeAxis = (NumberAxis) plot.getRangeAxis();
-            rangeAxis.setAutoRange(true);
-
+            plotAlarmIndicators(p, 1000);
             return getChartPanel();
         };
 
@@ -70,13 +66,7 @@ public class ConvergenceGroupChartBuilder extends XyzChartBuilder<BTopoConvergen
 
     @Override
     public void setTitle(BTopoConvergenceGroup p) {
-        super.setTitle(p);
-//        Color color = TopoHelper.getAlarmColorAwt(p);
-        Color color = Color.BLUE;
-        if (color == Color.RED || color == Color.GREEN) {
-            color = color.darker();
-        }
-        mChart.getTitle().setPaint(color);
+        setTitle(p, TopoHelper.getAlarmColorAwt(p));
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
         var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
         var date = "(%s) → %s".formatted(dateFirst, dateLast);
@@ -88,35 +78,38 @@ public class ConvergenceGroupChartBuilder extends XyzChartBuilder<BTopoConvergen
 
     @Override
     public synchronized void updateDataset(BTopoConvergenceGroup p) {
-        mTimeSeriesX.clear();
-
         var plot = (XYPlot) mChart.getPlot();
         resetPlot(plot);
         plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
-        p.ext().getObservationsTimeFiltered().forEach(o -> {
-            addNEMarkers(plot, o, true);
-
-            var minute = ChartHelper.convertToMinute(o.getDate());
-            mTimeSeriesX.add(minute, 0.0);
-        });
-
-        var renderer = plot.getRenderer();
-        var avgStroke = new BasicStroke(5.0f);
-        int avdDays = 90 * 60 * 24;
-        int avgSkipMeasurements = 0;
-        boolean plotAvg = false;
-
-        getDataset().addSeries(mTimeSeriesX);
-        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesX.getKey()), Color.RED);
-        if (plotAvg) {
-            var mavg = MovingAverage.createMovingAverage(mTimeSeriesX, "%s (avg)".formatted(mTimeSeriesX.getKey()), avdDays, avgSkipMeasurements);
-            getDataset().addSeries(mavg);
-            int index = getDataset().getSeriesIndex(mavg.getKey());
-            renderer.setSeriesPaint(index, Color.RED);
-            renderer.setSeriesStroke(index, avgStroke);
+        for (var pair : p.ext().getPairs()) {
+            updateDataset(pair);
         }
+        setRange(1.05, 1000, p.ext().getAlarm(BComponent.HEIGHT));
+    }
+
+    private void updateDataset(BTopoConvergencePair pair) {
+        var timeSeries = new TimeSeries(pair.getSimpleName());
+
+        var plot = (XYPlot) mChart.getPlot();
+
+        pair.getObservations().forEach(o -> {
+            addNEMarkers(plot, o, true);
+            if (o.isZeroMeasurement()) {
+//                mDateNull;
+            }
+            var minute = ChartHelper.convertToMinute(o.getDate());
+            Double delta = o.getMeasuredX();
+            timeSeries.addOrUpdate(minute, delta);
+//            if (DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), pair.getDateZero())) {
+            mMinMaxCollection.add(delta);
+//            }
+        });
+        var renderer = plot.getRenderer();
+
+        getDataset().addSeries(timeSeries);
+//        renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), Color.RED);
     }
 
 }

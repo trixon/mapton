@@ -118,7 +118,7 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
 
     private void initListeners() {
         mGroupManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoConvergenceGroup> c) -> {
-            load();
+            //load();
         });
     }
 
@@ -129,8 +129,8 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
 
         for (var group : mGroupManager.getTimeFilteredItems()) {
             var existingPairs = new HashSet<String>();
-            for (var p1 : group.ext2().getControlPoints()) {
-                for (var p2 : group.ext2().getControlPoints()) {
+            for (var p1 : group.ext().getControlPoints()) {
+                for (var p2 : group.ext().getControlPoints()) {
                     if (p1 == p2 || existingPairs.contains("%s-%s".formatted(p2.getName(), p1.getName()))) {
                         continue;
                     }
@@ -179,20 +179,21 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
             }
 
             observations.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
-            pair.setObservations(observations);
+//            pair.setObservations(observations);
         }
 
         pairs.sort((o1, o2) -> {
             if (o1.getObservations().isEmpty() || o2.getObservations().isEmpty()) {
                 return 0;
             } else {
-                var d1 = o1.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
-                var d2 = o2.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
-
-                d1 = Math.abs(d1);
-                d2 = Math.abs(d2);
-
-                return Double.compare(d2, d1);
+//                var d1 = o1.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
+//                var d2 = o2.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
+//
+//                d1 = Math.abs(d1);
+//                d2 = Math.abs(d2);
+//
+//                return Double.compare(d2, d1);
+                return 666;
             }
         });
 

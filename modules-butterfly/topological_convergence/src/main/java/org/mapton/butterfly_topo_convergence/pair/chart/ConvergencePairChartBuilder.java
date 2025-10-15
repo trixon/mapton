@@ -115,7 +115,7 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
 
         for (var o : p.getObservations()) {
             var minute = ChartHelper.convertToMinute(o.getDate());
-            mTimeSeriesDeltaL.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
+//            mTimeSeriesDeltaL.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
         }
 
         if (!p.getObservations().isEmpty()) {
@@ -222,7 +222,7 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
             var series = new TimeSeries(theOtherOne);
             pair.getObservations().forEach(o -> {
                 var minute = ChartHelper.convertToMinute(o.getDate());
-                series.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
+//                series.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
             });
 
             propertyMap.put(cat1 + "#" + theOtherOne, "%.1f mm".formatted(pair.getDeltaDistanceOverTime() * 1000));

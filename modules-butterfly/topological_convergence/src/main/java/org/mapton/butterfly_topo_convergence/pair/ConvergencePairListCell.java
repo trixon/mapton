@@ -78,7 +78,7 @@ class ConvergencePairListCell extends ListCell<BTopoConvergencePair> {
         mPointNamesLabel.setText(desc1);
         var ddd = 0.0;
         if (!pair.getObservations().isEmpty()) {
-            ddd = pair.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
+//            ddd = pair.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
         }
         var desc2 = "ΔL=%.1f mm  ΔP=%.1f mm  ΔH=%.1f mm".formatted(
                 ddd * 1000,

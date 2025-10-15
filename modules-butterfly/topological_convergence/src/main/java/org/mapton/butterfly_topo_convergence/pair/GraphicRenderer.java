@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo_convergence.pair;
 
-import org.mapton.butterfly_topo_convergence.pair.chart.ConvergencePairChartBuilder;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -34,6 +33,7 @@ import org.mapton.api.Mapton;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
+import org.mapton.butterfly_topo_convergence.pair.chart.ConvergencePairChartBuilder;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -125,12 +125,12 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         var path = new Path(pos1, pos2);
         var attrs = new BasicShapeAttributes(mAttributeManager.getPairPathAttributes());
-        var delta = pair.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
+//        var delta = pair.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
         int level = pair.getLevel(mMaterials.length);
         attrs.setOutlineMaterial(mMaterials[level]);
-        if (delta >= 0) {
-            attrs.setOutlineStippleFactor(3);
-        }
+//        if (delta >= 0) {
+//            attrs.setOutlineStippleFactor(3);
+//        }
 
         path.setAttributes(attrs);
         addRenderable(path, true, GraphicRendererItem.LINES, sMapObjects);

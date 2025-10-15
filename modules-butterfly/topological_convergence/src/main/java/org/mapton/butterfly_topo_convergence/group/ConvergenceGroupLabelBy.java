@@ -65,7 +65,7 @@ public enum ConvergenceGroupLabelBy implements LabelBy.Operations {
         return LabelBy.dateValidity(p);
     }),
     MISC_POINT_COUNT(LabelBy.CAT_MISC, "Punktantal", p -> {
-        return Objects.toString(p.ext2().getControlPoints().size(), "-");
+        return Objects.toString(p.ext().getControlPoints().size(), "-");
     }),
     MISC_GROUP(LabelBy.CAT_MISC, Dict.GROUP.toString(), p -> {
         return LabelBy.miscGroup(p);

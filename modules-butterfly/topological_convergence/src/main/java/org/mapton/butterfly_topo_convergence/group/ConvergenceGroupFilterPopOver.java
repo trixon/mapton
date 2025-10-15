@@ -92,6 +92,8 @@ public class ConvergenceGroupFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDisruptor.load();
         mFilterSectionDate.load(mManager.getTemporalRange());
         mFilterSectionMisc.load();
+
+        mManager.activatefilterPopoverLoad(() -> mFilterSectionDate.load(mManager.getTemporalRange()));
     }
 
     @Override
@@ -125,10 +127,6 @@ public class ConvergenceGroupFilterPopOver extends BaseTabbedFilterPopOver {
         );
 
         setContentNode(root);
-
-        mFilterSectionPoint.disable(
-                BFilterSectionPoint.PointElement.ALARM
-        );
     }
 
     private void initListeners() {
