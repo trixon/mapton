@@ -75,7 +75,8 @@ public class BTopoConvergencePairObservation {
     }
 
     private BTopoConvergencePairObservation getFirstObservation() {
-        return mPair.getObservations().getFirst();
+//        return mPair.getObservations().getFirst();
+        return null;
     }
 
 }

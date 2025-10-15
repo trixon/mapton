@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import javafx.geometry.Point3D;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
@@ -33,7 +33,7 @@ public class BTopoConvergencePair extends BXyzPoint {
     private final Point3D mDelta;
     private final double mDistance;
     private transient Ext mExt;
-    private ArrayList<BTopoConvergencePairObservation> mObservations = new ArrayList<>();
+    private ArrayList<BTopoConvergenceObservation> mObservations = new ArrayList<>();
     private BTopoControlPoint mP1;
     private BTopoControlPoint mP2;
 
@@ -42,7 +42,6 @@ public class BTopoConvergencePair extends BXyzPoint {
         mP1 = p1;
         mP2 = p2;
         setName("%s → %s".formatted(p1.getName(), p2.getName()));
-        mConvergenceGroup.ext2().getPairs().add(this);
 
         var p3d1 = new Point3D(p1.getZeroX(), p1.getZeroY(), p1.getZeroZ());
         var p3d2 = new Point3D(p2.getZeroX(), p2.getZeroY(), p2.getZeroZ());
@@ -55,6 +54,7 @@ public class BTopoConvergencePair extends BXyzPoint {
         setZeroZ(midPoint.getZ() + offset);
     }
 
+    @Override
     public Ext ext() {
         if (mExt == null) {
             mExt = new Ext();
@@ -75,8 +75,9 @@ public class BTopoConvergencePair extends BXyzPoint {
         if (mObservations.isEmpty()) {
             return 0;
         } else {
-            return mObservations.getLast().getDeltaDistanceInPairForSameDate()
-                    - mObservations.getFirst().getDeltaDistanceInPairForSameDate();
+//            return mObservations.getLast().getDeltaDistanceInPairForSameDate()
+//                    - mObservations.getFirst().getDeltaDistanceInPairForSameDate();
+            return 666;
         }
     }
 
@@ -89,8 +90,9 @@ public class BTopoConvergencePair extends BXyzPoint {
             return 0;
         } else {
             mObservations.getLast();
-            return mObservations.getLast().getDeltaRInPairForSameDate()
-                    - mObservations.getFirst().getDeltaRInPairForSameDate();
+//            return mObservations.getLast().getDeltaRInPairForSameDate()
+//                    - mObservations.getFirst().getDeltaRInPairForSameDate();
+            return 666;
         }
     }
 
@@ -103,8 +105,9 @@ public class BTopoConvergencePair extends BXyzPoint {
             return 0;
         } else {
             mObservations.getLast();
-            return mObservations.getLast().getDeltaHInPairForSameDate()
-                    - mObservations.getFirst().getDeltaHInPairForSameDate();
+//            return mObservations.getLast().getDeltaHInPairForSameDate()
+//                    - mObservations.getFirst().getDeltaHInPairForSameDate();
+            return 666;
         }
     }
 
@@ -116,12 +119,12 @@ public class BTopoConvergencePair extends BXyzPoint {
         if (getObservations().isEmpty()) {
             return 0;
         }
-        var delta = getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
-        int level = (int) Math.min(length - 1, (Math.abs(delta) / getConvergenceGroup().getLimit()) * (length - 1));
-        return level;
+//        var delta = getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
+//        int level = (int) Math.min(length - 1, (Math.abs(delta) / 0.002) * (length - 1));
+        return 0;
     }
 
-    public ArrayList<BTopoConvergencePairObservation> getObservations() {
+    public ArrayList<BTopoConvergenceObservation> getObservations() {
         return mObservations;
     }
 
@@ -133,11 +136,15 @@ public class BTopoConvergencePair extends BXyzPoint {
         return mP2;
     }
 
+    public String getSimpleName() {
+        return Strings.CI.remove(getName(), mConvergenceGroup.getName());
+    }
+
     public void setConvergenceGroup(BTopoConvergenceGroup convergenceGroup) {
         this.mConvergenceGroup = convergenceGroup;
     }
 
-    public void setObservations(ArrayList<BTopoConvergencePairObservation> observations) {
+    public void setObservations(ArrayList<BTopoConvergenceObservation> observations) {
         this.mObservations = observations;
     }
 
@@ -176,7 +183,7 @@ public class BTopoConvergencePair extends BXyzPoint {
         }
 
         public String getShortName() {
-            return StringUtils.remove(getName(), getConvergenceGroup().getName());
+            return Strings.CI.remove(getName(), getConvergenceGroup().getName());
         }
 
     }

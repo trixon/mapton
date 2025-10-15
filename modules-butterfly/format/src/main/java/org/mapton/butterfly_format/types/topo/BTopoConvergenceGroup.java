@@ -16,22 +16,22 @@
 package org.mapton.butterfly_format.types.topo;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
-import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BTopoConvergenceGroup extends BTopoControlPoint {
+public class BTopoConvergenceGroup extends BXyzPoint {
 
     private transient Ext mExt;
-    private double mLimit;
-    private String mRef;
+    private String ref;
 
-    public Ext ext2() {
+    @Override
+    public Ext ext() {
         if (mExt == null) {
             mExt = new Ext();
         }
@@ -39,27 +39,24 @@ public class BTopoConvergenceGroup extends BTopoControlPoint {
         return mExt;
     }
 
-    public double getLimit() {
-        return mLimit;
-    }
-
     public String getRef() {
-        return mRef;
-    }
-
-    public void setLimit(double limit) {
-        mLimit = limit;
+        return ref;
     }
 
     public void setRef(String ref) {
-        mRef = ref;
+        this.ref = ref;
     }
 
-    public class Ext extends BXyzPoint.Ext<BTopoControlPointObservation> {
+    public class Ext extends BXyzPoint.Ext<BTopoConvergenceObservation> {
 
         private BTopoControlPoint mAnchorPoint;
         private ArrayList<BTopoControlPoint> mControlPoints = new ArrayList<>();
-        private ArrayList<BTopoConvergencePair> mPairs = new ArrayList<>();
+        private final ArrayList<BTopoConvergencePair> mPairs = new ArrayList<>();
+
+        @Override
+        public int getAlarmLevel(BXyzPointObservation o) {
+            return getAlarmLevel(BComponent.HEIGHT, o.getMeasuredX() / 1000d);
+        }
 
         public BTopoControlPoint getAnchorPoint() {
             return mAnchorPoint;
@@ -108,29 +105,6 @@ public class BTopoConvergenceGroup extends BTopoControlPoint {
 
         public ArrayList<BTopoConvergencePair> getPairs() {
             return mPairs;
-        }
-
-        public ArrayList<Point2D> getProjected2dCoordinates() {
-            var viewDistance = 50.0;
-            var points2d = new ArrayList<Point2D>();
-            var points3d = getControlPointsWithoutAnchor().stream()
-                    .map(p1 -> new Point3D(p1.getZeroX(), p1.getZeroY(), p1.getZeroZ()))
-                    .toList();
-
-            for (var point : points3d) {
-                var x2d = (point.getX() * viewDistance) / point.getY();
-                var y2d = (point.getZ() * viewDistance) / point.getY();
-                points2d.add(new Point2D(x2d, y2d));
-            }
-
-            var avgX = points3d.stream().mapToDouble(p -> p.getX()).average().orElse(0.0);
-            var avgY = points3d.stream().mapToDouble(p -> p.getY()).average().orElse(0.0);
-            points2d = points2d.stream()
-                    .map(p -> {
-                        return p.subtract(avgX, avgY);
-                    }).collect(Collectors.toCollection(ArrayList::new));
-
-            return points2d;
         }
 
         public boolean hasAnchorPoint() {
