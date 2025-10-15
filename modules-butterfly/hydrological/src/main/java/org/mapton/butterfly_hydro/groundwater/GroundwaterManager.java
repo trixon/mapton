@@ -15,20 +15,24 @@
  */
 package org.mapton.butterfly_hydro.groundwater;
 
-import org.mapton.butterfly_hydro.groundwater.chart.GroundwaterChartBuilder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MDisruptorProvider;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MTemporalRange;
+import org.mapton.butterfly_core.api.BMeasurementReport;
+import org.mapton.butterfly_core.api.BMeasurementTab;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
+import org.mapton.butterfly_hydro.groundwater.chart.GroundwaterChartBuilder;
+import org.mapton.butterfly_hydro.groundwater.table.StandardMeasurementPopulator;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.CollectionHelper;
@@ -40,9 +44,9 @@ import se.trixon.almond.util.CollectionHelper;
 public class GroundwaterManager extends BaseManager<BHydroGroundwaterPoint> {
 
     private final static String DISRUPTOR_NAME = Bundle.CTL_GroundwaterAction();
-
     private final GroundwaterChartBuilder mChartBuilder = new GroundwaterChartBuilder();
     private final GroundwaterPropertiesBuilder mPropertiesBuilder = new GroundwaterPropertiesBuilder();
+    private final StandardMeasurementPopulator mStandardMeasurementPopulator = new StandardMeasurementPopulator();
 
     public static GroundwaterManager getInstance() {
         return Holder.INSTANCE;
@@ -55,6 +59,23 @@ public class GroundwaterManager extends BaseManager<BHydroGroundwaterPoint> {
     @Override
     public Object getObjectChart(BHydroGroundwaterPoint selectedObject) {
         return mChartBuilder.build(selectedObject);
+    }
+
+    @Override
+    public Object getObjectMeasurements(BHydroGroundwaterPoint p) {
+        if (p == null) {
+            return null;
+        } else {
+            mStandardMeasurementPopulator.populate(p);
+            var tabs = List.of(new BMeasurementTab("Standard", mStandardMeasurementPopulator.getTableView()));
+            var measurementReport = new BMeasurementReport(p, tabs);
+            var ext = p.ext();
+            measurementReport.setFirstDate(ext.getObservationFilteredFirstDate());
+            measurementReport.setLastDate(ext.getObservationFilteredLastDate());
+            measurementReport.setNumOfReplacements(0);
+            measurementReport.setNumOfMeasurements(ext.getNumOfObservations());
+            return measurementReport;
+        }
     }
 
     @Override
