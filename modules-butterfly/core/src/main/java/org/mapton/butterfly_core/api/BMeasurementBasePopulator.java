@@ -18,12 +18,15 @@ package org.mapton.butterfly_core.api;
 import java.time.format.DateTimeFormatter;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -112,12 +115,27 @@ public abstract class BMeasurementBasePopulator<T extends BXyzPoint> {
 
     public abstract void populate(T p);
 
+    private void copy(ObservableList<BMeasurementRowXyz> rows) {
+        var sb = new StringBuilder();
+        for (var column : mTableView.getColumns()) {
+            sb.append(column.getText()).append("\t");
+        }
+        sb.setLength(sb.length() - 1);
+        sb.append("\n");
+
+        var clipboard = Clipboard.getSystemClipboard();
+        var content = new ClipboardContent();
+        content.putString(sb.toString().trim());
+        clipboard.setContent(content);
+
+    }
+
     private void copyAllRows() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        copy(mTableView.getItems());
     }
 
     private void copySelectedRows() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        copy(mTableView.getSelectionModel().getSelectedItems());
     }
 
     private void initContextMenu() {
