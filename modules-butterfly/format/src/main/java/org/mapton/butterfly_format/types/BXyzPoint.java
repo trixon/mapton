@@ -377,12 +377,16 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         }
 
         public int getAlarmLevel(BComponent component, BXyzPointObservation o) {
+            return getAlarmLevel(component, component == BComponent.HEIGHT ? o.ext().getDeltaZ() : o.ext().getDelta2d());
+        }
+
+        public int getAlarmLevel(BComponent component, Double delta) {
             var alarm = getAlarm(component);
 
-            if (ObjectUtils.anyNull(alarm, o)) {
+            if (ObjectUtils.anyNull(alarm, delta)) {
                 return -1;
             } else {
-                return alarm.ext().getLevel(component == BComponent.HEIGHT ? o.ext().getDeltaZ() : o.ext().getDelta2d());
+                return alarm.ext().getLevel(delta);
             }
         }
 

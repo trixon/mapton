@@ -71,6 +71,7 @@ import org.mapton.butterfly_format.types.tmo.BVattenkemi;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
 
 /**
  *
@@ -113,6 +114,7 @@ public class Butterfly {
     private final ArrayList<BTopoControlPoint> mTopoControlPoints = new ArrayList<>();
     private final ArrayList<BTopoControlPointObservation> mTopoControlPointsObservations = new ArrayList<>();
     private final ArrayList<BTopoConvergenceGroup> mTopoConvergenceGroups = new ArrayList<>();
+    private final ArrayList<BTopoConvergenceObservation> mTopoConvergenceObservations = new ArrayList<>();
     private final ArrayList<BAcousticVibrationChannel> mVibrationChannels = new ArrayList<>();
     private final ArrayList<BAcousticVibrationLimit> mVibrationLimits = new ArrayList<>();
     private final ArrayList<BAcousticVibrationObservation> mVibrationObservations = new ArrayList<>();
@@ -241,7 +243,10 @@ public class Butterfly {
         }.load(sourceDir, "structuralTiltPointsObservations.csv", mStructuralTiltPointsObservations);
 
         new ImportFromCsv<BTopoConvergenceGroup>(BTopoConvergenceGroup.class) {
-        }.load(sourceDir, "topoControlPointsConvergence.csv", mTopoConvergenceGroups);
+        }.load(sourceDir, "topoConvergenceGroups.csv", mTopoConvergenceGroups);
+
+        new ImportFromCsv<BTopoConvergenceObservation>(BTopoConvergenceObservation.class) {
+        }.load(sourceDir, "topoConvergenceObservations.csv", mTopoConvergenceObservations);
 
         //Hydro
         new ImportFromCsv<BHydroGroundwaterPoint>(BHydroGroundwaterPoint.class) {
@@ -633,6 +638,10 @@ public class Butterfly {
 
         public ArrayList<BTopoConvergenceGroup> getConvergenceGroups() {
             return mTopoConvergenceGroups;
+        }
+
+        public ArrayList<BTopoConvergenceObservation> getConvergenceObservations() {
+            return mTopoConvergenceObservations;
         }
 
         private void postLoad() {
