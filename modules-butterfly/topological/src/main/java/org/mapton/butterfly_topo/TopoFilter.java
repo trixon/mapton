@@ -813,15 +813,25 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     }
 
     private boolean validateMeasCode(BTopoControlPoint p) {
-        if (p.ext().getObservationsAllRaw().isEmpty()) {
+        if (mMeasCodeCheckModel.isEmpty() || p.ext().getObservationsAllRaw().isEmpty()) {
             return true;
         }
+
         var firstIsZero = p.ext().getObservationRawFirstDate().equals(p.getDateZero());
-        var valid = mMeasCodeCheckModel.isEmpty()
-                || mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeZero")) && !firstIsZero
-                || mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeZeroIs")) && firstIsZero
-                || mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeReplacement")) && p.ext().getNumOfReplacementsAfterZero() > 0
-                || mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeReplacementNot")) && p.ext().getNumOfReplacementsAfterZero() == 0;
+        var chkIsFirstZero = mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeZeroIs"));
+        var chkIsFirstZeroNot = mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeZero"));
+        var chkHasReplacements = mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeReplacement"));
+        var chkHasReplacementsNot = mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeReplacementNot"));
+
+        var validFirstIsZero = chkIsFirstZero ? firstIsZero : true;
+        var validFirstIsZeroNot = chkIsFirstZeroNot ? !firstIsZero : true;
+        var validHasReplacements = chkHasReplacements ? p.ext().getNumOfReplacementsAfterZero() > 0 : true;
+        var validHasReplacementsNot = chkHasReplacementsNot ? p.ext().getNumOfReplacementsAfterZero() == 0 : true;
+
+        var valid = validFirstIsZero
+                && validFirstIsZeroNot
+                && validHasReplacements
+                && validHasReplacementsNot;
 
         return valid;
     }
