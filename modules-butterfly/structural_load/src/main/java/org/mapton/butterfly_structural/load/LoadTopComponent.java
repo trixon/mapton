@@ -46,7 +46,7 @@ import org.openide.windows.TopComponent;
         preferredID = "LoadTopComponent"
 )
 @Messages({
-    "CTL_LoadAction=Load cell"
+    "CTL_LoadAction=Load cells"
 })
 public final class LoadTopComponent extends MTopComponent {
 

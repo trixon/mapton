@@ -159,7 +159,11 @@ public class TopoHelper {
     }
 
     public static int getAlarmLevel(BTopoControlPoint p) {
-        return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
+        try {
+            return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
+        } catch (Exception e) {
+            return -1;
+        }
     }
 
     public static int getAlarmLevel(BTopoConvergenceGroup p) {

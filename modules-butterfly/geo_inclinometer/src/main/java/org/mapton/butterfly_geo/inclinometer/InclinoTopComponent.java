@@ -46,7 +46,7 @@ import org.openide.windows.TopComponent;
         preferredID = "InclinometerTopComponent"
 )
 @Messages({
-    "CTL_InclinometerAction=Inclinometer"
+    "CTL_InclinometerAction=Inclinometers"
 })
 public final class InclinoTopComponent extends MTopComponent {
 

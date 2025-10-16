@@ -47,7 +47,7 @@ import org.openide.windows.TopComponent;
         preferredID = "ExtensoTopComponent"
 )
 @Messages({
-    "CTL_ExtensometerAction=Extensometer"
+    "CTL_ExtensometerAction=Extensometers"
 })
 public final class ExtensoTopComponent extends MTopComponent {
 
