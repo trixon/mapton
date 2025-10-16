@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo_convergence.group;
 
-import java.time.LocalDate;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -75,23 +74,15 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
         var alarms = g.getAlarm1Id();
         var sign = "⇐";
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(g.getCategory(), "NOVALUE"), alarms);
-        var dateSB = new StringBuilder(StringHelper.toString(g.getDateLatest() == null ? null : g.getDateLatest().toLocalDate(), "NOVALUE"));
-        var nextDate = g.ext().getObservationRawNextDate();
-        if (nextDate != null) {
-            dateSB.append(" (").append(nextDate.toString()).append(")");
-            if (nextDate.isBefore(LocalDate.now())) {
-                dateSB.append(" ").append(sign);
-            }
-        }
-
+        var dateLast = StringHelper.toString(g.getDateLatest() == null ? null : g.getDateLatest().toLocalDate(), "NOVALUE");
         var dateZero = StringHelper.toString(g.getDateZero(), "NOVALUE");
 
         mAlarmIndicator.update(g);
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(Strings.CI.remove(g.getRef(), g.getName()));
-        mDesc3Label.setText(dateSB.toString());
-        mDesc4Label.setText(dateZero);
+//        mDesc3Label.setText(dateLast.toString());
+        mDesc4Label.setText("%s — %s".formatted(dateZero, dateLast));
 
         setGraphic(mVBox);
     }

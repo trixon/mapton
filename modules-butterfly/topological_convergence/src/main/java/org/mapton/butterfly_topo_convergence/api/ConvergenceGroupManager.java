@@ -133,6 +133,7 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
                     for (int j = i + 1; j < n; j++) {
                         var pair = new BTopoConvergencePair(g, controlPoints.get(i), controlPoints.get(j), offset);
                         var observations = pairToObservations.getOrDefault(pair.getP1().getName() + "::" + pair.getP2().getName(), new ArrayList<>());
+                        observations.sort(Comparator.comparing(BTopoConvergenceObservation::getDate));
                         for (var o : observations) {
                             o.ext().setParent(g);
                             dates.add(o.getDate());
@@ -167,6 +168,7 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
                         .flatMap(entry -> entry.stream()
                         .max(Comparator.comparingDouble(value -> Math.abs(value.getMeasuredX())))
                         .stream())
+                        .sorted(Comparator.comparing(BTopoConvergenceObservation::getDate))
                         .collect(Collectors.toList());
 
                 g.ext().getObservationsAllRaw().addAll(maxObservationsPerDate);

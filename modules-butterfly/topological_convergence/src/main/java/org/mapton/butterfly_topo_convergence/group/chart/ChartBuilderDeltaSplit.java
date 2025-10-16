@@ -30,15 +30,16 @@ import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
  */
 public class ChartBuilderDeltaSplit {
 
-    private final ChartBuilderDelta mCompleteChartBuilder = new ChartBuilderDelta(false, null);
+    private final ChartBuilderDelta mCompleteChartBuilder;
     private final BDimension mDimension;
     private final Function<BTopoConvergenceObservation, Double> mFunction;
-    private final ChartBuilderDelta mLatestChartBuilder = new ChartBuilderDelta(false, 7);
+    private final ChartBuilderDelta mLatestChartBuilder;
 
     public ChartBuilderDeltaSplit(BDimension dimension, Function<BTopoConvergenceObservation, Double> function) {
+        mCompleteChartBuilder = new ChartBuilderDelta(null, function);
+        mLatestChartBuilder = new ChartBuilderDelta(7, function);
         mDimension = dimension;
         mFunction = function;
-//        initChart(null, null);
     }
 
     public synchronized Callable<JPanel> build(BTopoConvergenceGroup p) {

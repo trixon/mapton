@@ -23,12 +23,10 @@ import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Minute;
-import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_topo.TopoHelper;
 import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -38,11 +36,9 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoConvergenceG
 
     protected Minute mSubSetLastMinute;
     protected Minute mSubSetZeroMinute;
-    protected final TimeSeries mTimeSeries1d = new TimeSeries(Dict.Geometry.HEIGHT);
-    protected final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
 
     public ChartBuilderBase() {
-        initChart("mm", "0");
+        initChart("mm", "0.0");
     }
 
     @Override
@@ -86,7 +82,6 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoConvergenceG
             getLeftSubTextTitle().setText(date);
         }
 
-        String delta = p.ext().deltaZero().getDelta1d2d(0, 1000);
-        getRightSubTextTitle().setText(delta);
+        getRightSubTextTitle().setText("TODO");
     }
 }
