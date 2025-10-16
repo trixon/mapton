@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_topo_convergence.api;
 
+import com.sun.jna.platform.KeyboardUtils;
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +36,7 @@ import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo_convergence.group.ConvergenceGroupPropertiesBuilder;
+import org.mapton.butterfly_topo_convergence.group.chart.ChartAggregate;
 import org.mapton.butterfly_topo_convergence.group.chart.ConvergenceGroupChartBuilder;
 import org.openide.util.Exceptions;
 
@@ -43,9 +46,10 @@ import org.openide.util.Exceptions;
  */
 public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> {
 
+    private final ChartAggregate mChartAggregate = new ChartAggregate();
     private final ConvergenceGroupChartBuilder mChartBuilder = new ConvergenceGroupChartBuilder();
-    private final ConvergenceGroupPropertiesBuilder mPropertiesBuilder = new ConvergenceGroupPropertiesBuilder();
     private Runnable mFilterReloadRunnable;
+    private final ConvergenceGroupPropertiesBuilder mPropertiesBuilder = new ConvergenceGroupPropertiesBuilder();
 
     public static ConvergenceGroupManager getInstance() {
         return Holder.INSTANCE;
@@ -65,7 +69,12 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
 
     @Override
     public Object getObjectChart(BTopoConvergenceGroup selectedObject) {
-        return mChartBuilder.build(selectedObject);
+        boolean isCtrlPressed = KeyboardUtils.isPressed(KeyEvent.VK_CONTROL);
+        if (isCtrlPressed) {
+            return mChartBuilder.build(selectedObject);
+        } else {
+            return mChartAggregate.build(selectedObject);
+        }
     }
 
     @Override
@@ -185,7 +194,9 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
             Exceptions.printStackTrace(e);
         }
 
-        mFilterReloadRunnable.run();
+        if (mFilterReloadRunnable != null) {
+            mFilterReloadRunnable.run();
+        }
     }
 
     @Override
