@@ -136,6 +136,7 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
                         observations.sort(Comparator.comparing(BTopoConvergenceObservation::getDate));
                         for (var o : observations) {
                             o.ext().setParent(g);
+                            o.ext().setPair(pair);
                             dates.add(o.getDate());
                             if (o.isZeroMeasurement()) {
                                 g.ext().setStoredZeroDateTime(o.getDate());

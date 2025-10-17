@@ -18,6 +18,7 @@ package org.mapton.butterfly_topo_convergence.group.chart;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.TreeMap;
 import java.util.function.Function;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.XYPlot;
@@ -36,6 +37,7 @@ import se.trixon.almond.util.DateHelper;
 public class ChartBuilderDelta extends ChartBuilderBase {
 
     private final Function<BTopoConvergenceObservation, Double> mFunction;
+    private TreeMap<Double, BTopoConvergencePair> mLastWeekDeltaToPair = new TreeMap<>();
 
     public ChartBuilderDelta(Integer recentDaysDefault, Function<BTopoConvergenceObservation, Double> function) {
         mFunction = function;
@@ -45,6 +47,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
 
     @Override
     public void updateDataset(BTopoConvergenceGroup p) {
+        mLastWeekDeltaToPair.clear();
         var plot = (XYPlot) mChart.getPlot();
         var rangeAxis = plot.getRangeAxis();
         resetPlot(plot);
@@ -63,7 +66,11 @@ public class ChartBuilderDelta extends ChartBuilderBase {
             dateAxis.setRange(DateHelper.convertToDate(p.getDateZero()), nowAsDate);
             setRange(1.05, 1000, p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
         } else {
-            var subTitle = "TODO";
+            var subTitle = "";
+            var entry = mLastWeekDeltaToPair.lastEntry();
+            if (entry != null) {
+                subTitle = "%+.1f %s".formatted(entry.getKey(), entry.getValue().getSimpleName());
+            }
             getRightSubTextTitle().setText(subTitle);
             dateAxis.setRange(DateHelper.convertToDate(now.minusDays(getRecentDays())), nowAsDate);
             rangeAxis.setLabel("");
@@ -76,6 +83,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         var startDate = isCompleteView() ? LocalDateTime.MIN : LocalDateTime.now().minusDays(getRecentDays());
         Double firstDelta = null;
         Double lastDelta = null;
+
         for (var o : pair.getObservations()) {
             if (o.getDate().isAfter(startDate)) {
                 var delta = mFunction.apply(o);
@@ -86,6 +94,12 @@ public class ChartBuilderDelta extends ChartBuilderBase {
                 timeSeries.add(ChartHelper.convertToMinute(o.getDate()), delta);
                 mMinMaxCollection.add(delta);
             }
+        }
+
+        try {
+            mLastWeekDeltaToPair.put(Math.abs(lastDelta - firstDelta), pair);
+        } catch (Exception e) {
+            //nvm
         }
 
         getDataset().addSeries(timeSeries);
@@ -107,7 +121,5 @@ public class ChartBuilderDelta extends ChartBuilderBase {
 
             mDateEnd = DateHelper.convertToDate(o.getDate());
         });
-
     }
-
 }

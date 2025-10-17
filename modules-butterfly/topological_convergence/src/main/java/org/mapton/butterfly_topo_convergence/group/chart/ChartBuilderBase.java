@@ -80,8 +80,8 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoConvergenceG
             var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
             var date = "(%s) → %s".formatted(dateFirst, dateLast);
             getLeftSubTextTitle().setText(date);
+            getRightSubTextTitle().setText(p.ext().getLastDiff());
         }
 
-        getRightSubTextTitle().setText("TODO");
     }
 }

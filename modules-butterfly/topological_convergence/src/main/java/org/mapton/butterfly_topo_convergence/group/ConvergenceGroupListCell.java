@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo_convergence.group;
 
+import java.util.List;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -26,6 +27,7 @@ import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_topo.TopoHelper;
 import se.trixon.almond.util.StringHelper;
@@ -38,7 +40,7 @@ import se.trixon.almond.util.fx.FxHelper;
 class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
 
     private final Label mDesc1Label = new Label();
-    private final Label mDesc2Label = new Label();
+//    private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
     private final Label mDesc4Label = new Label();
     private final Label mHeaderLabel = new Label();
@@ -70,18 +72,18 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
         if (StringUtils.isNotBlank(g.getStatus())) {
             header = "%s [%s]".formatted(header, g.getStatus());
         }
+        header = header + " (%d)".formatted(g.ext().getPairs().size());
+        var alarm = g.ext().getAlarm(BComponent.HEIGHT);
 
-        var alarms = g.getAlarm1Id();
-        var sign = "⇐";
-        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(g.getCategory(), "NOVALUE"), alarms);
+        var alarmInfo = g.getAlarm1Id();
+        var desc1 = "%s: %s".formatted(alarmInfo, String.join(", ", List.of(alarm.getLimit1(), alarm.getLimit2(), alarm.getLimit3())));
         var dateLast = StringHelper.toString(g.getDateLatest() == null ? null : g.getDateLatest().toLocalDate(), "NOVALUE");
         var dateZero = StringHelper.toString(g.getDateZero(), "NOVALUE");
-
         mAlarmIndicator.update(g);
         mHeaderLabel.setText(header);
-        mDesc1Label.setText(desc1);
-        mDesc2Label.setText(Strings.CI.remove(g.getRef(), g.getName()));
-//        mDesc3Label.setText(dateLast.toString());
+        mDesc1Label.setText(alarmInfo);
+//        mDesc2Label.setText(Strings.CI.remove(g.getRef(), g.getName()));
+        mDesc3Label.setText(g.ext().getLastDiff());
         mDesc4Label.setText("%s — %s".formatted(dateZero, dateLast));
 
         setGraphic(mVBox);
@@ -98,7 +100,7 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
         mVBox = new VBox(
                 mHeaderLabel,
                 mDesc1Label,
-                mDesc2Label,
+                //                mDesc2Label,
                 mDesc3Label,
                 mDesc4Label
         );
