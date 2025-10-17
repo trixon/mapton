@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo_convergence.group;
 
+import org.mapton.butterfly_topo_convergence.group.graphics.GraphicItem;
 import java.util.stream.Stream;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -35,7 +36,7 @@ public class ConvergenceGroupOptionsView extends BOptionsView {
     private static final ConvergenceGroupLabelBy DEFAULT_LABEL_BY = ConvergenceGroupLabelBy.NAME;
     private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;
 
-    private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public ConvergenceGroupOptionsView(ConvergenceGroupLayerBundle layerBundle) {
@@ -46,7 +47,7 @@ public class ConvergenceGroupOptionsView extends BOptionsView {
         initSession();
     }
 
-    public IndexedCheckModel<GraphicRendererItem> getGraphicCheckModel() {
+    public IndexedCheckModel<GraphicItem> getGraphicCheckModel() {
         return mGraphicSccb.getCheckModel();
     }
 
@@ -60,7 +61,7 @@ public class ConvergenceGroupOptionsView extends BOptionsView {
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
-        mGraphicSccb.getItems().setAll(GraphicRendererItem.values());
+        mGraphicSccb.getItems().setAll(GraphicItem.values());
 
         LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), ConvergenceGroupLabelBy.values());
 

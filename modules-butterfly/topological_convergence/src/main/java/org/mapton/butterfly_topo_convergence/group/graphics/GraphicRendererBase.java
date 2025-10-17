@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo_convergence.group;
+package org.mapton.butterfly_topo_convergence.group.graphics;
 
 import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import gov.nasa.worldwind.avlist.AVListImpl;
@@ -34,9 +34,9 @@ import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
  *
  * @author Patrik Karlström
  */
-public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BTopoConvergenceGroup> {
+public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicItem, BTopoConvergenceGroup> {
 
-    protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
+    protected static IndexedCheckModel<GraphicItem> sCheckModel;
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
@@ -44,7 +44,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
     protected final ConvergenceGroupManager mManager = ConvergenceGroupManager.getInstance();
 
     static {
-        for (var renderItem : GraphicRendererItem.values()) {
+        for (var renderItem : GraphicItem.values()) {
             sPlotLimiter.setLimit(renderItem, renderItem.getPlotLimit());
         }
     }

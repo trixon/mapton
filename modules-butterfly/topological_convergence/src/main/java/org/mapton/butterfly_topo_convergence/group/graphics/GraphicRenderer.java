@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo_convergence.group;
+package org.mapton.butterfly_topo_convergence.group.graphics;
 
 import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import gov.nasa.worldwind.WorldWind;
@@ -37,6 +37,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import org.mapton.butterfly_topo_convergence.group.AnchorManager;
 import org.mapton.butterfly_topo_convergence.pair.PairHelper;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -51,7 +52,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     private final HashSet<String> mPlottedLabels = new HashSet<>();
     private final HashSet<String> mPlottedNodes = new HashSet<>();
 
-    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer);
         sCheckModel = checkModel;
     }
@@ -61,15 +62,15 @@ public class GraphicRenderer extends GraphicRendererBase {
         sMapObjects = mapObjects;
         mOffset = ConvergenceGroupManager.getInstance().getOffset();
 
-        if (sCheckModel.isChecked(GraphicRendererItem.GEOMETRY)) {
+        if (sCheckModel.isChecked(GraphicItem.GEOMETRY)) {
             plotGeometry(convergenceGroup);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.GEOMETRY) && sCheckModel.isChecked(GraphicRendererItem.GEOMETRY_NAME)) {
+        if (sCheckModel.isChecked(GraphicItem.GEOMETRY) && sCheckModel.isChecked(GraphicItem.GEOMETRY_NAME)) {
             plotGeometryName(convergenceGroup);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.ANCHOR_DISPLACEMENT)) {
+        if (sCheckModel.isChecked(GraphicItem.ANCHOR_DISPLACEMENT)) {
             plotAnchorDisplacement(convergenceGroup);
         }
     }
@@ -125,7 +126,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 //                            attrs.setOutlineStippleFactor(3);
 //                        }
 //                        path.setAttributes(attrs);
-//                        addRenderable(path, true, GraphicRendererItem.GEOMETRY, null);
+//                        addRenderable(path, true, GraphicItem.GEOMETRY, null);
 //                        var leftClickRunnable = (Runnable) () -> {
 //                            mAnchorManager.setSelectedItem(pair);
 //                        };
@@ -146,7 +147,7 @@ public class GraphicRenderer extends GraphicRendererBase {
                     attrs.setOutlineMaterial(new Material(Color.decode("#add8e6")));
                     attrs.setOutlineWidth(1);
                     path.setAttributes(attrs);
-                    addRenderable(path, true, GraphicRendererItem.GEOMETRY, sMapObjects);
+                    addRenderable(path, true, GraphicItem.GEOMETRY, sMapObjects);
                 });
 
         group.ext().getControlPointsWithoutAnchor().forEach(p -> {
@@ -168,7 +169,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
             var groundPath = new Path(position, WWHelper.positionFromPosition(position, 0.0));
             groundPath.setAttributes(mAttributeManager.getGroundPathAttributes());
-            addRenderable(groundPath, false, GraphicRendererItem.GEOMETRY, sMapObjects);
+            addRenderable(groundPath, false, GraphicItem.GEOMETRY, sMapObjects);
 
             mPlottedNodes.add(name);
         }
@@ -205,7 +206,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             var pyramid = new Pyramid(p, radius * 1.0, radius * 1.0);
 
             pyramid.setAttributes(mAttributeManager.getNodeAttributes());
-//            addRenderable(pyramid, true, GraphicRendererItem.NONE, sMapObjects);
+//            addRenderable(pyramid, true, GraphicItem.NONE, sMapObjects);
 
             for (var cp2 : convergenceGroup.ext().getControlPointsWithoutAnchor()) {
                 if (cp2 == controlPoint) {
