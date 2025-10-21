@@ -15,7 +15,7 @@
  */
 package org.mapton.butterfly_topo_convergence.group;
 
-import java.util.List;
+import java.util.function.Function;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -24,12 +24,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
-import org.mapton.butterfly_format.types.BComponent;
+import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_topo.TopoHelper;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -39,8 +41,9 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
 
+    private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
-//    private final Label mDesc2Label = new Label();
+    private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
     private final Label mDesc4Label = new Label();
     private final Label mHeaderLabel = new Label();
@@ -48,7 +51,6 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
     private final String mStyleMono = "-fx-font-family: monospace;";
     private final Tooltip mTooltip = new Tooltip();
     private VBox mVBox;
-    private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
 
     public ConvergenceGroupListCell() {
         createUI();
@@ -72,19 +74,16 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
         if (StringUtils.isNotBlank(g.getStatus())) {
             header = "%s [%s]".formatted(header, g.getStatus());
         }
-        header = header + " (%d)".formatted(g.ext().getPairs().size());
-        var alarm = g.ext().getAlarm(BComponent.HEIGHT);
-
-        var alarmInfo = g.getAlarm1Id();
-        var desc1 = "%s: %s".formatted(alarmInfo, String.join(", ", List.of(alarm.getLimit1(), alarm.getLimit2(), alarm.getLimit3())));
         var dateLast = StringHelper.toString(g.getDateLatest() == null ? null : g.getDateLatest().toLocalDate(), "NOVALUE");
         var dateZero = StringHelper.toString(g.getDateZero(), "NOVALUE");
+        var date = "%s — %s  (%d)".formatted(dateZero, dateLast, g.ext().getPairs().size());
+
         mAlarmIndicator.update(g);
         mHeaderLabel.setText(header);
-        mDesc1Label.setText(alarmInfo);
-//        mDesc2Label.setText(Strings.CI.remove(g.getRef(), g.getName()));
-        mDesc3Label.setText(g.ext().getLastDiff());
-        mDesc4Label.setText("%s — %s".formatted(dateZero, dateLast));
+        mDesc1Label.setText(g.ext().getDeltaString("1d", BTopoConvergenceObservation.FUNCTION_1D));
+        mDesc2Label.setText(g.ext().getDeltaString("2d", BTopoConvergenceObservation.FUNCTION_2D));
+        mDesc3Label.setText(g.ext().getDeltaString("3d", BTopoConvergenceObservation.FUNCTION_3D));
+        mDesc4Label.setText(date);
 
         setGraphic(mVBox);
     }
@@ -100,7 +99,7 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
         mVBox = new VBox(
                 mHeaderLabel,
                 mDesc1Label,
-                //                mDesc2Label,
+                mDesc2Label,
                 mDesc3Label,
                 mDesc4Label
         );
@@ -118,22 +117,51 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
     private class AlarmIndicator extends HBox {
 
         private static final double SIZE = FxHelper.getUIScaled(12);
-        private Circle mResultantShape;
+        private Circle m1dShape;
+        private Polygon m2dShape;
+        private Rectangle m3dShape;
 
         public AlarmIndicator() {
             super(SIZE / 4);
             createUI();
         }
 
+        private int getAlarmLevel(BTopoConvergenceGroup group, Function<BTopoConvergenceObservation, Double> function) {
+            try {
+                var pair = group.ext().getPairWithLargestDiff(function);
+                return pair.ext().getAlarmLevel(function);
+            } catch (Exception e) {
+                return -1;
+            }
+
+        }
+
         public void update(BTopoConvergenceGroup p) {
-            mResultantShape.setFill(TopoHelper.getAlarmColorFx(p));
+            var color1 = ButterflyHelper.getAlarmColorFx(getAlarmLevel(p, BTopoConvergenceObservation.FUNCTION_1D));
+            var color2 = ButterflyHelper.getAlarmColorFx(getAlarmLevel(p, BTopoConvergenceObservation.FUNCTION_2D));
+            var color3 = ButterflyHelper.getAlarmColorFx(getAlarmLevel(p, BTopoConvergenceObservation.FUNCTION_3D));
+
+            m1dShape.setFill(color1);
+            m2dShape.setFill(color2);
+            m3dShape.setFill(color3);
         }
 
         private void createUI() {
-            mResultantShape = new Circle(SIZE / 2);
-            var hPane = new StackPane(mResultantShape);
+            m1dShape = new Circle(SIZE / 2);
+            var pane1 = new StackPane(m1dShape);
 
-            getChildren().setAll(hPane);
+            m2dShape = new Polygon();
+            m2dShape.getPoints().addAll(new Double[]{
+                SIZE / 2, 0.0,
+                SIZE, SIZE,
+                0.0, SIZE
+            });
+            var pane2 = new StackPane(m2dShape);
+
+            m3dShape = new Rectangle(SIZE, SIZE);
+            var pane3 = new StackPane(m3dShape);
+
+            getChildren().setAll(pane1, pane2, pane3);
         }
     }
 

@@ -138,11 +138,14 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
                             o.ext().setParent(g);
                             o.ext().setPair(pair);
                             dates.add(o.getDate());
+                            o.ext().setDeltaX(o.getCalculatedConvergence1d());
+                            o.ext().setDeltaY(o.getCalculatedConvergence2d());
+                            o.ext().setDeltaZ(o.getCalculatedConvergence3d());
                             if (o.isZeroMeasurement()) {
                                 g.ext().setStoredZeroDateTime(o.getDate());
                             }
                         }
-                        pair.setObservations(observations);
+                        pair.ext().setObservationsTimeFiltered(observations);
                         pairs.add(pair);
                     }
                 }
@@ -167,11 +170,11 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
                         .values()
                         .stream()
                         .flatMap(entry -> entry.stream()
-                        .max(Comparator.comparingDouble(value -> Math.abs(value.getMeasuredX())))
+                        .max(Comparator.comparingDouble(value -> Math.abs(value.getMeasuredZ())))
                         .stream())
                         .sorted(Comparator.comparing(BTopoConvergenceObservation::getDate))
                         .collect(Collectors.toList());
-
+                maxObservationsPerDate.forEach(o -> o.ext().setDeltaZ(o.ext().getDeltaZ()));
                 g.ext().getObservationsAllRaw().addAll(maxObservationsPerDate);
                 var minDate = maxObservationsPerDate.stream().map(gg -> gg.getDate()).min(LocalDateTime::compareTo);
                 var maxDate = maxObservationsPerDate.stream().map(gg -> gg.getDate()).max(LocalDateTime::compareTo);

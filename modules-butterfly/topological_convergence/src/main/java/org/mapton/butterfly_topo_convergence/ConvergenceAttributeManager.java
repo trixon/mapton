@@ -100,7 +100,7 @@ public class ConvergenceAttributeManager extends BaseAttributeManager {
             mSinglePinAttributes.setImageColor(color);
             mSinglePinAttributes.setScale(Mapton.getScalePinImage());
             mSinglePinAttributes.setLabelScale(Mapton.getScalePinLabel());
-            mSinglePinAttributes.setImageOffset(Offset.BOTTOM_CENTER);
+            mSinglePinAttributes.setImageOffset(Offset.CENTER);
         }
 
         return mSinglePinAttributes;

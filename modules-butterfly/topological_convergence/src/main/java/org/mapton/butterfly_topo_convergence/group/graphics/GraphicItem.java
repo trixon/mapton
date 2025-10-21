@@ -23,6 +23,9 @@ import se.trixon.almond.util.Dict;
  * @author Patrik Karlström
  */
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
+    LINES(Dict.Geometry.LINE.toString(), Integer.MAX_VALUE),
+    NODE("Nod", Integer.MAX_VALUE),
+    LABELS("Punktnamn", Integer.MAX_VALUE),
     GEOMETRY(Dict.Geometry.GEOMETRY.toString(), Integer.MAX_VALUE),
     GEOMETRY_NAME("\t— %s".formatted(Dict.NAME.toString()), Integer.MAX_VALUE),
     ANCHOR_DISPLACEMENT("Diffsättning mot ankarpunkt", Integer.MAX_VALUE),

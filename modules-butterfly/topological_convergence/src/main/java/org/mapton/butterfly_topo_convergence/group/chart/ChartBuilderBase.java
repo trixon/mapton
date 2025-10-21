@@ -20,11 +20,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Minute;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
 import org.mapton.butterfly_topo.TopoHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -34,6 +37,8 @@ import se.trixon.almond.util.DateHelper;
  */
 public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoConvergenceGroup> {
 
+    protected BDimension mDimension;
+    protected Function<BTopoConvergenceObservation, Double> mFunction;
     protected Minute mSubSetLastMinute;
     protected Minute mSubSetZeroMinute;
 
@@ -80,7 +85,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoConvergenceG
             var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
             var date = "(%s) → %s".formatted(dateFirst, dateLast);
             getLeftSubTextTitle().setText(date);
-            getRightSubTextTitle().setText(p.ext().getLastDiff());
+            getRightSubTextTitle().setText(p.ext().getDeltaString(mDimension.asText(), mFunction));
         }
 
     }

@@ -16,11 +16,9 @@
 package org.mapton.butterfly_topo_convergence.group.chart;
 
 import java.util.concurrent.Callable;
-import java.util.function.Function;
 import javax.swing.JTabbedPane;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
 
 /**
  *
@@ -34,12 +32,9 @@ public class ChartAggregate {
     private final JTabbedPane mTabbedPane;
 
     public ChartAggregate() {
-        final Function<BTopoConvergenceObservation, Double> func1d = (var o) -> o.ext().getDelta1d();
-        final Function<BTopoConvergenceObservation, Double> func2d = (var o) -> o.ext().getDelta2d();
-        final Function<BTopoConvergenceObservation, Double> func3d = (var o) -> o.ext().getDelta3d();
-        mBuilderDelta1dSplit = new ChartBuilderDeltaSplit(BDimension._1d, func1d);
-        mBuilderDelta2dSplit = new ChartBuilderDeltaSplit(BDimension._2d, func2d);
-        mBuilderDelta3dSplit = new ChartBuilderDeltaSplit(BDimension._3d, func3d);
+        mBuilderDelta1dSplit = new ChartBuilderDeltaSplit(BDimension._1d);
+        mBuilderDelta2dSplit = new ChartBuilderDeltaSplit(BDimension._2d);
+        mBuilderDelta3dSplit = new ChartBuilderDeltaSplit(BDimension._3d);
 
         mTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
     }

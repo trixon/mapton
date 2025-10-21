@@ -40,8 +40,8 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
     private TextTitle mDateSubTextTitle;
     private TextTitle mDeltaSubTextTitle;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
-    private final TimeSeries mTimeSeriesDeltaZ = new TimeSeries("ΔZ");
     private final TimeSeries mTimeSeriesAnchor = new TimeSeries("Ankare");
+    private final TimeSeries mTimeSeriesDeltaZ = new TimeSeries("ΔZ");
     private final TimeSeries mTimeSeriesPoint = new TimeSeries("Punkt");
 
     public AnchorChartBuilder() {
@@ -84,7 +84,7 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
         }
         mChart.getTitle().setPaint(color);
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
-        var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getLastDate()), "");
+        var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getDateLatest()), "");
         var date = "(%s) → %s".formatted(dateFirst, dateLast);
         getLeftSubTextTitle().setText(date);
     }
@@ -98,11 +98,11 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
         var plot = (XYPlot) mChart.getPlot();
         resetPlot(plot);
 
-        if (p.getObservations().isEmpty()) {
+        if (p.ext().getObservationsTimeFiltered().isEmpty()) {
             return;
         }
 
-        for (var o : p.getObservations()) {
+        for (var o : p.ext().getObservationsTimeFiltered()) {
             var minute = ChartHelper.convertToMinute(o.getDate());
 //            mTimeSeriesDeltaZ.add(minute, o.getDeltaDeltaZComparedToFirst());
         }
@@ -111,13 +111,13 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
         plotZ(p, p.getP1());
         plotZ(p, p.getP2());
 
-        plotBlasts(plot, p, p.ext().getFirstDate().toLocalDate(), p.ext().getLastDate().toLocalDate());
+        plotBlasts(plot, p, p.ext().getDateFirst().toLocalDate(), p.ext().getDateLatest().toLocalDate());
     }
 
     private void plotZ(BTopoConvergencePair pair, BTopoControlPoint p) {
         var plot = (XYPlot) mChart.getPlot();
-        var firstDate = pair.getObservations().getFirst().getDate().toLocalDate();
-        var lastDate = pair.getObservations().getLast().getDate().toLocalDate();
+        var firstDate = pair.ext().getObservationsAllRaw().getFirst().getDate().toLocalDate();
+        var lastDate = pair.ext().getObservationsAllRaw().getLast().getDate().toLocalDate();
         var series = pair.getConvergenceGroup().ext().getAnchorPoint() == p ? mTimeSeriesAnchor : mTimeSeriesPoint;
         p.ext().getObservationsAllRaw().stream()
                 .filter(o -> DateHelper.isBetween(

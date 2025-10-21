@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo_convergence.group.graphics;
 
-import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -32,13 +31,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.api.Mapton;
+import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import org.mapton.butterfly_topo_convergence.group.AnchorManager;
 import org.mapton.butterfly_topo_convergence.pair.PairHelper;
+import org.mapton.butterfly_topo_convergence.pair.chart.ConvergencePairChartBuilder;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -48,6 +53,7 @@ import org.mapton.worldwind.api.WWHelper;
 public class GraphicRenderer extends GraphicRendererBase {
 
     private final AnchorManager mAnchorManager = AnchorManager.getInstance();
+//    private final Material[] mMaterials;
     private double mOffset;
     private final HashSet<String> mPlottedLabels = new HashSet<>();
     private final HashSet<String> mPlottedNodes = new HashSet<>();
@@ -55,24 +61,58 @@ public class GraphicRenderer extends GraphicRendererBase {
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer);
         sCheckModel = checkModel;
+//        mMaterials = new Material[]{
+//            //https://colordesigner.io/gradient-generator/?mode=hsl#00FF00-FF0000
+//            new Material(Color.decode("#00ff00")),
+//            new Material(Color.decode("#22ff00")),
+//            new Material(Color.decode("#44ff00")),
+//            new Material(Color.decode("#66ff00")),
+//            new Material(Color.decode("#88ff00")),
+//            new Material(Color.decode("#aaff00")),
+//            new Material(Color.decode("#ccff00")),
+//            new Material(Color.decode("#eeff00")),
+//            new Material(Color.decode("#ffee00")),
+//            new Material(Color.decode("#ffcc00")),
+//            new Material(Color.decode("#ffaa00")),
+//            new Material(Color.decode("#ff8800")),
+//            new Material(Color.decode("#ff6600")),
+//            new Material(Color.decode("#ff4400")),
+//            new Material(Color.decode("#ff2200")),
+//            new Material(Color.decode("#ff0000"))
+//        };
     }
 
-    public void plot(BTopoConvergenceGroup convergenceGroup, Position position, ArrayList<AVListImpl> mapObjects) {
+    @Override
+    public void plot(BTopoConvergenceGroup convergence, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
         sMapObjects = mapObjects;
         mOffset = ConvergenceGroupManager.getInstance().getOffset();
 
         if (sCheckModel.isChecked(GraphicItem.GEOMETRY)) {
-            plotGeometry(convergenceGroup);
+            plotGeometry(convergence);
         }
 
         if (sCheckModel.isChecked(GraphicItem.GEOMETRY) && sCheckModel.isChecked(GraphicItem.GEOMETRY_NAME)) {
-            plotGeometryName(convergenceGroup);
+            plotGeometryName(convergence);
         }
 
         if (sCheckModel.isChecked(GraphicItem.ANCHOR_DISPLACEMENT)) {
-            plotAnchorDisplacement(convergenceGroup);
+            plotAnchorDisplacement(convergence);
         }
+
+        mOffset = ConvergenceGroupManager.getInstance().getOffset();
+        if (sCheckModel.isChecked(GraphicItem.LINES)) {
+            plotLine(convergence);
+        }
+
+        if (sCheckModel.isChecked(GraphicItem.NODE)) {
+            plotNodes(convergence);
+        }
+
+        if (sCheckModel.isChecked(GraphicItem.LABELS)) {
+            plotLabels(convergence);
+        }
+
     }
 
     @Override
@@ -175,7 +215,22 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
     }
 
-    private void plotLabel(BTopoConvergencePair pair, BTopoControlPoint point) {
+    private void plotLabel(BTopoConvergencePair pair, BTopoControlPoint controlPoint) {
+        var name = controlPoint.getName();
+
+        if (!mPlottedLabels.contains(name)) {
+            var position = PairHelper.getPosition(controlPoint, mOffset);
+            var placemark = new PointPlacemark(position);
+            placemark.setAltitudeMode(WorldWind.ABSOLUTE);
+            placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+            placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+            placemark.setLabelText(StringUtils.remove(controlPoint.getName(), pair.getConvergenceGroup().getName()));
+            addRenderable(placemark, true, null, sMapObjects);
+            mPlottedLabels.add(name);
+        }
+    }
+
+    private void plotLabelq(BTopoConvergencePair pair, BTopoControlPoint point) {
         var name = point.getName();
 
         if (!mPlottedLabels.contains(name)) {
@@ -187,6 +242,77 @@ public class GraphicRenderer extends GraphicRendererBase {
             placemark.setLabelText(StringUtils.remove(point.getName(), pair.getConvergenceGroup().getName()));
             addRenderable(placemark, true, null, sMapObjects);
             mPlottedLabels.add(name);
+        }
+    }
+
+    private void plotLabels(BTopoConvergenceGroup convergence) {
+        for (var pair : convergence.ext().getPairs()) {
+
+            plotLabel(pair, pair.getP1());
+            plotLabel(pair, pair.getP2());
+        }
+    }
+
+    private void plotLine(BTopoConvergenceGroup convergence) {
+        for (var pair : convergence.ext().getPairs()) {
+            if (pair.ext().getObservationsTimeFiltered().isEmpty()) {
+                continue;
+            }
+
+            var pos1 = PairHelper.getPosition(pair.getP1(), mOffset);
+            var pos2 = PairHelper.getPosition(pair.getP2(), mOffset);
+
+            var path = new Path(pos1, pos2);
+            var attrs = new BasicShapeAttributes(mAttributeManager.getPairPathAttributes());
+            Function<BTopoConvergenceObservation, Double> function = BTopoConvergenceObservation.FUNCTION_3D;
+//        var delta = pair.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
+//            int level = pair.getLevel(mMaterials.length);
+//            pair.getObservations().getLast();
+//            TopoHelper.getAlarmLevel(convergence);
+//            int alarmLevel = TopoHelper.getAlarmLevel(pair);
+            int alarmLevel = pair.ext().getAlarmLevel(function);
+
+            attrs.setOutlineMaterial(ButterflyHelper.getAlarmMaterial(alarmLevel));
+            var delta = pair.ext().getDelta(function);
+            if (delta >= 0) {
+                attrs.setOutlineStippleFactor(3);
+            }
+            if (Math.abs(delta) < 0.5) {
+                attrs.setOutlineMaterial(Material.LIGHT_GRAY);
+            }
+
+            path.setAttributes(attrs);
+            addRenderable(path, true, GraphicItem.LINES, sMapObjects);
+        }
+    }
+
+    private void plotNode(BTopoControlPoint controlPoint, double offset) {
+        var name = controlPoint.getName();
+        if (!mPlottedNodes.contains(name)) {
+            var radius = PairHelper.NODE_SIZE;
+            var position = PairHelper.getPosition(controlPoint, offset);
+            var pyramid = new Pyramid(position, radius, radius);
+            pyramid.setAttributes(mAttributeManager.getNodeAttributes());
+            addRenderable(pyramid, true, GraphicItem.NODE, null);
+
+            var groundPath = new Path(position, WWHelper.positionFromPosition(position, 0.0));
+            groundPath.setAttributes(mAttributeManager.getGroundPathAttributes());
+            addRenderable(groundPath, false, GraphicItem.NODE, sMapObjects);
+
+            mPlottedNodes.add(name);
+
+            var leftClickRunnable = (Runnable) () -> {
+                Mapton.getGlobalState().put(ConvergencePairChartBuilder.class.getName() + "node", name);
+            };
+            pyramid.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+        }
+    }
+
+    private void plotNodes(BTopoConvergenceGroup convergence) {
+        for (var pair : convergence.ext().getPairs()) {
+
+            plotNode(pair.getP1(), mOffset);
+            plotNode(pair.getP2(), mOffset);
         }
     }
 

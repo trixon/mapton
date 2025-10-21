@@ -37,9 +37,6 @@ public class ConvergenceGroupChartBuilder extends XyzChartBuilder<BTopoConvergen
 
     public ConvergenceGroupChartBuilder() {
         initChart("mm", "0.0");
-
-        var plot = (XYPlot) mChart.getPlot();
-//        plot.getRangeAxis().setVisible(false);
     }
 
     @Override
@@ -71,9 +68,6 @@ public class ConvergenceGroupChartBuilder extends XyzChartBuilder<BTopoConvergen
         var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
         var date = "(%s) → %s".formatted(dateFirst, dateLast);
         getLeftSubTextTitle().setText(date);
-
-//        var rightTitle = "%s: %s".formatted(p.getAlarm1Id(), p.ext().getDeltaZero());
-//        getRightSubTextTitle().setText(rightTitle);
     }
 
     @Override
@@ -94,7 +88,7 @@ public class ConvergenceGroupChartBuilder extends XyzChartBuilder<BTopoConvergen
 
         var plot = (XYPlot) mChart.getPlot();
 
-        pair.getObservations().forEach(o -> {
+        pair.ext().getObservationsTimeFiltered().forEach(o -> {
             addNEMarkers(plot, o, true);
             if (o.isZeroMeasurement()) {
 //                mDateNull;

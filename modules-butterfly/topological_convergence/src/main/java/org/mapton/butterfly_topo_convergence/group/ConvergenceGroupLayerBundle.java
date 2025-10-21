@@ -15,11 +15,11 @@
  */
 package org.mapton.butterfly_topo_convergence.group;
 
-import org.mapton.butterfly_topo_convergence.group.graphics.GraphicRenderer;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.util.ArrayList;
 import javafx.scene.Node;
@@ -27,8 +27,10 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
 import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
+import org.mapton.butterfly_topo_convergence.group.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -113,7 +115,7 @@ public class ConvergenceGroupLayerBundle extends BfLayerBundle {
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
-                        mapObjects.add(plotPin(position, labelPlacemark));
+                        mapObjects.add(plotPin(p, position, labelPlacemark));
 
                         mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptionsView);
                         var leftClickRunnable = (Runnable) () -> {
@@ -148,13 +150,16 @@ public class ConvergenceGroupLayerBundle extends BfLayerBundle {
         }
     }
 
-    private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {
+    private PointPlacemark plotPin(BTopoConvergenceGroup p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(Color.WHITE);
-
+        attrs = new PointPlacemarkAttributes(attrs);
+        attrs.setImageColor(TopoHelper.getAlarmColorAwt(p));
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
         placemark.setAttributes(attrs);
         placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+        p.setValue(BKey.PIN_URL, attrs.getImageAddress());
+        p.setValue(BKey.PIN_COLOR, attrs.getImageColor());
 
         mPinLayer.addRenderable(placemark);
         if (labelPlacemark != null) {

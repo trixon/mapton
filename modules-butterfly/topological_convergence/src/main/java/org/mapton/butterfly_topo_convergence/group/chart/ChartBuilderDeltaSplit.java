@@ -18,11 +18,9 @@ package org.mapton.butterfly_topo_convergence.group.chart;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.concurrent.Callable;
-import java.util.function.Function;
 import javax.swing.JPanel;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
 
 /**
  *
@@ -31,15 +29,11 @@ import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
 public class ChartBuilderDeltaSplit {
 
     private final ChartBuilderDelta mCompleteChartBuilder;
-    private final BDimension mDimension;
-    private final Function<BTopoConvergenceObservation, Double> mFunction;
     private final ChartBuilderDelta mLatestChartBuilder;
 
-    public ChartBuilderDeltaSplit(BDimension dimension, Function<BTopoConvergenceObservation, Double> function) {
-        mCompleteChartBuilder = new ChartBuilderDelta(null, function);
-        mLatestChartBuilder = new ChartBuilderDelta(7, function);
-        mDimension = dimension;
-        mFunction = function;
+    public ChartBuilderDeltaSplit(BDimension dimension) {
+        mCompleteChartBuilder = new ChartBuilderDelta(null, dimension);
+        mLatestChartBuilder = new ChartBuilderDelta(7, dimension);
     }
 
     public synchronized Callable<JPanel> build(BTopoConvergenceGroup p) {
