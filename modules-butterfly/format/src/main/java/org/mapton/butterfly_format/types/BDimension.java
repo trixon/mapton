@@ -26,6 +26,10 @@ public enum BDimension {
 
     }
 
+    public String asText() {
+        return getName() + "d";
+    }
+
     public int getIndex() {
         return ordinal() + 1;
     }

@@ -22,6 +22,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
@@ -367,9 +368,9 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             var alarm = getButterfly().getAlarms().stream()
                     .filter(a -> {
                         if (component == BComponent.HEIGHT) {
-                            return StringUtils.equals(a.getId(), alarm1Id);
+                            return Strings.CS.equals(a.getId(), getAlarm1Id());
                         } else {
-                            return StringUtils.equals(a.getId(), alarm2Id);
+                            return Strings.CS.equals(a.getId(), getAlarm2Id());
                         }
                     }).findAny().orElse(null);
 
@@ -377,7 +378,11 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         }
 
         public int getAlarmLevel(BComponent component, BXyzPointObservation o) {
-            return getAlarmLevel(component, component == BComponent.HEIGHT ? o.ext().getDeltaZ() : o.ext().getDelta2d());
+            try {
+                return getAlarmLevel(component, component == BComponent.HEIGHT ? o.ext().getDeltaZ() : o.ext().getDelta2d());
+            } catch (Exception e) {
+                return -1;
+            }
         }
 
         public int getAlarmLevel(BComponent component, Double delta) {
