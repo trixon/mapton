@@ -47,7 +47,8 @@ public class ButterflyHelper {
         Material.BLUE,
         Material.GREEN,
         Material.YELLOW,
-        Material.RED
+        Material.RED,
+        new Material(Color.RED.darker())
     };
 
     public static java.awt.Color getAlarmColorAwt(int alarmLevel) {

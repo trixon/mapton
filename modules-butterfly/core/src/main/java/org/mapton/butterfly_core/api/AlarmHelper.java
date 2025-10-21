@@ -45,13 +45,13 @@ public class AlarmHelper {
 
         if (component == BComponent.HEIGHT) {
             if (alarmH != null) {
-                result = StringHelper.join(" // ", "-", alarmH.getLimit1(), alarmH.getLimit2());
+                result = StringHelper.join(" // ", "-", alarmH.getLimit1(), alarmH.getLimit2(), alarmH.getLimit3());
             } else {
                 System.out.println("Alarm H not found: %s, %s".formatted(p.getName(), p.getAlarm1Id()));
             }
         } else if (p.getDimension() != BDimension._1d) {
             if (alarmP != null) {
-                result = StringHelper.join(" // ", "-", alarmP.getLimit1(), alarmP.getLimit2());
+                result = StringHelper.join(" // ", "-", alarmP.getLimit1(), alarmP.getLimit2(), alarmP.getLimit3());
             } else {
                 System.out.println("Alarm P not found: %s, %s".formatted(p.getName(), p.getAlarm2Id()));
             }
