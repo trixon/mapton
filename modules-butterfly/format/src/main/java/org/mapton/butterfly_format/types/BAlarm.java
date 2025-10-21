@@ -156,13 +156,13 @@ public class BAlarm extends BBasePoint {
 
     public class Ext {
 
+        private final ArrayList<BXyzPoint> mPoints = new ArrayList<>();
         private Range<Double> mRange0 = null;
         private Range<Double> mRange1 = null;
         private Range<Double> mRange2 = null;
         private Range<Double> mRatioRange0 = null;
         private Range<Double> mRatioRange1 = null;
         private Range<Double> mRatioRange2 = null;
-        private final ArrayList<BXyzPoint> mPoints = new ArrayList<>();
 
         public Ext() {
         }
@@ -176,8 +176,10 @@ public class BAlarm extends BBasePoint {
                 return 0;
             } else if (mRange1.contains(value)) {
                 return 1;
-            } else {
+            } else if (mRange2.contains(value)) {
                 return 2;
+            } else {
+                return 3;
             }
         }
 
