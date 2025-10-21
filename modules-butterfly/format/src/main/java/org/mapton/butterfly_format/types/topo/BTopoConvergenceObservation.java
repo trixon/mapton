@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_format.types.topo;
 
+import java.util.function.Function;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 
 /**
@@ -23,9 +24,17 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
  */
 public class BTopoConvergenceObservation extends BXyzPointObservation {
 
-    private Double distance1d;
-    private Double distance2d;
-    private Double distance3d;
+    public static final Function<BTopoConvergenceObservation, Double> FUNCTION_1D = o -> o.ext().getDeltaX();
+    public static final Function<BTopoConvergenceObservation, Double> FUNCTION_2D = o -> o.ext().getDeltaY();
+    public static final Function<BTopoConvergenceObservation, Double> FUNCTION_3D = o -> o.ext().getDeltaZ();
+
+    private Double calculatedConvergence1d;
+    private Double calculatedConvergence2d;
+    private Double calculatedConvergence3d;
+    private transient Ext mExt;
+    private Double offset1d;
+    private Double offset2d;
+    private Double offset3d;
     private String p1Name;
     private String p2Name;
     private Double zero1d;
@@ -35,16 +44,37 @@ public class BTopoConvergenceObservation extends BXyzPointObservation {
     public BTopoConvergenceObservation() {
     }
 
-    public Double getDistance1d() {
-        return distance1d;
+    @Override
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
     }
 
-    public Double getDistance2d() {
-        return distance2d;
+    public Double getCalculatedConvergence1d() {
+        return calculatedConvergence1d;
     }
 
-    public Double getDistance3d() {
-        return distance3d;
+    public Double getCalculatedConvergence2d() {
+        return calculatedConvergence2d;
+    }
+
+    public Double getCalculatedConvergence3d() {
+        return calculatedConvergence3d;
+    }
+
+    public Double getOffset1d() {
+        return offset1d;
+    }
+
+    public Double getOffset2d() {
+        return offset2d;
+    }
+
+    public Double getOffset3d() {
+        return offset3d;
     }
 
     public String getP1Name() {
@@ -67,16 +97,28 @@ public class BTopoConvergenceObservation extends BXyzPointObservation {
         return zero3d;
     }
 
-    public void setDistance1d(Double distance1d) {
-        this.distance1d = distance1d;
+    public void setCalculatedConvergence1d(Double calculatedConvergence1d) {
+        this.calculatedConvergence1d = calculatedConvergence1d;
     }
 
-    public void setDistance2d(Double distance2d) {
-        this.distance2d = distance2d;
+    public void setCalculatedConvergence2d(Double calculatedConvergence2d) {
+        this.calculatedConvergence2d = calculatedConvergence2d;
     }
 
-    public void setDistance3d(Double distance3d) {
-        this.distance3d = distance3d;
+    public void setCalculatedConvergence3d(Double calculatedConvergence3d) {
+        this.calculatedConvergence3d = calculatedConvergence3d;
+    }
+
+    public void setOffset1d(Double offset1d) {
+        this.offset1d = offset1d;
+    }
+
+    public void setOffset2d(Double offset2d) {
+        this.offset2d = offset2d;
+    }
+
+    public void setOffset3d(Double offset3d) {
+        this.offset3d = offset3d;
     }
 
     public void setP1Name(String p1Name) {
@@ -97,6 +139,37 @@ public class BTopoConvergenceObservation extends BXyzPointObservation {
 
     public void setZero3d(Double zero3d) {
         this.zero3d = zero3d;
+    }
+
+    public class Ext extends BXyzPointObservation.Ext<BTopoConvergenceGroup> {
+
+        private BTopoConvergencePair mPair;
+
+        public Ext() {
+        }
+
+        @Override
+        public Double getDelta1d() {
+            return getMeasuredZ();
+        }
+
+        @Override
+        public Double getDelta2d() {
+            return getMeasuredY();
+        }
+
+        @Override
+        public Double getDelta3d() {
+            return getMeasuredX();
+        }
+
+        public BTopoConvergencePair getPair() {
+            return mPair;
+        }
+
+        public void setPair(BTopoConvergencePair pair) {
+            this.mPair = pair;
+        }
     }
 
 }

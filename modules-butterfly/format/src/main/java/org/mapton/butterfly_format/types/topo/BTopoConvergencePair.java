@@ -15,13 +15,13 @@
  */
 package org.mapton.butterfly_format.types.topo;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.util.function.Function;
 import javafx.geometry.Point3D;
 import org.apache.commons.lang3.Strings;
+import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 
 /**
  *
@@ -31,9 +31,7 @@ public class BTopoConvergencePair extends BXyzPoint {
 
     private BTopoConvergenceGroup mConvergenceGroup;
     private final Point3D mDelta;
-    private final double mDistance;
     private transient Ext mExt;
-    private ArrayList<BTopoConvergenceObservation> mObservations = new ArrayList<>();
     private BTopoControlPoint mP1;
     private BTopoControlPoint mP2;
 
@@ -46,7 +44,6 @@ public class BTopoConvergencePair extends BXyzPoint {
         var p3d1 = new Point3D(p1.getZeroX(), p1.getZeroY(), p1.getZeroZ());
         var p3d2 = new Point3D(p2.getZeroX(), p2.getZeroY(), p2.getZeroZ());
         mDelta = p3d2.subtract(p3d1);
-        mDistance = p3d1.distance(p3d2);
 
         var midPoint = p3d1.midpoint(p3d2);
         setZeroX(midPoint.getX());
@@ -63,69 +60,27 @@ public class BTopoConvergencePair extends BXyzPoint {
         return mExt;
     }
 
+    @Override
+    public String getAlarm1Id() {
+        return mConvergenceGroup.getAlarm1Id();
+    }
+
+    @Override
+    public String getAlarm2Id() {
+        return mConvergenceGroup.getAlarm2Id();
+    }
+
+    @Override
+    public Butterfly getButterfly() {
+        return mConvergenceGroup.getButterfly();
+    }
+
     public BTopoConvergenceGroup getConvergenceGroup() {
         return mConvergenceGroup;
     }
 
     public Point3D getDelta() {
         return mDelta;
-    }
-
-    public double getDeltaDistanceOverTime() {
-        if (mObservations.isEmpty()) {
-            return 0;
-        } else {
-//            return mObservations.getLast().getDeltaDistanceInPairForSameDate()
-//                    - mObservations.getFirst().getDeltaDistanceInPairForSameDate();
-            return 666;
-        }
-    }
-
-    public double getDeltaR() {
-        return Math.hypot(mDelta.getX(), mDelta.getY());
-    }
-
-    public double getDeltaROverTime() {
-        if (mObservations.isEmpty()) {
-            return 0;
-        } else {
-            mObservations.getLast();
-//            return mObservations.getLast().getDeltaRInPairForSameDate()
-//                    - mObservations.getFirst().getDeltaRInPairForSameDate();
-            return 666;
-        }
-    }
-
-    public double getDeltaZ() {
-        return Math.abs(mDelta.getZ());
-    }
-
-    public double getDeltaZOverTime() {
-        if (mObservations.isEmpty()) {
-            return 0;
-        } else {
-            mObservations.getLast();
-//            return mObservations.getLast().getDeltaHInPairForSameDate()
-//                    - mObservations.getFirst().getDeltaHInPairForSameDate();
-            return 666;
-        }
-    }
-
-    public double getDistance() {
-        return mDistance;
-    }
-
-    public int getLevel(int length) {
-        if (getObservations().isEmpty()) {
-            return 0;
-        }
-//        var delta = getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
-//        int level = (int) Math.min(length - 1, (Math.abs(delta) / 0.002) * (length - 1));
-        return 0;
-    }
-
-    public ArrayList<BTopoConvergenceObservation> getObservations() {
-        return mObservations;
     }
 
     public BTopoControlPoint getP1() {
@@ -141,43 +96,40 @@ public class BTopoConvergencePair extends BXyzPoint {
     }
 
     public void setConvergenceGroup(BTopoConvergenceGroup convergenceGroup) {
-        this.mConvergenceGroup = convergenceGroup;
-    }
-
-    public void setObservations(ArrayList<BTopoConvergenceObservation> observations) {
-        this.mObservations = observations;
+        mConvergenceGroup = convergenceGroup;
     }
 
     public void setP1(BTopoControlPoint p1) {
-        this.mP1 = p1;
+        mP1 = p1;
     }
 
     public void setP2(BTopoControlPoint p2) {
-        this.mP2 = p2;
+        mP2 = p2;
     }
 
-    public class Ext {
+    public class Ext extends BXyzPoint.Ext<BTopoConvergenceObservation> {
 
-        public long getAge(ChronoUnit chronoUnit) {
-            if (mObservations.isEmpty()) {
-                return -1L;
-            } else {
-                return chronoUnit.between(mObservations.getLast().getDate().toLocalDate(), LocalDate.now());
+        public int getAlarmLevel(Function<BTopoConvergenceObservation, Double> function) {
+            try {
+                return getAlarmLevel(BComponent.HEIGHT, getDelta(function) / 1000d);
+            } catch (Exception e) {
+                return -1;
             }
         }
 
-        public LocalDateTime getFirstDate() {
-            if (mObservations != null && !mObservations.isEmpty()) {
-                return mObservations.getFirst().getDate();
-            } else {
-                return null;
+        @Override
+        public int getAlarmLevel(BXyzPointObservation o) {
+            try {
+                return getAlarmLevel(BComponent.HEIGHT, o.ext().getDelta1d() / 1000d);
+            } catch (Exception e) {
+                return -1;
             }
         }
 
-        public LocalDateTime getLastDate() {
-            if (mObservations != null && !mObservations.isEmpty()) {
-                return mObservations.getLast().getDate();
-            } else {
+        public Double getDelta(Function<BTopoConvergenceObservation, Double> function) {
+            try {
+                return function.apply(getObservationsTimeFiltered().getLast());
+            } catch (Exception e) {
                 return null;
             }
         }

@@ -15,7 +15,10 @@
  */
 package org.mapton.butterfly_format.types.topo;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.function.Function;
 import javafx.geometry.Point3D;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -55,7 +58,12 @@ public class BTopoConvergenceGroup extends BXyzPoint {
 
         @Override
         public int getAlarmLevel(BXyzPointObservation o) {
-            return getAlarmLevel(BComponent.HEIGHT, o.getMeasuredX() / 1000d);
+            try {
+                var delta = o.ext().getDeltaZ();
+                return getAlarmLevel(BComponent.HEIGHT, delta / 1000d);
+            } catch (Exception e) {
+                return -1;
+            }
         }
 
         public BTopoControlPoint getAnchorPoint() {
@@ -70,37 +78,54 @@ public class BTopoConvergenceGroup extends BXyzPoint {
             return new ArrayList<>(mControlPoints.stream().filter(p -> p != getAnchorPoint()).toList());
         }
 
-        public BTopoConvergencePair getMaxDeltaDistanceOverTime() {
-            BTopoConvergencePair storedPair = null;
-            for (var pair : getPairs()) {
-                if (storedPair == null || Math.abs(pair.getDeltaDistanceOverTime()) > Math.abs(storedPair.getDeltaDistanceOverTime())) {
-                    storedPair = pair;
-                }
-            }
+        public String getDeltaString(String prefix, Function<BTopoConvergenceObservation, Double> function) {
+            var pair = getPairWithLargestDiff(function);
+            if (pair == null) {
+                return "";
+            } else {
+                var o = pair.ext().getObservationFilteredLast();
+                var diff = "";
+                try {
+                    diff = "%s: %s   %+.1f".formatted(
+                            prefix,
+                            pair.getSimpleName(),
+                            function.apply(o)
+                    );
 
-            return storedPair;
+                } catch (Exception e) {
+                }
+
+                return diff;
+            }
         }
 
-        public BTopoConvergencePair getMaxDeltaROverTime() {
-            BTopoConvergencePair storedPair = null;
-            for (var pair : getPairs()) {
-                if (storedPair == null || Math.abs(pair.getDeltaROverTime()) > Math.abs(storedPair.getDeltaROverTime())) {
-                    storedPair = pair;
-                }
+        public Double getDeltaValue(Function<BTopoConvergenceObservation, Double> function) {
+            var pair = getPairWithLargestDiff(function);
+            if (pair == null) {
+                return null;
+            } else {
+                var o = pair.ext().getObservationFilteredLast();
+                return function.apply(o);
             }
-
-            return storedPair;
         }
 
-        public BTopoConvergencePair getMaxDeltaZOverTime() {
-            BTopoConvergencePair storedPair = null;
-            for (var pair : getPairs()) {
-                if (storedPair == null || Math.abs(pair.getDeltaZOverTime()) > Math.abs(storedPair.getDeltaZOverTime())) {
-                    storedPair = pair;
-                }
+        public BTopoConvergencePair getPairWithLargestDiff(Function<BTopoConvergenceObservation, Double> function) {
+            var observations = ext().getPairs().stream()
+                    .flatMap(pair -> pair.ext().getObservationsTimeFiltered().stream()).toList();
+
+            var maxDateOpt = observations.stream()
+                    .map(BTopoConvergenceObservation::getDate)
+                    .max(LocalDateTime::compareTo);
+
+            if (maxDateOpt.isPresent()) {
+                var maxDate = maxDateOpt.get();
+                var observation = observations.stream()
+                        .filter(value -> value.getDate().equals(maxDate))
+                        .max(Comparator.comparingDouble(o -> Math.abs(function.apply(o)))).orElse(null);
+                return observation.ext().getPair();
             }
 
-            return storedPair;
+            return null;
         }
 
         public ArrayList<BTopoConvergencePair> getPairs() {
