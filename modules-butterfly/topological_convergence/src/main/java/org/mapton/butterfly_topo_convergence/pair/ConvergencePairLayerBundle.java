@@ -29,9 +29,7 @@ import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
-import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
-import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SDict;
 
@@ -39,7 +37,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = LayerBundle.class)
+//@ServiceProvider(service = LayerBundle.class)
 public class ConvergencePairLayerBundle extends BfLayerBundle {
 
     private final ConvergenceAttributeManager mAttributeManager = ConvergenceAttributeManager.getInstance();

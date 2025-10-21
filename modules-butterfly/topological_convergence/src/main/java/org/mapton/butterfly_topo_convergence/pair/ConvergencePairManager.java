@@ -182,20 +182,20 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
 //            pair.setObservations(observations);
         }
 
-        pairs.sort((o1, o2) -> {
-            if (o1.getObservations().isEmpty() || o2.getObservations().isEmpty()) {
-                return 0;
-            } else {
-//                var d1 = o1.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
-//                var d2 = o2.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
-//
-//                d1 = Math.abs(d1);
-//                d2 = Math.abs(d2);
-//
-//                return Double.compare(d2, d1);
-                return 666;
-            }
-        });
+//        pairs.sort((o1, o2) -> {
+//            if (o1.getObservations().isEmpty() || o2.getObservations().isEmpty()) {
+//                return 0;
+//            } else {
+        ////                var d1 = o1.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
+////                var d2 = o2.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
+////
+////                d1 = Math.abs(d1);
+////                d2 = Math.abs(d2);
+////
+////                return Double.compare(d2, d1);
+//                return 666;
+//            }
+//        });
 
         initAllItems(pairs);
     }

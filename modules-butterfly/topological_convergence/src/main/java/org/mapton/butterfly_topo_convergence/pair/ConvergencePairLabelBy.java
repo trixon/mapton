@@ -34,17 +34,18 @@ public enum ConvergencePairLabelBy implements LabelBy.Operations {
         return "";
     }),
     MISC_DELTA(LabelBy.CAT_MISC, "Delta", p -> {
-        return "%.1f".formatted(p.getDeltaDistanceOverTime() * 1000);
+//        return "%.1f".formatted(p.getDeltaDistanceOverTime() * 1000);
+        return "666";
     }),
-    MISC_DISTANCE(LabelBy.CAT_MISC, "Avstånd", p -> {
-        return "%.3f".formatted(p.getDistance());
-    }),
-    MISC_DISTANCE_PLANE(LabelBy.CAT_MISC, "Avstånd, plan", p -> {
-        return "%.3f".formatted(p.getDeltaR());
-    }),
-    MISC_DISTANCE_HEIGHT(LabelBy.CAT_MISC, "Avstånd, höjd", p -> {
-        return "%.3f".formatted(p.getDeltaZ());
-    }),
+    //    MISC_DISTANCE(LabelBy.CAT_MISC, "Avstånd", p -> {
+    //        return "%.3f".formatted(p.getDistance());
+    //    }),
+    //    MISC_DISTANCE_PLANE(LabelBy.CAT_MISC, "Avstånd, plan", p -> {
+    //        return "%.3f".formatted(p.getDeltaR());
+    //    }),
+    //    MISC_DISTANCE_HEIGHT(LabelBy.CAT_MISC, "Avstånd, höjd", p -> {
+    //        return "%.3f".formatted(p.getDeltaZ());
+    //    }),
     MISC_GROUP(LabelBy.CAT_MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     });

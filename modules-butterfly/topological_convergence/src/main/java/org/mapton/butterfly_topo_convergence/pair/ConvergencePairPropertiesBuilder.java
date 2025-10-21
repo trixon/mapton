@@ -37,8 +37,8 @@ public class ConvergencePairPropertiesBuilder extends PropertiesBuilder<BTopoCon
 
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
-        var firstDate = Objects.toString(DateHelper.toDateString(p.ext().getFirstDate()), "-");
-        var lastDate = Objects.toString(DateHelper.toDateString(p.ext().getLastDate()), "-");
+        var firstDate = Objects.toString(DateHelper.toDateString(p.ext().getDateFirst()), "-");
+        var lastDate = Objects.toString(DateHelper.toDateString(p.ext().getDateLatest()), "-");
 
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getConvergenceGroup().getName());
@@ -47,22 +47,23 @@ public class ConvergencePairPropertiesBuilder extends PropertiesBuilder<BTopoCon
         propertyMap.put(getCatKey(cat1, "P2"), p.getP2().getName());
         propertyMap.put(getCatKey(cat1, Dict.FIRST.toString()), firstDate);
         propertyMap.put(getCatKey(cat1, Dict.LATEST.toString()), lastDate);
-        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getAge(ChronoUnit.DAYS));
-        propertyMap.put(getCatKey(cat1, "Count"), p.getObservations().size());
+        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
+        propertyMap.put(getCatKey(cat1, "Count"), p.ext().getObservationsTimeFiltered().size());
 
         var desc2 = "ΔL=%.1f mm  ΔP=%.1f mm  ΔH=%.1f mm".formatted(
-                p.getDeltaDistanceOverTime() * 1000,
-                p.getDeltaROverTime() * 1000,
-                p.getDeltaZOverTime() * 1000
+                666, 666, 666
+        //                p.getDeltaDistanceOverTime() * 1000,
+        //                p.getDeltaROverTime() * 1000,
+        //                p.getDeltaZOverTime() * 1000
         );
 
-        var desc3 = "L=%.3f m  P=%.3f m  H=%.3f m".formatted(
-                p.getDistance(),
-                p.getDeltaR(),
-                p.getDeltaZ()
-        );
+//        var desc3 = "L=%.3f m  P=%.3f m  H=%.3f m".formatted(
+//                p.getDistance(),
+//                p.getDeltaR(),
+//                p.getDeltaZ()
+//        );
         propertyMap.put(getCatKey(cat1, "Delta 1"), desc2);
-        propertyMap.put(getCatKey(cat1, "Delta 2"), desc3);
+//        propertyMap.put(getCatKey(cat1, "Delta 2"), desc3);
 
         return propertyMap;
     }

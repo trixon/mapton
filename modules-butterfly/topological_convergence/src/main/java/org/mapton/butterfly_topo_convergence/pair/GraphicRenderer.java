@@ -116,9 +116,9 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     private void plotLine(BTopoConvergencePair pair) {
-        if (pair.getObservations().isEmpty()) {
-            return;
-        }
+//        if (pair.getObservations().isEmpty()) {
+//            return;
+//        }
 
         var pos1 = PairHelper.getPosition(pair.getP1(), mOffset);
         var pos2 = PairHelper.getPosition(pair.getP2(), mOffset);
@@ -126,8 +126,8 @@ public class GraphicRenderer extends GraphicRendererBase {
         var path = new Path(pos1, pos2);
         var attrs = new BasicShapeAttributes(mAttributeManager.getPairPathAttributes());
 //        var delta = pair.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
-        int level = pair.getLevel(mMaterials.length);
-        attrs.setOutlineMaterial(mMaterials[level]);
+//        int level = pair.getLevel(mMaterials.length);
+        attrs.setOutlineMaterial(mMaterials[0]);
 //        if (delta >= 0) {
 //            attrs.setOutlineStippleFactor(3);
 //        }

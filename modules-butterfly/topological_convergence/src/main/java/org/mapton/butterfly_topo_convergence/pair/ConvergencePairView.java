@@ -51,7 +51,7 @@ public class ConvergencePairView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new ConvergencePairListCell());
+//        mListForm.getListView().setCellFactory(listView -> new ConvergencePairListCell());
 
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),

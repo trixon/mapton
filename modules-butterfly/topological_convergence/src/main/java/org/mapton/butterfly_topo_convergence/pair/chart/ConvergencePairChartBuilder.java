@@ -113,14 +113,14 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
         var plot = (XYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
 
-        for (var o : p.getObservations()) {
+        for (var o : p.ext().getObservationsTimeFiltered()) {
             var minute = ChartHelper.convertToMinute(o.getDate());
 //            mTimeSeriesDeltaL.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
         }
 
-        if (!p.getObservations().isEmpty()) {
-            var lastDate = p.getObservations().getLast().getDate().toLocalDate();
-            var firstDate = p.getObservations().getFirst().getDate().toLocalDate();
+        if (!p.ext().getObservationsTimeFiltered().isEmpty()) {
+            var lastDate = p.ext().getObservationsTimeFiltered().getLast().getDate().toLocalDate();
+            var firstDate = p.ext().getObservationsTimeFiltered().getFirst().getDate().toLocalDate();
 
             plotBlasts(plot, p, firstDate, lastDate);
         }
@@ -220,13 +220,13 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
         for (var pair : pairs) {
             var theOtherOne = StringHelper.getTheOtherOne(node, pair.getP1().getName(), pair.getP2().getName());
             var series = new TimeSeries(theOtherOne);
-            pair.getObservations().forEach(o -> {
+            pair.ext().getObservationsTimeFiltered().forEach(o -> {
                 var minute = ChartHelper.convertToMinute(o.getDate());
 //                series.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
             });
 
-            propertyMap.put(cat1 + "#" + theOtherOne, "%.1f mm".formatted(pair.getDeltaDistanceOverTime() * 1000));
-            Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
+//            propertyMap.put(cat1 + "#" + theOtherOne, "%.1f mm".formatted(pair.getDeltaDistanceOverTime() * 1000));
+//            Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
             mDataset.addSeries(series);
         }
     }
