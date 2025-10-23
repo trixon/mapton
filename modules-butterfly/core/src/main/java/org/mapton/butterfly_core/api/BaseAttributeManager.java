@@ -50,8 +50,8 @@ public abstract class BaseAttributeManager {
 
     public BasicShapeAttributes getAlarmInteriorAttributes(int alarmLevel) {
         if (mAlarmInteriorAttributes == null) {
-            mAlarmInteriorAttributes = new BasicShapeAttributes[4];
-            for (int i = 0; i < 4; i++) {
+            mAlarmInteriorAttributes = new BasicShapeAttributes[5];
+            for (int i = 0; i < 5; i++) {
                 var attrs = new BasicShapeAttributes();
                 attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
                 attrs.setEnableLighting(true);
@@ -77,8 +77,8 @@ public abstract class BaseAttributeManager {
 
     public BasicShapeAttributes getAlarmOutlineAttributes(int alarmLevel) {
         if (mAlarmOutlineAttributes == null) {
-            mAlarmOutlineAttributes = new BasicShapeAttributes[4];
-            for (int i = 0; i < 4; i++) {
+            mAlarmOutlineAttributes = new BasicShapeAttributes[5];
+            for (int i = 0; i < 5; i++) {
                 var attrs = new BasicShapeAttributes();
                 attrs.setOutlineMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
                 attrs.setDrawInterior(false);
@@ -146,7 +146,7 @@ public abstract class BaseAttributeManager {
                     var attrs = new BasicShapeAttributes();
                     attrs.setDrawOutline(false);
                     Material material;
-                    if (i < 4) {
+                    if (i < 5) {
                         material = ButterflyHelper.getAlarmMaterial(i - 1);
                     } else {
                         material = new Material(Color.decode("#800080"));
@@ -156,7 +156,7 @@ public abstract class BaseAttributeManager {
 
                     if (j == 1) {
                         attrs.setDrawOutline(true);
-                        if (i < 4) {
+                        if (i < 5) {
                             attrs.setOutlineMaterial(Material.LIGHT_GRAY);
                         } else {
                             attrs.setOutlineMaterial(Material.YELLOW);
@@ -235,8 +235,8 @@ public abstract class BaseAttributeManager {
 
     public PointPlacemarkAttributes getPinAttributes(int alarmLevel) {
         if (mPinAttributes == null) {
-            mPinAttributes = new PointPlacemarkAttributes[4];
-            for (int i = 0; i < 4; i++) {
+            mPinAttributes = new PointPlacemarkAttributes[5];
+            for (int i = 0; i < 5; i++) {
                 var attrs = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
                 attrs.setScale(Mapton.getScalePinImage());
                 attrs.setImageAddress("images/pushpins/plain-white.png");

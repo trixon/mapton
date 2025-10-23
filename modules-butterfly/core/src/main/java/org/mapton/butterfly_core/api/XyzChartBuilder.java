@@ -258,17 +258,27 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     public void plotAlarmIndicators(BXyzPoint p, int factor) {
         if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
             var ha = ext.getAlarm(BComponent.HEIGHT);
+            var color1 = Color.YELLOW;
+            var color2 = Color.RED;
+            var color3 = Color.decode("#800000");
+
             if (ha != null) {
                 var range0 = ha.ext().getRange0();
                 if (range0 != null) {
-                    plotAlarmIndicator(BComponent.HEIGHT, range0.getMinimum() * factor, Color.YELLOW);
-                    plotAlarmIndicator(BComponent.HEIGHT, range0.getMaximum() * factor, Color.YELLOW);
+                    plotAlarmIndicator(BComponent.HEIGHT, range0.getMinimum() * factor, color1);
+                    plotAlarmIndicator(BComponent.HEIGHT, range0.getMaximum() * factor, color1);
                 }
 
                 var range1 = ha.ext().getRange1();
                 if (range1 != null) {
-                    plotAlarmIndicator(BComponent.HEIGHT, range1.getMinimum() * factor, Color.RED);
-                    plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum() * factor, Color.RED);
+                    plotAlarmIndicator(BComponent.HEIGHT, range1.getMinimum() * factor, color2);
+                    plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum() * factor, color2);
+                }
+
+                var range2 = ha.ext().getRange2();
+                if (range2 != null) {
+                    plotAlarmIndicator(BComponent.HEIGHT, range2.getMinimum() * factor, color3);
+                    plotAlarmIndicator(BComponent.HEIGHT, range2.getMaximum() * factor, color3);
                 }
             }
 
@@ -277,17 +287,23 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                 var range0 = pa.ext().getRange0();
                 if (range0 != null) {
                     if (!Precision.equals(range0.getMinimum(), 0.0)) {
-                        plotAlarmIndicator(BComponent.PLANE, range0.getMinimum() * factor, Color.YELLOW);
+                        plotAlarmIndicator(BComponent.PLANE, range0.getMinimum() * factor, color1);
                     }
-                    plotAlarmIndicator(BComponent.PLANE, range0.getMaximum() * factor, Color.YELLOW);
+                    plotAlarmIndicator(BComponent.PLANE, range0.getMaximum() * factor, color1);
                 }
 
                 var range1 = pa.ext().getRange1();
                 if (range1 != null) {
                     if (!Precision.equals(range1.getMinimum(), 0.0)) {
-                        plotAlarmIndicator(BComponent.PLANE, range1.getMinimum() * factor, Color.RED);
+                        plotAlarmIndicator(BComponent.PLANE, range1.getMinimum() * factor, color2);
                     }
-                    plotAlarmIndicator(BComponent.PLANE, range1.getMaximum() * factor, Color.RED);
+                    plotAlarmIndicator(BComponent.PLANE, range1.getMaximum() * factor, color2);
+                }
+
+                var range2 = pa.ext().getRange2();
+                if (range2 != null) {
+                    plotAlarmIndicator(BComponent.PLANE, range2.getMinimum() * factor, color3);
+                    plotAlarmIndicator(BComponent.PLANE, range2.getMaximum() * factor, color3);
                 }
             }
         }
