@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import javafx.geometry.Point3D;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -83,19 +84,7 @@ public class BTopoConvergenceGroup extends BXyzPoint {
             if (pair == null) {
                 return "";
             } else {
-                var o = pair.ext().getObservationFilteredLast();
-                var diff = "";
-                try {
-                    diff = "%s: %s   %+.1f".formatted(
-                            prefix,
-                            pair.getSimpleName(),
-                            function.apply(o)
-                    );
-
-                } catch (Exception e) {
-                }
-
-                return diff;
+                return pair.ext().getDeltaString(prefix, function);
             }
         }
 
@@ -130,6 +119,22 @@ public class BTopoConvergenceGroup extends BXyzPoint {
 
         public ArrayList<BTopoConvergencePair> getPairs() {
             return mPairs;
+        }
+
+        public Stream<BTopoConvergencePair> getPairsOrderedByDeltaDesc(Function<BTopoConvergenceObservation, Double> function, Integer... limits) {
+            int limit;
+            if (limits == null || limits[0] == null) {
+                limit = Integer.MAX_VALUE;
+            } else {
+                limit = limits[0];
+            }
+
+            return getPairs().stream()
+                    .sorted((p1, p2) -> Double.compare(
+                    Math.abs(p2.ext().getDelta(function)),
+                    Math.abs(p1.ext().getDelta(function))))
+                    .limit(limit);
+
         }
 
         public boolean hasAnchorPoint() {

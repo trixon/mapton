@@ -134,6 +134,21 @@ public class BTopoConvergencePair extends BXyzPoint {
             }
         }
 
+        public String getDeltaString(String prefix, Function<BTopoConvergenceObservation, Double> function) {
+            var diff = "";
+            try {
+                var o = ext().getObservationFilteredLast();
+                diff = "%s: %s   %+.1f".formatted(
+                        prefix,
+                        getSimpleName(),
+                        function.apply(o)
+                );
+            } catch (Exception e) {
+            }
+
+            return diff;
+        }
+
         public String getShortName() {
             return Strings.CI.remove(getName(), getConvergenceGroup().getName());
         }
