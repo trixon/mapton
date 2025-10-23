@@ -558,7 +558,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         var levelH = TopoHelper.getAlarmLevelHeight(p);
         var levelP = TopoHelper.getAlarmLevelPlane(p);
 
-        var anyAlarmLevelFilterValues = EnumSet.of(AlarmLevelFilter.ANY_0, AlarmLevelFilter.ANY_1, AlarmLevelFilter.ANY_2, AlarmLevelFilter.ANY_E);
+        var anyAlarmLevelFilterValues = EnumSet.of(AlarmLevelFilter.ANY_0, AlarmLevelFilter.ANY_1, AlarmLevelFilter.ANY_2, AlarmLevelFilter.ANY_3, AlarmLevelFilter.ANY_E);
 
         for (var alarmFilter : AlarmLevelFilter.values()) {
             var itemChecked = mAlarmLevelCheckModel.isChecked(alarmFilter);
@@ -568,6 +568,8 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 } else if (alarmFilter == AlarmLevelFilter.ANY_1 && level == 1) {
                     return true;
                 } else if (alarmFilter == AlarmLevelFilter.ANY_2 && level == 2) {
+                    return true;
+                } else if (alarmFilter == AlarmLevelFilter.ANY_3 && level == 3) {
                     return true;
                 } else if (alarmFilter == AlarmLevelFilter.ANY_E && level == -1) {
                     return true;
@@ -585,11 +587,13 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                     var hSelected = mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_0)
                             || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_1)
                             || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_2)
+                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_3)
                             || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_E);
 
                     var pSelected = mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_0)
                             || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_1)
                             || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_2)
+                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_3)
                             || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_E);
                     if (hSelected && pSelected) {
                         valid = validH && validP;

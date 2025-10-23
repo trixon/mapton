@@ -21,6 +21,7 @@ import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_format.types.topo.BTopoGradeDiff;
 
@@ -98,6 +99,10 @@ public class TopoHelper {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
     }
 
+    public static Color getAlarmColorAwt(BTopoConvergencePair p) {
+        return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
+    }
+
     public static Color getAlarmColorAwt(BTopoGrade p) {
         if (p.getAxis() == BAxis.HORIZONTAL) {
             return ButterflyHelper.getAlarmColorAwt(getAlarmLevelHorizontal(p));
@@ -111,6 +116,10 @@ public class TopoHelper {
     }
 
     public static javafx.scene.paint.Color getAlarmColorFx(BTopoConvergenceGroup p) {
+        return ButterflyHelper.getAlarmColorFx(getAlarmLevel(p));
+    }
+
+    public static javafx.scene.paint.Color getAlarmColorFx(BTopoConvergencePair p) {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevel(p));
     }
 
@@ -167,6 +176,10 @@ public class TopoHelper {
     }
 
     public static int getAlarmLevel(BTopoConvergenceGroup p) {
+        return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
+    }
+
+    public static int getAlarmLevel(BTopoConvergencePair p) {
         return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
     }
 

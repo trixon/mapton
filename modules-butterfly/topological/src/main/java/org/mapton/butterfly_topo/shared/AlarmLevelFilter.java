@@ -27,14 +27,17 @@ public enum AlarmLevelFilter {
     ANY_0(null, 0),
     ANY_1(null, 1),
     ANY_2(null, 2),
+    ANY_3(null, 3),
     ANY_E(null, -1),
     HEIGHT_0(BComponent.HEIGHT, 0),
     HEIGHT_1(BComponent.HEIGHT, 1),
     HEIGHT_2(BComponent.HEIGHT, 2),
+    HEIGHT_3(BComponent.HEIGHT, 3),
     HEIGHT_E(BComponent.HEIGHT, -1),
     PLANE_0(BComponent.PLANE, 0),
     PLANE_1(BComponent.PLANE, 1),
     PLANE_2(BComponent.PLANE, 2),
+    PLANE_3(BComponent.PLANE, 3),
     PLANE_E(BComponent.PLANE, -1);
     private final BComponent mComponent;
     private final int mLevel;
