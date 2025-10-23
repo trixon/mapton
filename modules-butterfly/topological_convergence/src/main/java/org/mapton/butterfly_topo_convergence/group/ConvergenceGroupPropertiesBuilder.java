@@ -17,11 +17,15 @@ package org.mapton.butterfly_topo_convergence.group;
 
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
+import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 
 /**
  *
@@ -76,6 +80,24 @@ public class ConvergenceGroupPropertiesBuilder extends BPropertiesBuilder<BTopoC
         propertyMap.putAll(populateDates(p, dateParams));
 //******************************************************************************
         propertyMap.putAll(populateDatabase(p));
+
+        removeByKeyContains(propertyMap,
+                Dict.Geometry.PLANE.toString(),
+                SDict.ROLLING.toString(),
+                Dict.FIRST.toString(),
+                Dict.REFERENCE.toString()
+        );
+
+        propertyMap.put("Antal punkter", p.ext().getControlPointsWithoutAnchor().size());
+        propertyMap.put("Antal linjer", p.ext().getPairs().size());
+        propertyMap.put("Punkter", Strings.CI.remove(p.getRef(), p.getName()));
+
+        var function = BTopoConvergenceObservation.FUNCTION_3D;
+
+        p.ext().getPairsOrderedByDeltaDesc(function, 5)
+                .forEachOrdered(pair -> {
+                    propertyMap.put(pair.getSimpleName(), "%+.1f".formatted(pair.ext().getDelta(function)));
+                });
 
         return propertyMap;
     }

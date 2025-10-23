@@ -73,7 +73,7 @@ public class ConvergenceAttributeManager extends BaseAttributeManager {
         if (mNodeAttributes == null) {
             mNodeAttributes = new BasicShapeAttributes();
             mNodeAttributes.setDrawOutline(false);
-            mNodeAttributes.setInteriorMaterial(Material.ORANGE);
+            mNodeAttributes.setInteriorMaterial(new Material(Color.decode("#89CFF0")));
             mNodeAttributes.setEnableLighting(true);
         }
 

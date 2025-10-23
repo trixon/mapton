@@ -85,7 +85,7 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
     public double getOffset() {
         var offset = 0d;
         for (var g : getTimeFilteredItems()) {
-            var o = g.ext().getControlPoints().stream()
+            var o = g.ext().getControlPointsWithoutAnchor().stream()
                     .map(p -> p.getZeroZ())
                     .mapToDouble(Double::doubleValue).min().orElse(0);
             offset = FastMath.min(o, offset);
@@ -128,10 +128,21 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
                 var pairs = new ArrayList<BTopoConvergencePair>();
                 int n = controlPoints.size();
                 var offset = 10.0;//TODO Calculate it?
-
+                var anchorPoint = g.ext().getAnchorPoint();
+                i:
                 for (int i = 0; i < n; i++) {
+                    j:
                     for (int j = i + 1; j < n; j++) {
-                        var pair = new BTopoConvergencePair(g, controlPoints.get(i), controlPoints.get(j), offset);
+                        var pointI = controlPoints.get(i);
+                        if (pointI == anchorPoint) {
+                            continue i;
+                        }
+
+                        var pointJ = controlPoints.get(j);
+                        if (pointJ == anchorPoint) {
+                            continue j;
+                        }
+                        var pair = new BTopoConvergencePair(g, pointI, pointJ, offset);
                         var observations = pairToObservations.getOrDefault(pair.getP1().getName() + "::" + pair.getP2().getName(), new ArrayList<>());
                         observations.sort(Comparator.comparing(BTopoConvergenceObservation::getDate));
                         for (var o : observations) {

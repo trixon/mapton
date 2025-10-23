@@ -26,10 +26,9 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     LINES(Dict.Geometry.LINE.toString(), Integer.MAX_VALUE),
     NODE("Nod", Integer.MAX_VALUE),
     LABELS("Punktnamn", Integer.MAX_VALUE),
-    GEOMETRY(Dict.Geometry.GEOMETRY.toString(), Integer.MAX_VALUE),
-    GEOMETRY_NAME("\t— %s".formatted(Dict.NAME.toString()), Integer.MAX_VALUE),
-    ANCHOR_DISPLACEMENT("Diffsättning mot ankarpunkt", Integer.MAX_VALUE),
-    ANCHOR_DISPLACEMENT_NAME("\t— %s".formatted(Dict.NAME.toString()), Integer.MAX_VALUE);
+    VALUE_1D("Värde 1d", Integer.MAX_VALUE),
+    VALUE_2D("Värde 2d", Integer.MAX_VALUE),
+    VALUE_3D("Värde 3d", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 

@@ -128,7 +128,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
                     firstDelta = delta;
                 }
                 lastDelta = delta;
-                timeSeries.add(ChartHelper.convertToMinute(o.getDate()), delta);
+                timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), delta);
                 mMinMaxCollection.add(delta);
             }
         }
