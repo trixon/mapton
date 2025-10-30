@@ -16,49 +16,35 @@
 package org.mapton.butterfly_topo.grade.vertical;
 
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
+import org.mapton.butterfly_core.api.BListCell;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoHelper;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class GradeVListCell extends ListCell<BTopoGrade> {
+class GradeVListCell extends BListCell<BTopoGrade> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
     private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
-    private final Label mHeaderLabel = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
-    private VBox mVBox;
 
     public GradeVListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BTopoGrade p, boolean empty) {
-        super.updateItem(p, empty);
-        if (p == null || empty) {
-            clearContent();
-        } else {
-            addContent(p);
-        }
-    }
-
-    private void addContent(BTopoGrade p) {
+    protected void addContent(BTopoGrade p) {
         setText(null);
+        setGraphic(mVBox);
+        loadTooltip(p);
+        mAlarmIndicator.update(p);
+
         var header = p.getName();
         var gradeDiff = p.ext().getDiff();
 
-        mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
         mDesc1Label.setText("%.1f mm/m".formatted(gradeDiff.getRPerMille()));
         mDesc2Label.setText("ΔH=%.1f m, ΔP=%.1f m, ∂iH=%.1f mm, ∂iR=%.1f mm".formatted(
@@ -68,18 +54,10 @@ class GradeVListCell extends ListCell<BTopoGrade> {
                 gradeDiff.getPartialDiffR() * 1000
         ));
         mDesc3Label.setText("%s (%d)".formatted(p.getPeriod(), p.getCommonObservations().size()));
-
-        setGraphic(mVBox);
-    }
-
-    private void clearContent() {
-        setText(null);
-        setGraphic(null);
     }
 
     private void createUI() {
-        mHeaderLabel.setStyle(mStyleBold);
-        mVBox = new VBox(
+        mVBox.getChildren().setAll(
                 mHeaderLabel,
                 mDesc1Label,
                 mDesc2Label,
@@ -87,28 +65,18 @@ class GradeVListCell extends ListCell<BTopoGrade> {
         );
 
         mHeaderLabel.setGraphic(mAlarmIndicator);
-        mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
     }
 
-    private class AlarmIndicator extends HBox {
-
-        private static final double SIZE = FxHelper.getUIScaled(12);
-        private Circle mHeightShape;
+    private class AlarmIndicator extends BAlarmIndicator<BTopoGrade> {
 
         public AlarmIndicator() {
-            super(SIZE / 4);
-            createUI();
+            addNodes(m1dShape);
         }
 
+        @Override
         public void update(BTopoGrade p) {
-            mHeightShape.setFill(TopoHelper.getAlarmColorPlaneFx(p));
-            mHeightShape.setVisible(true);
-        }
-
-        private void createUI() {
-            mHeightShape = new Circle(SIZE / 2);
-            var hPane = new StackPane(mHeightShape);
-            getChildren().setAll(hPane);
+            m1dShape.setFill(TopoHelper.getAlarmColorPlaneFx(p));
+            m1dShape.setVisible(true);
         }
     }
 }

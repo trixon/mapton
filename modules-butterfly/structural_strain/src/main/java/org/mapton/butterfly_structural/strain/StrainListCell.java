@@ -16,52 +16,35 @@
 package org.mapton.butterfly_structural.strain;
 
 import java.time.LocalDate;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
-import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_core.api.BListCell;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import se.trixon.almond.util.StringHelper;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class StrainListCell extends ListCell<BStructuralStrainGaugePoint> {
+class StrainListCell extends BListCell<BStructuralStrainGaugePoint> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
     private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
     private final Label mDesc4Label = new Label();
-    private final Label mHeaderLabel = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
-    private final Tooltip mTooltip = new Tooltip();
-    private VBox mVBox;
 
     public StrainListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BStructuralStrainGaugePoint p, boolean empty) {
-        super.updateItem(p, empty);
-        if (p == null || empty) {
-            clearContent();
-        } else {
-            addContent(p);
-        }
-    }
-
-    private void addContent(BStructuralStrainGaugePoint p) {
+    protected void addContent(BStructuralStrainGaugePoint p) {
         setText(null);
+        setGraphic(mVBox);
+        loadTooltip(p);
+        mAlarmIndicator.update(p);
+
         var header = p.getName();
         if (StringUtils.isNotBlank(p.getStatus())) {
             header = "%s [%s]".formatted(header, p.getStatus());
@@ -84,26 +67,15 @@ class StrainListCell extends ListCell<BStructuralStrainGaugePoint> {
 
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
         var desc4 = "%s: %s".formatted(dateZero, p.ext().getDeltaZero());
-        mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(dateSB.toString());
         mDesc3Label.setText(desc3);
         mDesc4Label.setText(desc4);
-
-        mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
-        mTooltip.setText("TODO");
-        setGraphic(mVBox);
-    }
-
-    private void clearContent() {
-        setText(null);
-        setGraphic(null);
     }
 
     private void createUI() {
-        mHeaderLabel.setStyle(mStyleBold);
-        mVBox = new VBox(
+        mVBox.getChildren().setAll(
                 mHeaderLabel,
                 mDesc1Label,
                 mDesc2Label,
@@ -112,35 +84,18 @@ class StrainListCell extends ListCell<BStructuralStrainGaugePoint> {
         );
 
         mHeaderLabel.setGraphic(mAlarmIndicator);
-        mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
-
-        mVBox.getChildren().stream()
-                .filter(c -> c instanceof Control)
-                .map(c -> (Control) c)
-                .forEach(o -> o.setTooltip(mTooltip));
-
-        mTooltip.setShowDelay(Duration.seconds(2));
+        activateTooltip();
     }
 
-    private class AlarmIndicator extends HBox {
-
-        private static final double SIZE = FxHelper.getUIScaled(12);
-        private Circle mResultantShape;
+    private class AlarmIndicator extends BAlarmIndicator<BStructuralStrainGaugePoint> {
 
         public AlarmIndicator() {
-            super(SIZE / 4);
-            createUI();
+            addNodes(m1dShape);
         }
 
+        @Override
         public void update(BStructuralStrainGaugePoint p) {
-            mResultantShape.setFill(StrainHelper.getAlarmColorHeightFx(p));
-        }
-
-        private void createUI() {
-            mResultantShape = new Circle(SIZE / 2);
-            var hPane = new StackPane(mResultantShape);
-
-            getChildren().setAll(hPane);
+            m1dShape.setFill(StrainHelper.getAlarmColorHeightFx(p));
         }
     }
 }

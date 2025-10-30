@@ -17,53 +17,36 @@ package org.mapton.butterfly_geo.inclinometer;
 
 import java.time.LocalDate;
 import java.util.Comparator;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
-import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_core.api.BListCell;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation.ObservationItem;
 import se.trixon.almond.util.StringHelper;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class InclinoListCell extends ListCell<BGeoInclinometerPoint> {
+class InclinoListCell extends BListCell<BGeoInclinometerPoint> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
     private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
     private final Label mDesc4Label = new Label();
-    private final Label mHeaderLabel = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
-    private final Tooltip mTooltip = new Tooltip();
-    private VBox mVBox;
 
     public InclinoListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BGeoInclinometerPoint p, boolean empty) {
-        super.updateItem(p, empty);
-        if (p == null || empty) {
-            clearContent();
-        } else {
-            addContent(p);
-        }
-    }
-
-    private void addContent(BGeoInclinometerPoint p) {
+    protected void addContent(BGeoInclinometerPoint p) {
         setText(null);
+        setGraphic(mVBox);
+        loadTooltip(p);
+        mAlarmIndicator.update(p);
+
         var header = p.getName();
         if (StringUtils.isNotBlank(p.getStatus())) {
             header = "%s [%s]".formatted(header, p.getStatus());
@@ -93,26 +76,15 @@ class InclinoListCell extends ListCell<BGeoInclinometerPoint> {
                 desc4 = "%.1fmm @ %.1fm".formatted(item.getDistance() * 1000, item.getDown());
             }
         }
-        mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(dateSB.toString());
         mDesc3Label.setText(dateZero);
         mDesc4Label.setText(desc4);
-
-        mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
-        mTooltip.setText("TODO");
-        setGraphic(mVBox);
-    }
-
-    private void clearContent() {
-        setText(null);
-        setGraphic(null);
     }
 
     private void createUI() {
-        mHeaderLabel.setStyle(mStyleBold);
-        mVBox = new VBox(
+        mVBox.getChildren().setAll(
                 mHeaderLabel,
                 mDesc1Label,
                 mDesc2Label,
@@ -121,35 +93,18 @@ class InclinoListCell extends ListCell<BGeoInclinometerPoint> {
         );
 
         mHeaderLabel.setGraphic(mAlarmIndicator);
-        mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
-
-        mVBox.getChildren().stream()
-                .filter(c -> c instanceof Control)
-                .map(c -> (Control) c)
-                .forEach(o -> o.setTooltip(mTooltip));
-
-        mTooltip.setShowDelay(Duration.seconds(2));
+        activateTooltip();
     }
 
-    private class AlarmIndicator extends HBox {
-
-        private static final double SIZE = FxHelper.getUIScaled(12);
-        private Circle mResultantShape;
+    private class AlarmIndicator extends BAlarmIndicator<BGeoInclinometerPoint> {
 
         public AlarmIndicator() {
-            super(SIZE / 4);
-            createUI();
+            addNodes(m1dShape);
         }
 
+        @Override
         public void update(BGeoInclinometerPoint p) {
-            mResultantShape.setFill(InclinoHelper.getAlarmColorHeightFx(p));
-        }
-
-        private void createUI() {
-            mResultantShape = new Circle(SIZE / 2);
-            var hPane = new StackPane(mResultantShape);
-
-            getChildren().setAll(hPane);
+            m1dShape.setFill(InclinoHelper.getAlarmColorHeightFx(p));
         }
     }
 }
