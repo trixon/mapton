@@ -16,18 +16,14 @@
 package org.mapton.butterfly_geo_extensometer;
 
 import java.time.temporal.ChronoUnit;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
-import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_core.api.BListCell;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import se.trixon.almond.util.StringHelper;
@@ -37,35 +33,24 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-class ExtensoListCell extends ListCell<BGeoExtensometer> {
+class ExtensoListCell extends BListCell<BGeoExtensometer> {
 
-    private static final double SIZE = FxHelper.getUIScaled(12);
-    private final HBox mAlarmIndicatorBox = new HBox(FxHelper.getUIScaled(3));
+    private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
     private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
     private final Label mDesc4Label = new Label();
-    private final Label mHeaderLabel = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
-    private final Tooltip mTooltip = new Tooltip();
-    private VBox mVBox;
 
     public ExtensoListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BGeoExtensometer extenso, boolean empty) {
-        super.updateItem(extenso, empty);
-        if (extenso == null || empty) {
-            clearContent();
-        } else {
-            addContent(extenso);
-        }
-    }
-
-    private void addContent(BGeoExtensometer ext) {
+    protected void addContent(BGeoExtensometer ext) {
         setText(null);
+        setGraphic(mVBox);
+        mAlarmIndicator.update(ext);
+
         var header = ext.getName();
         if (StringUtils.isNotBlank(ext.getStatus())) {
             header = "%s [%s]".formatted(header, ext.getStatus());
@@ -84,72 +69,65 @@ class ExtensoListCell extends ListCell<BGeoExtensometer> {
         mDesc2Label.setText(dateLatest);
         mDesc3Label.setText(dateZero);
         mDesc4Label.setText(desc4);
-
-        mAlarmIndicatorBox.getChildren().clear();
-        for (var p : ext.getPoints()) {
-            Shape shape;
-            var delta = p.ext().getDelta();
-            if (delta != null && Math.abs(delta) > 0.2) {
-                var polygon = new Polygon();
-                polygon.getPoints().addAll(new Double[]{
-                    SIZE / 2, 0.0,
-                    SIZE, SIZE,
-                    0.0, SIZE
-                });
-
-                if (delta < 0) {
-                    polygon.setRotate(180);
-                }
-                shape = polygon;
-            } else {
-                shape = new Circle(SIZE / 2);
-            }
-            var alarmColor = ButterflyHelper.getAlarmColorFx(p.ext().getAlarmLevel());
-            if (p.ext().getMeasurementUntilNext(ChronoUnit.DAYS) < 0) {
-                alarmColor = new Color(alarmColor.getRed(), alarmColor.getGreen(), alarmColor.getBlue(), 0.4);
-            }
-            shape.setFill(alarmColor);
-            var safeDelta = delta == null ? 666.0 : delta;
-            var percentH = (safeDelta / p.getLimit3() / 10.0);
-            var tooltip = new Tooltip("%s\r%.2f mm\r%.0f%% av %.1f mm".formatted(
-                    p.getName(),
-                    safeDelta,
-                    percentH,
-                    p.getLimit3() * 1000
-            ));
-            Tooltip.install(shape, tooltip);
-
-            mAlarmIndicatorBox.getChildren().add(shape);
-        }
-
-        setGraphic(mVBox);
-    }
-
-    private void clearContent() {
-        setText(null);
-        setGraphic(null);
     }
 
     private void createUI() {
-        mHeaderLabel.setStyle(mStyleBold);
-        mVBox = new VBox(
+        mVBox.getChildren().setAll(
                 mHeaderLabel,
-                mAlarmIndicatorBox,
-                //                mDesc1Label,
+                mAlarmIndicator,
                 mDesc4Label,
                 mDesc2Label
-        //                mDesc3Label,
         );
 
-        //mHeaderLabel.setGraphic(mAlarmIndicator);
-        mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
+        mAlarmIndicator.setSpacing(FxHelper.getUIScaled(3));
+    }
 
-        mVBox.getChildren().stream()
-                .filter(c -> c instanceof Control)
-                .map(c -> (Control) c)
-                .forEach(o -> o.setTooltip(mTooltip));
+    private class AlarmIndicator extends BAlarmIndicator<BGeoExtensometer> {
 
-        mTooltip.setShowDelay(Duration.seconds(2));
+        public AlarmIndicator() {
+            addNodes(m1dShape, m2dShape);
+        }
+
+        @Override
+        public void update(BGeoExtensometer ext) {
+            mAlarmIndicator.getChildren().clear();
+
+            for (var p : ext.getPoints()) {
+                Shape shape;
+                var delta = p.ext().getDelta();
+                if (delta != null && Math.abs(delta) > 0.2) {
+                    var polygon = new Polygon();
+                    polygon.getPoints().addAll(new Double[]{
+                        SIZE / 2, 0.0,
+                        SIZE, SIZE,
+                        0.0, SIZE
+                    });
+
+                    if (delta < 0) {
+                        polygon.setRotate(180);
+                    }
+                    shape = polygon;
+                } else {
+                    shape = new Circle(SIZE / 2);
+                }
+                var alarmColor = ButterflyHelper.getAlarmColorFx(p.ext().getAlarmLevel());
+                if (p.ext().getMeasurementUntilNext(ChronoUnit.DAYS) < 0) {
+                    alarmColor = new Color(alarmColor.getRed(), alarmColor.getGreen(), alarmColor.getBlue(), 0.4);
+                }
+                shape.setFill(alarmColor);
+                var safeDelta = delta == null ? 666.0 : delta;
+                var percentH = (safeDelta / p.getLimit3() / 10.0);
+                var tooltip = new Tooltip("%s\r%.2f mm\r%.0f%% av %.1f mm".formatted(
+                        p.getName(),
+                        safeDelta,
+                        percentH,
+                        p.getLimit3() * 1000
+                ));
+                Tooltip.install(shape, tooltip);
+
+                mAlarmIndicator.getChildren().add(shape);
+            }
+        }
     }
 
 }
