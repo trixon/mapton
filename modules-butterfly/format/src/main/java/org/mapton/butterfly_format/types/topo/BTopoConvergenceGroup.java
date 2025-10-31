@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import javafx.geometry.Point3D;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
@@ -65,6 +64,16 @@ public class BTopoConvergenceGroup extends BXyzPoint {
             } catch (Exception e) {
                 return -1;
             }
+        }
+
+        public int getAlarmLevel(Function<BTopoConvergenceObservation, Double> function) {
+            try {
+                var pair = getPairWithLargestDiff(function);
+                return pair.ext().getAlarmLevel(function);
+            } catch (Exception e) {
+                return -1;
+            }
+
         }
 
         public BTopoControlPoint getAnchorPoint() {
@@ -150,26 +159,25 @@ public class BTopoConvergenceGroup extends BXyzPoint {
             var totalDistance = 0.0;
             mAnchorPoint = null;
 
-            for (var p1 : controlPoints) {
-                var pp1 = new Point3D(p1.getZeroX(), p1.getZeroY(), p1.getZeroZ());
-                var pointDistance = 0.0;
-                for (var p2 : controlPoints) {
-                    var pp2 = new Point3D(p2.getZeroX(), p2.getZeroY(), p2.getZeroZ());
-                    pointDistance += pp1.distance(pp2);
-                }
-                totalDistance += pointDistance;
-                if (pointDistance > maxDistance) {
-                    maxDistance = pointDistance;
-                    mAnchorPoint = p1;
-                }
-            }
-
-            var avgDistance = (totalDistance - maxDistance) / controlPoints.size();
-            if (maxDistance < avgDistance * 2) {
-                mAnchorPoint = null;
-            }
+//            for (var p1 : controlPoints) {
+//                var pp1 = new Point3D(p1.getZeroX(), p1.getZeroY(), p1.getZeroZ());
+//                var pointDistance = 0.0;
+//                for (var p2 : controlPoints) {
+//                    var pp2 = new Point3D(p2.getZeroX(), p2.getZeroY(), p2.getZeroZ());
+//                    pointDistance += pp1.distance(pp2);
+//                }
+//                totalDistance += pointDistance;
+//                if (pointDistance > maxDistance) {
+//                    maxDistance = pointDistance;
+//                    mAnchorPoint = p1;
+//                }
+//            }
+//
+//            var avgDistance = (totalDistance - maxDistance) / controlPoints.size();
+//            if (maxDistance < avgDistance * 2) {
+//                mAnchorPoint = null;
+//            }
         }
-
     }
 
 }
