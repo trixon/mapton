@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -33,6 +32,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.Mapton;
@@ -286,8 +286,8 @@ public class ParameterEditor extends BaseEditor {
                 .sorted(Comparator.comparing(BaseManagerProvider::getName))
                 .toList();
         mManagerComboBox.getItems().setAll(managerProviders);
-        mManagerComboBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends BaseManagerProvider> observable, BaseManagerProvider oldValue, BaseManagerProvider newValue) -> {
-            mManager = newValue.getManager();
+        mManagerComboBox.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
+            mManager = n.getManager();
             mSourceTextArea.clear();
             mPreviewLogPanel.clear();
             loadUIParameter();
@@ -332,23 +332,23 @@ public class ParameterEditor extends BaseEditor {
         for (var name : getPointWithNavetNames(StringUtils.split(mSourceTextArea.getText(), "\n"))) {
             String larm = null;
             if (mLarmHCheckBox.isSelected() || mLarmPCheckBox.isSelected()) {
-                if (StringUtils.endsWith(name, "_P")) {
+                if (Strings.CI.endsWith(name, "_P")) {
                     larm = mLarmPComboBox.getValue();
                 } else {
                     larm = mLarmHComboBox.getValue();
                 }
             }
 
-            var baseName = StringUtils.removeEnd(name, "_H");
-            baseName = StringUtils.removeEnd(baseName, "_P");
+            var baseName = Strings.CI.removeEnd(name, "_H");
+            baseName = Strings.CI.removeEnd(baseName, "_P");
             var p = mManager.getAllItemsMap().get(baseName);
             var toDate = "ERROR";
-//            if (p != null) {
-//                var date = p.ext().getObservationRawLastDate();
-//                if (date != null) {
-//                    toDate = date.toString();
-//                }
-//            }
+            if (p != null) {
+                var date = p.extOrNull().getObservationRawLastDate();
+                if (date != null) {
+                    toDate = date.toString();
+                }
+            }
 
             var projid = originToId.getOrDefault(p.getOrigin(), "ERROR");
             sb.append(projid);
@@ -380,8 +380,8 @@ public class ParameterEditor extends BaseEditor {
             sb.append("\n");
         }
 
-        var result = StringUtils.removeEnd(sb.toString(), "\n");
-        result = StringUtils.removeEnd(result, "\n");
+        var result = Strings.CI.removeEnd(sb.toString(), "\n");
+        result = Strings.CI.removeEnd(result, "\n");
 //        result = StringUtils.replace(result, "/", ".");
 
         mPreviewLogPanel.println(result);

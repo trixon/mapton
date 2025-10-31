@@ -24,6 +24,7 @@ import java.util.TreeMap;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.locationtech.jts.geom.Coordinate;
 import org.mapton.api.MPoi;
@@ -103,7 +104,7 @@ public class FreqCalcEditor extends BaseTopoEditor {
     private List<BTopoControlPoint> getPointsWithActiveFormulaTest() {
         return mManager.getAllItems().stream()
                 .filter(p -> {
-                    if (StringUtils.startsWithAny(p.getName(), "AN", "HA", "SDB", "V4", "VA")) {
+                    if (Strings.CI.startsWithAny(p.getName(), "AN", "HA", "SDB", "V4", "VA")) {
                         mPointToFormulaMap.put(p, "-1:0,50:7,100:14");
 
                         return true;
