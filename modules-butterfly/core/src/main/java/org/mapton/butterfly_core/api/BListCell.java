@@ -16,12 +16,10 @@
 package org.mapton.butterfly_core.api;
 
 import javafx.scene.Node;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
@@ -51,15 +49,7 @@ public abstract class BListCell<T extends BXyzPoint> extends ListCell<T> {
     }
 
     protected void activateTooltip() {
-        activateTooltip(mVBox);
-    }
-
-    protected void activateTooltip(Pane pane) {
-        pane.getChildren().stream()
-                .filter(c -> c instanceof Control)
-                .map(c -> (Control) c)
-                .forEach(o -> o.setTooltip(mTooltip));
-
+        Tooltip.install(this, mTooltip);
         mTooltip.setShowDelay(Duration.seconds(2));
     }
 
