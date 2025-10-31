@@ -26,8 +26,9 @@ import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
+import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_topo.TopoHelper;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
 import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
 import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import org.mapton.butterfly_topo_convergence.group.graphics.GraphicRenderer;
@@ -153,7 +154,8 @@ public class ConvergenceGroupLayerBundle extends BfLayerBundle {
     private PointPlacemark plotPin(BTopoConvergenceGroup p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(Color.WHITE);
         attrs = new PointPlacemarkAttributes(attrs);
-        attrs.setImageColor(TopoHelper.getAlarmColorAwt(p));
+        var color = ButterflyHelper.getAlarmColorAwt(p.ext().getAlarmLevel(BTopoConvergenceObservation.FUNCTION_3D));
+        attrs.setImageColor(color);
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
         placemark.setAttributes(attrs);

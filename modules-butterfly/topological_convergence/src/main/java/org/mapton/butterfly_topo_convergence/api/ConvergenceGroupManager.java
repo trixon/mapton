@@ -18,6 +18,7 @@ package org.mapton.butterfly_topo_convergence.api;
 import com.sun.jna.platform.KeyboardUtils;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -28,8 +29,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
@@ -214,6 +217,8 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
         if (mFilterReloadRunnable != null) {
             mFilterReloadRunnable.run();
         }
+
+        calculateDynamicFreq(butterfly);
     }
 
     @Override
@@ -249,6 +254,41 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
     @Override
     protected void load(ArrayList<BTopoConvergenceGroup> items) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private void calculateDynamicFreq(Butterfly butterfly) {
+        var blasts = butterfly.noise().getBlasts().stream()
+                .filter(b -> b.getDateLatest().isAfter(LocalDateTime.now().minusMonths(3)))
+                .toList();
+
+        g:
+        for (var g : butterfly.topo().getConvergenceGroups()) {
+            if (g.getMeasurementMode() != BMeasurementMode.MANUAL) {
+                continue;
+            }
+
+            g.setFrequency(666);
+            var dates = new TreeSet<LocalDateTime>();
+            var gDate = g.ext().getObservationRawLast().getDate();
+            for (var b : blasts) {
+                var bDate = b.getDateLatest();
+                var blasAfterMeas = bDate.isAfter(gDate);
+                if (blasAfterMeas) {
+                    var gll = BCoordinatrix.toLatLon(g);
+                    var bll = BCoordinatrix.toLatLon(b);
+                    if (gll.distance(bll) <= 40) {
+                        dates.add(b.getDateLatest().plusHours(12));
+//                        dates.add(b.getDateLatest().toLocalDate());
+                    }
+                }
+            }
+
+            if (!dates.isEmpty()) {
+                var daysBetween = (int) ChronoUnit.DAYS.between(gDate, dates.first());
+                g.setFrequency(Math.max(1, Math.abs(daysBetween)));
+
+            }
+        }
     }
 
     private static class Holder {

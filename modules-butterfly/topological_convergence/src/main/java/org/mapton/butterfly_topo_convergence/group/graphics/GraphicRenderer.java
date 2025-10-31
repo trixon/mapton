@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.swing.SortOrder;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BCoordinatrix;
@@ -112,7 +112,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             placemark.setAltitudeMode(WorldWind.ABSOLUTE);
             placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
             placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-            placemark.setLabelText(StringUtils.remove(controlPoint.getName(), pair.getConvergenceGroup().getName()));
+            placemark.setLabelText(Strings.CS.remove(controlPoint.getName(), pair.getConvergenceGroup().getName()));
             addRenderable(placemark, true, null, sMapObjects);
             mPlottedLabels.add(name);
         }
