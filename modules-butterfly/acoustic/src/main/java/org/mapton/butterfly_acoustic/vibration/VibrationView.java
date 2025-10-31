@@ -23,6 +23,7 @@ import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
+import org.mapton.core.api.ui.ExportAction;
 import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
 
@@ -41,6 +42,7 @@ public class VibrationView {
     public VibrationView() {
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
+                new ExportAction("Vibrationer"),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
