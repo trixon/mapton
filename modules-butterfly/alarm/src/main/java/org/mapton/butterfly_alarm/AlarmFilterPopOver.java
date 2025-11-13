@@ -53,7 +53,12 @@ public class AlarmFilterPopOver extends MFilterPopOver {
     @Override
     public void reset() {
         clear();
-        mFilter.freeTextProperty().set("*");
+
+//        if (getFilterPresetPopOver().restoreDefaultIfExists()) {
+//            //
+//        } else {
+//            //
+//        }
     }
 
     private void createUI() {

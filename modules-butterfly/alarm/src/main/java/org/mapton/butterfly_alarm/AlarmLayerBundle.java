@@ -55,7 +55,7 @@ public class AlarmLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView;
+        return mOptionsView.getUI();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class AlarmLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Mapton.addWarning(Bundle.CTL_AlarmAction(), 1), "", "ActTopComponent");
+        initCommons(Mapton.addWarning(Bundle.CTL_AlarmAction(), 1), "", "AlarmTopComponent");
 
         mLabelLayer.setEnabled(true);
         mLayer.setMaxActiveAltitude(6000);
