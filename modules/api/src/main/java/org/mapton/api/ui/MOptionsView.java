@@ -17,6 +17,9 @@ package org.mapton.api.ui;
 
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
@@ -25,19 +28,16 @@ import org.openide.util.NbPreferences;
  *
  * @author Patrik Karlström
  */
-public abstract class MOptionsView extends BorderPane {
+public abstract class MOptionsView {
 
+    private final BorderPane mBorderPane = new BorderPane();
     private SessionManager mSessionManager;
 
     public MOptionsView() {
     }
 
-    public SessionManager getSessionManager() {
-        if (mSessionManager == null) {
-            mSessionManager = new SessionManager(NbPreferences.forModule(getClass()));
-        }
-
-        return mSessionManager;
+    public BorderPane getBorderPane() {
+        return mBorderPane;
     }
 
     public ResourceBundle getBundle() {
@@ -62,5 +62,33 @@ public abstract class MOptionsView extends BorderPane {
      */
     public String getKeyOptions(String key) {
         return "%s.options.%s".formatted(getClass().getSimpleName(), key);
+    }
+
+    public SessionManager getSessionManager() {
+        if (mSessionManager == null) {
+            mSessionManager = new SessionManager(NbPreferences.forModule(getClass()));
+        }
+
+        return mSessionManager;
+    }
+
+    public Node getUI() {
+        return mBorderPane;
+    }
+
+    public void setBottom(Node node) {
+        mBorderPane.setBottom(node);
+    }
+
+    public void setCenter(Node node) {
+        mBorderPane.setCenter(new ScrollPane(node));
+    }
+
+    public void setTop(Node node) {
+        mBorderPane.setTop(node);
+    }
+
+    public ReadOnlyDoubleProperty widthProperty() {
+        return mBorderPane.widthProperty();
     }
 }

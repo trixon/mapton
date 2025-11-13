@@ -161,6 +161,19 @@ public abstract class MBaseFilterSection {
         return checkModel.isEmpty() || checkModel.isChecked(o);
     }
 
+    public boolean validateCheckContains(IndexedCheckModel checkModel, String s) {
+        if (checkModel.isEmpty()) {
+            return true;
+        } else {
+            for (var checkedItem : checkModel.getCheckedItems()) {
+                if (Strings.CI.contains(s, (CharSequence) checkedItem)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     public boolean validateRangeSliderPane(RangeSliderPane rangeSliderPane, double value) {
         if (rangeSliderPane.selectedProperty().get()) {
             return inRange(value, rangeSliderPane.minProperty(), rangeSliderPane.maxProperty());

@@ -270,7 +270,7 @@
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>3.6.0</version>
+            <version>3.6.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
