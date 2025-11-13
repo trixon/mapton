@@ -88,6 +88,20 @@ public class MFilterPresetPopOver extends MPopOver {
         return mItemsProperty;
     }
 
+    public boolean restoreDefaultIfExists() {
+        try {
+            var node = "(STANDARD)";
+            if (mPreferences.nodeExists(node)) {
+                mFilterPopOver.filterPresetRestore(mPreferences.node(node));
+                return true;
+            }
+        } catch (BackingStoreException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        return false;
+    }
+
     private void createUI() {
         var title = MDict.QUICK_FILTERS.toString();
         setTitle(title);
