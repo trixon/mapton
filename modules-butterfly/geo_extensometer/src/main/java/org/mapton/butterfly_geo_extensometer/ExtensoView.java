@@ -39,6 +39,7 @@ public class ExtensoView {
     private final ExtensoManager mManager = ExtensoManager.getInstance();
 
     public ExtensoView() {
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),

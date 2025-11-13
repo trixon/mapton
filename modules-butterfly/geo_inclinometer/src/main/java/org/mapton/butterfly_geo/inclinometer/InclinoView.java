@@ -40,6 +40,7 @@ public class InclinoView {
     private final InclinoManager mManager = InclinoManager.getInstance();
 
     public InclinoView() {
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
