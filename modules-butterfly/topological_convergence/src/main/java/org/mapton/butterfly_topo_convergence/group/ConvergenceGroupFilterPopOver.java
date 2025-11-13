@@ -109,10 +109,13 @@ public class ConvergenceGroupFilterPopOver extends BaseTabbedFilterPopOver {
     @Override
     public void reset() {
         clear();
-        mFilter.freeTextProperty().set("*");
 
-        mFilterSectionPoint.reset(null);
-        mFilterSectionMisc.reset(null);
+        if (getFilterPresetPopOver().restoreDefaultIfExists()) {
+            //
+        } else {
+            mFilterSectionPoint.reset(null);
+            mFilterSectionMisc.reset(null);
+        }
     }
 
     private void createUI() {

@@ -40,6 +40,7 @@ public class ConvergenceGroupView {
     private final ConvergenceGroupManager mManager = ConvergenceGroupManager.getInstance();
 
     public ConvergenceGroupView() {
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
