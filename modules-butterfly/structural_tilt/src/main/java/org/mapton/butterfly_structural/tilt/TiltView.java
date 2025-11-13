@@ -40,6 +40,7 @@ public class TiltView {
     private final TiltManager mManager = TiltManager.getInstance();
 
     public TiltView() {
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),

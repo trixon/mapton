@@ -40,6 +40,7 @@ public class StrainView {
     private final StrainManager mManager = StrainManager.getInstance();
 
     public StrainView() {
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),

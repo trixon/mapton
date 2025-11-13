@@ -40,6 +40,7 @@ public class LoadView {
     private final LoadManager mManager = LoadManager.getInstance();
 
     public LoadView() {
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),

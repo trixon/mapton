@@ -84,7 +84,7 @@ class TiltListCell extends BListCell<BStructuralTiltPoint> {
         );
 
         mHeaderLabel.setGraphic(mAlarmIndicator);
-        activateTooltip(mVBox);
+        activateTooltip();
     }
 
     private class AlarmIndicator extends BAlarmIndicator<BStructuralTiltPoint> {

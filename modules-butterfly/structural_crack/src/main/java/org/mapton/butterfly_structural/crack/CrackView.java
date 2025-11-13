@@ -40,6 +40,7 @@ public class CrackView {
     private final CrackManager mManager = CrackManager.getInstance();
 
     public CrackView() {
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),

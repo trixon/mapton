@@ -21,9 +21,9 @@ import java.util.prefs.Preferences;
 import javafx.scene.layout.BorderPane;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
+import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
-import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
@@ -108,10 +108,13 @@ public class StrainFilterPopOver extends BaseTabbedFilterPopOver {
     @Override
     public void reset() {
         clear();
-        mFilter.freeTextProperty().set("*");
 
-        mFilterSectionPoint.reset(null);
-        mFilterSectionMisc.reset(null);
+        if (getFilterPresetPopOver().restoreDefaultIfExists()) {
+            //
+        } else {
+            mFilterSectionPoint.reset(null);
+            mFilterSectionMisc.reset(null);
+        }
     }
 
     private void createUI() {

@@ -60,7 +60,7 @@ public class TiltLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView;
+        return mOptionsView.getUI();
     }
 
     @Override
