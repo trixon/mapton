@@ -40,6 +40,7 @@ public class GroundwaterView {
     private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "hydro.groundwater");
 
     public GroundwaterView() {
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
