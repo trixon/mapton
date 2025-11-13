@@ -64,7 +64,6 @@ public class ActOptionsView extends BOptionsView {
         box.setPadding(FxHelper.getUIScaledInsets(8));
 
         setCenter(box);
-
     }
 
     private void initListeners() {

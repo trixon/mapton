@@ -68,8 +68,12 @@ public class ActFilterPopOver extends BaseFilterPopOver {
     @Override
     public void reset() {
         clear();
-        mFilter.freeTextProperty().set("*");
-        mStatusSccb.getCheckModel().clearChecks();
+
+        if (getFilterPresetPopOver().restoreDefaultIfExists()) {
+            //
+        } else {
+            //
+        }
     }
 
     private void createUI() {

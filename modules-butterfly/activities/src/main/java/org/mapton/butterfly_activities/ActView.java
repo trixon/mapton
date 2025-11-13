@@ -37,6 +37,7 @@ public class ActView {
     private final ActManager mManager = ActManager.getInstance();
 
     public ActView() {
+//        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 ActionUtils.ACTION_SPAN,
