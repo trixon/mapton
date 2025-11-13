@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Layer: org/mapton/addon/photos/layer.xml
+OpenIDE-Module-Localizing-Bundle: org/mapton/addon/photos/Bundle.properties
+
