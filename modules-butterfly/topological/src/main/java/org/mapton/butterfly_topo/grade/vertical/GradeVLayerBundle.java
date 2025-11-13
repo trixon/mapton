@@ -64,7 +64,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView;
+        return mOptionsView.getUI();
     }
 
     @Override

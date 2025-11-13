@@ -41,6 +41,7 @@ import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Direction;
 import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -75,7 +76,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView;
+        return mOptionsView.getUI();
     }
 
     @Override
@@ -93,7 +94,9 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
     private void initListeners() {
         mOptionsView.colorByProperty().addListener((p, o, n) -> {
             mAttributeManager.setColorBy(n);
-            repaint();
+            SwingHelper.runLaterDelayed(50, () -> {
+                repaint();
+            });
         });
 
         mOptionsView.registerLayerBundle(this);
@@ -139,34 +142,39 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
             }
 
             synchronized (mManager.getTimeFilteredItems()) {
-                for (var p : mManager.getTimeFilteredItems()) {
-                    if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
-                        var position = BCoordinatrix.toPositionWW2d(p);
-                        var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
-                        var mapObjects = new ArrayList<AVListImpl>();
+                mManager.getTimeFilteredItems().stream()
+                        .sorted((o1, o2) -> Double.compare(o1.ext().getAlarmLevel(), o2.ext().getAlarmLevel()))
+                        .forEachOrdered(p -> {
+//                for (var p : mManager.getTimeFilteredItems()) {
+                            if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
+                                var position = BCoordinatrix.toPositionWW2d(p);
+                                var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                                var mapObjects = new ArrayList<AVListImpl>();
 
-                        mapObjects.add(labelPlacemark);
-                        mapObjects.add(plotPin(p, position, labelPlacemark));
-                        mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
-                        mapObjects.addAll(plotIndicators(p, position));
+                                mapObjects.add(labelPlacemark);
+                                mapObjects.add(plotPin(p, position, labelPlacemark));
+                                mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
+                                mapObjects.addAll(plotIndicators(p, position));
 
-                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptionsView);
-                        var leftClickRunnable = (Runnable) () -> {
-                            mManager.setSelectedItemAfterReset(p);
-                        };
+                                mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptionsView);
+                                var leftClickRunnable = (Runnable) () -> {
+                                    mManager.setSelectedItemAfterReset(p);
+                                };
 
-                        var leftDoubleClickRunnable = (Runnable) () -> {
-                            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                            mGraphicRenderer.addToAllowList(p);
-                            repaint();
-                        };
+                                var leftDoubleClickRunnable = (Runnable) () -> {
+                                    Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                                    mGraphicRenderer.addToAllowList(p);
+                                    repaint();
+                                };
 
-                        mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                                mapObjects.stream().filter(r -> r != null).forEach(r -> {
+                                    r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                                    r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                                });
+                            }
+//                }
                         });
-                    }
-                }
+
                 mGraphicRenderer.postPlot();
             }
 

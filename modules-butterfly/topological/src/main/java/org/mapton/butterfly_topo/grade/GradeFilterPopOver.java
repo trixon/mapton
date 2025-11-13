@@ -102,10 +102,12 @@ public class GradeFilterPopOver extends BaseTabbedFilterPopOver {
     @Override
     public void reset() {
         clear();
-        mFilter.freeTextProperty().set("*");
 
-        mFilterSectionMisc.reset(null);
-
+        if (getFilterPresetPopOver().restoreDefaultIfExists()) {
+            //
+        } else {
+            mFilterSectionMisc.reset(null);
+        }
     }
 
     private void createUI() {

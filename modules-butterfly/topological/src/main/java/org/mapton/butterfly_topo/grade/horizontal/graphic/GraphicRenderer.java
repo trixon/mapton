@@ -90,11 +90,11 @@ public class GraphicRenderer extends GraphicRendererBase {
         double z2;
 
         if (Math.signum(p.ext().getDiff().getZPerMille()) > 0) {
-            z1 = MID - z;
-            z2 = MID + z;
-        } else {
             z1 = MID + z;
             z2 = MID - z;
+        } else {
+            z1 = MID - z;
+            z2 = MID + z;
         }
 
         var path = new Path(WWHelper.positionFromPosition(pos1, z1), WWHelper.positionFromPosition(pos2, z2));

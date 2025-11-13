@@ -43,6 +43,7 @@ public class TopoView {
     private final TopoManager mManager = TopoManager.getInstance();
 
     public TopoView() {
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_ControlPointAction());
 
         var actions = Arrays.asList(

@@ -47,6 +47,7 @@ public class GradeVView extends GradeView {
 
         mFilterPopOver = new GradeFilterPopOver(getClass(), mFilter, config);
         mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "gradeV");
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
 
         var actions = Arrays.asList(
                 mRefreshAction,

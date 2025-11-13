@@ -32,7 +32,7 @@ public class HeatMapOptionsView extends MOptionsView implements TabOptionsViewPr
 
     @Override
     public Node getOvNode() {
-        return this;
+        return this.getUI();
     }
 
     @Override

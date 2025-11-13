@@ -324,7 +324,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                     var nameH = alarmH == null ? "" : alarmH.getName();
                     var nameP = alarmP == null ? "" : alarmP.getName();
 
-                    return validateFreeText(p.getName(), p.getCategory(), p.getGroup(), p.getAlarm1Id(), p.getAlarm2Id(), nameH, nameP);
+                    return validateFreeText(p.getName(), p.getCategory(), p.getGroup(), p.getAlarm1Id(), p.getAlarm2Id(), nameH, nameP, p.getTag());
                 })
                 .filter(p -> p.isVisible())
                 .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))

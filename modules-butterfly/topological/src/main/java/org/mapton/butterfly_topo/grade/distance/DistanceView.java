@@ -46,6 +46,7 @@ public class DistanceView extends GradeView {
 
         mFilterPopOver = new GradeFilterPopOver(getClass(), mFilter, config);
         mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "gradeD");
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
 
         var actions = Arrays.asList(
                 mRefreshAction,

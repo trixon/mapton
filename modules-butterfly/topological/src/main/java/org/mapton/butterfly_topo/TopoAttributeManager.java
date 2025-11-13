@@ -160,8 +160,8 @@ public class TopoAttributeManager extends BaseAttributeManager {
 
     public BasicShapeAttributes getComponentVector3dAttributes(int alarmLevel) {
         if (mComponentVector3dAttributes == null) {
-            mComponentVector3dAttributes = new BasicShapeAttributes[4];
-            for (int i = 0; i < 4; i++) {
+            mComponentVector3dAttributes = new BasicShapeAttributes[5];
+            for (int i = 0; i < 5; i++) {
                 var attrs = new BasicShapeAttributes();
                 attrs.setDrawOutline(true);
                 attrs.setOutlineMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
@@ -201,9 +201,9 @@ public class TopoAttributeManager extends BaseAttributeManager {
 
     public BasicShapeAttributes getComponentVectorCurrentAttributes(int alarmLevel) {
         if (mComponentVectorCurrentAttributes == null) {
-            mComponentVectorCurrentAttributes = new BasicShapeAttributes[4];
+            mComponentVectorCurrentAttributes = new BasicShapeAttributes[5];
 
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 5; i++) {
                 var attrs = new BasicShapeAttributes();
                 attrs.setDrawOutline(false);
                 attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
@@ -390,11 +390,15 @@ public class TopoAttributeManager extends BaseAttributeManager {
             Color.BLUE
         };
 
-        ArrayList<String> origins = TopoManager.getInstance().getValue("origins");
-        var index = Math.max(0, origins.indexOf(p.getOrigin()));
-        index = Math.min(colors.length - 1, index);
+        try {
+            ArrayList<String> origins = TopoManager.getInstance().getValue("origins");
+            var index = Math.max(0, origins.indexOf(p.getOrigin()));
+            index = Math.min(colors.length - 1, index);
 
-        return colors[index];
+            return colors[index];
+        } catch (Exception e) {
+            return Color.WHITE;
+        }
     }
 
     private Color getColorForVerticalDirection(BTopoControlPoint p) {
@@ -412,9 +416,9 @@ public class TopoAttributeManager extends BaseAttributeManager {
     }
 
     private void initAttributes() {
-        mComponentVector12dAttributes = new BasicShapeAttributes[4];
+        mComponentVector12dAttributes = new BasicShapeAttributes[5];
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             var attrs = new BasicShapeAttributes();
             attrs.setDrawOutline(true);
             attrs.setOutlineWidth(4);

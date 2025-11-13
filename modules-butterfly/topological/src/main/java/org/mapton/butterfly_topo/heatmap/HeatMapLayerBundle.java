@@ -58,7 +58,7 @@ public class HeatMapLayerBundle extends TopoBaseLayerBundle {
             }
         }
 
-        return mOptionsView;
+        return mOptionsView.getUI();
     }
 
     @Override

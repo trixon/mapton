@@ -144,9 +144,12 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     public void reset() {
         clear();
 
-        mFilter.freeTextProperty().set("*");
-        mFilterSectionPoint.reset(TopoFilterDefaultsConfig.getInstance().getConfig());
-        mFilterSectionMisc.reset(null);
+        if (getFilterPresetPopOver().restoreDefaultIfExists()) {
+            //
+        } else {
+            mFilterSectionPoint.reset(TopoFilterDefaultsConfig.getInstance().getConfig());
+            mFilterSectionMisc.reset(null);
+        }
     }
 
     private void createUI() {
