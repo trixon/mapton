@@ -4,7 +4,7 @@
     <parent>
         <groupId>se.trixon.netbeans-platform</groupId>
         <artifactId>parent</artifactId>
-        <version>27</version>
+        <version>28</version>
     </parent>
 
     <groupId>org.mapton</groupId>
@@ -84,6 +84,7 @@
         <module>add-ons/base64/base64</module>
         <module>add-ons/geonames/geonames-ww</module>
         <module>add-ons/notes/notes</module>
+        <module>add-ons/osd</module>
         <module>add-ons/photos/photos</module>
         <module>add-ons/seasonal</module>
         <module>add-ons/xkcd/xkcd</module>
@@ -375,7 +376,7 @@
     </profiles>
 
     <properties>
-        <jackson.version>2.20.0</jackson.version>
+        <jackson.version>2.20.1</jackson.version>
         <brandingToken>mapton</brandingToken>
         <mapton.version>25.10x</mapton.version>
         <geotools.version>34.0</geotools.version>

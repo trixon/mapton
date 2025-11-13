@@ -24,7 +24,7 @@
         <dependency>
             <groupId>se.trixon.netbeans-platform</groupId>
             <artifactId>basic</artifactId>
-            <version>27</version>
+            <version>28</version>
             <type>pom</type>
         </dependency>
         <dependency>
@@ -176,6 +176,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-photos</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-osd</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
