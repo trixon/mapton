@@ -36,6 +36,7 @@ public class MonView {
     private final MonManager mManager = MonManager.getInstance();
 
     public MonView() {
+//        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 ActionUtils.ACTION_SPAN,
