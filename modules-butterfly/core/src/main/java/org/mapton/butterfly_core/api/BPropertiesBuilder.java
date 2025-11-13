@@ -57,6 +57,7 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
                 StringHelper.join(SEPARATOR, "", Dict.ORIGIN.toString(), SDict.OPERATOR.toString())),
                 StringHelper.join(SEPARATOR, "", p.getOrigin(), p.getOperator()));
         map.put(getCatKeyNum(CAT_BASIC, "Mätläge"), p.getMeasurementMode().toString());
+        map.put(getCatKeyNum(CAT_BASIC, Dict.TAG.toString()), p.getTag());
         map.put(getCatKeyNum(CAT_BASIC, Dict.COMMENT.toString()), p.getComment());
 
         return map;

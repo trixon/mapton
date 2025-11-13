@@ -18,6 +18,7 @@ package org.mapton.butterfly_core.api;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -76,6 +77,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     private final SessionCheckComboBox<String> mRollingSccb;
     private final SessionCheckComboBox<String> mSparseSccb;
     private final SessionCheckComboBox<String> mStatusSccb;
+    private final SessionCheckComboBox<String> mTagSccb;
     private final SessionCheckComboBox<String> mUnitDiffSccb;
     private final SessionCheckComboBox<String> mUnitSccb;
 
@@ -98,6 +100,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mIntenseFrequencySccb = new SessionCheckComboBox<>();
         mIntenseFrequencyStatSccb = new SessionCheckComboBox<>();
         mCategorySccb = new SessionCheckComboBox<>();
+        mTagSccb = new SessionCheckComboBox<>();
         mMeasurementModeSccb = new SessionCheckComboBox<>();
         mPointFilterUI = new PointFilterUI();
         init();
@@ -125,6 +128,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put("Rolling formula", makeInfo(mRollingSccb.getCheckModel().getCheckedItems()));
         map.put("Sparse", makeInfo(mSparseSccb.getCheckModel().getCheckedItems()));
         map.put(Dict.CATEGORY.toString(), makeInfo(mCategorySccb.getCheckModel().getCheckedItems()));
+        map.put(Dict.TAG.toString(), makeInfo(mTagSccb.getCheckModel().getCheckedItems()));
         map.put(SDict.ALARMS.toString(), makeInfo(mAlarmNameSccb.getCheckModel().getCheckedItems()));
         map.put(SDict.OPERATOR.toString(), makeInfo(mOperatorSccb.getCheckModel().getCheckedItems()));
         map.put(Dict.ORIGIN.toString(), makeInfo(mOriginSccb.getCheckModel().getCheckedItems()));
@@ -163,6 +167,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             return validateCheck(mStatusSccb.getCheckModel(), p.getStatus())
                     && validateCheck(mGroupSccb.getCheckModel(), p.getGroup())
                     && validateCheck(mCategorySccb.getCheckModel(), p.getCategory())
+                    && validateCheckContains(mTagSccb.getCheckModel(), p.getTag())
                     && validateAlarmName(p, mAlarmNameSccb.getCheckModel())
                     && validateAlarmFlags(p, mAlarmStatSccb.getCheckModel())
                     && validateCheck(mFrequencySccb.getCheckModel(), p.getFrequency())
@@ -202,6 +207,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                 mStatusSccb.getCheckModel(),
                 mGroupSccb.getCheckModel(),
                 mCategorySccb.getCheckModel(),
+                mTagSccb.getCheckModel(),
                 mAlarmNameSccb.getCheckModel(),
                 mAlarmStatSccb.getCheckModel(),
                 mFrequencySccb.getCheckModel(),
@@ -233,6 +239,14 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mSparseSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getSparse()));
         mGroupSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
         mCategorySccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
+        var tagSet = new HashSet<String>();
+        for (var p : items) {
+            var splittedItems = StringUtils.splitPreserveAllTokens(p.getTag(), ",");
+            if (splittedItems != null) {
+                tagSet.addAll(Arrays.asList(splittedItems));
+            }
+        }
+        mTagSccb.loadAndRestoreCheckItems(tagSet.stream());
         mOperatorSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
         mOriginSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
         mUnitSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getUnit()));
@@ -574,6 +588,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mStatusSccb,
                     mGroupSccb,
                     mCategorySccb,
+                    mTagSccb,
                     mAlarmNameSccb,
                     mAlarmStatSccb,
                     mOperatorSccb,
@@ -614,6 +629,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             sessionManager.register("filter.checkedAlarmName", mAlarmNameSccb.checkedStringProperty());
             sessionManager.register("filter.checkedAlarmStat", mAlarmStatSccb.checkedStringProperty());
             sessionManager.register("filter.checkedCategory", mCategorySccb.checkedStringProperty());
+            sessionManager.register("filter.checkedTag", mTagSccb.checkedStringProperty());
             sessionManager.register("filter.checkedFrequency", mFrequencySccb.checkedStringProperty());
             sessionManager.register("filter.checkedDefaultFrequency", mDefaultFrequencySccb.checkedStringProperty());
             sessionManager.register("filter.checkedDefaultFrequencyStat", mDefaultFrequencyStatSccb.checkedStringProperty());
@@ -636,6 +652,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             FxHelper.setVisibleRowCount(25,
                     mGroupSccb,
                     mCategorySccb,
+                    mTagSccb,
                     mAlarmNameSccb,
                     mRollingSccb,
                     mSparseSccb
@@ -656,6 +673,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mStatusSccb,
                     mGroupSccb,
                     mCategorySccb,
+                    mTagSccb,
                     mAlarmNameSccb,
                     mAlarmStatSccb,
                     mOperatorSccb,
@@ -676,6 +694,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             mStatusSccb.setTitle(Dict.STATUS.toString());
             mGroupSccb.setTitle(Dict.GROUP.toString());
             mCategorySccb.setTitle(Dict.CATEGORY.toString());
+            mTagSccb.setTitle(Dict.TAG.toString());
             mAlarmNameSccb.setTitle(SDict.ALARMS.toString());
             mOperatorSccb.setTitle(SDict.OPERATOR.toString());
             mOriginSccb.setTitle(Dict.ORIGIN.toString());
@@ -714,6 +733,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mIntenseFrequencySccb,
                     mAlarmNameSccb,
                     mGroupSccb,
+                    mTagSccb,
                     mOriginSccb,
                     mUnitSccb,
                     mRollingSccb,
@@ -730,6 +750,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mIntenseFrequencyStatSccb,
                     mAlarmStatSccb,
                     mCategorySccb,
+                    dummyLabel,
                     mOperatorSccb,
                     mUnitDiffSccb,
                     mSparseSccb

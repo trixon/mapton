@@ -23,6 +23,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MDisruptorManager;
 import org.mapton.api.ui.MFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -35,6 +36,7 @@ public abstract class BaseFilterPopOver extends MFilterPopOver {
 
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
+    private MFilterPresetPopOver mFilterPresetPopOver;
     private boolean mFirstRun = true;
 
     public static void splitAndCheck(String string, IndexedCheckModel<String> checkModel) {
@@ -70,6 +72,10 @@ public abstract class BaseFilterPopOver extends MFilterPopOver {
         return mButterfly;
     }
 
+    public MFilterPresetPopOver getFilterPresetPopOver() {
+        return mFilterPresetPopOver;
+    }
+
     public abstract void load(Butterfly butterfly);
 
     public void onShownFirstTime() {
@@ -81,6 +87,10 @@ public abstract class BaseFilterPopOver extends MFilterPopOver {
 
             load(mButterfly);
         }
+    }
+
+    public void setFilterPresetPopOver(MFilterPresetPopOver filterPresetPopOver) {
+        mFilterPresetPopOver = filterPresetPopOver;
     }
 
 }

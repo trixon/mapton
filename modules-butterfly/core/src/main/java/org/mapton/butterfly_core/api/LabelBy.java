@@ -247,6 +247,10 @@ public class LabelBy {
         return Objects.toString(p.getCategory(), "NODATA");
     }
 
+    public static String miscTag(BBaseControlPoint p) {
+        return Objects.toString(p.getTag(), "");
+    }
+
     public static String miscDimens(BXyzPoint p) {
         return p.getDimension() != null ? p.getDimension().getName() : "--";
     }
