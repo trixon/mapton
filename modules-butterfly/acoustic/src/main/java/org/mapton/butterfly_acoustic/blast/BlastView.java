@@ -39,6 +39,7 @@ public class BlastView {
     private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "aco.blast");
 
     public BlastView() {
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new ExportAction("Salvor"),

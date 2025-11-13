@@ -40,6 +40,7 @@ public class VibrationView {
     private final VibrationManager mManager = VibrationManager.getInstance();
 
     public VibrationView() {
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new ExportAction("Vibrationer"),

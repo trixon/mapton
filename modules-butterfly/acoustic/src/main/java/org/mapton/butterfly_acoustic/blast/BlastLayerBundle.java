@@ -56,7 +56,7 @@ public class BlastLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView;
+        return mOptionsView.getUI();
     }
 
     @Override
