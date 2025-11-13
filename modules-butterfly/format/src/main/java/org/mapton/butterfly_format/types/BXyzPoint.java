@@ -395,6 +395,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
         }
 
+        public int getAlarmLevel() {
+            return getAlarmLevel(getObservationFilteredLast());
+        }
+
         public int getAlarmLevel(BXyzPointObservation o) {
             return Math.max(getAlarmLevelHeight(o), getAlarmLevelPlane(o));
         }
