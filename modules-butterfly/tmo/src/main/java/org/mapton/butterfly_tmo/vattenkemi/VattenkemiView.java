@@ -35,6 +35,7 @@ public class VattenkemiView {
     private final VattenkemiManager mManager = VattenkemiManager.getInstance();
 
     public VattenkemiView() {
+//        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),

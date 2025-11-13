@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_tmo.rorelse;
 
-import org.mapton.butterfly_tmo.api.RorelseManager;
 import java.util.Arrays;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.Action;
@@ -24,6 +23,7 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_format.types.tmo.BRorelse;
+import org.mapton.butterfly_tmo.api.RorelseManager;
 import org.mapton.core.api.ui.ExportAction;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -40,6 +40,7 @@ public class RorelseView {
     private final RorelseManager mManager = RorelseManager.getInstance();
 
     public RorelseView() {
+//        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var mergeAction = new Action("Sammanfoga med kontrollpunkter", actionEvent -> {
             new Merger().merge();
         });

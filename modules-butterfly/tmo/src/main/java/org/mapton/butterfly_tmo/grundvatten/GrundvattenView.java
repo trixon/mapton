@@ -39,6 +39,7 @@ public class GrundvattenView {
     private final GrundvattenManager mManager = GrundvattenManager.getInstance();
 
     public GrundvattenView() {
+        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 new ExportAction("TMO-Grundvatten"),
                 ActionUtils.ACTION_SPAN,

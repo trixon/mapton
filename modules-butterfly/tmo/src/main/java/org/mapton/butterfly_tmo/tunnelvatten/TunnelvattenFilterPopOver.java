@@ -81,7 +81,12 @@ public class TunnelvattenFilterPopOver extends BaseFilterPopOver {
     @Override
     public void reset() {
         clear();
-        mFilter.freeTextProperty().set("*");
+
+        if (getFilterPresetPopOver().restoreDefaultIfExists()) {
+            //
+        } else {
+            //
+        }
     }
 
     private void createUI() {

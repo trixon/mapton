@@ -35,6 +35,7 @@ public class InfiltrationView {
     private final InfiltrationManager mManager = InfiltrationManager.getInstance();
 
     public InfiltrationView() {
+//        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
