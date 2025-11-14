@@ -45,8 +45,18 @@ public abstract class BlastMultiChartPart extends BMultiChartPart {
     }
 
     @Override
+    public String getAxisLabel() {
+        return "kN";
+    }
+
+    @Override
     public String getCategory() {
         return BAcousticBlast.class.getName();
+    }
+
+    @Override
+    public String getDecimalPattern() {
+        return "0";
     }
 
     @Override

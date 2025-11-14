@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_structural.load;
 
+import com.sun.jna.platform.KeyboardUtils;
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,7 +28,9 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPointObservation;
+import org.mapton.butterfly_structural.load.chart.ChartAggregate;
 import org.mapton.butterfly_structural.load.chart.LoadChartBuilder;
+import org.mapton.butterfly_structural.load.chart.MultiChartAggregate;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -38,6 +42,8 @@ public class LoadManager extends BaseManager<BStructuralLoadCellPoint> {
 
     private final LoadChartBuilder mChartBuilder = new LoadChartBuilder();
     private final LoadPropertiesBuilder mPropertiesBuilder = new LoadPropertiesBuilder();
+    private final ChartAggregate mChartAggregate = new ChartAggregate();
+    private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
 
     public static LoadManager getInstance() {
         return Holder.INSTANCE;
@@ -49,7 +55,16 @@ public class LoadManager extends BaseManager<BStructuralLoadCellPoint> {
 
     @Override
     public Object getObjectChart(BStructuralLoadCellPoint selectedObject) {
-        return mChartBuilder.build(selectedObject);
+        if (KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
+            return mChartBuilder.build(selectedObject);
+        } else {
+            boolean isCtrlPressed = KeyboardUtils.isPressed(KeyEvent.VK_CONTROL);
+            if (isCtrlPressed) {
+                return mMultiChartAggregate.build(selectedObject);
+            } else {
+                return mChartAggregate.build(selectedObject);
+            }
+        }
     }
 
     @Override

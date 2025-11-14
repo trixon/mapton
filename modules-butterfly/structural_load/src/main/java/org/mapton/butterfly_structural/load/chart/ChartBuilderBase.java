@@ -66,7 +66,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralLoadCe
             var date = isCompleteView() ? mDateNull : Date.from(Instant.now().minus(getRecentDays(), ChronoUnit.DAYS));
             setDateRangeNullNow(plot, p, date);
             plot.clearRangeMarkers();
-            plotAlarmIndicators(p, 1000);
+            plotAlarmIndicators(p);
 
             return getChartPanel();
         };
@@ -85,7 +85,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralLoadCe
             getLeftSubTextTitle().setText(date);
         }
 
-        String delta = p.ext().deltaZero().getDelta1d2d(0, 1000);
+        String delta = p.ext().deltaZero().getDelta1d2d(0);
         getRightSubTextTitle().setText(delta);
     }
 }

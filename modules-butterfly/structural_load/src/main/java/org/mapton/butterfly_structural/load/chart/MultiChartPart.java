@@ -37,6 +37,8 @@ import se.trixon.almond.util.MathHelper;
  */
 public abstract class MultiChartPart extends BMultiChartPart {
 
+    public static final double LIMIT_DISTANCE_STRUCT_LOAD = 40.0;
+
 //    public final double CUT_OFF_LIMIT = 0.002;
     public final double CUT_OFF_LIMIT = 0.0;
     private final BDimension mDimension;
@@ -46,8 +48,18 @@ public abstract class MultiChartPart extends BMultiChartPart {
     }
 
     @Override
+    public String getAxisLabel() {
+        return "kN";
+    }
+
+    @Override
     public String getCategory() {
         return BStructuralLoadCellPoint.class.getName();
+    }
+
+    @Override
+    public String getDecimalPattern() {
+        return "0";
     }
 
     @Override
@@ -85,7 +97,7 @@ public abstract class MultiChartPart extends BMultiChartPart {
                     return true;
                 })
                 .filter(p -> {
-                    return latLon.distance(BCoordinatrix.toLatLon(p)) <= LIMIT_DISTANCE_TOPO;
+                    return latLon.distance(BCoordinatrix.toLatLon(p)) <= LIMIT_DISTANCE_STRUCT_LOAD;
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 

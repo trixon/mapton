@@ -48,7 +48,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         mDimension = dimension;
         mFunction = function;
         mTimeSeries = new TimeSeries(dimension == BDimension._1d ? Dict.Geometry.HEIGHT : Dict.Geometry.PLANE);
-        initChart(null, null);
+        initChart("kN", "0");
     }
 
     @Override
@@ -152,7 +152,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
             var now = LocalDateTime.now();
             var val1 = trend.function().getValue(ChartHelper.convertToMinute(now.plusYears(1)).getFirstMillisecond());
             var val2 = trend.function().getValue(ChartHelper.convertToMinute(now).getFirstMillisecond());
-            return "%.1f mm/år".formatted((val1 - val2) * 1000);
+            return "%.1f mm/år".formatted((val1 - val2));
         });
 
         plot.setRenderer(index, renderer);
