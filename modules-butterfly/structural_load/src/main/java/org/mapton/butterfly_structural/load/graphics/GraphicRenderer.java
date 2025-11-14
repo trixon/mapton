@@ -47,6 +47,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         sCheckModel = checkModel;
     }
 
+    @Override
     public void plot(BStructuralLoadCellPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
 
