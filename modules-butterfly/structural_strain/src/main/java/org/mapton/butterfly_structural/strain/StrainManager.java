@@ -15,7 +15,8 @@
  */
 package org.mapton.butterfly_structural.strain;
 
-import org.mapton.butterfly_structural.strain.chart.StrainChartBuilder;
+import com.sun.jna.platform.KeyboardUtils;
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,6 +28,9 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePointObservation;
+import org.mapton.butterfly_structural.strain.chart.ChartAggregate;
+import org.mapton.butterfly_structural.strain.chart.MultiChartAggregate;
+import org.mapton.butterfly_structural.strain.chart.StrainChartBuilder;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -38,6 +42,8 @@ public class StrainManager extends BaseManager<BStructuralStrainGaugePoint> {
 
     private final StrainChartBuilder mChartBuilder = new StrainChartBuilder();
     private final StrainPropertiesBuilder mPropertiesBuilder = new StrainPropertiesBuilder();
+    private final ChartAggregate mChartAggregate = new ChartAggregate();
+    private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
 
     public static StrainManager getInstance() {
         return Holder.INSTANCE;
@@ -49,7 +55,16 @@ public class StrainManager extends BaseManager<BStructuralStrainGaugePoint> {
 
     @Override
     public Object getObjectChart(BStructuralStrainGaugePoint selectedObject) {
-        return mChartBuilder.build(selectedObject);
+        if (KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
+            return mChartBuilder.build(selectedObject);
+        } else {
+            boolean isCtrlPressed = KeyboardUtils.isPressed(KeyEvent.VK_CONTROL);
+            if (isCtrlPressed) {
+                return mMultiChartAggregate.build(selectedObject);
+            } else {
+                return mChartAggregate.build(selectedObject);
+            }
+        }
     }
 
     @Override
