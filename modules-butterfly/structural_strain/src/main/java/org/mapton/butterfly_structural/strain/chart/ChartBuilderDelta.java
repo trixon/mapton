@@ -58,12 +58,8 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         resetPlot(plot);
         plotMarkers(p);
         var delta1d = 0.0;
-        var delta2d = 0.0;
         if (p.getDimension() != BDimension._2d) {
             delta1d = plot(p, mTimeSeries1d, Color.RED, (BXyzPointObservation o) -> o.ext().getDelta1d());
-        }
-        if (p.getDimension() != BDimension._1d) {
-            delta2d = plot(p, mTimeSeries2d, Color.GREEN, (BXyzPointObservation o) -> o.ext().getDelta2d());
         }
 
         var dateAxis = (DateAxis) plot.getDomainAxis();
@@ -75,13 +71,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         } else {
             var sb = new StringBuilder();
             if (p.getDimension() != BDimension._2d) {
-                sb.append("Δ1d %+.0f".formatted(delta1d));
-                if (p.getDimension() == BDimension._3d) {
-                    sb.append(", ");
-                }
-            }
-            if (p.getDimension() != BDimension._1d) {
-                sb.append("Δ2d %+.0f".formatted(delta2d));
+                sb.append("Δ %+.0f".formatted(delta1d));
             }
             getRightSubTextTitle().setText(sb.toString());
             dateAxis.setRange(DateHelper.convertToDate(now.minusDays(getRecentDays())), nowAsDate);

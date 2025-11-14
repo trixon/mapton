@@ -31,14 +31,11 @@ public class ChartAggregate {
     private final ChartBuilderDelta mBuilderDeltaAvg = new ChartBuilderDelta(true, null);
     private final ChartBuilderDeltaSplit mBuilderDeltaSplit = new ChartBuilderDeltaSplit();
     private final ChartBuilderTrend mBuilderTrend1d;
-    private final ChartBuilderTrend mBuilderTrend2d;
     private final JTabbedPane mTabbedPane;
 
     public ChartAggregate() {
         final Function<BXyzPointObservation, Double> func1d = (var o) -> o.ext().getDelta1d();
-        final Function<BXyzPointObservation, Double> func2d = (var o) -> o.ext().getDelta2d();
         mBuilderTrend1d = new ChartBuilderTrend(BDimension._1d, func1d);
-        mBuilderTrend2d = new ChartBuilderTrend(BDimension._2d, func2d);
 
         mTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
     }
@@ -56,10 +53,7 @@ public class ChartAggregate {
                     mTabbedPane.add("Delta", mBuilderDeltaSplit.build(p).call());
                     mTabbedPane.add("Delta (avg)", mBuilderDeltaAvg.build(p).call());
                     if (p.getDimension() != BDimension._2d) {
-                        mTabbedPane.add("Trend 1d", mBuilderTrend1d.build(p).call());
-                    }
-                    if (p.getDimension() != BDimension._1d) {
-                        mTabbedPane.add("Trend 2d", mBuilderTrend2d.build(p).call());
+                        mTabbedPane.add("Trend", mBuilderTrend1d.build(p).call());
                     }
 
                     if (prevIndex > -1) {

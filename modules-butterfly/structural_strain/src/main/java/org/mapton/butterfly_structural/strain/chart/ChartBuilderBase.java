@@ -85,7 +85,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralStrain
             getLeftSubTextTitle().setText(date);
         }
 
-        String delta = p.ext().deltaZero().getDelta1d2d(0);
-        getRightSubTextTitle().setText(delta);
+        String delta = p.ext().deltaZero().getDelta1(0);
+        getRightSubTextTitle().setText("Δ " + delta);
     }
 }
