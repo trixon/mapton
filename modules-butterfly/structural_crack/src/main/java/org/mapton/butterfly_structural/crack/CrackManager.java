@@ -15,7 +15,8 @@
  */
 package org.mapton.butterfly_structural.crack;
 
-import org.mapton.butterfly_structural.crack.chart.CrackChartBuilder;
+import com.sun.jna.platform.KeyboardUtils;
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,6 +28,9 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
+import org.mapton.butterfly_structural.crack.chart.ChartAggregate;
+import org.mapton.butterfly_structural.crack.chart.CrackChartBuilder;
+import org.mapton.butterfly_structural.crack.chart.MultiChartAggregate;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -36,7 +40,9 @@ import se.trixon.almond.util.CollectionHelper;
  */
 public class CrackManager extends BaseManager<BStructuralCrackPoint> {
 
+    private final ChartAggregate mChartAggregate = new ChartAggregate();
     private final CrackChartBuilder mChartBuilder = new CrackChartBuilder();
+    private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
     private final CrackPropertiesBuilder mPropertiesBuilder = new CrackPropertiesBuilder();
 
     public static CrackManager getInstance() {
@@ -49,7 +55,16 @@ public class CrackManager extends BaseManager<BStructuralCrackPoint> {
 
     @Override
     public Object getObjectChart(BStructuralCrackPoint selectedObject) {
-        return mChartBuilder.build(selectedObject);
+        if (KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
+            return mChartBuilder.build(selectedObject);
+        } else {
+            boolean isCtrlPressed = KeyboardUtils.isPressed(KeyEvent.VK_CONTROL);
+            if (isCtrlPressed) {
+                return mMultiChartAggregate.build(selectedObject);
+            } else {
+                return mChartAggregate.build(selectedObject);
+            }
+        }
     }
 
     @Override

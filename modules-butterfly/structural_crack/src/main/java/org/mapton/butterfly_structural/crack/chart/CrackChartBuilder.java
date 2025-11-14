@@ -73,7 +73,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
             setDateRangeNullNow(plot, p, mDateNull);
 
             plot.clearRangeMarkers();
-            plotAlarmIndicators(p);
+            plotAlarmIndicators(p, CrackHelper.getScaleFactor(p));
 
             return getChartPanel();
         };
@@ -147,7 +147,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
 
             if (o.ext().getDeltaZ() != null) {
                 var minute = ChartHelper.convertToMinute(o.getDate());
-                var delta = o.ext().getDeltaZ() * 1000;
+                var delta = o.ext().getDeltaZ() * CrackHelper.getScaleFactor(p);
                 timeSeries.addOrUpdate(minute, delta);
                 if (DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), p.getDateZero())) {
                     mMinMaxCollection.add(delta);
@@ -160,8 +160,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
         getDataset().addSeries(timeSeries);
         renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
 
-        var alarmFactor = p.getUnit().equalsIgnoreCase("m") ? 1000 : 1;
-        setRange(1.05, alarmFactor, p.ext().getAlarm(BComponent.HEIGHT));
+        setRange(1.05, CrackHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.HEIGHT));
     }
 
     private void updateDatasetTemperature(BStructuralCrackPoint p) {

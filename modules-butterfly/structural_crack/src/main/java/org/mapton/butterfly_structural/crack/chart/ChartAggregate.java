@@ -1,0 +1,71 @@
+/*
+ * Copyright 2025 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.mapton.butterfly_structural.crack.chart;
+
+import java.util.concurrent.Callable;
+import java.util.function.Function;
+import javax.swing.JTabbedPane;
+import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
+import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+public class ChartAggregate {
+
+    private final ChartBuilderDelta mBuilderDeltaAvg = new ChartBuilderDelta(true, null);
+    private final ChartBuilderDeltaSplit mBuilderDeltaSplit = new ChartBuilderDeltaSplit();
+    private final ChartBuilderTrend mBuilderTrend1d;
+    private final JTabbedPane mTabbedPane;
+
+    public ChartAggregate() {
+        final Function<BXyzPointObservation, Double> func1d = (var o) -> o.ext().getDelta1d();
+        mBuilderTrend1d = new ChartBuilderTrend(BDimension._1d, func1d);
+
+        mTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
+    }
+
+    public synchronized Callable<JTabbedPane> build(BStructuralCrackPoint p) {
+        if (p == null) {
+            return null;
+        }
+
+        var prevIndex = mTabbedPane.getSelectedIndex();
+        var callable = (Callable<JTabbedPane>) () -> {
+            synchronized (mTabbedPane) {
+                mTabbedPane.removeAll();
+                if (p.ext().getObservationsTimeFiltered().size() > 1) {
+                    mTabbedPane.add("Delta", mBuilderDeltaSplit.build(p).call());
+                    mTabbedPane.add("Delta (avg)", mBuilderDeltaAvg.build(p).call());
+                    if (p.getDimension() != BDimension._2d) {
+                        mTabbedPane.add("Trend", mBuilderTrend1d.build(p).call());
+                    }
+
+                    if (prevIndex > -1) {
+                        mTabbedPane.setSelectedIndex(prevIndex);
+                    }
+                }
+
+                return mTabbedPane;
+            }
+        };
+
+        return callable;
+    }
+
+}
