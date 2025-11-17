@@ -51,7 +51,6 @@ public class ChartBuilderDelta extends ChartBuilderBase {
     @Override
     public void updateDataset(BStructuralStrainGaugePoint p) {
         mTimeSeries1d.clear();
-        mTimeSeries2d.clear();
 
         var plot = (XYPlot) mChart.getPlot();
         var rangeAxis = plot.getRangeAxis();

@@ -28,7 +28,6 @@ import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.butterfly_structural.strain.StrainHelper;
 import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -38,8 +37,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralStrain
 
     protected Minute mSubSetLastMinute;
     protected Minute mSubSetZeroMinute;
-    protected final TimeSeries mTimeSeries1d = new TimeSeries(Dict.Geometry.HEIGHT);
-    protected final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
+    protected final TimeSeries mTimeSeries1d = new TimeSeries("Töjning");
 
     public ChartBuilderBase() {
         initChart("Δ µε", "0");
