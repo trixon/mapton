@@ -270,7 +270,7 @@
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>3.6.2</version>
+            <version>3.7.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -338,22 +338,22 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-pdf-layout</artifactId>
-            <version>8.0.0</version>
+            <version>8.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.helger.font</groupId>
             <artifactId>ph-fonts-api</artifactId>
-            <version>6.0.0</version>
+            <version>6.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.helger.font</groupId>
             <artifactId>ph-fonts-open-sans</artifactId>
-            <version>6.0.0</version>
+            <version>6.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.helger.font</groupId>
             <artifactId>ph-fonts-roboto</artifactId>
-            <version>6.0.0</version>
+            <version>6.1.0</version>
         </dependency>
 
         <!--Jackson-->
