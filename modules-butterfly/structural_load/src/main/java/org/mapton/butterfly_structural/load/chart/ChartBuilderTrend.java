@@ -32,7 +32,6 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -47,7 +46,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
     public ChartBuilderTrend(BDimension dimension, Function<BXyzPointObservation, Double> function) {
         mDimension = dimension;
         mFunction = function;
-        mTimeSeries = new TimeSeries(dimension == BDimension._1d ? Dict.Geometry.HEIGHT : Dict.Geometry.PLANE);
+        mTimeSeries = new TimeSeries("Kraft");
         initChart("kN", "0");
     }
 
