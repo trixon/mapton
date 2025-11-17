@@ -52,19 +52,14 @@ public class ChartBuilderDelta extends ChartBuilderBase {
     @Override
     public void updateDataset(BStructuralCrackPoint p) {
         mTimeSeries1d.clear();
-        mTimeSeries2d.clear();
 
         var plot = (XYPlot) mChart.getPlot();
         var rangeAxis = plot.getRangeAxis();
         resetPlot(plot);
         plotMarkers(p);
         var delta1d = 0.0;
-        var delta2d = 0.0;
         if (p.getDimension() != BDimension._2d) {
             delta1d = plot(p, mTimeSeries1d, Color.RED, (BXyzPointObservation o) -> o.ext().getDelta1d());
-        }
-        if (p.getDimension() != BDimension._1d) {
-            delta2d = plot(p, mTimeSeries2d, Color.GREEN, (BXyzPointObservation o) -> o.ext().getDelta2d());
         }
 
         var dateAxis = (DateAxis) plot.getDomainAxis();
