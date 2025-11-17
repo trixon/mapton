@@ -37,6 +37,8 @@ import se.trixon.almond.util.MathHelper;
  */
 public abstract class MultiChartPart extends BMultiChartPart {
 
+    public static final double LIMIT_DISTANCE_TOPO = 40.0;
+
 //    public final double CUT_OFF_LIMIT = 0.002;
     public final double CUT_OFF_LIMIT = 0.0;
     private final BDimension mDimension;

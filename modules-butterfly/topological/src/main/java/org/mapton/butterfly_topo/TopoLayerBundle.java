@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.api.MRunnable;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.PinPaddle;
@@ -48,7 +49,7 @@ import se.trixon.almond.util.swing.SwingHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class TopoLayerBundle extends TopoBaseLayerBundle {
+public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
 
     private static final double Z_BASE_OFFSET = 5.0;
 
@@ -83,6 +84,15 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
     public void populate() throws Exception {
         super.populate();
         repaint(DEFAULT_REPAINT_DELAY);
+    }
+
+    @Override
+    public void run() {
+    }
+
+    @Override
+    public void runOnce() {
+        mOptionsView.runOnce();
     }
 
     private void init() {

@@ -18,7 +18,7 @@ package org.mapton.butterfly_topo.chart;
 import java.util.Comparator;
 import java.util.concurrent.Callable;
 import javax.swing.JTabbedPane;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.openide.util.Exceptions;
@@ -46,7 +46,7 @@ public class MultiChartAggregate {
             synchronized (mTabbedPane) {
                 mTabbedPane.removeAll();
                 Lookup.getDefault().lookupAll(BMultiChartPart.class).stream()
-                        .filter(c -> StringUtils.equalsIgnoreCase(c.getCategory(), BTopoControlPoint.class.getName()))
+                        .filter(c -> Strings.CI.equals(c.getCategory(), BTopoControlPoint.class.getName()))
                         .sorted(Comparator.comparing(BMultiChartPart::getName))
                         .forEachOrdered(multiChartComponent -> {
                             try {
