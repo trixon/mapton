@@ -150,6 +150,13 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
                     .collect(Collectors.toCollection(ArrayList<String>::new));
             setValue("origins", origins);
 
+            var classifications = getAllItems()
+                    .stream().map(p -> p.getClassification())
+                    .collect(Collectors.toCollection(TreeSet::new))
+                    .stream()
+                    .collect(Collectors.toCollection(ArrayList<String>::new));
+            setValue("classifications", classifications);
+
             var dates = new TreeSet<LocalDateTime>();
             getAllItems().stream().forEachOrdered(p -> {
                 dates.addAll(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());

@@ -140,7 +140,7 @@ public class TopoOptionsView extends BOptionsView implements MRunnable {
         gp.addRow(row++, pointLabel, colorLabel);
         gp.addRow(row++, mPointScb, mColorScb);
         gp.addRow(row++, labelLabel);
-        gp.addRow(row++, mLabelMenuButton);
+        gp.add(mLabelMenuButton, 0, row++, GridPane.REMAINING, 1);
         gp.addRow(row++, graphicLabel);
         gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
 //                mIndicatorSccb,

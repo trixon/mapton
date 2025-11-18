@@ -107,6 +107,9 @@ public enum TopoLabelBy implements LabelBy.Operations {
     MISC_STATUS(LabelBy.CAT_MISC, Dict.STATUS.toString(), p -> {
         return LabelBy.miscStatus(p);
     }),
+    MISC_CLASSIFICATION(LabelBy.CAT_MISC, "Klassning", p -> {
+        return LabelBy.miscClassification(p);
+    }),
     MISC_OPERATOR(LabelBy.CAT_MISC, SDict.OPERATOR.toString(), p -> {
         return LabelBy.miscOperator(p);
     }),

@@ -318,6 +318,9 @@ public class TopoAttributeManager extends BaseAttributeManager {
             case ORIGIN -> {
                 return getColorForOrigin(p);
             }
+            case CLASSIFICATION -> {
+                return getColorForClassification(p);
+            }
             case VERTICAL_DIRECTION -> {
                 return getColorForVerticalDirection(p);
             }
@@ -394,6 +397,33 @@ public class TopoAttributeManager extends BaseAttributeManager {
             ArrayList<String> origins = TopoManager.getInstance().getValue("origins");
             var index = Math.max(0, origins.indexOf(p.getOrigin()));
             index = Math.min(colors.length - 1, index);
+
+            return colors[index];
+        } catch (Exception e) {
+            return Color.WHITE;
+        }
+    }
+
+    private Color getColorForClassification(BTopoControlPoint p) {
+        var colors = new Color[]{
+            Color.GRAY,
+            Color.PINK,
+            Color.CYAN,
+            Color.ORANGE,
+            Color.MAGENTA,
+            Color.GREEN,
+            Color.YELLOW,
+            Color.RED,
+            Color.LIGHT_GRAY,
+            Color.DARK_GRAY,
+            Color.BLACK,
+            Color.BLUE
+        };
+
+        try {
+            ArrayList<String> classifications = TopoManager.getInstance().getValue("classifications");
+            var index = Math.max(0, classifications.indexOf(p.getClassification()));
+            index = Math.min(colors.length - 1, index - 1);
 
             return colors[index];
         } catch (Exception e) {

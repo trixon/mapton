@@ -48,8 +48,20 @@ class TopoListCell extends BListCell<BTopoControlPoint> {
         mAlarmIndicator.update(p);
 
         var header = "%s  %s".formatted(p.getOrigin(), p.getName());
-        if (StringUtils.isNotBlank(p.getStatus())) {
-            header = "%s [%s]".formatted(header, p.getStatus());
+        var sta = p.getStatus();
+        var cls = p.getClassification();
+        if (!StringUtils.isAllBlank(sta, cls)) {
+            var sb = new StringBuilder();
+            if (StringUtils.isNotBlank(sta)) {
+                sb.append(sta);
+                if (StringUtils.isNotBlank(cls)) {
+                    sb.append(" ");
+                }
+            }
+            if (StringUtils.isNotBlank(cls)) {
+                sb.append(cls);
+            }
+            header = "%s [%s]".formatted(header, sb.toString());
         }
 
         var alarms = StringHelper.getJoinedUnique(", ",

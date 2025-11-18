@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 public abstract class BBaseControlPoint extends BBasePoint {
 
     private String category;
+    private String classification;
     private LocalDateTime dateLatest;
     private LocalDate dateRolling;
     private LocalDate dateValidFrom;
@@ -43,6 +44,10 @@ public abstract class BBaseControlPoint extends BBasePoint {
 
     public String getCategory() {
         return category;
+    }
+
+    public String getClassification() {
+        return classification;
     }
 
     public LocalDateTime getDateLatest() {
@@ -103,6 +108,10 @@ public abstract class BBaseControlPoint extends BBasePoint {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public void setClassification(String classification) {
+        this.classification = classification;
     }
 
     public void setDateLatest(LocalDateTime dateLatest) {

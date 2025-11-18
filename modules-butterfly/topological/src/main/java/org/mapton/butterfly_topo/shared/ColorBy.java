@@ -24,6 +24,7 @@ import se.trixon.almond.util.SDict;
  */
 public enum ColorBy {
     ALARM(SDict.ALARM.toString()),
+    CLASSIFICATION("Klassning"),
     FREQUENCY(SDict.FREQUENCY.toString()),
     MEAS_NEED(SDict.MEASUREMENT_NEED.toString()),
     ORIGIN(Dict.ORIGIN.toString()),
