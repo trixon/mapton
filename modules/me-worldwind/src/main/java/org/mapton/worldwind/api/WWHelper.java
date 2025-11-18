@@ -23,6 +23,7 @@ import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Offset;
+import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.SurfaceCircle;
@@ -79,6 +80,19 @@ public class WWHelper {
         var circle = new SurfaceCircle(sa, positionFromLatLon(latLon), radius);
 
         return circle;
+    }
+
+    public static Renderable createIndicatorPole(MLatLon latLon) {
+        var path = new Path(WWHelper.positionFromLatLon(latLon, 0), WWHelper.positionFromLatLon(latLon, 100));
+        var attrs = new BasicShapeAttributes();
+        attrs.setDrawInterior(false);
+        attrs.setDrawOutline(true);
+        attrs.setOutlineMaterial(Material.WHITE);
+        attrs.setOutlineOpacity(0.5);
+        attrs.setOutlineWidth(2.0);
+        path.setAttributes(attrs);
+
+        return path;
     }
 
     public static ArrayList<LatLon> createNodes(Position position, double radius, int nodes, double offsetAzimuth) {

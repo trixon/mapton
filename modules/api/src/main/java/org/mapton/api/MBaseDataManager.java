@@ -243,6 +243,10 @@ public abstract class MBaseDataManager<T> {
         return mLayerBundleEnabled;
     }
 
+    public boolean isSelected(T t) {
+        return t != null && t == getSelectedItem();
+    }
+
     public boolean isSelectionLocked() {
         return mSelectionLockManager.isLocked();
     }

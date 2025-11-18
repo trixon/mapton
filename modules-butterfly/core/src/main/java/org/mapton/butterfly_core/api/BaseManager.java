@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_core.api;
 
+import gov.nasa.worldwind.render.Renderable;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -103,7 +104,8 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
     public Object getMapIndicator(T t) {
         if (t instanceof BBasePoint) {
             try {
-                return WWHelper.createIndicator(getLatLonForItem(t));
+                var latLon = getLatLonForItem(t);
+                return new Renderable[]{WWHelper.createIndicator(latLon), WWHelper.createIndicatorPole(latLon)};
             } catch (NullPointerException e) {
                 //
             }
