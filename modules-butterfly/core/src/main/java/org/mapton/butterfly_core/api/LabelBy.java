@@ -247,8 +247,8 @@ public class LabelBy {
         return Objects.toString(p.getCategory(), "NODATA");
     }
 
-    public static String miscTag(BBaseControlPoint p) {
-        return Objects.toString(p.getTag(), "");
+    public static String miscClassification(BXyzPoint p) {
+        return Objects.toString(p.getClassification(), "");
     }
 
     public static String miscDimens(BXyzPoint p) {
@@ -297,6 +297,10 @@ public class LabelBy {
 
     public static String miscStatus(BXyzPoint p) {
         return Objects.toString(p.getStatus(), "NODATA");
+    }
+
+    public static String miscTag(BBaseControlPoint p) {
+        return Objects.toString(p.getTag(), "");
     }
 
     public static void populateMenuButton(MenuButton menuButton, SimpleObjectProperty<LabelBy.Operations> labelByProperty, Enum<? extends LabelBy.Operations>[] items) {

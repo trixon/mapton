@@ -48,8 +48,8 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
 
         map.put(getCatKeyNum(CAT_BASIC, Dict.NAME.toString()), p.getName());
         map.put(getCatKeyNum(CAT_BASIC,
-                StringHelper.join(SEPARATOR, "", Dict.STATUS.toString(), SDict.DIMENSION.toString())),
-                StringHelper.join(SEPARATOR, "", p.getStatus(), p.getDimension().getName()));
+                StringHelper.join(SEPARATOR, "", "Sta", "Dim", "Kls")),
+                StringHelper.join(SEPARATOR, "", p.getStatus(), p.getDimension().getName(), p.getClassification()));
         map.put(getCatKeyNum(CAT_BASIC,
                 StringHelper.join(SEPARATOR, "", Dict.GROUP.toString(), Dict.CATEGORY.toString())),
                 StringHelper.join(SEPARATOR, "", p.getGroup(), p.getCategory()));

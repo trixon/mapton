@@ -33,7 +33,6 @@ import se.trixon.almond.util.fx.FxHelper;
 public abstract class BMultiChartPart {
 
     public static final double LIMIT_DISTANCE_BLAST = 40.0;
-    public static final double LIMIT_DISTANCE_TOPO = 40.0;
 
     public String getAxisLabel() {
         return "m";

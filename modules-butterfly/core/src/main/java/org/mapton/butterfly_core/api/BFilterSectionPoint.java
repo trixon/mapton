@@ -63,6 +63,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     private final RangeSliderPane mAltitudeRangeSlider = new RangeSliderPane("Z", -100.0, 100.0, false);
     private final ResourceBundle mBundle = NbBundle.getBundle(getClass());
     private final SessionCheckComboBox<String> mCategorySccb;
+    private final SessionCheckComboBox<String> mClassificationSccb;
     private final SessionCheckComboBox<Integer> mDefaultFrequencySccb;
     private final SessionCheckComboBox<DefaultFreqFlags> mDefaultFrequencyStatSccb;
     private final SessionCheckComboBox<Integer> mFrequencySccb;
@@ -85,6 +86,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         super("Grunddata");
         mAlarmNameSccb = new SessionCheckComboBox<>();
         mStatusSccb = new SessionCheckComboBox<>();
+        mClassificationSccb = new SessionCheckComboBox<>();
         mOriginSccb = new SessionCheckComboBox<>();
         mOperatorSccb = new SessionCheckComboBox<>();
         mUnitSccb = new SessionCheckComboBox<>();
@@ -120,6 +122,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         }
         map.put(Dict.Geometry.POINT.toUpper(), ".");
         map.put(Dict.STATUS.toString(), makeInfo(mStatusSccb.getCheckModel().getCheckedItems()));
+        map.put("Klassning", makeInfo(mClassificationSccb.getCheckModel().getCheckedItems()));
         map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencySccb.getCheckModel().getCheckedItems()));
         map.put("%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toLower()), makeInfoInteger(mDefaultFrequencySccb.getCheckModel().getCheckedItems()));
         map.put("%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.HIGH.toLower()), makeInfoInteger(mIntenseFrequencySccb.getCheckModel().getCheckedItems()));
@@ -154,6 +157,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put(OPERATOR, mOperatorSccb);
         map.put(ORIGIN, mOriginSccb);
         map.put(STATUS, mStatusSccb);
+        map.put(CLASSIFICATION, mClassificationSccb);
         map.put(UNIT, mUnitSccb);
         map.put(UNIT_DIFF, mUnitDiffSccb);
 
@@ -165,6 +169,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     public boolean filter(BXyzPoint p, Long remainingDays) {
         if (isSelected()) {
             return validateCheck(mStatusSccb.getCheckModel(), p.getStatus())
+                    && validateCheck(mClassificationSccb.getCheckModel(), p.getClassification())
                     && validateCheck(mGroupSccb.getCheckModel(), p.getGroup())
                     && validateCheck(mCategorySccb.getCheckModel(), p.getCategory())
                     && validateCheckContains(mTagSccb.getCheckModel(), p.getTag())
@@ -205,6 +210,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         List.of(
                 mMeasNextSccb.getCheckModel(),
                 mStatusSccb.getCheckModel(),
+                mClassificationSccb.getCheckModel(),
                 mGroupSccb.getCheckModel(),
                 mCategorySccb.getCheckModel(),
                 mTagSccb.getCheckModel(),
@@ -252,6 +258,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mUnitSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getUnit()));
         mUnitDiffSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getUnitDiff()));
         mStatusSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
+        mClassificationSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getClassification()));
         mFrequencySccb.loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequency() != null).map(o -> o.getFrequency()));
         mDefaultFrequencySccb.loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequencyDefault() != null).map(o -> o.getFrequencyDefault()));
         mIntenseFrequencySccb.loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequencyHigh() != null).map(o -> o.getFrequencyHigh()));
@@ -554,6 +561,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         ALARM_STAT,
         ALTITUDE,
         CATEGORY,
+        CLASSIFICATION,
         FORMULA_ROLLING,
         FORMULA_SPARSE,
         FREQUENCY_DEFAULT,
@@ -586,6 +594,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             mAltitudeRangeSlider.clear();
             SessionCheckComboBox.clearChecks(
                     mStatusSccb,
+                    mClassificationSccb,
                     mGroupSccb,
                     mCategorySccb,
                     mTagSccb,
@@ -641,6 +650,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             sessionManager.register("filter.checkedOperators", mOperatorSccb.checkedStringProperty());
             sessionManager.register("filter.checkedOrigin", mOriginSccb.checkedStringProperty());
             sessionManager.register("filter.checkedStatus", mStatusSccb.checkedStringProperty());
+            sessionManager.register("filter.checkedClassification", mClassificationSccb.checkedStringProperty());
             sessionManager.register("filter.checkedUnit", mUnitSccb.checkedStringProperty());
             sessionManager.register("filter.checkedUnitDiff", mUnitDiffSccb.checkedStringProperty());
             sessionManager.register("filter.measCheckedNextMeas", mMeasNextSccb.checkedStringProperty());
@@ -671,6 +681,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             FxHelper.setShowCheckedCount(true,
                     mMeasNextSccb,
                     mStatusSccb,
+                    mClassificationSccb,
                     mGroupSccb,
                     mCategorySccb,
                     mTagSccb,
@@ -692,6 +703,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
             mMeasNextSccb.setTitle(mBundle.getString("nextMeasCheckComboBoxTitle"));
             mStatusSccb.setTitle(Dict.STATUS.toString());
+            mClassificationSccb.setTitle("Klassning");
             mGroupSccb.setTitle(Dict.GROUP.toString());
             mCategorySccb.setTitle(Dict.CATEGORY.toString());
             mTagSccb.setTitle(Dict.TAG.toString());
@@ -744,13 +756,14 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             dummyLabel.prefHeightProperty().bind(mMeasurementModeSccb.heightProperty());
 
             var rightBox = new VBox(rowGap,
-                    mMeasurementModeSccb,
+                    mClassificationSccb,
                     mMeasNextSccb,
                     mDefaultFrequencyStatSccb,
                     mIntenseFrequencyStatSccb,
                     mAlarmStatSccb,
                     mCategorySccb,
-                    dummyLabel,
+                    //                    dummyLabel,
+                    mMeasurementModeSccb,
                     mOperatorSccb,
                     mUnitDiffSccb,
                     mSparseSccb
