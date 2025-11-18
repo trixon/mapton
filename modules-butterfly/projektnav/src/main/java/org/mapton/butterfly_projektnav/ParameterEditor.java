@@ -92,6 +92,8 @@ public class ParameterEditor extends BaseEditor {
     private final TextArea mSourceTextArea = new TextArea();
     private final CheckBox mStatusCheckBox = new CheckBox("Status");
     private final ComboBox<String> mStatusComboBox = new ComboBox<>();
+    private final CheckBox mClassCheckBox = new CheckBox("Klassning");
+    private final ComboBox<String> mClassComboBox = new ComboBox<>();
     private final CheckBox mUtforareCheckBox = new CheckBox("Utförare");
     private final ComboBox<String> mUtforareComboBox = new ComboBox<>();
     private final CheckBox mUtglesningCheckBox = new CheckBox("Utglesning");
@@ -170,6 +172,8 @@ public class ParameterEditor extends BaseEditor {
     }
 
     private void loadUIParameter() {
+        mClassComboBox.getItems().setAll("K0", "K1", "K2", "K3", "K4", "K5");
+        mClassComboBox.getSelectionModel().select("K1");
         mStatusComboBox.getItems().setAll("S0", "S1", "S2", "S3", "S4", "S5");
         mStatusComboBox.getSelectionModel().select("S1");
 
@@ -195,6 +199,7 @@ public class ParameterEditor extends BaseEditor {
         mDagIntSpinner.disableProperty().bind(mDagIntCheckBox.selectedProperty().not());
         mDagIntParamTextField.disableProperty().bind(mDagIntParamCheckBox.selectedProperty().not());
         mStatusComboBox.disableProperty().bind(mStatusCheckBox.selectedProperty().not());
+        mClassComboBox.disableProperty().bind(mClassCheckBox.selectedProperty().not());
         mUtforareComboBox.disableProperty().bind(mUtforareCheckBox.selectedProperty().not());
         mGruppComboBox.disableProperty().bind(mGruppCheckBox.selectedProperty().not());
         mLarmHComboBox.disableProperty().bind(mLarmHCheckBox.selectedProperty().not());
@@ -213,6 +218,8 @@ public class ParameterEditor extends BaseEditor {
         gp.addRow(++row, mDagIntParamCheckBox, mDagDefRestoreCheckBox, mDagIntRestoreCheckBox);
         gp.addRow(++row, mDagIntParamTextField);
         gp.addRow(++row, createSpacer());
+        gp.addRow(++row, mClassCheckBox);
+        gp.addRow(++row, mClassComboBox);
         gp.addRow(++row, mStatusCheckBox, mGruppCheckBox, mKategoriCheckBox);
         gp.addRow(++row, mStatusComboBox, mGruppComboBox, mKategoriComboBox);
         gp.addRow(++row, createSpacer());
@@ -315,6 +322,7 @@ public class ParameterEditor extends BaseEditor {
         addConditionlly(sb, mDagIntCheckBox.isSelected(), "meta");
         addConditionlly(sb, mDagIntParamCheckBox.isSelected(), "meta");
         addConditionlly(sb, mStatusCheckBox.isSelected(), "status");
+        addConditionlly(sb, mClassCheckBox.isSelected(), "meta");
         addConditionlly(sb, mGruppCheckBox.isSelected(), "grupp");
         addConditionlly(sb, mKategoriCheckBox.isSelected(), "kategori");
         addConditionlly(sb, mLarmHCheckBox.isSelected() || mLarmPCheckBox.isSelected(), "larm");
@@ -364,6 +372,7 @@ public class ParameterEditor extends BaseEditor {
             addConditionlly(sb, mDagDefCheckBox.isSelected(), "DefaultDag=%d".formatted(mDagDefSpinner.getValue()));
             addConditionlly(sb, mDagIntCheckBox.isSelected(), "IntenseDag=%d".formatted(mDagIntSpinner.getValue()));
             addConditionlly(sb, mDagIntParamCheckBox.isSelected(), "IntenseDagParam=%s".formatted(mDagIntParamTextField.getText()));
+            addConditionlly(sb, mClassCheckBox.isSelected(), "Classification=%s".formatted(mClassComboBox.getValue()));
             addConditionlly(sb, mStatusCheckBox.isSelected(), mStatusComboBox.getValue());
             addConditionlly(sb, mGruppCheckBox.isSelected(), mGruppComboBox.getValue());
             addConditionlly(sb, mKategoriCheckBox.isSelected(), mKategoriComboBox.getValue());
