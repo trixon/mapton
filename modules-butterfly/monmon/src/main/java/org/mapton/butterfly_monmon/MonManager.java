@@ -17,7 +17,9 @@ package org.mapton.butterfly_monmon;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import javafx.collections.ListChangeListener;
+import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
@@ -55,7 +57,17 @@ public class MonManager extends BaseManager<BMonmon> {
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.getMonmons());
+            var monmons = butterfly.getMonmons().stream()
+                    .filter(m -> {
+                        return m.getControlPoint() != null && ObjectUtils.allNotNull(
+                                m.getControlPoint().getZeroX(),
+                                m.getControlPoint().getZeroY(),
+                                m.getControlPoint().getZeroZ()
+                        );
+                    })
+                    .collect(Collectors.toCollection(ArrayList<BMonmon>::new));
+
+            initAllItems(monmons);
             initObjectToItemMap();
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
