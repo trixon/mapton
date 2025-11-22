@@ -33,8 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
-import se.trixon.almond.nbp.FileChooserHelper;
-import org.mapton.api.MBookmarkManager;
+import org.mapton.api.MBookmarkManagerSql;
 import org.mapton.api.MKmlCreator;
 import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -43,6 +42,7 @@ import org.openide.awt.NotificationDisplayer.Priority;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.FileChooserHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxActionSwing;
@@ -132,15 +132,15 @@ public class FileExportAction extends FileAction {
                     .withCommentMarker('#')
                     .withDelimiter(';')
                     .withHeader(
-                            MBookmarkManager.COL_CATEGORY,
-                            MBookmarkManager.COL_NAME,
-                            MBookmarkManager.COL_DESCRIPTION,
-                            MBookmarkManager.COL_URL,
-                            MBookmarkManager.COL_COLOR,
-                            MBookmarkManager.COL_LATITUDE,
-                            MBookmarkManager.COL_LONGITUDE,
-                            MBookmarkManager.COL_ZOOM,
-                            MBookmarkManager.COL_DISPLAY_MARKER)
+                            MBookmarkManagerSql.COL_CATEGORY,
+                            MBookmarkManagerSql.COL_NAME,
+                            MBookmarkManagerSql.COL_DESCRIPTION,
+                            MBookmarkManagerSql.COL_URL,
+                            MBookmarkManagerSql.COL_COLOR,
+                            MBookmarkManagerSql.COL_LATITUDE,
+                            MBookmarkManagerSql.COL_LONGITUDE,
+                            MBookmarkManagerSql.COL_ZOOM,
+                            MBookmarkManagerSql.COL_DISPLAY_MARKER)
                     .print(stringWriter);
 
             for (var bookmark : mManager.getItems()) {

@@ -45,7 +45,7 @@ public class BookmarkReport extends MReportSystem {
     public ContainerTag getContent() {
         var bookmarkCategories = new TreeMap<String, ArrayList<MBookmark>>();
 
-        for (var bookmark : mManager.dbLoad("*", false)) {
+        for (var bookmark : mManager.search("*")) {
             bookmarkCategories.computeIfAbsent(bookmark.getCategory(), k -> new ArrayList<>()).add(bookmark);
         }
 
@@ -69,7 +69,7 @@ public class BookmarkReport extends MReportSystem {
                                                         th(Dict.LONGITUDE.toString())
                                                 ),
                                                 tbody(
-                                                        each(filter(mManager.dbLoad(), bookmark -> bookmark.getCategory().equals(category)), bookmark
+                                                        each(filter(mManager.getItems(), bookmark -> bookmark.getCategory().equals(category)), bookmark
                                                                 -> tr(
                                                                 td(bookmark.getName()),
                                                                 td(StringUtils.defaultString(bookmark.getDescription())),

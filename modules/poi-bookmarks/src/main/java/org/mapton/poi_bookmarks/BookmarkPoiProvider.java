@@ -41,7 +41,7 @@ public class BookmarkPoiProvider implements MPoiProvider {
     public ArrayList<MPoi> getPois() {
         ArrayList<MPoi> pois = new ArrayList<>();
 
-        for (var bookmark : MBookmarkManager.getInstance().dbLoad("%", false)) {
+        for (var bookmark : MBookmarkManager.getInstance().getItems()) {
             var poi = new MPoi();
             poi.setDescription(bookmark.getDescription());
             poi.setCategory(bookmark.getCategory());

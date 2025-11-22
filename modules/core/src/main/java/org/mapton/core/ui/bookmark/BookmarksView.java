@@ -15,7 +15,6 @@
  */
 package org.mapton.core.ui.bookmark;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -45,7 +44,6 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.core.api.BookmarkEditor;
-import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
@@ -60,8 +58,8 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class BookmarksView extends BorderPane {
 
-    private final Map<String, TreeItem<MBookmark>> mBookmarkParents = new TreeMap<>();
     private final BookmarkEditor mBookmarkEditor;
+    private final Map<String, TreeItem<MBookmark>> mBookmarkParents = new TreeMap<>();
     private TextField mFilterTextField;
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
     private final PopOver mPopOver;
@@ -73,17 +71,17 @@ public class BookmarksView extends BorderPane {
         mBookmarkEditor = new BookmarkEditor();
         createUI();
 
-        mManager.dbLoad(mFilterTextField.getText(), true);
+        mManager.search(mFilterTextField.getText());
         populate();
         addListeners();
     }
 
     private void addListeners() {
-        mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            mManager.dbLoad(newValue, true);
+        mFilterTextField.textProperty().addListener((p, o, n) -> {
+            mManager.search(n);
         });
 
-        mManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
+        mManager.getAllItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
             populate();
         });
     }
@@ -104,8 +102,6 @@ public class BookmarksView extends BorderPane {
             mManager.goTo(bookmark);
         } catch (NullPointerException ex) {
             // nvm
-        } catch (ClassNotFoundException | SQLException ex) {
-            Exceptions.printStackTrace(ex);
         }
     }
 
@@ -137,7 +133,7 @@ public class BookmarksView extends BorderPane {
         String[] categorySegments = StringUtils.split(category, "/");
         StringBuilder sb = new StringBuilder();
 
-        for (String segment : categorySegments) {
+        for (var segment : categorySegments) {
             sb.append(segment);
             String path = sb.toString();
 
@@ -167,11 +163,11 @@ public class BookmarksView extends BorderPane {
         var rootMark = new MBookmark();
         rootMark.setName("");
         var root = new TreeItem<>(rootMark);
-        Map<String, TreeItem<MBookmark>> bookmarkParents = new TreeMap<>();
+        var bookmarkParents = new TreeMap<String, TreeItem<MBookmark>>();
 
-        for (var bookmark : mManager.getItems()) {
+        for (var bookmark : mManager.getFilteredItems()) {
             var bookmarkTreeItem = new TreeItem<>(bookmark);
-            String category = bookmark.getCategory();
+            var category = bookmark.getCategory();
             var parent = bookmarkParents.computeIfAbsent(category, k -> getParent(root, category));
             parent.getChildren().add(bookmarkTreeItem);
         }
@@ -196,7 +192,7 @@ public class BookmarksView extends BorderPane {
 
         treeItem.getChildren().sort(c1.thenComparing(c2));
 
-        for (TreeItem<MBookmark> childTreeItem : treeItem.getChildren()) {
+        for (var childTreeItem : treeItem.getChildren()) {
             postPopulate(childTreeItem, level + "-");
         }
     }

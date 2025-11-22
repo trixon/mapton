@@ -15,72 +15,45 @@
  */
 package org.mapton.api;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import java.time.LocalDateTime;
+import com.google.gson.annotations.SerializedName;
+import java.sql.Timestamp;
 import java.util.Objects;
 import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.api.jackson.CustomSerializerDecimals.CustomSerializer6Decimals;
 
-@JsonPropertyOrder({
-    "id",
-    "name",
-    "category",
-    "description",
-    "latitude",
-    "longitude",
-    "zoom",
-    "color",
-    "displayMarker",
-    "timeCreated",
-    "timeModified"
-})
 /**
  *
  * @author Patrik Karlström
  */
-public class MBookmark extends MObject {
+public class MBookmarkSql extends MObject {
 
-    @JsonIgnore
-    private transient Object avList;//Hide it
-    @JsonIgnore
-    private transient Object entries;//Hide it
-    @JsonProperty("category")
+    @SerializedName("category")
     private String mCategory = "";
-    @JsonProperty("color")
+    @SerializedName("color")
     private String mColor = "";
-    @JsonProperty("description")
+    @SerializedName("description")
     private String mDescription = "";
-    @JsonProperty("displayMarker")
+    @SerializedName("display_marker")
     private Boolean mDisplayMarker;
-    @JsonProperty("id")
-    private Long mId;
-    @JsonIgnore
-    @Deprecated(forRemoval = true)
+    private transient Long mId;
     private transient MLatLon mLatLon;
-    @JsonIgnore
-    private transient MLatLonBox mLatLonBox;
-    @JsonSerialize(using = CustomSerializer6Decimals.class)
-    @JsonProperty("latitude")
+    @SerializedName("lanLonBox")
+    private MLatLonBox mLatLonBox;
+    @SerializedName("latitude")
     private Double mLatitude;
-    @JsonProperty("longitude")
-    @JsonSerialize(using = CustomSerializer6Decimals.class)
+    @SerializedName("longitude")
     private Double mLongitude;
-    @JsonProperty("name")
+    @SerializedName("name")
     private String mName = "";
-    @JsonProperty("timeCreated")
-    private LocalDateTime mTimeCreated;
-    @JsonProperty("timeModified")
-    private LocalDateTime mTimeModified;
-    @JsonProperty("url")
-    private String mUrl;
-    @JsonSerialize(using = CustomSerializer6Decimals.class)
-    @JsonProperty("zoom")
+    @SerializedName("time_created")
+    private transient Timestamp mTimeCreated;
+    @SerializedName("time_modified")
+    private transient Timestamp mTimeModified;
+    @SerializedName("zoom")
     private Double mZoom;
+    @SerializedName("url")
+    private String mUrl;
 
-    public MBookmark() {
+    public MBookmarkSql() {
         setDisplayMarker(true);
     }
 
@@ -124,11 +97,11 @@ public class MBookmark extends MObject {
         return mName;
     }
 
-    public LocalDateTime getTimeCreated() {
+    public Timestamp getTimeCreated() {
         return mTimeCreated;
     }
 
-    public LocalDateTime getTimeModified() {
+    public Timestamp getTimeModified() {
         return mTimeModified;
     }
 
@@ -140,7 +113,6 @@ public class MBookmark extends MObject {
         return mZoom;
     }
 
-    @JsonIgnore
     public Boolean isCategory() {
         return !ObjectUtils.allNotNull(getLatitude(), getLongitude());
     }
@@ -189,11 +161,11 @@ public class MBookmark extends MObject {
         mName = name;
     }
 
-    public void setTimeCreated(LocalDateTime timeCreated) {
+    public void setTimeCreated(Timestamp timeCreated) {
         mTimeCreated = timeCreated;
     }
 
-    public void setTimeModified(LocalDateTime timeModified) {
+    public void setTimeModified(Timestamp timeModified) {
         mTimeModified = timeModified;
     }
 

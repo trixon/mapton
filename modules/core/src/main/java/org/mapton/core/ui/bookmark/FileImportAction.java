@@ -17,7 +17,6 @@ package org.mapton.core.ui.bookmark;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -32,9 +31,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
-import se.trixon.almond.nbp.FileChooserHelper;
 import org.mapton.api.MBookmark;
-import org.mapton.api.MBookmarkManager;
+import org.mapton.api.MBookmarkManagerSql;
 import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.awt.NotificationDisplayer;
@@ -42,6 +40,7 @@ import org.openide.awt.NotificationDisplayer.Priority;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.FileChooserHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.fx.FxActionSwing;
@@ -133,11 +132,11 @@ public class FileImportAction extends FileAction {
 
     private void importCsv() throws IOException {
         var requiredColumns = new String[]{
-            MBookmarkManager.COL_NAME,
-            MBookmarkManager.COL_LATITUDE,
-            MBookmarkManager.COL_LONGITUDE};
+            MBookmarkManagerSql.COL_NAME,
+            MBookmarkManagerSql.COL_LATITUDE,
+            MBookmarkManagerSql.COL_LONGITUDE};
 
-        try ( var csvRecords = CSVParser.parse(
+        try (var csvRecords = CSVParser.parse(
                 mFile,
                 Charset.forName("utf-8"),
                 CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).setDelimiter(';').build()
@@ -147,24 +146,24 @@ public class FileImportAction extends FileAction {
                 var bookmarks = new ArrayList<MBookmark>();
 
                 for (var csvRecord : csvRecords) {
-                    String category = getOrDefault(csvRecord, MBookmarkManager.COL_CATEGORY, Dict.DEFAULT.toString());
-                    String description = getOrDefault(csvRecord, MBookmarkManager.COL_DESCRIPTION, "");
-                    String url = getOrDefault(csvRecord, MBookmarkManager.COL_URL, "");
-                    String color = getOrDefault(csvRecord, MBookmarkManager.COL_COLOR, "FFFF00");
-                    String displayMarker = getOrDefault(csvRecord, MBookmarkManager.COL_DISPLAY_MARKER, "1");
-                    String zoomString = getOrDefault(csvRecord, MBookmarkManager.COL_ZOOM, default_zoom);
+                    String category = getOrDefault(csvRecord, MBookmarkManagerSql.COL_CATEGORY, Dict.DEFAULT.toString());
+                    String description = getOrDefault(csvRecord, MBookmarkManagerSql.COL_DESCRIPTION, "");
+                    String url = getOrDefault(csvRecord, MBookmarkManagerSql.COL_URL, "");
+                    String color = getOrDefault(csvRecord, MBookmarkManagerSql.COL_COLOR, "FFFF00");
+                    String displayMarker = getOrDefault(csvRecord, MBookmarkManagerSql.COL_DISPLAY_MARKER, "1");
+                    String zoomString = getOrDefault(csvRecord, MBookmarkManagerSql.COL_ZOOM, default_zoom);
                     if (!NumberUtils.isCreatable(zoomString)) {
                         zoomString = default_zoom;
                     }
 
-                    Double lat = MathHelper.convertStringToDouble(csvRecord.get(MBookmarkManager.COL_LATITUDE));
-                    Double lon = MathHelper.convertStringToDouble(csvRecord.get(MBookmarkManager.COL_LONGITUDE));
+                    Double lat = MathHelper.convertStringToDouble(csvRecord.get(MBookmarkManagerSql.COL_LATITUDE));
+                    Double lon = MathHelper.convertStringToDouble(csvRecord.get(MBookmarkManagerSql.COL_LONGITUDE));
                     Double zoom = MathHelper.convertStringToDouble(zoomString);
 
                     var bookmark = new MBookmark();
 
                     bookmark.setCategory(category);
-                    bookmark.setName(csvRecord.get(MBookmarkManager.COL_NAME));
+                    bookmark.setName(csvRecord.get(MBookmarkManagerSql.COL_NAME));
                     bookmark.setDescription(description);
                     bookmark.setUrl(url);
                     bookmark.setColor(color);
@@ -177,9 +176,9 @@ public class FileImportAction extends FileAction {
                     bookmarks.add(bookmark);
                 }
 
-                Point result = mManager.dbInsert(bookmarks);
-                mImports = result.x;
-                mErrors = result.y;
+//                Point result = mManager.dbInsert(bookmarks);
+//                mImports = result.x;
+//                mErrors = result.y;
             } else {
                 String message = mBundle.getString("bookmark_import_error_csv_message").formatted(String.join("\n ▶ ", requiredColumns));
                 NotificationDisplayer.getDefault().notify(
@@ -209,9 +208,9 @@ public class FileImportAction extends FileAction {
             bookmarks.add(bookmark);
         }
 
-        Point result = mManager.dbInsert(bookmarks);
-        mImports = result.x;
-        mErrors = result.y;
+//        Point result = mManager.dbInsert(bookmarks);
+//        mImports = result.x;
+//        mErrors = result.y;
     }
 
     private void importJson() throws IOException {
@@ -226,9 +225,9 @@ public class FileImportAction extends FileAction {
         ArrayList<MBookmark> bookmarks = gson.fromJson(json, new TypeToken<ArrayList<MBookmark>>() {
         }.getType());
 
-        Point result = mManager.dbInsert(bookmarks);
-        mImports = result.x;
-        mErrors = result.y;
+//        Point result = mManager.dbInsert(bookmarks);
+//        mImports = result.x;
+//        mErrors = result.y;
     }
 
     private boolean isValidCsv(CSVParser records, String[] columns) {

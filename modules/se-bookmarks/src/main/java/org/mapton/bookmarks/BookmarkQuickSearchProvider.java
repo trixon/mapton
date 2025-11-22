@@ -15,9 +15,7 @@
  */
 package org.mapton.bookmarks;
 
-import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
-import org.mapton.api.MLatLon;
 import org.mapton.api.Mapton;
 import org.netbeans.spi.quicksearch.SearchProvider;
 import org.netbeans.spi.quicksearch.SearchRequest;
@@ -31,9 +29,9 @@ public class BookmarkQuickSearchProvider implements SearchProvider {
 
     @Override
     public void evaluate(SearchRequest request, SearchResponse response) {
-        for (MBookmark bookmark : MBookmarkManager.getInstance().dbLoad(request.getText(), false)) {
+        for (var bookmark : MBookmarkManager.getInstance().search(request.getText())) {
             if (!response.addResult(() -> {
-                Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
+                Mapton.getEngine().panTo(bookmark.getLatLon(), bookmark.getZoom());
             }, bookmark.getName())) {
                 break;
             }
