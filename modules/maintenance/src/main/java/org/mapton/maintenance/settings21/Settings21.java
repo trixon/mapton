@@ -22,7 +22,7 @@ import org.openide.NotifyDescriptor;
 import org.openide.modules.OnStart;
 import org.openide.modules.Places;
 import se.trixon.almond.nbp.dialogs.NbOptionalDialog;
-import se.trixon.almond.util.SnapHelper;
+import se.trixon.almond.util.SystemHelper;
 
 /**
  * This class will notify the user of a change in user config/cache paths i.e.
@@ -63,7 +63,7 @@ public class Settings21 implements Runnable {
             File newUserDir = Places.getUserDirectory();
             File newCacheDir = Places.getCacheDirectory();
 
-            if (SnapHelper.isSnap()) {
+            if (SystemHelper.isPackageSnap()) {
                 oldUserDir = new File(System.getenv("SNAP_USER_DATA"), ".mapton/2.1");
                 oldCacheDir = new File(System.getenv("SNAP_USER_DATA"), ".cache/mapton/2.1");
             } else {
