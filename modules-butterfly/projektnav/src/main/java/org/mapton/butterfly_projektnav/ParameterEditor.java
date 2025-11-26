@@ -63,45 +63,54 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 @ServiceProvider(service = MEditor.class)
 public class ParameterEditor extends BaseEditor {
 
+    private final CheckBox mAnmCheckBox = new CheckBox("Kommentar");
+    private final ComboBox<EditMode> mAnmComboBox = new ComboBox<>();
+    private final TextField mAnmTextField = new TextField();
+    private final TextField mDynamicTextField = new TextField();
     private BorderPane mBorderPane;
     private final ResourceBundle mBundle = NbBundle.getBundle(BaseTopoEditor.class);
+    private final CheckBox mClassCheckBox = new CheckBox("Klassning");
+    private final ComboBox<String> mClassComboBox = new ComboBox<>();
     private final CheckBox mDagCheckBox = new CheckBox("Dag");
+    private final CheckBox mDagDefCheckBox = new CheckBox("DagDef");
+    private final CheckBox mDagDefRestoreCheckBox = new CheckBox("Reset dag def");
+    private final Spinner<Integer> mDagDefSpinner = new Spinner<>(0, 999, 1);
+    private final CheckBox mDagIntCheckBox = new CheckBox("DagInt");
+    private final CheckBox mDagIntParamCheckBox = new CheckBox("DagIntParam");
+    private final TextField mDagIntParamTextField = new TextField();
+    private final CheckBox mDagIntRestoreCheckBox = new CheckBox("Reset dag int");
+    private final Spinner<Integer> mDagIntSpinner = new Spinner<>(0, 999, 1);
     private final Spinner<Integer> mDagSpinner = new Spinner<>(0, 999, 1);
     private final CheckBox mDatFromCheckBox = new CheckBox("Från");
     private final DatePicker mDatFromDatePicker = new DatePicker();
     private final CheckBox mDatToCheckBox = new CheckBox("Till");
     private final DatePicker mDatToDatePicker = new DatePicker();
     private final CheckBox mDatToLatestCheckBox = new CheckBox("Till (senaste)");
-    private final CheckBox mDagDefCheckBox = new CheckBox("DagDef");
-    private final CheckBox mDagDefRestoreCheckBox = new CheckBox("Reset dag def");
-    private final CheckBox mDagIntCheckBox = new CheckBox("DagInt");
-    private final CheckBox mDagIntRestoreCheckBox = new CheckBox("Reset dag int");
-    private final CheckBox mDagIntParamCheckBox = new CheckBox("DagIntParam");
-    private final Spinner<Integer> mDagDefSpinner = new Spinner<>(0, 999, 1);
-    private final Spinner<Integer> mDagIntSpinner = new Spinner<>(0, 999, 1);
     private final CheckBox mGruppCheckBox = new CheckBox("Grupp");
     private final ComboBox<String> mGruppComboBox = new ComboBox<>();
     private final CheckBox mKategoriCheckBox = new CheckBox("Kategori");
+    private final CheckBox mDynamicCheckBox = new CheckBox("Dynamisk");
     private final ComboBox<String> mKategoriComboBox = new ComboBox<>();
+    private final ComboBox<String> mDynamicComboBox = new ComboBox<>();
     private final CheckBox mLarmHCheckBox = new CheckBox("Larm H");
     private final ComboBox<String> mLarmHComboBox = new ComboBox<>();
     private final CheckBox mLarmPCheckBox = new CheckBox("Larm P");
     private final ComboBox<String> mLarmPComboBox = new ComboBox<>();
     private BaseManager<? extends BXyzPoint> mManager;
+    private final ComboBox<BaseManagerProvider> mManagerComboBox = new ComboBox<>();
     private final LogPanel mPreviewLogPanel = new LogPanel();
+    private final CheckBox mRullandeCheckBox = new CheckBox("Rullande");
+    private final TextField mRullandeTextField = new TextField("Roll(10)");
     private final TextArea mSourceTextArea = new TextArea();
     private final CheckBox mStatusCheckBox = new CheckBox("Status");
     private final ComboBox<String> mStatusComboBox = new ComboBox<>();
-    private final CheckBox mClassCheckBox = new CheckBox("Klassning");
-    private final ComboBox<String> mClassComboBox = new ComboBox<>();
+    private final CheckBox mTagCheckBox = new CheckBox("Etikett");
+    private final ComboBox<EditMode> mTagComboBox = new ComboBox<>();
+    private final TextField mTagTextField = new TextField();
     private final CheckBox mUtforareCheckBox = new CheckBox("Utförare");
     private final ComboBox<String> mUtforareComboBox = new ComboBox<>();
     private final CheckBox mUtglesningCheckBox = new CheckBox("Utglesning");
     private final TextField mUtglesningTextField = new TextField("MEDIAN / 2D");
-    private final TextField mDagIntParamTextField = new TextField();
-    private final ComboBox<BaseManagerProvider> mManagerComboBox = new ComboBox<>();
-    private final CheckBox mRullandeCheckBox = new CheckBox("Rullande");
-    private final TextField mRullandeTextField = new TextField("Roll(10)");
 
     public ParameterEditor() {
         setName("Parametrar");
@@ -171,28 +180,6 @@ public class ParameterEditor extends BaseEditor {
         createUIParameter();
     }
 
-    private void loadUIParameter() {
-        mClassComboBox.getItems().setAll("K0", "K1", "K2", "K3", "K4", "K5");
-        mClassComboBox.getSelectionModel().select("K1");
-        mStatusComboBox.getItems().setAll("S0", "S1", "S2", "S3", "S4", "S5");
-        mStatusComboBox.getSelectionModel().select("S1");
-
-        var larmH = new TreeSet<>(mManager.getAllItems().stream()
-                .map(p -> p.getAlarm1Id())
-                .toList());
-        mLarmHComboBox.getItems().setAll(larmH);
-        var larmP = new TreeSet<>(mManager.getAllItems().stream()
-                .map(p -> p.getAlarm2Id())
-                .toList());
-        mLarmPComboBox.getItems().setAll(larmP);
-        var grupper = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getGroup()).toList());
-        mGruppComboBox.getItems().setAll(grupper);
-        var kategorier = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getCategory()).toList());
-        mKategoriComboBox.getItems().setAll(kategorier);
-        var utforare = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getOperator()).toList());
-        mUtforareComboBox.getItems().setAll(utforare);
-    }
-
     private void createUIParameter() {
         mDagSpinner.disableProperty().bind(mDagCheckBox.selectedProperty().not());
         mDagDefSpinner.disableProperty().bind(mDagDefCheckBox.selectedProperty().not());
@@ -209,7 +196,16 @@ public class ParameterEditor extends BaseEditor {
         mDatToDatePicker.disableProperty().bind(mDatToCheckBox.selectedProperty().not());
         mUtglesningTextField.disableProperty().bind(mUtglesningCheckBox.selectedProperty().not());
         mRullandeTextField.disableProperty().bind(mRullandeCheckBox.selectedProperty().not());
+        mTagTextField.disableProperty().bind(mTagCheckBox.selectedProperty().not());
+        mTagComboBox.disableProperty().bind(mTagCheckBox.selectedProperty().not());
+        mAnmTextField.disableProperty().bind(mAnmCheckBox.selectedProperty().not());
+        mAnmComboBox.disableProperty().bind(mAnmCheckBox.selectedProperty().not());
+        mAnmComboBox.disableProperty().bind(mAnmCheckBox.selectedProperty().not());
+        mDynamicTextField.disableProperty().bind(mDynamicCheckBox.selectedProperty().not());
+        mDynamicComboBox.disableProperty().bind(mDynamicCheckBox.selectedProperty().not());
+        mDynamicComboBox.disableProperty().bind(mDynamicCheckBox.selectedProperty().not());
 
+        mDynamicComboBox.setEditable(true);
         var gp = new GridPane(FxHelper.getUIScaled(8.0), FxHelper.getUIScaled(2.0));
         gp.setPadding(FxHelper.getUIScaledInsets(8.0));
         int row = 0;
@@ -231,11 +227,31 @@ public class ParameterEditor extends BaseEditor {
         gp.addRow(++row, createSpacer());
         gp.addRow(++row, mUtglesningCheckBox, mRullandeCheckBox);
         gp.addRow(++row, mUtglesningTextField, mRullandeTextField);
+        gp.addRow(++row, createSpacer());
+        gp.addRow(++row, mTagCheckBox);
+        gp.addRow(++row, mTagTextField, mTagComboBox);
+        gp.addRow(++row, createSpacer());
+        gp.addRow(++row, mAnmCheckBox);
+        gp.addRow(++row, mAnmTextField, mAnmComboBox);
+        gp.addRow(++row, mDynamicCheckBox);
+        gp.addRow(++row, mDynamicTextField, mDynamicComboBox);
+
         FxHelper.autoSizeColumn(gp, 3);
 
-        FxHelper.setEditable(true, mDagSpinner, mDagDefSpinner, mDagIntSpinner);
+        FxHelper.setEditable(true,
+                mDagSpinner,
+                mDagDefSpinner,
+                mDagIntSpinner
+        );
         FxHelper.autoCommitSpinners(mDagSpinner, mDagDefSpinner);
-        FxHelper.setEditable(true, mGruppComboBox, mKategoriComboBox, mUtforareComboBox);
+        FxHelper.setEditable(true,
+                mGruppComboBox,
+                mKategoriComboBox,
+                mUtforareComboBox,
+                mStatusComboBox,
+                mLarmHComboBox,
+                mLarmPComboBox
+        );
 
         mBorderPane.setRight(gp);
 
@@ -312,6 +328,41 @@ public class ParameterEditor extends BaseEditor {
         mSplitNavSetting.getToolBarItems().setAll(toolBar.getItems());
     }
 
+    private void loadUIParameter() {
+        mClassComboBox.getItems().setAll("K0", "K1", "K2", "K3", "K4", "K5");
+        mClassComboBox.getSelectionModel().select("K1");
+        mStatusComboBox.getItems().setAll("S0", "S1", "S2", "S3", "S4", "S5");
+        mStatusComboBox.getSelectionModel().select("S1");
+
+        mTagComboBox.getItems().setAll(EditMode.values());
+        mTagComboBox.getSelectionModel().selectFirst();
+        mAnmComboBox.getItems().setAll(EditMode.values());
+        mAnmComboBox.getSelectionModel().selectFirst();
+
+        mDynamicComboBox.getItems().setAll(
+                "ref",
+                "decx",
+                "decz",
+                "meta",
+                "sysp",
+                "sysh");
+
+        var larmH = new TreeSet<>(mManager.getAllItems().stream()
+                .map(p -> p.getAlarm1Id())
+                .toList());
+        mLarmHComboBox.getItems().setAll(larmH);
+        var larmP = new TreeSet<>(mManager.getAllItems().stream()
+                .map(p -> p.getAlarm2Id())
+                .toList());
+        mLarmPComboBox.getItems().setAll(larmP);
+        var grupper = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getGroup()).toList());
+        mGruppComboBox.getItems().setAll(grupper);
+        var kategorier = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getCategory()).toList());
+        mKategoriComboBox.getItems().setAll(kategorier);
+        var utforare = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getOperator()).toList());
+        mUtforareComboBox.getItems().setAll(utforare);
+    }
+
     private void preview() {
         HashMap<String, String> originToId = Mapton.getGlobalState().getOrDefault("ParamEditor.originToId", new HashMap<String, String>());
         mPreviewLogPanel.clear();
@@ -335,6 +386,10 @@ public class ParameterEditor extends BaseEditor {
         }
         addConditionlly(sb, mUtglesningCheckBox.isSelected(), "sparse");
         addConditionlly(sb, mRullandeCheckBox.isSelected(), "roll");
+        addConditionlly(sb, mTagCheckBox.isSelected(), "tag");
+        addConditionlly(sb, mAnmCheckBox.isSelected(), "anm");
+        addConditionlly(sb, mDynamicCheckBox.isSelected(), mDynamicComboBox.getValue());
+
         sb.append("\n");
 
         for (var name : getPointWithNavetNames(StringUtils.split(mSourceTextArea.getText(), "\n"))) {
@@ -386,6 +441,61 @@ public class ParameterEditor extends BaseEditor {
             addConditionlly(sb, mUtglesningCheckBox.isSelected(), mUtglesningTextField.getText());
             addConditionlly(sb, mRullandeCheckBox.isSelected(), mRullandeTextField.getText());
 
+            var tag = "";
+            var tagNew = mTagTextField.getText();
+            var tagOld = p.getTag();
+            switch (mTagComboBox.getSelectionModel().getSelectedItem()) {
+                case FIRST:
+                    if (StringUtils.isBlank(tagOld)) {
+                        tag = tagNew;
+                    } else {
+                        tag = "%s,%s".formatted(tagNew, tagOld);
+                    }
+                    break;
+
+                case LAST:
+                    if (StringUtils.isBlank(tagOld)) {
+                        tag = tagNew;
+                    } else {
+                        tag = "%s,%s".formatted(tagOld, tagNew);
+                    }
+                    break;
+                case REPLACE:
+                    tag = tagNew;
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+            addConditionlly(sb, mTagCheckBox.isSelected(), tag);
+
+            var anm = "";
+            var anmNew = mAnmTextField.getText();
+            var anmOld = p.getComment();
+            switch (mAnmComboBox.getSelectionModel().getSelectedItem()) {
+                case FIRST:
+                    if (StringUtils.isBlank(anmOld)) {
+                        anm = anmNew;
+                    } else {
+                        anm = "%s\\n%s".formatted(anmNew, anmOld);
+                    }
+                    break;
+
+                case LAST:
+                    if (StringUtils.isBlank(anmOld)) {
+                        anm = anmNew;
+                    } else {
+                        anm = "%s\\n%s".formatted(anmOld, anmNew);
+                    }
+                    break;
+                case REPLACE:
+                    anm = anmNew;
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+            addConditionlly(sb, mAnmCheckBox.isSelected(), anm);
+            addConditionlly(sb, mDynamicCheckBox.isSelected(), mDynamicTextField.getText());
+
             sb.append("\n");
         }
 
@@ -396,4 +506,9 @@ public class ParameterEditor extends BaseEditor {
         mPreviewLogPanel.println(result);
     }
 
+    public enum EditMode {
+        REPLACE,
+        FIRST,
+        LAST
+    }
 }
