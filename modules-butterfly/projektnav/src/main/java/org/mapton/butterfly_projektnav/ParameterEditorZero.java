@@ -27,7 +27,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -39,7 +39,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class ParameterEditorZero extends GridPane {
+public class ParameterEditorZero extends ParameterEditorBase {
 
     private final RadioButton mCountDaysRadioButton = new RadioButton("...dagar");
     private final RadioButton mCountMeasurementsRadioButton = new RadioButton("...mätningar");
@@ -164,27 +164,18 @@ public class ParameterEditorZero extends GridPane {
         mCountMeasurementsRadioButton.setToggleGroup(mCountToggleGroup);
         mCountToggleGroup.selectToggle(mCountDaysRadioButton);
 
-        setPadding(FxHelper.getUIScaledInsets(8.0));
-        setHgap(FxHelper.getUIScaled(8.0));
-        setVgap(FxHelper.getUIScaled(2.0));
-
         int row = 0;
-        addRow(row++, mModeAvgRadioButton);
-        addRow(row++, mModeMedianRadioButton);
+        addRow(row++, mModeAvgRadioButton, mModeMedianRadioButton);
         addRow(row++, new Label("Första möjliga startdatum"));
         addRow(row++, mDatePicker);
-        addRow(row++, new Label("Max antal"));
-        addRow(row++, mMaxSpinner);
-        addRow(row++, new Label("Min antal"));
-        addRow(row++, mMinSpinner);
-        addRow(row++, mCountDaysRadioButton);
-        addRow(row++, mCountMeasurementsRadioButton);
-        addRow(row++, new Label("Operatör"));
-        addRow(row++, mOperatorTextField);
-        addRow(row++, new Label("Instrument"));
-        addRow(row++, mInstrumentTextField);
+        addRow(row++, new Label("Min antal"), new Label("Max antal"));
+        addRow(row++, mMinSpinner, mMaxSpinner);
+        addRow(row++, new Label(), new HBox(mCountDaysRadioButton, mCountMeasurementsRadioButton));
+        addRow(row++, new Label("Instrument"), new Label("Operatör"));
+        addRow(row++, mInstrumentTextField, mOperatorTextField);
 
         FxHelper.setEditable(true, mMaxSpinner, mMinSpinner);
+        FxHelper.autoSizeColumn(this, 3);
     }
 
     private double getMedian(DoubleStream stream) {
