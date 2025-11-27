@@ -33,6 +33,10 @@ import org.mapton.api.MRunnable;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.PinPaddle;
+import static org.mapton.butterfly_format.types.BDimension._1d;
+import static org.mapton.butterfly_format.types.BDimension._2d;
+import static org.mapton.butterfly_format.types.BDimension._3d;
+import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.graphics.GraphicRenderer;
@@ -261,6 +265,12 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                 throw new AssertionError();
         }
 
+        if (p.getMeasurementMode() == BMeasurementMode.AUTOMATIC) {
+            attrs.setScale(attrs.getScale() * 0.9);
+        } else {
+            attrs.setScale(attrs.getScale() * 1.1);
+        }
+
         p.setValue(BKey.PIN_URL, attrs.getImageAddress());
         p.setValue(BKey.PIN_COLOR, attrs.getImageColor());
 
@@ -284,19 +294,32 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
 
     private ArrayList<AVListImpl> plotSymbol(BTopoControlPoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
-        var center = WWHelper.positionFromPosition(position, SYMBOL_RADIUS / 2);
+        var symbolRadius = SYMBOL_RADIUS;
+        if (p.getMeasurementMode() == BMeasurementMode.AUTOMATIC) {
+            symbolRadius *= 0.9;
+        } else {
+            symbolRadius *= 1.1;
+        }
+
+        var center = WWHelper.positionFromPosition(position, symbolRadius / 2);
 
         AbstractShape abstractShape = null;
         if (null != p.getDimension()) {
+            var symbolHeight = SYMBOL_HEIGHT;
+            if (p.getMeasurementMode() == BMeasurementMode.AUTOMATIC) {
+                symbolHeight *= 0.9;
+            } else {
+                symbolHeight *= 1.1;
+            }
             switch (p.getDimension()) {
                 case _1d -> {
-                    abstractShape = new Ellipsoid(position, SYMBOL_RADIUS, SYMBOL_HEIGHT / 2, SYMBOL_RADIUS);
+                    abstractShape = new Ellipsoid(position, symbolRadius, symbolHeight / 2, symbolRadius);
                 }
                 case _2d -> {
-                    abstractShape = new Cylinder(position, 0.5, SYMBOL_RADIUS);
+                    abstractShape = new Cylinder(position, 0.5, symbolRadius);
                 }
                 case _3d -> {
-                    abstractShape = new Pyramid(center, SYMBOL_HEIGHT * 1.3, SYMBOL_RADIUS * 2);
+                    abstractShape = new Pyramid(center, symbolHeight * 1.3, symbolRadius * 2);
                 }
                 default -> {
                 }
