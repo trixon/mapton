@@ -26,6 +26,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -66,7 +68,6 @@ public class ParameterEditor extends BaseEditor {
     private final CheckBox mAnmCheckBox = new CheckBox("Kommentar");
     private final ComboBox<EditMode> mAnmComboBox = new ComboBox<>();
     private final TextField mAnmTextField = new TextField();
-    private final TextField mDynamicTextField = new TextField();
     private BorderPane mBorderPane;
     private final ResourceBundle mBundle = NbBundle.getBundle(BaseTopoEditor.class);
     private final CheckBox mClassCheckBox = new CheckBox("Klassning");
@@ -86,24 +87,27 @@ public class ParameterEditor extends BaseEditor {
     private final CheckBox mDatToCheckBox = new CheckBox("Till");
     private final DatePicker mDatToDatePicker = new DatePicker();
     private final CheckBox mDatToLatestCheckBox = new CheckBox("Till (senaste)");
+    private final CheckBox mDynamicCheckBox = new CheckBox("Dynamisk");
+    private final ComboBox<String> mDynamicComboBox = new ComboBox<>();
+    private final TextField mDynamicTextField = new TextField();
     private final CheckBox mGruppCheckBox = new CheckBox("Grupp");
     private final ComboBox<String> mGruppComboBox = new ComboBox<>();
     private final CheckBox mKategoriCheckBox = new CheckBox("Kategori");
-    private final CheckBox mDynamicCheckBox = new CheckBox("Dynamisk");
     private final ComboBox<String> mKategoriComboBox = new ComboBox<>();
-    private final ComboBox<String> mDynamicComboBox = new ComboBox<>();
     private final CheckBox mLarmHCheckBox = new CheckBox("Larm H");
     private final ComboBox<String> mLarmHComboBox = new ComboBox<>();
     private final CheckBox mLarmPCheckBox = new CheckBox("Larm P");
     private final ComboBox<String> mLarmPComboBox = new ComboBox<>();
     private BaseManager<? extends BXyzPoint> mManager;
     private final ComboBox<BaseManagerProvider> mManagerComboBox = new ComboBox<>();
+    private final ParameterEditorZero mParameterEditorZero = new ParameterEditorZero();
     private final LogPanel mPreviewLogPanel = new LogPanel();
     private final CheckBox mRullandeCheckBox = new CheckBox("Rullande");
     private final TextField mRullandeTextField = new TextField("Roll(10)");
     private final TextArea mSourceTextArea = new TextArea();
     private final CheckBox mStatusCheckBox = new CheckBox("Status");
     private final ComboBox<String> mStatusComboBox = new ComboBox<>();
+    private TabPane mTabPane;
     private final CheckBox mTagCheckBox = new CheckBox("Etikett");
     private final ComboBox<EditMode> mTagComboBox = new ComboBox<>();
     private final TextField mTagTextField = new TextField();
@@ -253,8 +257,12 @@ public class ParameterEditor extends BaseEditor {
                 mLarmPComboBox
         );
 
-        mBorderPane.setRight(gp);
+        var baseTab = new Tab("Grunddata", gp);
+        var zeroTab = new Tab("Nollmätning", mParameterEditorZero);
+        mTabPane = new TabPane(baseTab, zeroTab);
+        mTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
+        mBorderPane.setRight(mTabPane);
     }
 
     private void importPoints() {
@@ -364,8 +372,23 @@ public class ParameterEditor extends BaseEditor {
     }
 
     private void preview() {
-        HashMap<String, String> originToId = Mapton.getGlobalState().getOrDefault("ParamEditor.originToId", new HashMap<String, String>());
         mPreviewLogPanel.clear();
+        switch (mTabPane.getSelectionModel().getSelectedIndex()) {
+            case 0:
+                previewBase();
+                break;
+
+            case 1:
+                previewZero();
+                break;
+
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    private void previewBase() {
+        HashMap<String, String> originToId = Mapton.getGlobalState().getOrDefault("ParamEditor.originToId", new HashMap<String, String>());
         var sb = new StringBuilder("projid");
         addConditionlly(sb, true, "nr");
         addConditionlly(sb, mDagCheckBox.isSelected(), "dag");
@@ -504,6 +527,11 @@ public class ParameterEditor extends BaseEditor {
 //        result = StringUtils.replace(result, "/", ".");
 
         mPreviewLogPanel.println(result);
+    }
+
+    private void previewZero() {
+        var navetNames = StringUtils.split(mSourceTextArea.getText(), "\n");
+        mPreviewLogPanel.println(mParameterEditorZero.preview(mManager, navetNames));
     }
 
     public enum EditMode {
