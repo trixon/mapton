@@ -28,7 +28,6 @@ import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.api.TopoManager;
-import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MathHelper;
 
 /**
@@ -75,27 +74,17 @@ public abstract class MultiChartPart extends BMultiChartPart {
                             throw new AssertionError();
                     }
                 })
-                .filter(p -> {
-                    try {
-                        if (p.ext().getDateLatest().toLocalDate().isBefore(LocalDate.now().minusMonths(3))) {
-                            return false;
-                        }
-                    } catch (Exception e) {
-                        return false;
-                    }
-
-                    return true;
-                })
-                .filter(p -> {
+                .filter(p
+                        -> {
                     return latLon.distance(BCoordinatrix.toLatLon(p)) <= LIMIT_DISTANCE_TOPO;
-                })
+                }
+                )
                 .collect(Collectors.toCollection(ArrayList::new));
 
         var pointsToExclude = new ArrayList<BTopoControlPoint>();
 
         for (var p : pointList) {
             var observations = p.ext().getObservationsTimeFiltered().stream()
-                    .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
                     .map(o -> {
                         var oo = new BTopoControlPointObservation();
                         oo.setDate(o.getDate());

@@ -15,8 +15,10 @@
  */
 package org.mapton.butterfly_topo.chart;
 
+import com.sun.jna.platform.KeyboardUtils;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -68,7 +70,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
 
         var dateAxis = (DateAxis) plot.getDomainAxis();
         var now = LocalDate.now();
-        var nowAsDate = DateHelper.convertToDate(now);
+        var nowAsDate = DateHelper.convertToDate(now.plusDays(1));
         if (isCompleteView()) {
             dateAxis.setRange(DateHelper.convertToDate(p.ext().getDateFirst()), nowAsDate);
             setRange(1.05, 1000, p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
@@ -101,6 +103,11 @@ public class ChartBuilderDelta extends ChartBuilderBase {
                 var delta = function.apply(o) * 1000;
                 if (firstDelta == null) {
                     firstDelta = delta;
+                }
+                if (!KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
+                    if (lastDelta != null) {
+                        timeSeries.add(ChartHelper.convertToMinute(o.getDate()).previous(), lastDelta);
+                    }
                 }
                 lastDelta = delta;
                 timeSeries.add(ChartHelper.convertToMinute(o.getDate()), delta);
