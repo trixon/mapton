@@ -136,7 +136,11 @@ public class ParameterEditorZero extends ParameterEditorBase {
             var date = mDateTimeFormatter.format(observations.getFirst().getDate().minusSeconds(1));
             var minDate = observations.getFirst().getDate().toLocalDate();
             var maxDate = observations.getLast().getDate().toLocalDate();
-            var row = "1\t%s\t%s\t%s\t%.3f\t%.3f\t%.3f\t%s\t%s\t%d\t%s\t%s\t%.0f\t%.0f\t%.0f".formatted(projId,
+            var dateZero = p.getDateZero();
+            var diffN = n - p.getZeroY();
+            var diffE = e - p.getZeroX();
+            var diffH = h - p.getZeroZ();
+            var row = "1\t%s\t%s\t%s\t%.3f\t%.3f\t%.3f\t%s\t%s\t%d\t%s\t%s\t%.0f\t%.0f\t%.0f\t%s\t%.0f\t%.0f\t%.0f".formatted(projId,
                     p.getName(),
                     date,
                     n,
@@ -149,7 +153,11 @@ public class ParameterEditorZero extends ParameterEditorBase {
                     maxDate.toString(),
                     1000 * (maxN - minN),
                     1000 * (maxE - minE),
-                    1000 * (maxH - minH)
+                    1000 * (maxH - minH),
+                    dateZero.toString(),
+                    1000 * diffN,
+                    1000 * diffE,
+                    1000 * diffH
             );
 
             return row;
