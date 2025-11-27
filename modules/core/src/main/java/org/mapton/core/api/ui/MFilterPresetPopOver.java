@@ -41,6 +41,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.fx.NbEditableList;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.editable_list.DefaultEditableListItem;
@@ -57,13 +58,16 @@ public class MFilterPresetPopOver extends MPopOver {
 
     protected EditableList<DefaultEditableListItem> mEditableList;
     private final MFilterPopOver mFilterPopOver;
-    private final ObjectProperty<ObservableList<DefaultEditableListItem>> mItemsProperty = new SimpleObjectProperty<>();
+    private String mFilterText;
+    private final ObjectProperty<ObservableList<DefaultEditableListItem>> mItemsFilteredProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<ObservableList<DefaultEditableListItem>> mItemsRawProperty = new SimpleObjectProperty<>();
     private final Preferences mPreferences;
 
     public MFilterPresetPopOver(MFilterPopOver filterPopOver, String path) {
         mPreferences = NbPreferences.forModule(filterPopOver.getClass()).node(FILTER_PRESET_NODE).node(path);
         mFilterPopOver = filterPopOver;
-        mItemsProperty.set(FXCollections.observableArrayList());
+        mItemsFilteredProperty.set(FXCollections.observableArrayList());
+        mItemsRawProperty.set(FXCollections.observableArrayList());
         createUI();
         try {
             var presets = Arrays.stream(mPreferences.childrenNames())
@@ -72,20 +76,12 @@ public class MFilterPresetPopOver extends MPopOver {
                         return new DefaultEditableListItem(s);
                     })
                     .toList();
-            getItems().setAll(presets);
+            getItemsRaw().setAll(presets);
         } catch (BackingStoreException ex) {
             Exceptions.printStackTrace(ex);
         }
 
         initListeners();
-    }
-
-    public ObservableList<DefaultEditableListItem> getItems() {
-        return mItemsProperty.get();
-    }
-
-    public ObjectProperty<ObservableList<DefaultEditableListItem>> itemsProperty() {
-        return mItemsProperty;
     }
 
     public boolean restoreDefaultIfExists() {
@@ -112,15 +108,19 @@ public class MFilterPresetPopOver extends MPopOver {
                 .setIconSize(Mapton.getIconSizeToolBarInt())
                 .setItemSingular(MDict.QUICK_FILTER.toString())
                 .setItemPlural(MDict.QUICK_FILTERS.toString())
-                .setItemsProperty(itemsProperty())
+                .setItemsProperty(itemsFilteredProperty())
                 .setOnAdd((String t, DefaultEditableListItem item) -> {
                     save(item);
                 })
                 .setOnRemoveAll(() -> {
-                    getItems().clear();
+                    getItemsRaw().clear();
                 })
                 .setOnRemove(t -> {
-                    getItems().remove(t);
+                    getItemsRaw().remove(t);
+                })
+                .setOnFilter(s -> {
+                    mFilterText = s;
+                    refreshFilteredItems();
                 })
                 .build();
 
@@ -151,8 +151,16 @@ public class MFilterPresetPopOver extends MPopOver {
         FxHelper.slimToolBar(mEditableList.getToolBar());
     }
 
+    private ObservableList<DefaultEditableListItem> getItemsFiltered() {
+        return itemsFilteredProperty().get();
+    }
+
+    private ObservableList<DefaultEditableListItem> getItemsRaw() {
+        return itemsRawProperty().get();
+    }
+
     private void initListeners() {
-        mItemsProperty.get().addListener((ListChangeListener.Change<? extends DefaultEditableListItem> c) -> {
+        mItemsRawProperty.get().addListener((ListChangeListener.Change<? extends DefaultEditableListItem> c) -> {
             while (c.next()) {
                 c.getRemoved().forEach(item -> {
                     try {
@@ -162,6 +170,7 @@ public class MFilterPresetPopOver extends MPopOver {
                     }
                 });
             }
+            refreshFilteredItems();
         });
 
         mEditableList.getListView().getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
@@ -171,6 +180,22 @@ public class MFilterPresetPopOver extends MPopOver {
         });
     }
 
+    private ObjectProperty<ObservableList<DefaultEditableListItem>> itemsFilteredProperty() {
+        return mItemsFilteredProperty;
+    }
+
+    private ObjectProperty<ObservableList<DefaultEditableListItem>> itemsRawProperty() {
+        return mItemsRawProperty;
+    }
+
+    private void refreshFilteredItems() {
+        getItemsFiltered().setAll(
+                getItemsRaw().stream().filter(item -> {
+                    return StringHelper.matchesSimpleGlob(item.getName(), mFilterText, true, true);
+                }).toList()
+        );
+    }
+
     private DefaultEditableListItem save(DefaultEditableListItem item) {
         var panel = new MFilterPresetSavePanel();
         panel.load(mPreferences);
@@ -178,9 +203,9 @@ public class MFilterPresetPopOver extends MPopOver {
         if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
             item = new DefaultEditableListItem();
             item.setName(panel.getPresetName());
-            if (!getItems().contains(item)) {
-                getItems().add(item);
-                getItems().sort((o1, o2) -> Strings.CI.compare(o1.getName(), o2.getName()));
+            if (!getItemsRaw().contains(item)) {
+                getItemsRaw().add(item);
+                getItemsRaw().sort((o1, o2) -> Strings.CI.compare(o1.getName(), o2.getName()));
             }
             try {
                 mPreferences.node(item.getName()).removeNode();
