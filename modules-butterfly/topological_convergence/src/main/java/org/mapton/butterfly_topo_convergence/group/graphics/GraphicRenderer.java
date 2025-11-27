@@ -206,14 +206,14 @@ public class GraphicRenderer extends GraphicRendererBase {
         switch (graphicItem) {
             case VALUE_1D:
                 function = BTopoConvergenceObservation.FUNCTION_1D;
-                verticalOffset = 0.45;
+                verticalOffset = -0.5;
                 break;
             case VALUE_2D:
                 function = BTopoConvergenceObservation.FUNCTION_2D;
                 break;
             case VALUE_3D:
                 function = BTopoConvergenceObservation.FUNCTION_3D;
-                verticalOffset = -0.45;
+                verticalOffset = +0.5;
                 break;
         }
 
