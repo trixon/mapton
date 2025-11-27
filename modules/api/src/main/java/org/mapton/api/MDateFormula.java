@@ -15,7 +15,9 @@
  */
 package org.mapton.api;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import javafx.util.Pair;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
@@ -65,6 +67,8 @@ public class MDateFormula {
         } else if (Strings.CI.equals(mode, "C")) {
             var unit = items[1];
             switch (unit) {
+                case "W" ->
+                    startDate = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
                 case "M" ->
                     startDate = now.withDayOfMonth(1);
                 case "Y" ->
@@ -76,6 +80,10 @@ public class MDateFormula {
         } else if (Strings.CI.equals(mode, "P")) {
             var unit = items[1];
             switch (unit) {
+                case "W" -> {
+                    startDate = now.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                    endDate = startDate.plusDays(6);
+                }
                 case "M" -> {
                     startDate = now.minusMonths(1).withDayOfMonth(1);
                     endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());

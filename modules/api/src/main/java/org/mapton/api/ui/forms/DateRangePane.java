@@ -208,11 +208,13 @@ public class DateRangePane {
         );
 
         presentMenu.getItems().addAll(
+                createPresetMenuItem("vecka", "C,W"),
                 createPresetMenuItem("månad", "C,M"),
                 createPresetMenuItem("år", "C,Y")
         );
 
         previousMenu.getItems().addAll(
+                createPresetMenuItem("vecka", "P,W"),
                 createPresetMenuItem("månad", "P,M"),
                 createPresetMenuItem("år", "P,Y")
         );
