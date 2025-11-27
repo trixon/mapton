@@ -96,6 +96,7 @@ public class Butterfly {
     private final Hydro mHydro = new Hydro();
     private final ArrayList<BHydroGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
     private final ArrayList<BHydroGroundwaterPointObservation> mHydroGroundwaterPointsObservations = new ArrayList<>();
+    private final ButterflyManipulator mManipulator = new ButterflyManipulator();
     private final ArrayList<BMonmon> mMonmons = new ArrayList<>();
     private final Noise mNoise = new Noise();
     private final Structural mStructural = new Structural();
@@ -150,6 +151,10 @@ public class Butterfly {
 
     public ArrayList<BAreaBase> getAreaFilters() {
         return mAreaFilters;
+    }
+
+    public ButterflyManipulator getManipulator() {
+        return mManipulator;
     }
 
     public ArrayList<BMonmon> getMonmons() {
