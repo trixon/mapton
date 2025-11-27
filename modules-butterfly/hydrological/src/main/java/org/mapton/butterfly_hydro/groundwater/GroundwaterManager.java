@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_hydro.groundwater;
 
+import com.sun.jna.platform.KeyboardUtils;
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -31,7 +33,9 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
+import org.mapton.butterfly_hydro.groundwater.chart.ChartAggregate;
 import org.mapton.butterfly_hydro.groundwater.chart.GroundwaterChartBuilder;
+import org.mapton.butterfly_hydro.groundwater.chart.MultiChartAggregate;
 import org.mapton.butterfly_hydro.groundwater.table.StandardMeasurementPopulator;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
@@ -44,7 +48,9 @@ import se.trixon.almond.util.CollectionHelper;
 public class GroundwaterManager extends BaseManager<BHydroGroundwaterPoint> {
 
     private final static String DISRUPTOR_NAME = Bundle.CTL_GroundwaterAction();
+    private final ChartAggregate mChartAggregate = new ChartAggregate();
     private final GroundwaterChartBuilder mChartBuilder = new GroundwaterChartBuilder();
+    private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
     private final GroundwaterPropertiesBuilder mPropertiesBuilder = new GroundwaterPropertiesBuilder();
     private final StandardMeasurementPopulator mStandardMeasurementPopulator = new StandardMeasurementPopulator();
 
@@ -58,7 +64,16 @@ public class GroundwaterManager extends BaseManager<BHydroGroundwaterPoint> {
 
     @Override
     public Object getObjectChart(BHydroGroundwaterPoint selectedObject) {
-        return mChartBuilder.build(selectedObject);
+        if (KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
+            return mChartBuilder.build(selectedObject);
+        } else {
+            boolean isCtrlPressed = KeyboardUtils.isPressed(KeyEvent.VK_CONTROL);
+            if (isCtrlPressed) {
+                return mMultiChartAggregate.build(selectedObject);
+            } else {
+                return mChartAggregate.build(selectedObject);
+            }
+        }
     }
 
     @Override
@@ -135,6 +150,8 @@ public class GroundwaterManager extends BaseManager<BHydroGroundwaterPoint> {
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
+
+        //butterfly.getManipulator().updateMultipleObservationsPerDay(butterfly.hydro().getGroundwaterPoints());
     }
 
     @Override
