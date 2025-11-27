@@ -29,6 +29,7 @@ import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.MSearchProviderManager;
 import org.mapton.api.Mapton;
+import org.mapton.butterfly_core.actions.SwapSelectionAction;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBasePoint;
@@ -63,7 +64,7 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
         selectedItemProperty().addListener((p, o, n) -> {
             var disabled = n == null || StringUtils.isAnyBlank(n.getExternalSysId(), n.getExternalSysKey());
             mDisabledSearchProperty.setValue(disabled);
-
+            SwapSelectionAction.store(this, n);
             var objectMeasurements = getObjectMeasurements(n);
             if (objectMeasurements != Boolean.FALSE) {
                 Mapton.getGlobalState().put(BKey.OBJECT_MEASUREMENTS, objectMeasurements);
