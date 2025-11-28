@@ -17,10 +17,12 @@ package org.mapton.butterfly_core.api;
 
 import gov.nasa.worldwind.render.Renderable;
 import java.net.URLEncoder;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,13 +30,14 @@ import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.MSearchProviderManager;
+import org.mapton.api.MTemporalManager;
 import org.mapton.api.Mapton;
-import org.mapton.butterfly_core.actions.SwapSelectionAction;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
+import se.trixon.almond.util.fx.DelayedResetRunner;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -44,9 +47,29 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
 
+    private static BBase sCurrItem;
+    private static BaseManager< BBase> sCurrManager;
+    private static BBase sPrevItem;
+    private static BaseManager< BBase> sPrevManager;
+
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
     private final BooleanProperty mDisabledSearchProperty = new SimpleBooleanProperty(true);
+
+    public static BBase getCurrItem() {
+        return sCurrItem;
+    }
+
+    public static BaseManager<BBase> getCurrManager() {
+        return sCurrManager;
+    }
+
+    public static void restoreManagerAndItem() {
+        if (ObjectUtils.allNotNull(sPrevManager, sPrevItem)) {
+            sPrevManager.setSelectedItem(null);
+            sPrevManager.setSelectedItem(sPrevItem);
+        }
+    }
 
     public BaseManager(Class<T> typeParameterClass) {
         super(typeParameterClass);
@@ -64,12 +87,32 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
         selectedItemProperty().addListener((p, o, n) -> {
             var disabled = n == null || StringUtils.isAnyBlank(n.getExternalSysId(), n.getExternalSysKey());
             mDisabledSearchProperty.setValue(disabled);
-            SwapSelectionAction.store(this, n);
+            storeManagerAndItem(n);
             var objectMeasurements = getObjectMeasurements(n);
             if (objectMeasurements != Boolean.FALSE) {
                 Mapton.getGlobalState().put(BKey.OBJECT_MEASUREMENTS, objectMeasurements);
             }
         });
+
+        var drr = new DelayedResetRunner(300, () -> {
+            //TODO This probably needs some improvements
+            if (getCurrManager() == this && getSelectedItem() != null) {
+                var selectedItem = getSelectedItem();
+                FxHelper.runLaterDelayed(500, () -> {
+                    selectedItemProperty().set(null);
+                    FxHelper.runLaterDelayed(10, () -> {
+                        selectedItemProperty().set(selectedItem);
+                    });
+                });
+            }
+        });
+
+        ChangeListener<LocalDate> temporalChangeListener = (p, o, n) -> {
+            drr.reset();
+        };
+
+        MTemporalManager.getInstance().lowDateProperty().addListener(temporalChangeListener);
+        MTemporalManager.getInstance().highDateProperty().addListener(temporalChangeListener);
     }
 
     public BooleanProperty disabledSearchProperty() {
@@ -160,5 +203,15 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
                 .toList();
 
         return new MLatLonBox(latLons);
+    }
+
+    private void storeManagerAndItem(BBase item) {
+        if (ObjectUtils.allNotNull(item) && item != sCurrItem) {
+            sPrevManager = sCurrManager;
+            sPrevItem = sCurrItem;
+            sCurrManager = (BaseManager<BBase>) this;
+            sCurrItem = item;
+        }
+
     }
 }

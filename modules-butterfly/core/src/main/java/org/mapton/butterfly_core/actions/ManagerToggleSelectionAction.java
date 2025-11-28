@@ -17,9 +17,7 @@ package org.mapton.butterfly_core.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BaseManager;
-import org.mapton.butterfly_format.types.BBase;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -28,45 +26,24 @@ import org.openide.util.NbBundle;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.butterfly_core.actions.SwapSelectionAction"
+        id = "org.mapton.butterfly_core.actions.ManagerToggleSelectionAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_SwapSelectionAction"
+        displayName = "#CTL_ManagerToggleSelectionAction"
 )
 @ActionReferences({
     @ActionReference(path = "Menu/Navigate", position = 1000),
     @ActionReference(path = "Shortcuts", name = "SO-T")
 })
-@NbBundle.Messages("CTL_SwapSelectionAction=Växla senaste objekt")
-public final class SwapSelectionAction implements ActionListener {
+@NbBundle.Messages("CTL_ManagerToggleSelectionAction=Växla senaste objekt")
+public final class ManagerToggleSelectionAction implements ActionListener {
 
-    private static BaseManager< BBase> sPrevManager;
-    private static BaseManager< BBase> sCurrManager;
-    private static BBase sCurrItem;
-    private static BBase sPrevItem;
-
-    public SwapSelectionAction() {
-    }
-
-    public static void store(BaseManager< ? extends BBase> manager, BBase item) {
-        if (ObjectUtils.allNotNull(manager, item) && item != sCurrItem) {
-            sPrevManager = sCurrManager;
-            sPrevItem = sCurrItem;
-            sCurrManager = (BaseManager<BBase>) manager;
-            sCurrItem = item;
-        }
-
+    public ManagerToggleSelectionAction() {
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        restore();
+        BaseManager.restoreManagerAndItem();
     }
 
-    private void restore() {
-        if (ObjectUtils.allNotNull(sPrevManager, sPrevItem)) {
-            sPrevManager.setSelectedItem(null);
-            sPrevManager.setSelectedItem(sPrevItem);
-        }
-    }
 }
