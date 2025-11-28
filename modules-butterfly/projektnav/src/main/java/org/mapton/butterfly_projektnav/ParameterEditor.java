@@ -82,7 +82,7 @@ public class ParameterEditor extends BaseEditor {
         return mBody;
     }
 
-    public ArrayList<String> getPointWithNavetNames(String[] points) {
+    private String[] getPointWithNavetNames(String[] points) {
         var names = new ArrayList<String>();
         for (var name : points) {
             var p = mManager.getItemForKey(name);
@@ -108,7 +108,7 @@ public class ParameterEditor extends BaseEditor {
             mManager.getAllItemsSet();
         }
 
-        return names;
+        return names.toArray(String[]::new);
     }
 
     private void createUI() {
@@ -200,14 +200,14 @@ public class ParameterEditor extends BaseEditor {
 
     private void preview() {
         mPreviewLogPanel.clear();
-        var navetNames = StringUtils.split(mSourceTextArea.getText(), "\n");
+        var names = StringUtils.split(mSourceTextArea.getText(), "\n");
         switch (mTabPane.getSelectionModel().getSelectedIndex()) {
             case 0 -> {
-                mPreviewLogPanel.println(mParameterEditorBasic.preview(mManager, navetNames));
+                mPreviewLogPanel.println(mParameterEditorBasic.preview(mManager, getPointWithNavetNames(names)));
             }
 
             case 1 -> {
-                mPreviewLogPanel.println(mParameterEditorZero.preview(mManager, navetNames));
+                mPreviewLogPanel.println(mParameterEditorZero.preview(mManager, names));
             }
 
             default ->

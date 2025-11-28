@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.TreeSet;
 import java.util.stream.DoubleStream;
 import javafx.scene.control.DatePicker;
@@ -30,6 +31,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import se.trixon.almond.util.DateHelper;
@@ -44,11 +46,11 @@ public class ParameterEditorZero extends ParameterEditorBase {
     private final RadioButton mCountDaysRadioButton = new RadioButton("...dagar");
     private final RadioButton mCountMeasurementsRadioButton = new RadioButton("...mätningar");
     private final ToggleGroup mCountToggleGroup = new ToggleGroup();
-    private final DatePicker mDatePicker = new DatePicker(LocalDate.parse("2017-01-01"));
+    private final DatePicker mDatePicker = new DatePicker(LocalDate.parse("2030-12-15"));
     private final DateTimeFormatter mDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private final TextField mInstrumentTextField = new TextField("Virtual");
-    private final Spinner<Integer> mMaxSpinner = new Spinner<>(2, 999, 1);
-    private final Spinner<Integer> mMinSpinner = new Spinner<>(2, 999, 1);
+    private final TextField mInstrumentTextField = new TextField("BERÄKNAD");
+    private final Spinner<Integer> mMaxSpinner = new Spinner<>(2, 999, 10, 1);
+    private final Spinner<Integer> mMinSpinner = new Spinner<>(2, 999, 3, 1);
     private final RadioButton mModeAvgRadioButton = new RadioButton("Medelvärde");
     private final RadioButton mModeMedianRadioButton = new RadioButton("Medianvärde");
     private final ToggleGroup mModeToggleGroup = new ToggleGroup();
@@ -70,9 +72,13 @@ public class ParameterEditorZero extends ParameterEditorBase {
                 nameSet.add(p.getName());
             }
         }
+
         if (!sb.isEmpty()) {
-            sb.insert(0, "nm\tprojidnr\tdtm\tn\te\th\tinr\topr\n");
+            sb.insert(0, "nm\tprojid\tnr\tdtm\tn\te\th\tinr\topr"
+                    + "\t#Antal\t#MinDat\t#MaxDat\t#SpannN\t#SpannE\t#SpannH\t#NollDat\t#DiffN\t#DiffE\t#DiffH"
+                    + "\n");
         }
+
         if (!nameSet.isEmpty()) {
             sb.append("\n\nInte tillräckligt med observationer\n");
             sb.append(String.join("\n", nameSet));
@@ -116,31 +122,62 @@ public class ParameterEditorZero extends ParameterEditorBase {
         if (observations.size() < min) {
             return null;
         } else {
-            var minN = observations.stream().mapToDouble(o -> o.getMeasuredY()).min().getAsDouble();
-            var minE = observations.stream().mapToDouble(o -> o.getMeasuredX()).min().getAsDouble();
-            var minH = observations.stream().mapToDouble(o -> o.getMeasuredZ()).min().getAsDouble();
-            var maxN = observations.stream().mapToDouble(o -> o.getMeasuredY()).max().getAsDouble();
-            var maxE = observations.stream().mapToDouble(o -> o.getMeasuredX()).max().getAsDouble();
-            var maxH = observations.stream().mapToDouble(o -> o.getMeasuredZ()).max().getAsDouble();
-            double n, e, h;
+            var minN = p.getZeroX();
+            var minE = p.getZeroY();
+            var minH = p.getZeroZ();
+            var maxN = minN;
+            var maxE = minE;
+            var maxH = minH;
+
+            if (p.getDimension() != BDimension._2d) {
+                minH = observations.stream().mapToDouble(o -> o.getMeasuredZ()).min().getAsDouble();
+                maxH = observations.stream().mapToDouble(o -> o.getMeasuredZ()).max().getAsDouble();
+            }
+
+            if (p.getDimension() != BDimension._1d) {
+                minN = observations.stream().mapToDouble(o -> o.getMeasuredY()).min().getAsDouble();
+                minE = observations.stream().mapToDouble(o -> o.getMeasuredX()).min().getAsDouble();
+                maxN = observations.stream().mapToDouble(o -> o.getMeasuredY()).max().getAsDouble();
+                maxE = observations.stream().mapToDouble(o -> o.getMeasuredX()).max().getAsDouble();
+            }
+            double n = p.getZeroY(), e = p.getZeroX(), h = p.getZeroZ();
 
             if (mModeAvgRadioButton.isSelected()) {
-                n = observations.stream().mapToDouble(o -> o.getMeasuredY()).average().getAsDouble();
-                e = observations.stream().mapToDouble(o -> o.getMeasuredX()).average().getAsDouble();
-                h = observations.stream().mapToDouble(o -> o.getMeasuredZ()).average().getAsDouble();
+                if (p.getDimension() != BDimension._2d) {
+                    h = observations.stream().mapToDouble(o -> o.getMeasuredZ()).average().getAsDouble();
+                }
+                if (p.getDimension() != BDimension._1d) {
+                    n = observations.stream().mapToDouble(o -> o.getMeasuredY()).average().getAsDouble();
+                    e = observations.stream().mapToDouble(o -> o.getMeasuredX()).average().getAsDouble();
+                }
+
             } else {
-                n = getMedian(observations.stream().mapToDouble(o -> o.getMeasuredY()));
-                e = getMedian(observations.stream().mapToDouble(o -> o.getMeasuredX()));
-                h = getMedian(observations.stream().mapToDouble(o -> o.getMeasuredZ()));
+                if (p.getDimension() != BDimension._2d) {
+                    h = getMedian(observations.stream().mapToDouble(o -> o.getMeasuredZ()));
+                }
+                if (p.getDimension() != BDimension._1d) {
+                    n = getMedian(observations.stream().mapToDouble(o -> o.getMeasuredY()));
+                    e = getMedian(observations.stream().mapToDouble(o -> o.getMeasuredX()));
+                }
             }
-            var date = mDateTimeFormatter.format(observations.getFirst().getDate().minusSeconds(1));
+            var date = mDateTimeFormatter.format(observations.getFirst().getDate().minusMinutes(1));
             var minDate = observations.getFirst().getDate().toLocalDate();
             var maxDate = observations.getLast().getDate().toLocalDate();
             var dateZero = p.getDateZero();
-            var diffN = n - p.getZeroY();
-            var diffE = e - p.getZeroX();
-            var diffH = h - p.getZeroZ();
-            var row = "1\t%s\t%s\t%s\t%.3f\t%.3f\t%.3f\t%s\t%s\t%d\t%s\t%s\t%.0f\t%.0f\t%.0f\t%s\t%.0f\t%.0f\t%.0f".formatted(projId,
+            var diffN = 0d;
+            var diffE = 0d;
+            var diffH = 0d;
+            if (p.getDimension() != BDimension._2d) {
+                diffH = h - p.getZeroZ();
+
+            }
+            if (p.getDimension() != BDimension._1d) {
+                diffN = n - p.getZeroY();
+                diffE = e - p.getZeroX();
+            }
+
+            var row = String.format(Locale.ENGLISH, "1\t%s\t%s\t%s\t%.3f\t%.3f\t%.3f\t%s\t%s\t%d\t%s\t%s\t%.0f\t%.0f\t%.0f\t%s\t%.0f\t%.0f\t%.0f",
+                    projId,
                     p.getName(),
                     date,
                     n,
