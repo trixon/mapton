@@ -28,10 +28,16 @@ import org.apache.commons.lang3.Strings;
  */
 public class MDateFormula {
 
+    private final boolean mBefore;
     private final String mCode;
 
     public MDateFormula(String code) {
+        this(code, false);
+    }
+
+    public MDateFormula(String code, boolean before) {
         mCode = code;
+        mBefore = before;
     }
 
     public String getCode() {
@@ -95,6 +101,11 @@ public class MDateFormula {
                 default ->
                     throw new AssertionError();
             }
+        }
+
+        if (mBefore) {
+            endDate = startDate.minusDays(1);
+            startDate = LocalDate.MIN;
         }
 
         return new Pair<>(startDate, endDate);

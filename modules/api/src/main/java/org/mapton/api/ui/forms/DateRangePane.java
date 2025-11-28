@@ -32,6 +32,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.SegmentedButton;
 import org.mapton.api.MDateFormula;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.control.DatePane;
 
@@ -98,11 +99,13 @@ public class DateRangePane {
         mDatePane.setMinMaxDate(minDate, maxDate);
     }
 
-    private MenuItem createPresetMenuItem(String name, String code) {
+    private MenuItem createPresetMenuItem(String name, String code, boolean before) {
         var menuItem = new MenuItem(name);
-        var dateFormula = new MDateFormula(code);
+        var dateFormula = new MDateFormula(code, before);
         menuItem.setOnAction(actionEvent -> {
-            mDatePane.getDateRangeSlider().setLowHighDate(dateFormula.getStartDate(), dateFormula.getEndDate());
+            var startDate = DateHelper.getMax(dateFormula.getStartDate(), mDatePane.getDateRangeSlider().getMinDate());
+            var endDate = DateHelper.getMin(dateFormula.getEndDate(), mDatePane.getDateRangeSlider().getMaxDate());
+            mDatePane.getDateRangeSlider().setLowHighDate(startDate, endDate);
             mDateFormulaProperty.set(code);
         });
 
@@ -184,39 +187,72 @@ public class DateRangePane {
         var latestMenu = new Menu("Senaste");
         var presentMenu = new Menu("Innevarande");
         var previousMenu = new Menu("Föregående");
+        var beforeLatestMenu = new Menu("Före senaste");
+        var beforePresentMenu = new Menu("Före innevarande");
+        var beforePreviousMenu = new Menu("Före föregående");
 
         mPresetSplitMenuButton.getItems().setAll(
-                createPresetMenuItem(Dict.Time.TODAY.toString(), "L,0,D"),
+                createPresetMenuItem(Dict.Time.TODAY.toString(), "L,0,D", false),
                 new SeparatorMenuItem(),
                 latestMenu,
                 presentMenu,
-                previousMenu
+                previousMenu,
+                new SeparatorMenuItem(),
+                beforeLatestMenu,
+                beforePresentMenu,
+                beforePreviousMenu
         );
 
         latestMenu.getItems().addAll(
-                createPresetMenuItem("dygnet", "L,1,D"),
-                createPresetMenuItem("veckan", "L,1,W"),
-                createPresetMenuItem("två veckorna", "L,2,W"),
-                createPresetMenuItem("månaden", "L,1,M"),
-                createPresetMenuItem("tre månaderna", "L,3,M"),
-                createPresetMenuItem("sex månaderna", "L,6,M"),
-                createPresetMenuItem("året", "L,1,Y"),
-                createPresetMenuItem("två åren", "L,2,Y"),
-                createPresetMenuItem("tre åren", "L,3,Y"),
-                createPresetMenuItem("fyra åren", "L,4,Y"),
-                createPresetMenuItem("fem åren", "L,5,Y")
+                createPresetMenuItem("dygnet", "L,1,D", false),
+                createPresetMenuItem("veckan", "L,1,W", false),
+                createPresetMenuItem("två veckorna", "L,2,W", false),
+                createPresetMenuItem("månaden", "L,1,M", false),
+                createPresetMenuItem("tre månaderna", "L,3,M", false),
+                createPresetMenuItem("sex månaderna", "L,6,M", false),
+                createPresetMenuItem("året", "L,1,Y", false),
+                createPresetMenuItem("två åren", "L,2,Y", false),
+                createPresetMenuItem("tre åren", "L,3,Y", false),
+                createPresetMenuItem("fyra åren", "L,4,Y", false),
+                createPresetMenuItem("fem åren", "L,5,Y", false)
         );
 
         presentMenu.getItems().addAll(
-                createPresetMenuItem("vecka", "C,W"),
-                createPresetMenuItem("månad", "C,M"),
-                createPresetMenuItem("år", "C,Y")
+                createPresetMenuItem("vecka", "C,W", false),
+                createPresetMenuItem("månad", "C,M", false),
+                createPresetMenuItem("år", "C,Y", false)
         );
 
         previousMenu.getItems().addAll(
-                createPresetMenuItem("vecka", "P,W"),
-                createPresetMenuItem("månad", "P,M"),
-                createPresetMenuItem("år", "P,Y")
+                createPresetMenuItem("vecka", "P,W", false),
+                createPresetMenuItem("månad", "P,M", false),
+                createPresetMenuItem("år", "P,Y", false)
+        );
+
+        beforeLatestMenu.getItems().addAll(
+                createPresetMenuItem("dygnet", "L,1,D", true),
+                createPresetMenuItem("veckan", "L,1,W", true),
+                createPresetMenuItem("två veckorna", "L,2,W", true),
+                createPresetMenuItem("månaden", "L,1,M", true),
+                createPresetMenuItem("tre månaderna", "L,3,M", true),
+                createPresetMenuItem("sex månaderna", "L,6,M", true),
+                createPresetMenuItem("året", "L,1,Y", true),
+                createPresetMenuItem("två åren", "L,2,Y", true),
+                createPresetMenuItem("tre åren", "L,3,Y", true),
+                createPresetMenuItem("fyra åren", "L,4,Y", true),
+                createPresetMenuItem("fem åren", "L,5,Y", true)
+        );
+
+        beforePresentMenu.getItems().addAll(
+                createPresetMenuItem("vecka", "C,W", true),
+                createPresetMenuItem("månad", "C,M", true),
+                createPresetMenuItem("år", "C,Y", true)
+        );
+
+        beforePreviousMenu.getItems().addAll(
+                createPresetMenuItem("vecka", "P,W", true),
+                createPresetMenuItem("månad", "P,M", true),
+                createPresetMenuItem("år", "P,Y", true)
         );
     }
 
