@@ -21,22 +21,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Pos;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.SplitMenuButton;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import org.controlsfx.control.ToggleSwitch;
 import org.mapton.api.MTemporalManager;
-import se.trixon.almond.util.DateHelper;
+import org.mapton.api.ui.forms.DateRangePane;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.control.DatePane;
-import se.trixon.almond.util.fx.control.DateSelectionMode;
-import se.trixon.almond.util.fx.control.TemporalPreset;
 
 /**
  *
@@ -44,20 +33,16 @@ import se.trixon.almond.util.fx.control.TemporalPreset;
  */
 public class TemporalView extends BorderPane {
 
-    private DatePane mDatePane;
     private final MTemporalManager mManager = MTemporalManager.getInstance();
-    private SplitMenuButton mPresetSplitMenuButton;
     private final StringProperty mTitleProperty = new SimpleStringProperty();
-    private ToggleSwitch mToggleSwitch;
+    private final DateRangePane mDateRangePane = new DateRangePane();
 
     public TemporalView() {
         createUI();
-        populatePresets();
         initListeners();
 
-        mToggleSwitch.setSelected(true);
         setDisable(true);
-        mDatePane.setMinMaxDate(mManager.getMinDate(), mManager.getMaxDate());
+        mDateRangePane.setMinMaxDate(mManager.getMinDate(), mManager.getMaxDate());
 
         mManager.refresh();
     }
@@ -70,37 +55,12 @@ public class TemporalView extends BorderPane {
         setPrefWidth(FxHelper.getUIScaled(300));
         setPadding(FxHelper.getUIScaledInsets(8));
 
-        mDatePane = new DatePane();
-        mPresetSplitMenuButton = new SplitMenuButton();
-        mPresetSplitMenuButton.setText(Dict.RESET.toString());
-
-        mToggleSwitch = new ToggleSwitch(Dict.INTERVAL.toString());
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        HBox hBox = new HBox(
-                mPresetSplitMenuButton,
-                spacer,
-                mToggleSwitch
-        );
-
-        hBox.setAlignment(Pos.CENTER);
-        setBottom(hBox);
-        setCenter(mDatePane);
-
-        mPresetSplitMenuButton.disableProperty().bind(mToggleSwitch.selectedProperty().not());
-    }
-
-    private LocalDate getProperMax(LocalDate localDate) {
-        return DateHelper.getMin(localDate, mManager.getMaxDate());
-    }
-
-    private LocalDate getProperMin(LocalDate localDate) {
-        return DateHelper.getMax(localDate, mManager.getMinDate());
+        setCenter(mDateRangePane.getRoot());
     }
 
     private void initListeners() {
-        ChangeListener<LocalDate> minMaxChangeListener = (ObservableValue<? extends LocalDate> ov, LocalDate t, LocalDate t1) -> {
-            mDatePane.setMinMaxDate(mManager.getMinDate(), mManager.getMaxDate());
+        ChangeListener<LocalDate> minMaxChangeListener = (p, o, n) -> {
+            mDateRangePane.setMinMaxDate(mManager.getMinDate(), mManager.getMaxDate());
             try {
                 setDisable(mManager.getMinDate().equals(LocalDate.of(1900, 1, 1)) && mManager.getMaxDate().equals(LocalDate.of(2099, 12, 31)));
             } catch (Exception e) {
@@ -119,68 +79,19 @@ public class TemporalView extends BorderPane {
         mManager.lowDateProperty().addListener(rangeChangeListener);
         mManager.highDateProperty().addListener(rangeChangeListener);
 
-        mManager.lowDateProperty().bindBidirectional(mDatePane.getFromDatePicker().valueProperty());
-        mManager.highDateProperty().bindBidirectional(mDatePane.getToDatePicker().valueProperty());
-
-        mToggleSwitch.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
-            mDatePane.setDateSelectionMode(t1 ? DateSelectionMode.INTERVAL : DateSelectionMode.POINT_IN_TIME);
-            refreshTitle();
-        });
-
-        mPresetSplitMenuButton.setOnAction(ae -> {
-            mToggleSwitch.setSelected(true);
-            mManager.lowDateProperty().set(mManager.getMinDate());
-            mManager.highDateProperty().set(mManager.getMaxDate());
-        });
-    }
-
-    private void populatePreset(TemporalPreset temporalPreset) {
-        var menuItem = new MenuItem(temporalPreset.name());
-        menuItem.setOnAction(ae -> {
-            mManager.setLowDate(getProperMin(temporalPreset.lowDate()));
-            mManager.setHighDate(getProperMax(temporalPreset.highDate()));
-        });
-        mPresetSplitMenuButton.getItems().add(menuItem);
-    }
-
-    private void populatePresets() {
-        final LocalDate now = LocalDate.now();
-
-        populatePreset(new TemporalPreset("%s + 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.YEAR.toString().toLowerCase()), now, now.plusYears(1)));
-        populatePreset(new TemporalPreset("%s + 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.MONTH.toString().toLowerCase()), now, now.plusMonths(1)));
-        populatePreset(new TemporalPreset("%s + 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.WEEK.toString().toLowerCase()), now, now.plusWeeks(1)));
-        populatePreset(new TemporalPreset("%s + 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.DAY.toString().toLowerCase()), now, now.plusDays(1)));
-        mPresetSplitMenuButton.getItems().add(new SeparatorMenuItem());
-        populatePreset(new TemporalPreset(Dict.Time.TODAY.toString(), now, now));
-        mPresetSplitMenuButton.getItems().add(new SeparatorMenuItem());
-        populatePreset(new TemporalPreset("%s - 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.DAY.toString().toLowerCase()), now.minusDays(1), now));
-        populatePreset(new TemporalPreset("%s - 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.WEEK.toString().toLowerCase()), now.minusWeeks(1), now));
-        populatePreset(new TemporalPreset("%s - 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.MONTH.toString().toLowerCase()), now.minusMonths(1), now));
-        populatePreset(new TemporalPreset("%s - 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.YEAR.toString().toLowerCase()), now.minusYears(1), now));
+        mManager.lowDateProperty().bindBidirectional(mDateRangePane.lowDateProperty());
+        mManager.highDateProperty().bindBidirectional(mDateRangePane.highDateProperty());
     }
 
     private void refreshTitle() {
         FxHelper.runLater(() -> {
-            if (isDisabled()) {
-                mTitleProperty.set(Dict.DATE.toString());
-            } else {
-                String text = null;
-                switch (mDatePane.getDateSelectionMode()) {
-                    case INTERVAL:
-                        text = "%s %s %s".formatted(
-                                mManager.getLowDate(),
-                                Dict.TO.toString().toLowerCase(Locale.getDefault()),
-                                mManager.getHighDate()
-                        );
-                        break;
+            var text = "%s %s %s".formatted(
+                    mManager.getLowDate(),
+                    Dict.TO.toString().toLowerCase(Locale.getDefault()),
+                    mManager.getHighDate()
+            );
 
-                    case POINT_IN_TIME:
-                        text = mManager.getHighDate().toString();
-                        break;
-                }
-
-                mTitleProperty.set(text);
-            }
+            mTitleProperty.set(isDisabled() ? Dict.DATE.toString() : text);
         });
     }
 
