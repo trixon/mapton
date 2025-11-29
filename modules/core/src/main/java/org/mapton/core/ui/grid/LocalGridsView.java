@@ -60,7 +60,7 @@ public class LocalGridsView extends BorderPane {
     private void createUI() {
         mPlotCheckBox = new CheckBox(Dict.LOCAL.toString());
         mPlotCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 1.3em");
-        mPlotCheckBox.setPadding(new Insets(0, 0, 0, 8));
+        mPlotCheckBox.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, 8));
 
         var addAction = new Action(Dict.ADD.toString(), actionEvent -> {
             mLocalGridEditor.edit(null);

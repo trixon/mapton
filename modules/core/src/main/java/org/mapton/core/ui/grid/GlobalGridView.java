@@ -16,7 +16,6 @@
 package org.mapton.core.ui.grid;
 
 import java.util.ResourceBundle;
-import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -84,7 +83,7 @@ public class GlobalGridView extends VBox {
 
         setSpacing(8);
         getChildren().addAll(mPlotCheckBox, vbox);
-        vbox.setPadding(new Insets(4, 0, 0, 16));
+        vbox.setPadding(FxHelper.getUIScaledInsets(4, 0, 0, 16));
 
     }
 

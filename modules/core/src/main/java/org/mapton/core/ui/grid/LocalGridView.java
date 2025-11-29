@@ -230,7 +230,7 @@ public class LocalGridView extends GridPane {
 
         autoSizeRegion(headerPane, latPane, lonPane);
 
-        final Insets rowInsets = new Insets(0, 0, 8, 0);
+        final Insets rowInsets = FxHelper.getUIScaledInsets(0, 0, 8, 0);
         GridPane.setMargin(headerPane, rowInsets);
         GridPane.setMargin(latPane, rowInsets);
         GridPane.setMargin(lonPane, rowInsets);
@@ -238,9 +238,9 @@ public class LocalGridView extends GridPane {
         GridPane.setMargin(mCooTransComboBox, rowInsets);
 
         initValidation();
-        setPadding(new Insets(8, 16, 0, 16));
+        setPadding(FxHelper.getUIScaledInsets(8, 16, 0, 16));
 
-        final Insets topInsets = new Insets(8, 0, 8, 0);
+        final Insets topInsets = FxHelper.getUIScaledInsets(8, 0, 8, 0);
         VBox.setMargin(latStartLabel, topInsets);
         VBox.setMargin(lonStartLabel, topInsets);
 

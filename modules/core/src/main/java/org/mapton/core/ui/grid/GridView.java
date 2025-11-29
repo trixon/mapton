@@ -15,9 +15,9 @@
  */
 package org.mapton.core.ui.grid;
 
-import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import se.trixon.almond.util.fx.FxHelper;
 
 public final class GridView extends VBox {
 
@@ -32,7 +32,7 @@ public final class GridView extends VBox {
         mGlobalGridView = new GlobalGridView();
         mLocalGridView = new LocalGridsView();
 
-        mGlobalGridView.setPadding(new Insets(8));
+        mGlobalGridView.setPadding(FxHelper.getUIScaledInsets(8));
         setSpacing(8);
 
         getChildren().setAll(
