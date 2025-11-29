@@ -19,19 +19,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBase;
-import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MLocalGrid;
 import org.mapton.api.MLocalGridManager;
-import org.mapton.api.MOptions;
-import static org.mapton.api.MOptions.*;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -46,22 +41,15 @@ public class LocalGridsView extends BorderPane {
     private final CheckListView<MLocalGrid> mListView = new CheckListView<>();
     private final LocalGridEditor mLocalGridEditor;
     private final MLocalGridManager mManager = MLocalGridManager.getInstance();
-    private final MOptions mOptions = MOptions.getInstance();
-    private CheckBox mPlotCheckBox;
 
     public LocalGridsView() {
         mLocalGridEditor = new LocalGridEditor();
         createUI();
-        initStates();
         initListeners();
         load();
     }
 
     private void createUI() {
-        mPlotCheckBox = new CheckBox(Dict.LOCAL.toString());
-        mPlotCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 1.3em");
-        mPlotCheckBox.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, 8));
-
         var addAction = new Action(Dict.ADD.toString(), actionEvent -> {
             mLocalGridEditor.edit(null);
         });
@@ -98,11 +86,8 @@ public class LocalGridsView extends BorderPane {
         });
 
         FxHelper.slimToolBar(toolBar);
-        setTop(new VBox(8, mPlotCheckBox, toolBar));
+        setTop(toolBar);
         setCenter(mListView);
-        toolBar.disableProperty().bind(mPlotCheckBox.selectedProperty().not());
-        mListView.disableProperty().bind(mPlotCheckBox.selectedProperty().not());
-        mListView.setPrefHeight(FxHelper.getUIScaled(150.0));
 
         mListView.setItems(mManager.getItems());
     }
@@ -112,10 +97,6 @@ public class LocalGridsView extends BorderPane {
     }
 
     private void initListeners() {
-        mPlotCheckBox.setOnAction(event -> {
-            mOptions.put(KEY_GRID_LOCAL_PLOT, mPlotCheckBox.isSelected());
-        });
-
         mListView.setOnMouseClicked(mouseEvent -> {
             if (getSelected() != null
                     && mouseEvent.getButton() == MouseButton.PRIMARY
@@ -131,10 +112,6 @@ public class LocalGridsView extends BorderPane {
                 mManager.save();
             });
         });
-    }
-
-    private void initStates() {
-        mPlotCheckBox.setSelected(mOptions.is(KEY_GRID_LOCAL_PLOT));
     }
 
     private void load() {
