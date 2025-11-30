@@ -19,7 +19,6 @@ import static j2html.TagCreator.*;
 import java.util.Comparator;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -169,7 +168,7 @@ public abstract class MSubReports extends MReport {
             mainBox.setAlignment(Pos.CENTER_LEFT);
 
             mBorderPane.setCenter(mainBox);
-            BorderPane.setMargin(mainBox, new Insets(8));
+            BorderPane.setMargin(mainBox, FxHelper.getUIScaledInsets(2));
         }
     }
 }

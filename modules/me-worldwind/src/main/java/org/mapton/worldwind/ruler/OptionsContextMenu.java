@@ -27,7 +27,6 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
@@ -86,7 +85,7 @@ public class OptionsContextMenu extends ContextMenu {
     private void createUI() {
         var vbox = new VBox(8);
 
-        vbox.setPadding(new Insets(8, 16, 16, 16));
+        vbox.setPadding(FxHelper.getUIScaledInsets(2, 4, 4, 4));
         var pathTypeLabel = new Label(mBundle.getString("ruler.option.path_type"));
         String[] pathTypes = StringUtils.split(mBundle.getString("ruler.option.path_types"), "|");
         mPathTypeComboBox = new ComboBox<>(FXCollections.observableArrayList(pathTypes));
