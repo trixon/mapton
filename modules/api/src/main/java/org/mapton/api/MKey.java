@@ -36,6 +36,7 @@ public class MKey {
     public static final String INDICATOR_LAYER_LOAD = "indicator_layer.load";
     public static final String LAYER_FAST_OPEN_TOOL = "map.layer.fastopen_tool";
     public static final String LAYER_PROPERTIES = "map.layer.properties";
+    public static final String LAYER_PROPERTIES_WORLD_WIND = "map.layer.properties.worldwind";
     public static final String LAYER_SUB_VISIBILITY = "map.layer.sub_visibility";
     /**
      * Listen for this GlobalState key in order to catch ClearLayersAction

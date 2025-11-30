@@ -29,6 +29,9 @@ public class DoOnStart implements Runnable {
     @Override
     public void run() {
         Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED, () -> {
+//            if (Mapton.getEngine() instanceof WorldWindMapEngine) {
+            LayerOptionsManager.getInstance().refresh();
+//            }
             Mapton.getGlobalState().addListener(gsce -> {
                 OverlayManager.getInstance().populateOverlayLayers();
             }, MKey.DATA_SOURCES_WMS_SOURCES);
