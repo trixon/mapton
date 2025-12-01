@@ -32,6 +32,7 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -65,7 +66,7 @@ public class AlarmLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Mapton.addWarning(Bundle.CTL_AlarmAction(), 1), "", "AlarmTopComponent");
+        initCommons(Mapton.addWarning(Bundle.CTL_AlarmAction(), 1), Dict.MISCELLANEOUS.toString(), "AlarmTopComponent");
 
         mLabelLayer.setEnabled(true);
         mLayer.setMaxActiveAltitude(6000);

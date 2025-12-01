@@ -32,6 +32,7 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.SDict;
 
 /**
  *
@@ -66,7 +67,7 @@ public class MonLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_MonmonAction(), "", "MonmonTopComponent");
+        initCommons(Bundle.CTL_MonmonAction(), SDict.TOPOGRAPHY.toString(), "MonmonTopComponent");
 
         mLabelLayer.setEnabled(true);
         mLayer.setMaxActiveAltitude(6000);
