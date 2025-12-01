@@ -37,6 +37,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.MKey;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.MTemporalRange;
@@ -55,6 +56,7 @@ public abstract class LayerBundle {
 
     public static final int DEFAULT_REPAINT_DELAY = 5000;
     private static final Set<Runnable> sActivePaintersSet = Collections.synchronizedSet(new HashSet<>());
+    private String mCategory;
     private HashSet<Layer> mChildLayers = new HashSet<>();
     private boolean mInitialized = false;
     private final ObservableList<Layer> mLayers = FXCollections.observableArrayList();
@@ -107,6 +109,10 @@ public abstract class LayerBundle {
         }
     }
 
+    public String getCategory() {
+        return mCategory;
+    }
+
     public ObservableList<Layer> getLayers() {
         return mLayers;
     }
@@ -121,6 +127,16 @@ public abstract class LayerBundle {
 
     public Layer getParentLayer() {
         return mParentLayer;
+    }
+
+    public String getPath() {
+        var sb = new StringBuilder(getCategory());
+        if (!Strings.CI.endsWith(getCategory(), "/")) {
+            sb.append("/");
+        }
+        sb.append(getName());
+
+        return sb.toString();
     }
 
     public ArrayList<Renderable> getRenderablesForObject(Object o) {
@@ -243,6 +259,7 @@ public abstract class LayerBundle {
     }
 
     public void setCategory(Layer layer, String category) {
+        mCategory = category;
         layer.setValue(WWHelper.KEY_LAYER_CATEGORY, category);
     }
 

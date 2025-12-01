@@ -18,6 +18,7 @@ package org.mapton.worldwind;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.openide.modules.OnStart;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -30,7 +31,9 @@ public class DoOnStart implements Runnable {
     public void run() {
         Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED, () -> {
 //            if (Mapton.getEngine() instanceof WorldWindMapEngine) {
-            LayerOptionsManager.getInstance().refresh();
+            FxHelper.runLaterDelayed(1000, () -> {
+                LayerOptionsManager.getInstance().refresh();
+            });
 //            }
             Mapton.getGlobalState().addListener(gsce -> {
                 OverlayManager.getInstance().populateOverlayLayers();

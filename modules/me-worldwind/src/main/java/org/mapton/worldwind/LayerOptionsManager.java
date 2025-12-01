@@ -74,6 +74,7 @@ public class LayerOptionsManager {
 
         private void createUI() {
             setTop(mComboBox);
+            mComboBox.setVisibleRowCount(99);
             mComboBox.prefWidthProperty().bind(widthProperty());
             mComboBox.setConverter(new StringConverter<LayerBundle>() {
                 @Override
@@ -83,8 +84,9 @@ public class LayerOptionsManager {
 
                 @Override
                 public String toString(LayerBundle layerBundle) {
-                    return layerBundle == null ? null : layerBundle.getName();
+                    return layerBundle == null ? null : layerBundle.getPath();
                 }
+
             });
         }
 
@@ -103,7 +105,7 @@ public class LayerOptionsManager {
         private void populate() {
             var layerBundles = new ArrayList<>(Lookup.getDefault().lookupAll(LayerBundle.class)).stream()
                     .filter(lb -> lb.getOptionsView() != null)
-                    .sorted(Comparator.comparing(LayerBundle::getName))
+                    .sorted(Comparator.comparing(LayerBundle::getPath))
                     .toList();
             mComboBox.getItems().setAll(layerBundles);
         }
