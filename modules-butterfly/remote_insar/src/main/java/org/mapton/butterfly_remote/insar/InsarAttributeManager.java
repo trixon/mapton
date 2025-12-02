@@ -19,7 +19,7 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 
 /**
  *
@@ -61,7 +61,7 @@ public class InsarAttributeManager extends BaseAttributeManager {
         return mInsarAttribute;
     }
 
-    public PointPlacemarkAttributes getPinAttributes(BStructuralCrackPoint p) {
+    public PointPlacemarkAttributes getPinAttributes(BRemoteInsarPoint p) {
         var attrs = getPinAttributes(InsarHelper.getAlarmLevel(p));
 //        attrs.setImageAddress("https://maps.google.com/mapfiles/kml/paddle/wht-circle.png");
 //        PinPaddle.SQUARE.apply(attrs);

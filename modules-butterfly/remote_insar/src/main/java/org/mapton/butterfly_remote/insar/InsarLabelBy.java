@@ -18,7 +18,7 @@ package org.mapton.butterfly_remote.insar;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.LabelBy;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -130,17 +130,17 @@ public enum InsarLabelBy implements LabelBy.Operations {
         return LabelBy.measNeedFreq(p);
     }),
     VALUE_DELTA_ZERO(LabelBy.CAT_VALUE, "Δ₀", p -> {
-        return p.ext().getDeltaZero();
+        return "p.ext().getDeltaZero()";
     }),
     VALUE_DELTA_ZERO_Z(LabelBy.CAT_VALUE, "ΔR₀", p -> {
         String deltaRAbsolute = p.ext().deltaZero().getDeltaZAbsolute(1);
         return StringUtils.replace(deltaRAbsolute, "Z", "R");
     });
     private final String mCategory;
-    private final Function<BStructuralCrackPoint, String> mFunction;
+    private final Function<BRemoteInsarPoint, String> mFunction;
     private final String mName;
 
-    private InsarLabelBy(String category, String name, Function<BStructuralCrackPoint, String> function) {
+    private InsarLabelBy(String category, String name, Function<BRemoteInsarPoint, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -160,7 +160,7 @@ public enum InsarLabelBy implements LabelBy.Operations {
         }
     }
 
-    public String getLabel(BStructuralCrackPoint o) {
+    public String getLabel(BRemoteInsarPoint o) {
         try {
             return mFunction.apply(o);
         } catch (Exception e) {

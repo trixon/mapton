@@ -27,7 +27,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_remote.api.RemoteHelper;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
@@ -148,7 +148,7 @@ public class InsarLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BStructuralCrackPoint p, InsarLabelBy labelBy, Position position) {
+    private PointPlacemark plotLabel(BRemoteInsarPoint p, InsarLabelBy labelBy, Position position) {
         if (labelBy == InsarLabelBy.NONE) {
             return null;
         } else {
@@ -160,7 +160,7 @@ public class InsarLayerBundle extends BfLayerBundle {
         }
     }
 
-    private PointPlacemark plotPin(BStructuralCrackPoint p, Position position, PointPlacemark labelPlacemark) {
+    private PointPlacemark plotPin(BRemoteInsarPoint p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(p);
         attrs = PinPaddle.W_CIRCLE.applyToCopy(attrs);
 
@@ -182,7 +182,7 @@ public class InsarLayerBundle extends BfLayerBundle {
         return placemark;
     }
 
-    private ArrayList<AVListImpl> plotSymbol(BStructuralCrackPoint p, Position position, PointPlacemark labelPlacemark) {
+    private ArrayList<AVListImpl> plotSymbol(BRemoteInsarPoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
         var cylinder = new Cylinder(position, SYMBOL_HEIGHT, SYMBOL_RADIUS);
         var attrs = mAttributeManager.getAlarmInteriorAttributes(InsarHelper.getAlarmLevel(p));

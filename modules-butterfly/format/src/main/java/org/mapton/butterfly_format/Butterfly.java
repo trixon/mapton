@@ -52,6 +52,8 @@ import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservationPre
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
@@ -86,7 +88,10 @@ public class Butterfly {
     private final ArrayList<BAcousticBlast> mBlasts = new ArrayList<>();
     private final ArrayList<BCoordinate> mCoordinates = new ArrayList<>();
     private final Dev mDev = new Dev();
+    private final Remote mRemote = new Remote();
     private final ArrayList<BGeoExtensometer> mGeoExtensometers = new ArrayList<>();
+    private final ArrayList<BRemoteInsarPoint> mRemoteInsarPoints = new ArrayList<>();
+    private final ArrayList<BRemoteInsarPointObservation> mRemoteInsarPointsObservations = new ArrayList<>();
     private final ArrayList<BGeoExtensometerPoint> mGeoExtensometersPoints = new ArrayList<>();
     private final ArrayList<BGeoExtensometerPointObservation> mGeoExtensometersPointsObservations = new ArrayList<>();
     private final ArrayList<BGeoInclinometerPoint> mGeoInclinometerPoints = new ArrayList<>();
@@ -159,6 +164,10 @@ public class Butterfly {
 
     public ArrayList<BMonmon> getMonmons() {
         return mMonmons;
+    }
+
+    public Remote remote() {
+        return mRemote;
     }
 
     public Hydro hydro() {
@@ -300,6 +309,13 @@ public class Butterfly {
         new ImportFromCsv<BGeoInclinometerPointObservationPre>(BGeoInclinometerPointObservationPre.class) {
         }.load(sourceDir, "geoInclinometerPointsObservations.csv", mGeoInclinometerPointsObservationsPre);
 
+        //Remote
+        new ImportFromCsv<BRemoteInsarPoint>(BRemoteInsarPoint.class) {
+        }.load(sourceDir, "remoteInsarPoints.csv", mRemoteInsarPoints);
+
+        new ImportFromCsv<BRemoteInsarPointObservation>(BRemoteInsarPointObservation.class) {
+        }.load(sourceDir, "remoteInsarPointsObservations.csv", mRemoteInsarPointsObservations);
+
         //System
         new ImportFromCsv<BSystemSearchProvider>(BSystemSearchProvider.class) {
         }.load(sourceDir, "systemSearchProviders.csv", mSystemSearchProviders);
@@ -318,7 +334,8 @@ public class Butterfly {
                 mTopoConvergenceGroups,
                 mTopoControlPoints,
                 mGeoExtensometers,
-                mGeoInclinometerPoints
+                mGeoInclinometerPoints,
+                mRemoteInsarPoints
         ).forEach(items -> items.forEach(item -> item.setButterfly(this)));
 
         for (var a : mAlarms) {
@@ -351,6 +368,7 @@ public class Butterfly {
         structural().postLoad();
         topo().postLoad();
         geotechnical().postLoad();
+        remote().postLoad();
         try {
             populateMonmon();
         } catch (Exception e) {
@@ -461,6 +479,32 @@ public class Butterfly {
             }
 
             Collections.sort(mGeoInclinometerPointsObservations, Comparator.comparing(BBasePointObservation::getName).thenComparing(Comparator.comparing(BBasePointObservation::getDate)));
+        }
+    }
+
+    public class Remote {
+
+        private final HashMap<String, BRemoteInsarPoint> mNameToInsarPoint = new HashMap<>();
+
+        public ArrayList<BRemoteInsarPoint> getInsarPoints() {
+            return mRemoteInsarPoints;
+        }
+
+        public ArrayList<BRemoteInsarPointObservation> getInsarPointsObservations() {
+            return mRemoteInsarPointsObservations;
+        }
+
+        public BRemoteInsarPoint getInsarPointByName(String name) {
+            return mNameToInsarPoint.get(name);
+        }
+
+        private void postLoad() {
+            mNameToInsarPoint.clear();
+
+            for (var p : mRemoteInsarPoints) {
+                mNameToInsarPoint.put(p.getName(), p);
+                p.setDimension(BDimension._1d);
+            }
         }
     }
 

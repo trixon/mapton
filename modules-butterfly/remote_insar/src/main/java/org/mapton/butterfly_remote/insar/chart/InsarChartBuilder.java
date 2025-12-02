@@ -28,19 +28,18 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_remote.insar.InsarHelper;
 import org.mapton.butterfly_remote.insar.InsarManager;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.CircularInt;
 import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.MathHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
+public class InsarChartBuilder extends XyzChartBuilder<BRemoteInsarPoint> {
 
     private final CircularInt mColorCircularInt = new CircularInt(0, 5);
     private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
@@ -49,7 +48,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
     private final TimeSeries mTimeSeriesTemperature = new TimeSeries("°C");
     private final TimeSeries mTimeSeriesZ = new TimeSeries("Δ µε");
 
-    public CrackChartBuilder() {
+    public InsarChartBuilder() {
         initChart("mm", null);
 
         var plot = (XYPlot) mChart.getPlot();
@@ -61,7 +60,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
     }
 
     @Override
-    public synchronized Callable<ChartPanel> build(BStructuralCrackPoint p) {
+    public synchronized Callable<ChartPanel> build(BRemoteInsarPoint p) {
         if (p == null) {
             return null;
         }
@@ -82,7 +81,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
     }
 
     @Override
-    public void setTitle(BStructuralCrackPoint p) {
+    public void setTitle(BRemoteInsarPoint p) {
         setTitle(p, InsarHelper.getAlarmColorAwt(p));
 
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
@@ -90,12 +89,12 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
         var date = "(%s) → %s".formatted(dateFirst, dateLast);
         getLeftSubTextTitle().setText(date);
 
-        var rightTitle = "%s: %s".formatted(p.getAlarm1Id(), p.ext().getDeltaZero());
-        getRightSubTextTitle().setText(rightTitle);
+//        var rightTitle = "%s: %s".formatted(p.getAlarm1Id(), p.ext().getDeltaZero());
+//        getRightSubTextTitle().setText(rightTitle);
     }
 
     @Override
-    public synchronized void updateDataset(BStructuralCrackPoint p) {
+    public synchronized void updateDataset(BRemoteInsarPoint p) {
         mTimeSeriesZ.clear();
 
         mTemperatureDataset.removeAllSeries();
@@ -138,7 +137,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
         return colors[mColorCircularInt.inc()];
     }
 
-    private void updateDataset(BStructuralCrackPoint p, Color color, boolean plotZeroAndReplacement) {
+    private void updateDataset(BRemoteInsarPoint p, Color color, boolean plotZeroAndReplacement) {
         var plot = (XYPlot) mChart.getPlot();
         var timeSeries = new TimeSeries(p.getName());
 
@@ -163,12 +162,12 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
         setRange(1.05, InsarHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.HEIGHT));
     }
 
-    private void updateDatasetTemperature(BStructuralCrackPoint p) {
+    private void updateDatasetTemperature(BRemoteInsarPoint p) {
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = ChartHelper.convertToMinute(o.getDate());
-            if (MathHelper.isBetween(-40d, +40d, o.getTemperature())) {
-                mTimeSeriesTemperature.addOrUpdate(minute, o.getTemperature());
-            }
+//            if (MathHelper.isBetween(-40d, +40d, o.getTemperature())) {
+//                mTimeSeriesTemperature.addOrUpdate(minute, o.getTemperature());
+//            }
         });
 
         if (!mTimeSeriesTemperature.isEmpty()) {

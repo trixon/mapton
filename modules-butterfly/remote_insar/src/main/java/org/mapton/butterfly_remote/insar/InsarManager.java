@@ -26,10 +26,10 @@ import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPointObservation;
 import org.mapton.butterfly_remote.insar.chart.ChartAggregate;
-import org.mapton.butterfly_remote.insar.chart.CrackChartBuilder;
+import org.mapton.butterfly_remote.insar.chart.InsarChartBuilder;
 import org.mapton.butterfly_remote.insar.chart.MultiChartAggregate;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
@@ -38,10 +38,10 @@ import se.trixon.almond.util.CollectionHelper;
  *
  * @author Patrik Karlström
  */
-public class InsarManager extends BaseManager<BStructuralCrackPoint> {
+public class InsarManager extends BaseManager<BRemoteInsarPoint> {
 
     private final ChartAggregate mChartAggregate = new ChartAggregate();
-    private final CrackChartBuilder mChartBuilder = new CrackChartBuilder();
+    private final InsarChartBuilder mChartBuilder = new InsarChartBuilder();
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
     private final InsarPropertiesBuilder mPropertiesBuilder = new InsarPropertiesBuilder();
 
@@ -50,11 +50,11 @@ public class InsarManager extends BaseManager<BStructuralCrackPoint> {
     }
 
     private InsarManager() {
-        super(BStructuralCrackPoint.class);
+        super(BRemoteInsarPoint.class);
     }
 
     @Override
-    public Object getObjectChart(BStructuralCrackPoint selectedObject) {
+    public Object getObjectChart(BRemoteInsarPoint selectedObject) {
         if (KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
             return mChartBuilder.build(selectedObject);
         } else {
@@ -68,22 +68,22 @@ public class InsarManager extends BaseManager<BStructuralCrackPoint> {
     }
 
     @Override
-    public Object getObjectProperties(BStructuralCrackPoint selectedObject) {
+    public Object getObjectProperties(BRemoteInsarPoint selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.structural().getCrackPoints());
+            initAllItems(butterfly.remote().getInsarPoints());
             initObjectToItemMap();
 
-            var nameToObservations = new LinkedHashMap<String, ArrayList<BStructuralCrackPointObservation>>();
-            for (var o : butterfly.structural().getCrackPointsObservations()) {
+            var nameToObservations = new LinkedHashMap<String, ArrayList<BRemoteInsarPointObservation>>();
+            for (var o : butterfly.remote().getInsarPointsObservations()) {
                 nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
             }
 
-            for (var p : butterfly.structural().getCrackPoints()) {
+            for (var p : butterfly.remote().getInsarPoints()) {
                 var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
                 if (!observations.isEmpty()) {
                     p.ext().setDateFirst(observations.getFirst().getDate());
@@ -129,7 +129,7 @@ public class InsarManager extends BaseManager<BStructuralCrackPoint> {
     @Override
     protected void applyTemporalFilter() {
         var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
-        var timeFilteredItems = new ArrayList<BStructuralCrackPoint>();
+        var timeFilteredItems = new ArrayList<BRemoteInsarPoint>();
 
         p:
         for (var p : getFilteredItems()) {
@@ -166,7 +166,7 @@ public class InsarManager extends BaseManager<BStructuralCrackPoint> {
     }
 
     @Override
-    protected void load(ArrayList<BStructuralCrackPoint> items) {
+    protected void load(ArrayList<BRemoteInsarPoint> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -23,7 +23,7 @@ import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
 
@@ -35,8 +35,8 @@ public class InsarView {
 
     private final InsarFilter mFilter = new InsarFilter();
     private final InsarFilterPopOver mFilterPopOver = new InsarFilterPopOver(mFilter);
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "crack");
-    private final SingleListForm<InsarManager, BStructuralCrackPoint> mListForm;
+    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "insar");
+    private final SingleListForm<InsarManager, BRemoteInsarPoint> mListForm;
     private final InsarManager mManager = InsarManager.getInstance();
 
     public InsarView() {
@@ -64,7 +64,7 @@ public class InsarView {
                 Dict.NAME.toString()
         );
 
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralCrackPoint> c) -> {
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BRemoteInsarPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());
         });
     }

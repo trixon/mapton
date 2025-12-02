@@ -28,7 +28,7 @@ import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_remote.insar.InsarHelper;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.Exceptions;
@@ -50,7 +50,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
     }
 
     @Override
-    public void updateDataset(BStructuralCrackPoint p) {
+    public void updateDataset(BRemoteInsarPoint p) {
         mTimeSeries1d.clear();
 
         var plot = (XYPlot) mChart.getPlot();
@@ -83,7 +83,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         }
     }
 
-    private double plot(BStructuralCrackPoint p, TimeSeries timeSeries, Color color, Function<BXyzPointObservation, Double> function) {
+    private double plot(BRemoteInsarPoint p, TimeSeries timeSeries, Color color, Function<BXyzPointObservation, Double> function) {
         var plot = (XYPlot) mChart.getPlot();
         var renderer = plot.getRenderer();
         var startDate = isCompleteView() ? LocalDateTime.MIN : LocalDateTime.now().minusDays(getRecentDays());
@@ -138,7 +138,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         }
     }
 
-    private void plotMarkers(BStructuralCrackPoint p) {
+    private void plotMarkers(BRemoteInsarPoint p) {
         var plot = (XYPlot) mChart.getPlot();
         plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));

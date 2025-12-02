@@ -26,8 +26,8 @@ import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPointObservation;
 import org.mapton.butterfly_remote.insar.InsarManager;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MathHelper;
@@ -38,9 +38,9 @@ import se.trixon.almond.util.MathHelper;
  */
 public abstract class BlastMultiChartPart extends BMultiChartPart {
 
-    private final Predicate<BStructuralCrackPoint> mPredicate;
+    private final Predicate<BRemoteInsarPoint> mPredicate;
 
-    public BlastMultiChartPart(Predicate<BStructuralCrackPoint> predicate) {
+    public BlastMultiChartPart(Predicate<BRemoteInsarPoint> predicate) {
         mPredicate = predicate;
     }
 
@@ -65,7 +65,7 @@ public abstract class BlastMultiChartPart extends BMultiChartPart {
     }
 
     @Override
-    public ArrayList<BStructuralCrackPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
+    public ArrayList<BRemoteInsarPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = InsarManager.getInstance().getTimeFilteredItems().stream()
                 .filter(mPredicate)
                 .filter(p -> {
@@ -83,13 +83,13 @@ public abstract class BlastMultiChartPart extends BMultiChartPart {
                     return latLon.distance(BCoordinatrix.toLatLon(p)) <= LIMIT_DISTANCE_BLAST;
                 }).collect(Collectors.toCollection(ArrayList::new));
 
-        var pointsToExclude = new ArrayList<BStructuralCrackPoint>();
+        var pointsToExclude = new ArrayList<BRemoteInsarPoint>();
         for (var p : pointList) {
             var observations = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
                     .filter(o -> o.getMeasuredZ() != null)
                     .map(o -> {
-                        var oo = new BStructuralCrackPointObservation();
+                        var oo = new BRemoteInsarPointObservation();
                         oo.setDate(o.getDate());
                         oo.setMeasuredZ(o.getMeasuredZ());
                         oo.ext().setAccuZ(o.ext().getAccuZ());

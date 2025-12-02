@@ -29,7 +29,7 @@ import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_remote.insar.InsarHelper;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
@@ -52,7 +52,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
     }
 
     @Override
-    public void updateDataset(BStructuralCrackPoint p) {
+    public void updateDataset(BRemoteInsarPoint p) {
         mTimeSeries.clear();
 
         var plot = (XYPlot) mChart.getPlot();
@@ -118,7 +118,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         setRange(1.05, InsarHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
     }
 
-    private void plot(BStructuralCrackPoint p, String title, LocalDateTime startDate, LocalDateTime limitDate, Color color, int index, Integer percentile) {
+    private void plot(BRemoteInsarPoint p, String title, LocalDateTime startDate, LocalDateTime limitDate, Color color, int index, Integer percentile) {
         if (startDate.isBefore(limitDate)) {
             return;
         }

@@ -24,7 +24,7 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
  */
 @JsonIgnoreProperties(value = {"replacementMeasurement", "zeroMeasurement"})
 
-public class BInsarPointObservation extends BXyzPointObservation {
+public class BRemoteInsarPointObservation extends BXyzPointObservation {
 
     private transient boolean replacementMeasurement;
     private transient boolean zeroMeasurement;

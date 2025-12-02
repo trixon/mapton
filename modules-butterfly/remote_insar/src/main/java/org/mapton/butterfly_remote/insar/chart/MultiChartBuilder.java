@@ -33,7 +33,7 @@ import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BXyzPoint;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -41,7 +41,7 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-public class MultiChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
+public class MultiChartBuilder extends XyzChartBuilder<BRemoteInsarPoint> {
 
     private LocalDate mDateFirst;
     private LocalDate mDateLast;
@@ -54,7 +54,7 @@ public class MultiChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
         initChart(axisLabel, decimalPattern);
     }
 
-    public synchronized Callable<ChartPanel> build(BStructuralCrackPoint p, BMultiChartPart multiChartComponent) {
+    public synchronized Callable<ChartPanel> build(BRemoteInsarPoint p, BMultiChartPart multiChartComponent) {
         if (p == null) {
             return null;
         }
@@ -105,7 +105,7 @@ public class MultiChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
     }
 
     @Override
-    public Object build(BStructuralCrackPoint selectedObject) {
+    public Object build(BRemoteInsarPoint selectedObject) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -114,7 +114,7 @@ public class MultiChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
     }
 
     @Override
-    public void setTitle(BStructuralCrackPoint b) {
+    public void setTitle(BRemoteInsarPoint b) {
         mChart.setTitle("%s: %s".formatted(mTitlePrefix, b.getName()));
 
 //        setTitle(p, Color.BLUE);
@@ -126,7 +126,7 @@ public class MultiChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
     }
 
     @Override
-    public void updateDataset(BStructuralCrackPoint p) {
+    public void updateDataset(BRemoteInsarPoint p) {
         var plot = (XYPlot) mChart.getPlot();
         resetPlot(plot);
 

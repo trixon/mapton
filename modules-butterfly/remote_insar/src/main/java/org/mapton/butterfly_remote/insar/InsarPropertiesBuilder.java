@@ -20,17 +20,17 @@ import java.util.LinkedHashMap;
 import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class InsarPropertiesBuilder extends BPropertiesBuilder<BStructuralCrackPoint> {
+public class InsarPropertiesBuilder extends BPropertiesBuilder<BRemoteInsarPoint> {
 
     @Override
-    public Object build(BStructuralCrackPoint p) {
+    public Object build(BRemoteInsarPoint p) {
         if (p == null) {
             return p;
         }

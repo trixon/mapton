@@ -19,14 +19,14 @@ import java.time.LocalDate;
 import javafx.scene.control.Label;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BListCell;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import se.trixon.almond.util.StringHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class InsarListCell extends BListCell<BStructuralCrackPoint> {
+class InsarListCell extends BListCell<BRemoteInsarPoint> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
@@ -39,7 +39,7 @@ class InsarListCell extends BListCell<BStructuralCrackPoint> {
     }
 
     @Override
-    protected void addContent(BStructuralCrackPoint p) {
+    protected void addContent(BRemoteInsarPoint p) {
         setText(null);
         setGraphic(mVBox);
         loadTooltip(p);
@@ -63,10 +63,10 @@ class InsarListCell extends BListCell<BStructuralCrackPoint> {
         }
 
         var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
-        var desc3 = "%s: %s".formatted(dateRolling, p.ext().getDeltaRolling());
+        var desc3 = "%s: %s".formatted(dateRolling, "p.ext().getDeltaRolling()");
 
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
-        var desc4 = "%s: %s".formatted(dateZero, p.ext().getDeltaZero());
+        var desc4 = "%s: %s".formatted(dateZero, "p.ext().getDeltaZero()");
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(dateSB.toString());
@@ -87,14 +87,14 @@ class InsarListCell extends BListCell<BStructuralCrackPoint> {
         activateTooltip();
     }
 
-    private class AlarmIndicator extends BAlarmIndicator<BStructuralCrackPoint> {
+    private class AlarmIndicator extends BAlarmIndicator<BRemoteInsarPoint> {
 
         public AlarmIndicator() {
             addNodes(m1dShape);
         }
 
         @Override
-        public void update(BStructuralCrackPoint p) {
+        public void update(BRemoteInsarPoint p) {
             m1dShape.setFill(InsarHelper.getAlarmColorHeightFx(p));
         }
 

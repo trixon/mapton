@@ -20,7 +20,7 @@ import java.util.concurrent.Callable;
 import javax.swing.JTabbedPane;
 import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly_core.api.BMultiChartPart;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 
@@ -36,7 +36,7 @@ public class MultiChartAggregate {
         mTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
     }
 
-    public synchronized Callable<JTabbedPane> build(BStructuralCrackPoint p) {
+    public synchronized Callable<JTabbedPane> build(BRemoteInsarPoint p) {
         if (p == null) {
             return null;
         }
@@ -46,7 +46,7 @@ public class MultiChartAggregate {
             synchronized (mTabbedPane) {
                 mTabbedPane.removeAll();
                 Lookup.getDefault().lookupAll(BMultiChartPart.class).stream()
-                        .filter(c -> Strings.CI.equals(c.getCategory(), BStructuralCrackPoint.class.getName()))
+                        .filter(c -> Strings.CI.equals(c.getCategory(), BRemoteInsarPoint.class.getName()))
                         .sorted(Comparator.comparing(BMultiChartPart::getName))
                         .forEachOrdered(multiChartComponent -> {
                             try {

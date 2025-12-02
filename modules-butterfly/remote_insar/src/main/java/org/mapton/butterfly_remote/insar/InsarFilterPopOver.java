@@ -87,7 +87,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var items = butterfly.structural().getCrackPoints();
+        var items = butterfly.remote().getInsarPoints();
 
         mFilterSectionPoint.load(items);
         mFilterSectionDisruptor.load();

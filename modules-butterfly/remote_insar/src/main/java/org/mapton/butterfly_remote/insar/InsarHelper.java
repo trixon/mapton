@@ -17,7 +17,7 @@ package org.mapton.butterfly_remote.insar;
 
 import java.awt.Color;
 import org.mapton.butterfly_core.api.ButterflyHelper;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 
 /**
  *
@@ -25,23 +25,23 @@ import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
  */
 public class InsarHelper {
 
-    public static Color getAlarmColorAwt(BStructuralCrackPoint p) {
+    public static Color getAlarmColorAwt(BRemoteInsarPoint p) {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
     }
 
-    public static javafx.scene.paint.Color getAlarmColorHeightFx(BStructuralCrackPoint p) {
+    public static javafx.scene.paint.Color getAlarmColorHeightFx(BRemoteInsarPoint p) {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevelHeight(p));
     }
 
-    public static int getAlarmLevel(BStructuralCrackPoint p) {
+    public static int getAlarmLevel(BRemoteInsarPoint p) {
         return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
     }
 
-    public static int getScaleFactor(BStructuralCrackPoint p) {
+    public static int getScaleFactor(BRemoteInsarPoint p) {
         return p.getUnit().equalsIgnoreCase("m") ? 1000 : 1;
     }
 
-    public static int getAlarmLevelHeight(BStructuralCrackPoint p) {
+    public static int getAlarmLevelHeight(BRemoteInsarPoint p) {
         return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
     }
 

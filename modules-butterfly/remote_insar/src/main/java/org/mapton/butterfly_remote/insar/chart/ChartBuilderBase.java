@@ -25,7 +25,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_remote.insar.InsarHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -33,7 +33,7 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralCrackPoint> {
+public abstract class ChartBuilderBase extends XyzChartBuilder<BRemoteInsarPoint> {
 
     protected Minute mSubSetLastMinute;
     protected Minute mSubSetZeroMinute;
@@ -44,7 +44,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralCrackP
     }
 
     @Override
-    public synchronized Callable<ChartPanel> build(BStructuralCrackPoint p) {
+    public synchronized Callable<ChartPanel> build(BRemoteInsarPoint p) {
         if (p == null) {
             return null;
         }
@@ -73,7 +73,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralCrackP
     }
 
     @Override
-    public void setTitle(BStructuralCrackPoint p) {
+    public void setTitle(BRemoteInsarPoint p) {
         setTitle(p, InsarHelper.getAlarmColorAwt(p));
 
         if (isCompleteView()) {

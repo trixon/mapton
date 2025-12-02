@@ -19,7 +19,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.concurrent.Callable;
 import javax.swing.JPanel;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 
 /**
  *
@@ -33,7 +33,7 @@ public class ChartBuilderDeltaSplit {
     public ChartBuilderDeltaSplit() {
     }
 
-    public synchronized Callable<JPanel> build(BStructuralCrackPoint p) {
+    public synchronized Callable<JPanel> build(BRemoteInsarPoint p) {
         if (p == null) {
             return null;
         }

@@ -21,7 +21,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
  *
  * @author Patrik Karlström
  */
-public class BInsarPoint extends BXyzPoint {
+public class BRemoteInsarPoint extends BXyzPoint {
 
     private transient Ext mExt;
 
@@ -34,7 +34,7 @@ public class BInsarPoint extends BXyzPoint {
         return mExt;
     }
 
-    public class Ext extends BXyzPoint.Ext<BInsarPointObservation> {
+    public class Ext extends BXyzPoint.Ext<BRemoteInsarPointObservation> {
 
     }
 
