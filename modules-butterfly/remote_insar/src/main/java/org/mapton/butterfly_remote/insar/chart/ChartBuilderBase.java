@@ -28,6 +28,7 @@ import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_remote.insar.InsarHelper;
 import se.trixon.almond.util.DateHelper;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -37,10 +38,10 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BRemoteInsarPoint
 
     protected Minute mSubSetLastMinute;
     protected Minute mSubSetZeroMinute;
-    protected final TimeSeries mTimeSeries1d = new TimeSeries("Spricka");
+    protected final TimeSeries mTimeSeries1d = new TimeSeries(Dict.Geometry.HEIGHT.toString());
 
     public ChartBuilderBase() {
-        initChart("mm", "0.000");
+        initChart("mm", "0.0");
     }
 
     @Override

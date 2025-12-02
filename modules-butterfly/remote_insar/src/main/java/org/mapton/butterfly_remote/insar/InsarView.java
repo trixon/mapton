@@ -18,14 +18,17 @@ package org.mapton.butterfly_remote.insar;
 import java.util.Arrays;
 import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Pane;
+import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_core.api.CopyNamesAction;
-import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -38,11 +41,23 @@ public class InsarView {
     private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "insar");
     private final SingleListForm<InsarManager, BRemoteInsarPoint> mListForm;
     private final InsarManager mManager = InsarManager.getInstance();
+    private Action mRefreshAction;
+    private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
 
     public InsarView() {
+        mRefreshAction = new Action(Dict.REFRESH.toString(), actionEvent -> {
+            mRefreshAction.setDisabled(true);
+            mManager.load2(mButterflyManager.getButterfly());
+        });
+        mRefreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
+        mButterflyManager.butterflyProperty().addListener((p, o, n) -> {
+            mRefreshAction.setDisabled(false);
+        });
+
         mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
-                new ExternalSearchAction(mManager),
+                mRefreshAction,
+                //                new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),

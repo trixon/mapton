@@ -33,6 +33,7 @@ import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_remote.insar.InsarHelper;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -47,8 +48,8 @@ public class ChartBuilderTrend extends ChartBuilderBase {
     public ChartBuilderTrend(BDimension dimension, Function<BXyzPointObservation, Double> function) {
         mDimension = dimension;
         mFunction = function;
-        mTimeSeries = new TimeSeries("Spricka");
-        initChart("mm", "0.000");
+        mTimeSeries = new TimeSeries(Dict.Geometry.HEIGHT.toString());
+        initChart("mm", "0.0");
     }
 
     @Override

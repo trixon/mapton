@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_remote.insar;
 
-import org.mapton.butterfly_remote.insar.graphics.GraphicRenderer;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -29,6 +28,7 @@ import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_remote.api.RemoteHelper;
+import org.mapton.butterfly_remote.insar.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -41,7 +41,7 @@ import se.trixon.almond.nbp.Almond;
 @ServiceProvider(service = LayerBundle.class)
 public class InsarLayerBundle extends BfLayerBundle {
 
-    private final double SYMBOL_HEIGHT = 8.0;
+    private final double SYMBOL_HEIGHT = .1;
     private final double SYMBOL_RADIUS = 0.5;
 
     private final InsarAttributeManager mAttributeManager = InsarAttributeManager.getInstance();
@@ -185,7 +185,8 @@ public class InsarLayerBundle extends BfLayerBundle {
     private ArrayList<AVListImpl> plotSymbol(BRemoteInsarPoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
         var cylinder = new Cylinder(position, SYMBOL_HEIGHT, SYMBOL_RADIUS);
-        var attrs = mAttributeManager.getAlarmInteriorAttributes(InsarHelper.getAlarmLevel(p));
+        var attrs = mAttributeManager.getSurfaceAttributes();
+//        var attrs = mAttributeManager.getAlarmInteriorAttributes(InsarHelper.getAlarmLevel(p));
 
         cylinder.setAttributes(attrs);
         mapObjects.add(cylinder);

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
@@ -74,6 +75,12 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
 
     @Override
     public void load(Butterfly butterfly) {
+        if (MSimpleObjectStorageManager.getInstance().getBoolean(AutoLoadInsarSOSB.class, AutoLoadInsarSOSB.DEFAULT_VALUE)) {
+            load2(butterfly);
+        }
+    }
+
+    void load2(Butterfly butterfly) {
         try {
             initAllItems(butterfly.remote().getInsarPoints());
             initObjectToItemMap();
@@ -96,6 +103,7 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
                 p.ext().setObservationsAllRaw(observations);
                 p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
                 for (var o : p.ext().getObservationsAllRaw()) {
+                    o.setMeasuredZ(p.getZeroZ() + o.getMeasuredZ() / 1000d);
                     if (o.isZeroMeasurement()) {
                         p.ext().setStoredZeroDateTime(o.getDate());
                         break;

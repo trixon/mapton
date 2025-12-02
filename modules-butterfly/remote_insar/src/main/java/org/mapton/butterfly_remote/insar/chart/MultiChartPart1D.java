@@ -32,7 +32,7 @@ public class MultiChartPart1D extends MultiChartPart {
 
     @Override
     public String getName() {
-        return "Sprickmätare";
+        return "InSAR";
     }
 
 }

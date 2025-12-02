@@ -46,7 +46,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         setRecentDaysDefault(recentDaysDefault);
         setRecentDays(recentDaysDefault);
         mPlotAvg = plotAvg;
-        initChart("mm", "0.000");
+        initChart("mm", "0.0");
     }
 
     @Override
