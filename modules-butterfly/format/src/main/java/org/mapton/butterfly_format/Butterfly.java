@@ -500,10 +500,22 @@ public class Butterfly {
 
         private void postLoad() {
             mNameToInsarPoint.clear();
+            var groupMap = new HashMap<String, String>();
+            groupMap.put("asc", "Ascending");
+            groupMap.put("desc", "Descending");
 
             for (var p : mRemoteInsarPoints) {
                 mNameToInsarPoint.put(p.getName(), p);
                 p.setDimension(BDimension._1d);
+                p.setMeasurementMode(BMeasurementMode.AUTOMATIC);
+                p.setFrequency(14);
+                p.setFrequencyDefault(14);
+                p.setFrequencyHigh(14);
+                p.setNumOfDecXY(1);
+                p.setNumOfDecZ(4);
+                p.setUnit("m");
+                p.setUnitDiff("mm");
+                p.setGroup(groupMap.computeIfAbsent(p.getGroup(), s -> s));
             }
         }
     }
