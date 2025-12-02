@@ -38,18 +38,18 @@ import se.trixon.almond.util.CollectionHelper;
  *
  * @author Patrik Karlström
  */
-public class CrackManager extends BaseManager<BStructuralCrackPoint> {
+public class InsarManager extends BaseManager<BStructuralCrackPoint> {
 
     private final ChartAggregate mChartAggregate = new ChartAggregate();
     private final CrackChartBuilder mChartBuilder = new CrackChartBuilder();
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
-    private final CrackPropertiesBuilder mPropertiesBuilder = new CrackPropertiesBuilder();
+    private final InsarPropertiesBuilder mPropertiesBuilder = new InsarPropertiesBuilder();
 
-    public static CrackManager getInstance() {
+    public static InsarManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private CrackManager() {
+    private InsarManager() {
         super(BStructuralCrackPoint.class);
     }
 
@@ -172,6 +172,6 @@ public class CrackManager extends BaseManager<BStructuralCrackPoint> {
 
     private static class Holder {
 
-        private static final CrackManager INSTANCE = new CrackManager();
+        private static final InsarManager INSTANCE = new InsarManager();
     }
 }

@@ -29,8 +29,8 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
-import org.mapton.butterfly_remote.insar.CrackHelper;
-import org.mapton.butterfly_remote.insar.CrackManager;
+import org.mapton.butterfly_remote.insar.InsarHelper;
+import org.mapton.butterfly_remote.insar.InsarManager;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.CircularInt;
 import se.trixon.almond.util.DateHelper;
@@ -73,7 +73,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
             setDateRangeNullNow(plot, p, mDateNull);
 
             plot.clearRangeMarkers();
-            plotAlarmIndicators(p, CrackHelper.getScaleFactor(p));
+            plotAlarmIndicators(p, InsarHelper.getScaleFactor(p));
 
             return getChartPanel();
         };
@@ -83,7 +83,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
 
     @Override
     public void setTitle(BStructuralCrackPoint p) {
-        setTitle(p, CrackHelper.getAlarmColorAwt(p));
+        setTitle(p, InsarHelper.getAlarmColorAwt(p));
 
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
         var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
@@ -115,7 +115,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
         } else {
             updateDataset(p, Color.RED, true);
             mColorCircularInt.set(0);
-            CrackManager.getInstance().getTimeFilteredItems().stream()
+            InsarManager.getInstance().getTimeFilteredItems().stream()
                     .filter(pp -> {
                         return Math.hypot(pp.getZeroX() - p.getZeroX(), pp.getZeroY() - p.getZeroY()) < 1.0;
                     })
@@ -147,7 +147,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
 
             if (o.ext().getDeltaZ() != null) {
                 var minute = ChartHelper.convertToMinute(o.getDate());
-                var delta = o.ext().getDeltaZ() * CrackHelper.getScaleFactor(p);
+                var delta = o.ext().getDeltaZ() * InsarHelper.getScaleFactor(p);
                 timeSeries.addOrUpdate(minute, delta);
                 if (DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), p.getDateZero())) {
                     mMinMaxCollection.add(delta);
@@ -160,7 +160,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
         getDataset().addSeries(timeSeries);
         renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
 
-        setRange(1.05, CrackHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.HEIGHT));
+        setRange(1.05, InsarHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.HEIGHT));
     }
 
     private void updateDatasetTemperature(BStructuralCrackPoint p) {

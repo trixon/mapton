@@ -32,17 +32,17 @@ import org.openide.util.NbPreferences;
  *
  * @author Patrik Karlström
  */
-public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
+public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilterPopOver.class);
-    private final CrackFilter mFilter;
+    private final ResourceBundle mBundle = NbBundle.getBundle(InsarFilterPopOver.class);
+    private final InsarFilter mFilter;
     private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
     private final BFilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
-    private final CrackManager mManager = CrackManager.getInstance();
+    private final InsarManager mManager = InsarManager.getInstance();
 
-    public CrackFilterPopOver(CrackFilter filter) {
+    public InsarFilterPopOver(InsarFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();

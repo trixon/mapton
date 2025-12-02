@@ -30,7 +30,7 @@ import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
-import org.mapton.butterfly_remote.insar.CrackHelper;
+import org.mapton.butterfly_remote.insar.InsarHelper;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -115,7 +115,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         plot(p, "1m", startDateMinus1m, startDateZero, Color.ORANGE, index++, null);
         plot(p, "1w", startDateMinus1w, startDateZero, Color.RED, index++, null);
 
-        setRange(1.05, CrackHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
+        setRange(1.05, InsarHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
     }
 
     private void plot(BStructuralCrackPoint p, String title, LocalDateTime startDate, LocalDateTime limitDate, Color color, int index, Integer percentile) {

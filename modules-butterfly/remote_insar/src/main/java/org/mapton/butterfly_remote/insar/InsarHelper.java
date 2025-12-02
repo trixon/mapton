@@ -23,7 +23,7 @@ import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
  *
  * @author Patrik Karlström
  */
-public class CrackHelper {
+public class InsarHelper {
 
     public static Color getAlarmColorAwt(BStructuralCrackPoint p) {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));

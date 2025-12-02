@@ -26,7 +26,7 @@ import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
-import org.mapton.butterfly_remote.insar.CrackHelper;
+import org.mapton.butterfly_remote.insar.InsarHelper;
 import se.trixon.almond.util.DateHelper;
 
 /**
@@ -64,7 +64,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralCrackP
             var date = isCompleteView() ? mDateNull : Date.from(Instant.now().minus(getRecentDays(), ChronoUnit.DAYS));
             setDateRangeNullNow(plot, p, date);
             plot.clearRangeMarkers();
-            plotAlarmIndicators(p, CrackHelper.getScaleFactor(p));
+            plotAlarmIndicators(p, InsarHelper.getScaleFactor(p));
 
             return getChartPanel();
         };
@@ -74,7 +74,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralCrackP
 
     @Override
     public void setTitle(BStructuralCrackPoint p) {
-        setTitle(p, CrackHelper.getAlarmColorAwt(p));
+        setTitle(p, InsarHelper.getAlarmColorAwt(p));
 
         if (isCompleteView()) {
             var dateFirst = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredFirstDate()), "");
@@ -83,7 +83,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralCrackP
             getLeftSubTextTitle().setText(date);
         }
 
-        String delta = p.ext().deltaZero().getDelta1(3, CrackHelper.getScaleFactor(p), false);
+        String delta = p.ext().deltaZero().getDelta1(3, InsarHelper.getScaleFactor(p), false);
         getRightSubTextTitle().setText("Δ " + delta);
     }
 }

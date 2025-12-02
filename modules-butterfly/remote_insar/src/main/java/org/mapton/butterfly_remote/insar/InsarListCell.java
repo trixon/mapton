@@ -26,7 +26,7 @@ import se.trixon.almond.util.StringHelper;
  *
  * @author Patrik Karlström
  */
-class CrackListCell extends BListCell<BStructuralCrackPoint> {
+class InsarListCell extends BListCell<BStructuralCrackPoint> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
@@ -34,7 +34,7 @@ class CrackListCell extends BListCell<BStructuralCrackPoint> {
     private final Label mDesc3Label = new Label();
     private final Label mDesc4Label = new Label();
 
-    public CrackListCell() {
+    public InsarListCell() {
         createUI();
     }
 
@@ -95,7 +95,7 @@ class CrackListCell extends BListCell<BStructuralCrackPoint> {
 
         @Override
         public void update(BStructuralCrackPoint p) {
-            m1dShape.setFill(CrackHelper.getAlarmColorHeightFx(p));
+            m1dShape.setFill(InsarHelper.getAlarmColorHeightFx(p));
         }
 
     }

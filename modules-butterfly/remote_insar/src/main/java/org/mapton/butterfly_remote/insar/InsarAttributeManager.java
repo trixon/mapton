@@ -25,17 +25,17 @@ import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
  *
  * @author Patrik Karlström
  */
-public class CrackAttributeManager extends BaseAttributeManager {
+public class InsarAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
-    private BasicShapeAttributes mCrackAttribute;
+    private BasicShapeAttributes mInsarAttribute;
     private BasicShapeAttributes mSurfaceAttributes;
 
-    public static CrackAttributeManager getInstance() {
+    public static InsarAttributeManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private CrackAttributeManager() {
+    private InsarAttributeManager() {
     }
 
     public BasicShapeAttributes getComponentEllipsoidAttributes() {
@@ -49,20 +49,20 @@ public class CrackAttributeManager extends BaseAttributeManager {
         return mComponentEllipsoidAttributes;
     }
 
-    public BasicShapeAttributes getCrackAttribute() {
-        if (mCrackAttribute == null) {
-            mCrackAttribute = new BasicShapeAttributes();
-            mCrackAttribute.setDrawOutline(true);
-            mCrackAttribute.setOutlineMaterial(Material.RED);
-            mCrackAttribute.setOutlineWidth(4.0);
-            mCrackAttribute.setOutlineOpacity(1.0);
+    public BasicShapeAttributes getInsarAttribute() {
+        if (mInsarAttribute == null) {
+            mInsarAttribute = new BasicShapeAttributes();
+            mInsarAttribute.setDrawOutline(true);
+            mInsarAttribute.setOutlineMaterial(Material.RED);
+            mInsarAttribute.setOutlineWidth(4.0);
+            mInsarAttribute.setOutlineOpacity(1.0);
         }
 
-        return mCrackAttribute;
+        return mInsarAttribute;
     }
 
     public PointPlacemarkAttributes getPinAttributes(BStructuralCrackPoint p) {
-        var attrs = getPinAttributes(CrackHelper.getAlarmLevel(p));
+        var attrs = getPinAttributes(InsarHelper.getAlarmLevel(p));
 //        attrs.setImageAddress("https://maps.google.com/mapfiles/kml/paddle/wht-circle.png");
 //        PinPaddle.SQUARE.apply(attrs);
 //        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
@@ -86,6 +86,6 @@ public class CrackAttributeManager extends BaseAttributeManager {
 
     private static class Holder {
 
-        private static final CrackAttributeManager INSTANCE = new CrackAttributeManager();
+        private static final InsarAttributeManager INSTANCE = new InsarAttributeManager();
     }
 }

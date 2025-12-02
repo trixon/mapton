@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_remote.insar;
 
+import org.mapton.butterfly_remote.insar.graphics.GraphicRenderer;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -38,20 +39,20 @@ import se.trixon.almond.nbp.Almond;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class CrackLayerBundle extends BfLayerBundle {
+public class InsarLayerBundle extends BfLayerBundle {
 
     private final double SYMBOL_HEIGHT = 8.0;
     private final double SYMBOL_RADIUS = 0.5;
 
-    private final CrackAttributeManager mAttributeManager = CrackAttributeManager.getInstance();
+    private final InsarAttributeManager mAttributeManager = InsarAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
-    private final CrackManager mManager = CrackManager.getInstance();
-    private final CrackOptionsView mOptionsView;
+    private final InsarManager mManager = InsarManager.getInstance();
+    private final InsarOptionsView mOptionsView;
 
-    public CrackLayerBundle() {
+    public InsarLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new CrackOptionsView(this);
+        mOptionsView = new InsarOptionsView(this);
         mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
 
@@ -147,8 +148,8 @@ public class CrackLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BStructuralCrackPoint p, CrackLabelBy labelBy, Position position) {
-        if (labelBy == CrackLabelBy.NONE) {
+    private PointPlacemark plotLabel(BStructuralCrackPoint p, InsarLabelBy labelBy, Position position) {
+        if (labelBy == InsarLabelBy.NONE) {
             return null;
         } else {
             var label = labelBy.getLabel(p);
@@ -184,7 +185,7 @@ public class CrackLayerBundle extends BfLayerBundle {
     private ArrayList<AVListImpl> plotSymbol(BStructuralCrackPoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
         var cylinder = new Cylinder(position, SYMBOL_HEIGHT, SYMBOL_RADIUS);
-        var attrs = mAttributeManager.getAlarmInteriorAttributes(CrackHelper.getAlarmLevel(p));
+        var attrs = mAttributeManager.getAlarmInteriorAttributes(InsarHelper.getAlarmLevel(p));
 
         cylinder.setAttributes(attrs);
         mapObjects.add(cylinder);

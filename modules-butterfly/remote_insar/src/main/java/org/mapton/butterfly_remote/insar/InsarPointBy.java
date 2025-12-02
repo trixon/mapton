@@ -15,39 +15,25 @@
  */
 package org.mapton.butterfly_remote.insar;
 
-import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
-import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
-
-    ALARM_CONSUMPTION("Larmförbrukning", Integer.MAX_VALUE),
-    TRACE(SDict.TRACE.toString(), 10_000);
-
+public enum InsarPointBy {
+    PIN(Dict.PIN.toString()),
+    SYMBOL(Dict.SYMBOL.toString()),
+    NONE(Dict.NONE.toString());
     private final String mName;
-    private final int mPlotLimit;
 
-    private GraphicRendererItem(String name, int plotLimit) {
+    private InsarPointBy(String name) {
         mName = name;
-        mPlotLimit = plotLimit;
     }
 
     @Override
-    public String getName() {
+    public String toString() {
         return mName;
     }
 
-    @Override
-    public int getPlotLimit() {
-        return mPlotLimit;
-    }
-
-    @Override
-
-    public String toString() {
-        return getName();
-    }
 }

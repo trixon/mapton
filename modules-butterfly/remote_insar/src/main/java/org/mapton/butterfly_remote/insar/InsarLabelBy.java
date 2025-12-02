@@ -26,7 +26,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public enum CrackLabelBy implements LabelBy.Operations {
+public enum InsarLabelBy implements LabelBy.Operations {
     NAME(LabelBy.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
@@ -140,7 +140,7 @@ public enum CrackLabelBy implements LabelBy.Operations {
     private final Function<BStructuralCrackPoint, String> mFunction;
     private final String mName;
 
-    private CrackLabelBy(String category, String name, Function<BStructuralCrackPoint, String> function) {
+    private InsarLabelBy(String category, String name, Function<BStructuralCrackPoint, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;

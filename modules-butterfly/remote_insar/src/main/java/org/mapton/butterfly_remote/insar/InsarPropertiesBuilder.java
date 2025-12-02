@@ -27,7 +27,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
  *
  * @author Patrik Karlström
  */
-public class CrackPropertiesBuilder extends BPropertiesBuilder<BStructuralCrackPoint> {
+public class InsarPropertiesBuilder extends BPropertiesBuilder<BStructuralCrackPoint> {
 
     @Override
     public Object build(BStructuralCrackPoint p) {

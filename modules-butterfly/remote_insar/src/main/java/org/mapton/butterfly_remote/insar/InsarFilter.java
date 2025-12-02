@@ -37,21 +37,21 @@ import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
  *
  * @author Patrik Karlström
  */
-public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
+public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
         BFilterSectionDisruptorProvider {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilter.class);
+    private final ResourceBundle mBundle = NbBundle.getBundle(InsarFilter.class);
     private BFilterSectionDate mFilterSectionDate;
     private BFilterSectionDisruptor mFilterSectionDisruptor;
     private BFilterSectionPoint mFilterSectionPoint;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
-    private final CrackManager mManager = CrackManager.getInstance();
+    private final InsarManager mManager = InsarManager.getInstance();
 
-    public CrackFilter() {
-        super(CrackManager.getInstance());
+    public InsarFilter() {
+        super(InsarManager.getInstance());
 
         initListeners();
     }

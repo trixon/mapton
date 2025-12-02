@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_remote.insar;
 
+import org.mapton.butterfly_remote.insar.graphics.GraphicItem;
 import java.util.stream.Stream;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -30,15 +31,15 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class CrackOptionsView extends BOptionsView {
+public class InsarOptionsView extends BOptionsView {
 
-    private static final CrackLabelBy DEFAULT_LABEL_BY = CrackLabelBy.NAME;
-    private static final CrackPointBy DEFAULT_POINT_BY = CrackPointBy.PIN;
+    private static final InsarLabelBy DEFAULT_LABEL_BY = InsarLabelBy.NAME;
+    private static final InsarPointBy DEFAULT_POINT_BY = InsarPointBy.PIN;
 
-    private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
-    private final SessionComboBox<CrackPointBy> mPointScb = new SessionComboBox<>();
+    private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
+    private final SessionComboBox<InsarPointBy> mPointScb = new SessionComboBox<>();
 
-    public CrackOptionsView(CrackLayerBundle layerBundle) {
+    public InsarOptionsView(InsarLayerBundle layerBundle) {
         super(layerBundle, Bundle.CTL_InsarAction());
         setDefaultId(DEFAULT_LABEL_BY);
         createUI();
@@ -46,23 +47,23 @@ public class CrackOptionsView extends BOptionsView {
         initSession();
     }
 
-    public IndexedCheckModel<GraphicRendererItem> getGraphicCheckModel() {
+    public IndexedCheckModel<GraphicItem> getGraphicCheckModel() {
         return mGraphicSccb.getCheckModel();
     }
 
-    public CrackPointBy getPointBy() {
+    public InsarPointBy getPointBy() {
         return mPointScb.valueProperty().get();
     }
 
     private void createUI() {
-        mPointScb.getItems().setAll(CrackPointBy.values());
+        mPointScb.getItems().setAll(InsarPointBy.values());
         mPointScb.setValue(DEFAULT_POINT_BY);
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
-        mGraphicSccb.getItems().setAll(GraphicRendererItem.values());
+        mGraphicSccb.getItems().setAll(GraphicItem.values());
 
-        LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), CrackLabelBy.values());
+        LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), InsarLabelBy.values());
 
         var pointLabel = new Label(Dict.Geometry.POINT.toString());
         var labelLabel = new Label(Dict.LABEL.toString());
@@ -98,6 +99,6 @@ public class CrackOptionsView extends BOptionsView {
         sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
         initSession(sessionManager);
 
-        restoreLabelFromId(CrackLabelBy.class, DEFAULT_LABEL_BY);
+        restoreLabelFromId(InsarLabelBy.class, DEFAULT_LABEL_BY);
     }
 }

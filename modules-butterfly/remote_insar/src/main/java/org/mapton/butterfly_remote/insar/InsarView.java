@@ -33,11 +33,11 @@ import se.trixon.almond.util.Dict;
  */
 public class InsarView {
 
-    private final CrackFilter mFilter = new CrackFilter();
-    private final CrackFilterPopOver mFilterPopOver = new CrackFilterPopOver(mFilter);
+    private final InsarFilter mFilter = new InsarFilter();
+    private final InsarFilterPopOver mFilterPopOver = new InsarFilterPopOver(mFilter);
     private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "crack");
-    private final SingleListForm<CrackManager, BStructuralCrackPoint> mListForm;
-    private final CrackManager mManager = CrackManager.getInstance();
+    private final SingleListForm<InsarManager, BStructuralCrackPoint> mListForm;
+    private final InsarManager mManager = InsarManager.getInstance();
 
     public InsarView() {
         mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
@@ -58,7 +58,7 @@ public class InsarView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new CrackListCell());
+        mListForm.getListView().setCellFactory(listView -> new InsarListCell());
 
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()

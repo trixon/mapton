@@ -27,7 +27,7 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
-import org.mapton.butterfly_remote.insar.CrackManager;
+import org.mapton.butterfly_remote.insar.InsarManager;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -64,12 +64,12 @@ public abstract class MultiChartPart extends BMultiChartPart {
 
     @Override
     public BaseManager getManager() {
-        return CrackManager.getInstance();
+        return InsarManager.getInstance();
     }
 
     @Override
     public ArrayList<BStructuralCrackPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
-        var pointList = CrackManager.getInstance().getTimeFilteredItems().stream()
+        var pointList = InsarManager.getInstance().getTimeFilteredItems().stream()
                 .filter(p -> {
                     switch (mDimension) {
                         case _1d -> {

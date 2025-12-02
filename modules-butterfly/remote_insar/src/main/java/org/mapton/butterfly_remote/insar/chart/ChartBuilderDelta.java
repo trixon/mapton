@@ -29,7 +29,7 @@ import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
-import org.mapton.butterfly_remote.insar.CrackHelper;
+import org.mapton.butterfly_remote.insar.InsarHelper;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
@@ -67,7 +67,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         var nowAsDate = DateHelper.convertToDate(now.plusDays(1));
         if (isCompleteView()) {
             dateAxis.setRange(DateHelper.convertToDate(p.ext().getDateFirst()), nowAsDate);
-            setRange(1.05, CrackHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
+            setRange(1.05, InsarHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
         } else {
             var sb = new StringBuilder();
             if (p.getDimension() != BDimension._2d) {
@@ -91,7 +91,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         Double lastDelta = null;
         for (var o : p.ext().getObservationsTimeFiltered()) {
             if (o.getDate().isAfter(startDate)) {
-                var delta = function.apply(o) * CrackHelper.getScaleFactor(p);
+                var delta = function.apply(o) * InsarHelper.getScaleFactor(p);
                 if (firstDelta == null) {
                     firstDelta = delta;
                 }
