@@ -341,6 +341,16 @@
                     <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-structural-tilt</artifactId>
                 </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-remote</artifactId>
+                    <version>${mapton.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-remote-insar</artifactId>
+                    <version>${mapton.version}</version>
+                </dependency>
             </dependencies>
         </profile>
 
