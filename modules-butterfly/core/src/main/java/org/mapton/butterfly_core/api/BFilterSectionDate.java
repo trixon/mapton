@@ -26,8 +26,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.MDateFormula;
@@ -41,7 +43,9 @@ import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.control.SliderPane;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
+import se.trixon.almond.util.fx.session.SessionComboBox;
 
 /**
  *
@@ -70,6 +74,8 @@ public class BFilterSectionDate extends MBaseFilterSection {
     private final DateRangePane mDateRangeFirstPane = new DateRangePane();
     private final DateRangePane mDateRangeLastPane = new DateRangePane();
     private final SessionCheckComboBox<String> mHasDateFromToSccb = new SessionCheckComboBox<>(true);
+    private final SessionComboBox<BeforeAfter> mLatestAgeHoursBeforeAfterScb = new SessionComboBox<>();
+    private final SliderPane mLatestAgeHoursSliderPane = new SliderPane("Ålder på senaste mätning", 1, 48, true, true, 1d);
     private final GridPane mRoot = new GridPane(columnGap, rowGap);
 
     public BFilterSectionDate() {
@@ -92,6 +98,7 @@ public class BFilterSectionDate extends MBaseFilterSection {
         SessionCheckComboBox.clearChecks(
                 mHasDateFromToSccb
         );
+        mLatestAgeHoursSliderPane.clear();
     }
 
     @Override
@@ -132,6 +139,17 @@ public class BFilterSectionDate extends MBaseFilterSection {
                 valid = validateAge(p.getDateLatest(), dateLastLowProperty(), dateLastHighProperty());
             }
 
+            if (valid && mLatestAgeHoursSliderPane.isSelected()) {
+                var latestDate = p.getDateLatest();
+                var val = mLatestAgeHoursSliderPane.valueProperty().get();
+                var limDate = LocalDateTime.now().minusMinutes((long) (60 * val));
+                if (mLatestAgeHoursBeforeAfterScb.getValue() == BeforeAfter.AFTER) {
+                    valid = latestDate.isBefore(limDate);
+                } else {
+                    valid = latestDate.isAfter(limDate);
+                }
+            }
+
             return valid;
         } else {
             return true;
@@ -167,7 +185,10 @@ public class BFilterSectionDate extends MBaseFilterSection {
                 dateFirstHighProperty(),
                 dateFirstLowProperty(),
                 dateLastHighProperty(),
-                dateLastLowProperty()
+                dateLastLowProperty(),
+                mLatestAgeHoursSliderPane.selectedProperty(),
+                mLatestAgeHoursSliderPane.valueProperty(),
+                mLatestAgeHoursBeforeAfterScb.valueProperty()
         ).forEach(propertyBase -> propertyBase.addListener(changeListenerObject));
 
         List.of(
@@ -186,7 +207,7 @@ public class BFilterSectionDate extends MBaseFilterSection {
         var dateFirstToEnd = true;
         var dateLastFromStart = true;
         var dateLastToEnd = true;
-        var isPreset = StringUtils.containsIgnoreCase(preferences.absolutePath(), MFilterPresetPopOver.FILTER_PRESET_NODE);
+        var isPreset = Strings.CI.contains(preferences.absolutePath(), MFilterPresetPopOver.FILTER_PRESET_NODE);
 
         if (isPreset) {
             mDateFirstToEnd = preferences.getBoolean(KEY_DATE_FIRST_TO_END, true);
@@ -224,6 +245,7 @@ public class BFilterSectionDate extends MBaseFilterSection {
         sessionManager.register(KEY_DATE_LAST_LOW, mDateRangeLastPane.lowStringProperty());
         sessionManager.register(KEY_DATE_LAST_FROM_START, mDateRangeLastPane.selectedFromStartProperty());
         sessionManager.register(KEY_DATE_LAST_TO_END, mDateRangeLastPane.selectedToEndProperty());
+        mLatestAgeHoursSliderPane.initSession(getKeyFilter("ageLatestMeas"), sessionManager);
 
         if (isPreset) {
             mDateFirstFromStart = dateFirstFromStart;
@@ -290,6 +312,7 @@ public class BFilterSectionDate extends MBaseFilterSection {
 
     @Override
     public void reset(PropertiesConfiguration filterConfig) {
+        mLatestAgeHoursSliderPane.setSelected(false);
     }
 
     private void createUI() {
@@ -305,11 +328,14 @@ public class BFilterSectionDate extends MBaseFilterSection {
                 SDict.IS_VALID.toString(),
                 SDict.IS_INVALID.toString()
         ));
-
+        mLatestAgeHoursBeforeAfterScb.getItems().setAll(BeforeAfter.values());
+        mLatestAgeHoursBeforeAfterScb.setValue(BeforeAfter.BEFORE);
+        mLatestAgeHoursBeforeAfterScb.disableProperty().bind(mLatestAgeHoursSliderPane.selectedProperty().not());
+        mLatestAgeHoursBeforeAfterScb.prefWidthProperty().bind(mLatestAgeHoursSliderPane.widthProperty());
         mRoot.setMaxWidth(getMaxWidth());
         int row = 0;
         mRoot.addRow(row++, getDateFirstBorderBox(), getDateLastBorderBox());
-        mRoot.addRow(row++, getHasDateFromToSccb());
+        mRoot.addRow(row++, getHasDateFromToSccb(), new VBox(mLatestAgeHoursSliderPane, mLatestAgeHoursBeforeAfterScb));
         FxHelper.autoSizeColumn(mRoot, 2);
     }
 
@@ -415,6 +441,22 @@ public class BFilterSectionDate extends MBaseFilterSection {
                 || (toDate == null && validToChecked);
 
         return valid;
+    }
+
+    public enum BeforeAfter {
+        BEFORE("...timmar som mest"),
+        AFTER("...timmar som minst");
+        private final String mTitle;
+
+        private BeforeAfter(String title) {
+            mTitle = title;
+        }
+
+        @Override
+        public String toString() {
+            return mTitle;
+        }
+
     }
 
     public enum DateElement {

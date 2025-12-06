@@ -39,7 +39,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 public final class GridTopComponent extends MTopComponent {
 
-    private GridView mGridForm;
+    private LocalGridsView mGridForm;
     private BorderPane mRoot;
 
     public GridTopComponent() {
@@ -62,7 +62,7 @@ public final class GridTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        mGridForm = new GridView();
+        mGridForm = new LocalGridsView();
         Label titleLabel = Mapton.createTitle(MDict.GRID.toString());
         mRoot = new BorderPane(mGridForm);
         mRoot.setTop(titleLabel);

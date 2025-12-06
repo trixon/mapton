@@ -23,6 +23,7 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MDict;
 import org.mapton.api.MLocalGrid;
@@ -46,6 +47,7 @@ public class GridLayerBundle extends LayerBundle {
     private final RenderableLayer mLayer = new RenderableLayer();
     private final MLocalGridManager mManager = MLocalGridManager.getInstance();
     private final MOptions mOptions = MOptions.getInstance();
+    private GridLayerOptionsView mOptionsView;
     private BasicShapeAttributes mPolarAttributes;
     private BasicShapeAttributes mTropicAttributes;
 
@@ -53,6 +55,15 @@ public class GridLayerBundle extends LayerBundle {
         init();
         initRepaint();
         initListeners();
+    }
+
+    @Override
+    public Node getOptionsView() {
+        if (mOptionsView == null) {
+            mOptionsView = new GridLayerOptionsView();
+        }
+
+        return mOptionsView;
     }
 
     @Override

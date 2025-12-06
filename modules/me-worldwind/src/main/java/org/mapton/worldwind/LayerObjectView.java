@@ -303,7 +303,11 @@ public class LayerObjectView extends BorderPane implements MActivatable {
             try {
                 var layerBundle = (LayerBundle) getSelectedTreeItem().getValue().getValue("layerBundle");
                 var optionsView = layerBundle.getOptionsView();
-                Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES, optionsView);
+                if (optionsView == null) {
+                    Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES, null);
+                } else {
+                    Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES_WORLD_WIND, layerBundle);
+                }
                 if (layerBundle instanceof MRunnable r) {
                     FxHelper.runLaterDelayed(75, () -> {
                         if (!runOnceChecker.contains(r)) {

@@ -16,7 +16,6 @@
 package org.mapton.core.ui.grid;
 
 import java.util.ResourceBundle;
-import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -31,29 +30,35 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class GlobalGridView extends VBox {
+public class GridOptionsView extends VBox {
 
     private CheckBox mClampToGroundCheckBox;
     private CheckBox mEquatorCheckBox;
     private CheckBox mLatitudesCheckBox;
     private CheckBox mLongitudesCheckBox;
     private final MOptions mOptions = MOptions.getInstance();
-    private CheckBox mPlotCheckBox;
+    private CheckBox mPlotGlobalsCheckBox;
     private CheckBox mPolarAntarticCheckBox;
     private CheckBox mPolarArticCheckBox;
     private CheckBox mTropicCancerCheckBox;
     private CheckBox mTropicCapricornCheckBox;
+    private CheckBox mPlotLocalsCheckBox;
 
-    public GlobalGridView() {
+    public GridOptionsView() {
         createUI();
         initStates();
         initListeners();
     }
 
     private void createUI() {
-        ResourceBundle bundle = NbBundle.getBundle(GridView.class);
-        mPlotCheckBox = new CheckBox(Dict.GLOBAL.toString());
-        mPlotCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 1.3em");
+        ResourceBundle bundle = NbBundle.getBundle(GridTopComponent.class);
+        mPlotGlobalsCheckBox = new CheckBox(Dict.GLOBAL.toString());
+        mPlotGlobalsCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 1.3em");
+
+        mPlotLocalsCheckBox = new CheckBox(Dict.LOCAL.toString());
+        mPlotLocalsCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 1.3em");
+//        mPlotLocalsCheckBox.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, 8));
+
         mClampToGroundCheckBox = new CheckBox("CLAMP TO GROUND");
 
         mLongitudesCheckBox = new CheckBox(bundle.getString("longitudes"));
@@ -65,10 +70,10 @@ public class GlobalGridView extends VBox {
         mTropicCapricornCheckBox = new CheckBox(bundle.getString("tropic_capricorn"));
         mPolarAntarticCheckBox = new CheckBox(bundle.getString("antarctic_circle"));
 
-        Label presentationLabel = new Label(bundle.getString("major_latitudes"));
+        var presentationLabel = new Label(bundle.getString("major_latitudes"));
         presentationLabel.setFont(new Font(FxHelper.getScaledFontSize() * 1.2));
 
-        VBox vbox = new VBox(8,
+        var vbox = new VBox(8,
                 //mClampToGroundCheckBox,
                 mLongitudesCheckBox,
                 mLatitudesCheckBox,
@@ -80,18 +85,22 @@ public class GlobalGridView extends VBox {
                 mPolarAntarticCheckBox
         );
 
-        vbox.disableProperty().bind(mPlotCheckBox.selectedProperty().not());
+        vbox.disableProperty().bind(mPlotGlobalsCheckBox.selectedProperty().not());
 
         setSpacing(8);
-        getChildren().addAll(mPlotCheckBox, vbox);
-        vbox.setPadding(new Insets(4, 0, 0, 16));
-
+        getChildren().setAll(mPlotGlobalsCheckBox, vbox, mPlotLocalsCheckBox);
+        vbox.setPadding(FxHelper.getUIScaledInsets(4, 0, 0, 16));
     }
 
     private void initListeners() {
-        mPlotCheckBox.setOnAction((event) -> {
-            mOptions.put(KEY_GRID_GLOBAL_PLOT, mPlotCheckBox.isSelected());
+        mPlotGlobalsCheckBox.setOnAction((event) -> {
+            mOptions.put(KEY_GRID_GLOBAL_PLOT, mPlotGlobalsCheckBox.isSelected());
         });
+
+        mPlotLocalsCheckBox.setOnAction(event -> {
+            mOptions.put(KEY_GRID_LOCAL_PLOT, mPlotLocalsCheckBox.isSelected());
+        });
+
         mClampToGroundCheckBox.setOnAction((event) -> {
             mOptions.put(KEY_GRID_GLOBAL_CLAMP_TO_GROUND, mClampToGroundCheckBox.isSelected());
         });
@@ -127,7 +136,8 @@ public class GlobalGridView extends VBox {
     }
 
     private void initStates() {
-        mPlotCheckBox.setSelected(mOptions.is(KEY_GRID_GLOBAL_PLOT));
+        mPlotGlobalsCheckBox.setSelected(mOptions.is(KEY_GRID_GLOBAL_PLOT));
+        mPlotLocalsCheckBox.setSelected(mOptions.is(KEY_GRID_LOCAL_PLOT));
 
         mClampToGroundCheckBox.setSelected(mOptions.is(KEY_GRID_GLOBAL_CLAMP_TO_GROUND));
 

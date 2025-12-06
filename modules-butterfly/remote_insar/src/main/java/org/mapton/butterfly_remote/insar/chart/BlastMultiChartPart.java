@@ -13,32 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro.groundwater.chart;
+package org.mapton.butterfly_remote.insar.chart;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
-import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
-import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
-import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
-import org.mapton.butterfly_hydro.groundwater.GroundwaterManager;
-import org.openide.util.lookup.ServiceProvider;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPointObservation;
+import org.mapton.butterfly_remote.insar.InsarManager;
 import se.trixon.almond.util.DateHelper;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = BMultiChartPart.class)
-public class GroundwaterMultiChartPart extends BMultiChartPart {
+public abstract class BlastMultiChartPart extends BMultiChartPart {
 
-    public GroundwaterMultiChartPart() {
+    private final Predicate<BRemoteInsarPoint> mPredicate;
+
+    public BlastMultiChartPart(Predicate<BRemoteInsarPoint> predicate) {
+        mPredicate = predicate;
+    }
+
+    @Override
+    public String getAxisLabel() {
+        return "mm";
     }
 
     @Override
@@ -53,17 +61,13 @@ public class GroundwaterMultiChartPart extends BMultiChartPart {
 
     @Override
     public BaseManager getManager() {
-        return GroundwaterManager.getInstance();
+        return InsarManager.getInstance();
     }
 
     @Override
-    public String getName() {
-        return "Grundvatten";
-    }
-
-    @Override
-    public ArrayList<BHydroGroundwaterPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
-        var pointList = GroundwaterManager.getInstance().getTimeFilteredItems().stream()
+    public ArrayList<BRemoteInsarPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
+        var pointList = InsarManager.getInstance().getTimeFilteredItems().stream()
+                .filter(mPredicate)
                 .filter(p -> {
                     try {
                         if (p.ext().getDateFirst().toLocalDate().isAfter(lastDate)
@@ -76,28 +80,37 @@ public class GroundwaterMultiChartPart extends BMultiChartPart {
                     return true;
                 })
                 .filter(p -> {
-                    return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= LIMIT_DISTANCE_BLAST;
+                    return latLon.distance(BCoordinatrix.toLatLon(p)) <= LIMIT_DISTANCE_BLAST;
                 }).collect(Collectors.toCollection(ArrayList::new));
 
-        var pointsToExclude = new ArrayList<BXyzPoint>();
+        var pointsToExclude = new ArrayList<BRemoteInsarPoint>();
         for (var p : pointList) {
             var observations = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
-                    .filter(o -> o.getGroundwaterLevel() != null)
+                    .filter(o -> o.getMeasuredZ() != null)
                     .map(o -> {
-                        var oo = new BHydroGroundwaterPointObservation();
+                        var oo = new BRemoteInsarPointObservation();
                         oo.setDate(o.getDate());
-                        oo.setGroundwaterLevel(o.getGroundwaterLevel());
+                        oo.setMeasuredZ(o.getMeasuredZ());
+                        oo.ext().setAccuZ(o.ext().getAccuZ());
                         return oo;
                     })
                     .toList();
 
             if (observations.size() > 1) {
                 var map = new TreeMap<LocalDateTime, Double>();
+                var firstAccuZ = MathHelper.convertDoubleToDouble(observations.getFirst().ext().getAccuZ());
                 for (var o : observations) {
-                    map.put(o.getDate(), o.getGroundwaterLevel() - observations.getFirst().getGroundwaterLevel());
+                    var accuZ = MathHelper.convertDoubleToDouble(o.ext().getAccuZ());
+                    var value = o.getMeasuredZ() - observations.getFirst().getMeasuredZ();
+                    value = value + firstAccuZ - accuZ;
+                    map.put(o.getDate(), value);
                 }
-                p.setValue(BMultiChartPart.class, map);
+                if (Math.abs(map.lastEntry().getValue()) > 0.002) {
+                    p.setValue(BMultiChartPart.class, map);
+                } else {
+                    pointsToExclude.add(p);
+                }
             } else {
                 pointsToExclude.add(p);
             }
@@ -108,5 +121,4 @@ public class GroundwaterMultiChartPart extends BMultiChartPart {
 
         return pointList;
     }
-
 }

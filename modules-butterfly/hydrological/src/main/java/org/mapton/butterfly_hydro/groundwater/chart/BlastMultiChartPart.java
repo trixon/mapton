@@ -1,0 +1,123 @@
+/*
+ * Copyright 2025 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.mapton.butterfly_hydro.groundwater.chart;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.TreeMap;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import org.mapton.api.MLatLon;
+import org.mapton.butterfly_core.api.BCoordinatrix;
+import org.mapton.butterfly_core.api.BMultiChartPart;
+import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
+import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
+import org.mapton.butterfly_hydro.groundwater.GroundwaterManager;
+import se.trixon.almond.util.DateHelper;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+public abstract class BlastMultiChartPart extends BMultiChartPart {
+
+    private final Predicate<BHydroGroundwaterPoint> mPredicate;
+
+    public BlastMultiChartPart(Predicate<BHydroGroundwaterPoint> predicate) {
+        mPredicate = predicate;
+    }
+
+    @Override
+    public String getAxisLabel() {
+        return "m";
+    }
+
+    @Override
+    public String getCategory() {
+        return BAcousticBlast.class.getName();
+    }
+
+    @Override
+    public String getDecimalPattern() {
+        return "0.0";
+    }
+
+    @Override
+    public BaseManager getManager() {
+        return GroundwaterManager.getInstance();
+    }
+
+    @Override
+    public ArrayList<BHydroGroundwaterPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
+        var pointList = GroundwaterManager.getInstance().getTimeFilteredItems().stream()
+                .filter(mPredicate)
+                .filter(p -> {
+                    try {
+                        if (p.ext().getDateFirst().toLocalDate().isAfter(lastDate)
+                                || p.ext().getDateLatest().toLocalDate().isBefore(firstDate)) {
+                            return false;
+                        }
+                    } catch (Exception e) {
+                        return false;
+                    }
+                    return true;
+                })
+                .filter(p -> {
+                    return latLon.distance(BCoordinatrix.toLatLon(p)) <= LIMIT_DISTANCE_BLAST;
+                }).collect(Collectors.toCollection(ArrayList::new));
+
+        var pointsToExclude = new ArrayList<BHydroGroundwaterPoint>();
+        for (var p : pointList) {
+            var observations = p.ext().getObservationsTimeFiltered().stream()
+                    .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
+                    .filter(o -> o.getGroundwaterLevel() != null)
+                    .map(o -> {
+                        var oo = new BHydroGroundwaterPointObservation();
+                        oo.setDate(o.getDate());
+                        oo.setGroundwaterLevel(o.getGroundwaterLevel());
+//                        oo.ext().setAccuZ(o.ext().getAccuZ());
+                        return oo;
+                    })
+                    .toList();
+
+            if (observations.size() > 1) {
+                var map = new TreeMap<LocalDateTime, Double>();
+//                var firstAccuZ = MathHelper.convertDoubleToDouble(observations.getFirst().ext().getAccuZ());
+                for (var o : observations) {
+//                    var accuZ = MathHelper.convertDoubleToDouble(o.ext().getAccuZ());
+                    var value = o.getGroundwaterLevel() - observations.getFirst().getGroundwaterLevel();
+//                    value = value + firstAccuZ - accuZ;
+                    map.put(o.getDate(), value);
+                }
+                if (Math.abs(map.lastEntry().getValue()) > 0.002) {
+                    p.setValue(BMultiChartPart.class, map);
+                } else {
+                    pointsToExclude.add(p);
+                }
+            } else {
+                pointsToExclude.add(p);
+            }
+        }
+
+        pointList.removeAll(pointsToExclude);
+        sortPointList(pointList);
+
+        return pointList;
+    }
+}

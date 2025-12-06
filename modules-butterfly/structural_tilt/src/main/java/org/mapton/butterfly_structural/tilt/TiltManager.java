@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_structural.tilt;
 
-import org.mapton.butterfly_structural.tilt.chart.TiltChartBuilder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -28,6 +27,7 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPointObservation;
+import org.mapton.butterfly_structural.tilt.chart.TiltChartBuilder;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -110,6 +110,8 @@ public class TiltManager extends BaseManager<BStructuralTiltPoint> {
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
+
+        butterfly.getManipulator().updateMultipleObservationsPerDay(getAllItems());
     }
 
     @Override

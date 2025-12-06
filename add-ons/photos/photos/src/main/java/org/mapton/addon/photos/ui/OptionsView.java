@@ -18,7 +18,6 @@ package org.mapton.addon.photos.ui;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
@@ -112,7 +111,7 @@ public class OptionsView extends BorderPane {
         );
 
         FxHelper.setPadding(
-                new Insets(8, 0, 0, 0),
+                FxHelper.getUIScaledInsets(4, 0, 0, 0),
                 mDrawTrackCheckBox,
                 mDrawGapCheckBox,
                 widthLabel,
@@ -127,7 +126,7 @@ public class OptionsView extends BorderPane {
                 mSplitByNoneRadioButton
         );
 
-        mRoot.setPadding(new Insets(8));
+        mRoot.setPadding(FxHelper.getUIScaledInsets(8));
 
         setCenter(mRoot);
     }

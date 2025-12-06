@@ -63,8 +63,8 @@ public class MultiChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
         var callable = (Callable<ChartPanel>) () -> {
             mDateFirst = LocalDate.now().minusMonths(3);
             mDateLast = LocalDate.now();
-            setTitle(p);
             updateDataset(p);
+            setTitle(p);
             var plot = (XYPlot) mChart.getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
             dateAxis.setRange(DateHelper.convertToDate(mDateFirst), DateHelper.convertToDate(mDateLast));
@@ -117,12 +117,11 @@ public class MultiChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
     public void setTitle(BTopoControlPoint b) {
         mChart.setTitle("%s: %s".formatted(mTitlePrefix, b.getName()));
 
-//        setTitle(p, Color.BLUE);
-        var date = "%s ← (%s) → %s".formatted(mDateFirst, b.ext().getDateLatest().toLocalDate(), mDateLast);
+        var date = "%s → %s".formatted(mDateFirst, mDateLast);
         getLeftSubTextTitle().setText(date);
 
-        var rightTitle = "Z = %.1f".formatted(b.getZeroZ());
-        getRightSubTextTitle().setText(rightTitle);
+//        var rightTitle = "Z = %.1f".formatted(b.getZeroZ());
+//        getRightSubTextTitle().setText(rightTitle);
     }
 
     @Override
@@ -143,6 +142,7 @@ public class MultiChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
         if (map != null) {
             for (var entry : map.entrySet()) {
                 var date = entry.getKey();
+                mDateFirst = DateHelper.getMin(mDateFirst, date.toLocalDate());
                 var z = entry.getValue();
                 var minute = ChartHelper.convertToMinute(date);
                 timeSeries.addOrUpdate(minute, z);

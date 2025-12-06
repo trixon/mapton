@@ -20,7 +20,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -28,15 +27,17 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javax.swing.JFileChooser;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.mapton.addon.photos.api.MapoSource;
 import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.control.FileChooserPane;
+import se.trixon.almond.util.fx.control.FileChooserPaneSwingFx;
 
 /**
  *
@@ -52,7 +53,7 @@ public class SourceView extends VBox {
     private CheckBox mLinksCheckBox;
     private TextField mNameTextField;
     private CheckBox mRecursiveCheckBox;
-    private FileChooserPane mSourceChooser;
+    private FileChooserPaneSwingFx mSourceChooser;
     private Spinner<Integer> mThumbnailBorderSizeSpinner;
     private Spinner<Integer> mThumbnailSizeSpinner;
     private CheckBox mThumnailForceCreation;
@@ -114,7 +115,7 @@ public class SourceView extends VBox {
         mFilePatternField = new TextField();
         mLinksCheckBox = new CheckBox(Dict.FOLLOW_LINKS.toString());
         mRecursiveCheckBox = new CheckBox(Dict.SUBDIRECTORIES.toString());
-        mSourceChooser = new FileChooserPane(Dict.SELECT.toString(), Dict.IMAGE_DIRECTORY.toString(), FileChooserPane.ObjectMode.DIRECTORY, SelectionMode.SINGLE);
+        mSourceChooser = new FileChooserPaneSwingFx(Dict.SELECT.toString(), Dict.IMAGE_DIRECTORY.toString(), Almond.getFrame(), JFileChooser.DIRECTORIES_ONLY);
         mThumnailForceCreation = new CheckBox(mBundle.getString("TabSource.forceThumbnail"));
 
         var nameLabel = new Label(Dict.NAME.toString());

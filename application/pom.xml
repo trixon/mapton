@@ -203,6 +203,12 @@
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-actions-osx</artifactId>
         </dependency>
+        <dependency>
+            <groupId>se.trixon.netbeans-plugin</groupId>
+            <artifactId>netbeans-plugin-guideruler</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>nbm</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -336,9 +342,14 @@
                     <artifactId>butterfly-structural-tilt</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>se.trixon.netbeans</groupId>
-                    <artifactId>guideruler</artifactId>
-                    <version>0.1-SNAPSHOT</version>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-remote</artifactId>
+                    <version>${mapton.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-remote-insar</artifactId>
+                    <version>${mapton.version}</version>
                 </dependency>
             </dependencies>
         </profile>

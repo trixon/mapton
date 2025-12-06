@@ -22,8 +22,6 @@ import gov.nasa.worldwind.render.AbstractShape;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Box;
 import gov.nasa.worldwind.render.Cylinder;
-import gov.nasa.worldwind.render.Ellipsoid;
-import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.RigidShape;
 import gov.nasa.worldwind.render.Wedge;
@@ -157,19 +155,13 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             if (dZ != null) {
                 rise = Math.signum(o.ext().getDeltaZ()) > 0;
             }
-            var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, false);
+            var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, false, false);
 
             var scale = 0.6;
             var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentH / 100.0);
-            var ellipsoid = new Ellipsoid(pos, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale);
-            ellipsoid.setAttributes(attrs);
-            addRenderable(ellipsoid, true, null, sMapObjects);
-            double heightOffset = rise ? +PERCENTAGE_SIZE * scale : -PERCENTAGE_SIZE * scale;
-            pos = WWHelper.positionFromPosition(position, (PERCENTAGE_ALTITUDE * percentH / 100.0) + heightOffset);
-            var pyramid = new Pyramid(pos, PERCENTAGE_SIZE * 0.75, PERCENTAGE_SIZE * 0.75);
-            var a2 = new BasicAirspaceAttributes(attrs);
-            a2.setInteriorMaterial(Material.WHITE);
-            pyramid.setAttributes(a2);
+            var pyramid = new Pyramid(pos, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale);
+            pyramid.setAttributes(attrs);
+            addRenderable(pyramid, true, null, sMapObjects);
             if (!rise) {
                 pyramid.setTilt(Angle.POS180);
             }
@@ -177,7 +169,6 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
                 attrs = new BasicAirspaceAttributes(attrs);
                 attrs.setInteriorOpacity(historicOpacity);
             }
-            addRenderable(pyramid, false, null, null);
 
             var alarm = p.ext().getAlarm(BComponent.HEIGHT);
             var alarmShape = new Cylinder(position, PERCENTAGE_SIZE_ALARM, PERCENTAGE_SIZE_ALARM_HEIGHT, PERCENTAGE_SIZE_ALARM);

@@ -72,6 +72,9 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     private final SessionCheckComboBox<IntenseFreqFlags> mIntenseFrequencyStatSccb;
     private final SessionCheckComboBox<String> mMeasNextSccb;
     private final SessionCheckComboBox<String> mMeasurementModeSccb;
+    private final SessionCheckComboBox<String> mMeasurementModeSubSccb;
+    private final String mMultipleObservatiosPerDay = "Har >1 mätning per dygn";
+    private final String mMultipleObservatiosPerDayNot = "Har inte >1 mätning per dygn";
     private final SessionCheckComboBox<String> mOperatorSccb;
     private final SessionCheckComboBox<String> mOriginSccb;
     private final PointFilterUI mPointFilterUI;
@@ -104,6 +107,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mCategorySccb = new SessionCheckComboBox<>();
         mTagSccb = new SessionCheckComboBox<>();
         mMeasurementModeSccb = new SessionCheckComboBox<>();
+        mMeasurementModeSubSccb = new SessionCheckComboBox<>();
         mPointFilterUI = new PointFilterUI();
         init();
         setContent(mPointFilterUI.getBaseBox());
@@ -136,6 +140,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put(SDict.OPERATOR.toString(), makeInfo(mOperatorSccb.getCheckModel().getCheckedItems()));
         map.put(Dict.ORIGIN.toString(), makeInfo(mOriginSccb.getCheckModel().getCheckedItems()));
         map.put("Mätläge", makeInfo(mMeasurementModeSccb.getCheckModel().getCheckedItems()));
+        map.put("Mätläge sub", makeInfo(mMeasurementModeSubSccb.getCheckModel().getCheckedItems()));
     }
 
     public void disable(PointElement... elements) {
@@ -154,6 +159,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put(FORMULA_SPARSE, mSparseSccb);
         map.put(MEAS_NEXT, mMeasNextSccb);
         map.put(MEAS_MODE, mMeasurementModeSccb);
+        map.put(MEAS_MODE_SUB, mMeasurementModeSubSccb);
         map.put(OPERATOR, mOperatorSccb);
         map.put(ORIGIN, mOriginSccb);
         map.put(STATUS, mStatusSccb);
@@ -187,6 +193,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     && validateCheck(mSparseSccb.getCheckModel(), p.getSparse())
                     && validateCheck(mOriginSccb.getCheckModel(), p.getOrigin())
                     && validateCheckMeasurementMode(mMeasurementModeSccb.getCheckModel(), p.getMeasurementMode())
+                    && validateCheckMeasurementModeSub(mMeasurementModeSubSccb.getCheckModel(), p)
                     && validateNextMeas(p, mMeasNextSccb.getCheckModel(), remainingDays)
                     && validateAltitude(p)
                     && true;
@@ -222,6 +229,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                 mIntenseFrequencySccb.getCheckModel(),
                 mIntenseFrequencyStatSccb.getCheckModel(),
                 mMeasurementModeSccb.getCheckModel(),
+                mMeasurementModeSubSccb.getCheckModel(),
                 mOperatorSccb.getCheckModel(),
                 mOriginSccb.getCheckModel(),
                 mUnitSccb.getCheckModel(),
@@ -264,6 +272,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mIntenseFrequencySccb.loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequencyHigh() != null).map(o -> o.getFrequencyHigh()));
         mMeasNextSccb.loadAndRestoreCheckItems();
         mMeasurementModeSccb.loadAndRestoreCheckItems(Stream.of("Automatisk", "Manuell", "Odefinierad"));
+        mMeasurementModeSubSccb.loadAndRestoreCheckItems(Stream.of(mMultipleObservatiosPerDay, mMultipleObservatiosPerDayNot));
 
         var minZ = items.stream().filter(p -> p.getZeroZ() != null).mapToDouble(p -> p.getZeroZ()).min().orElse(-100d);
         var maxZ = items.stream().filter(p -> p.getZeroZ() != null).mapToDouble(p -> p.getZeroZ()).max().orElse(100d);
@@ -317,6 +326,17 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         return m == BMeasurementMode.AUTOMATIC && checkModel.isChecked("Automatisk")
                 || m == BMeasurementMode.MANUAL && checkModel.isChecked("Manuell")
                 || m == null && checkModel.isChecked("Odefinierad");
+    }
+
+    public boolean validateCheckMeasurementModeSub(IndexedCheckModel checkModel, BXyzPoint p) {
+        if (checkModel.isEmpty()) {
+            return true;
+        }
+
+        boolean hasMultiple = p.extOrNull().isMultipleObservationsPerDay();
+
+        return hasMultiple && checkModel.isChecked(mMultipleObservatiosPerDay)
+                || !hasMultiple && checkModel.isChecked(mMultipleObservatiosPerDayNot);
     }
 
     public boolean validateDefaultFregFlags(BXyzPoint p, IndexedCheckModel checkModel) {
@@ -572,6 +592,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         GROUP,
         MEAS_NEXT,
         MEAS_MODE,
+        MEAS_MODE_SUB,
         OPERATOR,
         ORIGIN,
         STATUS,
@@ -606,6 +627,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mUnitDiffSccb,
                     mMeasNextSccb,
                     mMeasurementModeSccb,
+                    mMeasurementModeSubSccb,
                     mRollingSccb,
                     mSparseSccb,
                     mFrequencySccb,
@@ -655,6 +677,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             sessionManager.register("filter.checkedUnitDiff", mUnitDiffSccb.checkedStringProperty());
             sessionManager.register("filter.measCheckedNextMeas", mMeasNextSccb.checkedStringProperty());
             sessionManager.register("filter.measCheckedMeasMode", mMeasurementModeSccb.checkedStringProperty());
+            sessionManager.register("filter.measCheckedMeasModeSub", mMeasurementModeSubSccb.checkedStringProperty());
             mAltitudeRangeSlider.initSession("altitude", sessionManager);
         }
 
@@ -692,6 +715,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mUnitSccb,
                     mUnitDiffSccb,
                     mMeasurementModeSccb,
+                    mMeasurementModeSubSccb,
                     mFrequencySccb,
                     mDefaultFrequencySccb,
                     mDefaultFrequencyStatSccb,
@@ -726,10 +750,12 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             mIntenseFrequencyStatSccb.setTitle("%s, %s".formatted(Dict.STATUS.toString(), Dict.HIGH.toLower()));
             mIntenseFrequencyStatSccb.getItems().setAll(IntenseFreqFlags.values());
             mMeasurementModeSccb.setTitle("Mätläge");
+            mMeasurementModeSubSccb.setTitle("Mätläge Extra");
             mMeasNextSccb.getItems().setAll(List.of(
                     "<0",
                     "0",
-                    "1-6",
+                    "1-2",
+                    "3-6",
                     "7-14",
                     "15-28",
                     "29-182",
@@ -745,6 +771,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mIntenseFrequencySccb,
                     mAlarmNameSccb,
                     mGroupSccb,
+                    mMeasurementModeSccb,
                     mTagSccb,
                     mOriginSccb,
                     mUnitSccb,
@@ -762,8 +789,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mIntenseFrequencyStatSccb,
                     mAlarmStatSccb,
                     mCategorySccb,
-                    //                    dummyLabel,
-                    mMeasurementModeSccb,
+                    mMeasurementModeSubSccb,
+                    dummyLabel,
                     mOperatorSccb,
                     mUnitDiffSccb,
                     mSparseSccb

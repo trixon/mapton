@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 import org.apache.commons.numbers.core.Precision;
@@ -70,12 +71,15 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends ChartBuilder<T> {
 
+    private static final double sMinDefaultValue = 0.00001d;
+
     protected JFreeChart mChart;
     protected Date mDateEnd;
     protected Date mDateNull;
     protected final MinMaxCollection mMinMaxCollection = new MinMaxCollection();
     private ChartPanel mChartPanel;
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
+    private Date mDefaultDate;
     private TextTitle mLeftSubTextTitle;
     private Integer mRecentDays;
     private Integer mRecentDaysDefault;
@@ -320,7 +324,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         try {
             var dateAxis = (DateAxis) plot.getDomainAxis();
             dateAxis.setAutoRange(true);
-            dateAxis.setRange(dateNull, dateEnd);
+            dateAxis.setRange(getNullSafeDate(dateNull), dateEnd);
         } catch (IllegalArgumentException e) {
             System.out.println("%s: Bad chart plot range".formatted(p.getName()));
         }
@@ -330,7 +334,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         try {
             var dateAxis = (DateAxis) plot.getDomainAxis();
             dateAxis.setAutoRange(true);
-            dateAxis.setRange(dateNull, DateHelper.convertToDate(LocalDate.now().plusDays(1)));
+            dateAxis.setRange(getNullSafeDate(dateNull), DateHelper.convertToDate(LocalDate.now().plusDays(1)));
         } catch (IllegalArgumentException e) {
             System.out.println("%s: Bad chart plot range".formatted(p.getName()));
         }
@@ -346,7 +350,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         var plot = (XYPlot) mChart.getPlot();
         var rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setAutoRange(false);
-        rangeAxis.setRange(mMinMaxCollection.getMin() * margin, mMinMaxCollection.getMax() * margin);
+        rangeAxis.setRange(getMinMaxMin() * margin, getMinMaxMax() * margin);
     }
 
     public void setRange() {
@@ -439,6 +443,32 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         var compositeTitle = new CompositeTitle(blockContainer);
         compositeTitle.setPadding(new RectangleInsets(0, 20, 0, 20));
         mChart.addSubtitle(compositeTitle);
+    }
+
+    private double getMinMaxMax() {
+        return Math.max(sMinDefaultValue, mMinMaxCollection.getMax());
+    }
+
+    private double getMinMaxMin() {
+        if (mMinMaxCollection.getMax() == sMinDefaultValue && mMinMaxCollection.getMin() == 0d) {
+            return -sMinDefaultValue;
+        } else {
+            return mMinMaxCollection.getMin();
+        }
+
+    }
+
+    private Date getNullSafeDate(Date date) {
+        if (date == null) {
+            if (mDefaultDate == null) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(2000, Calendar.JANUARY, 1);
+                mDefaultDate = calendar.getTime();
+            }
+            return mDefaultDate;
+        } else {
+            return date;
+        }
     }
 
 }

@@ -63,7 +63,7 @@ public class BackgroundImageLayerBundle extends LayerBundle {
     private void init() {
         mLayer.setName(Dict.BACKGROUND_IMAGE.toString());
         setCategorySystem(mLayer);
-        setName(Dict.IMAGE.toString());
+        setName(Dict.BACKGROUND_IMAGE.toString());
         mLayer.setEnabled(true);
         mLayer.setPickEnabled(false);
         setParentLayer(mLayer);

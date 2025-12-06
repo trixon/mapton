@@ -280,6 +280,7 @@ public class ButterflyManager {
 
         calculateLatLons(butterfly.noise().getVibrationPoints());
         calculateLatLons(butterfly.geotechnical().getExtensometers());
+        calculateLatLons(butterfly.remote().getInsarPoints());
     }
 
     private void calculateLatLonsTmo(ArrayList<? extends BBasObjekt> baseControlPoints) {

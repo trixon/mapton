@@ -194,7 +194,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
 
             var dateAxis = (DateAxis) plot.getDomainAxis();
             var now = LocalDate.now();
-            var nowAsDate = DateHelper.convertToDate(now);
+            var nowAsDate = DateHelper.convertToDate(now.plusDays(1));
 
             if (mCompleteView) {
                 dateAxis.setRange(DateHelper.convertToDate(p.ext().getDateFirst()), nowAsDate);

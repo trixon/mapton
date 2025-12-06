@@ -37,6 +37,7 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -70,7 +71,7 @@ public class ActLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_ActAction(), "", "ActTopComponent");
+        initCommons(Bundle.CTL_ActAction(), Dict.MISCELLANEOUS.toString(), "ActTopComponent");
 
         mLabelLayer.setEnabled(true);
         mLayer.setMaxActiveAltitude(6000);

@@ -270,7 +270,7 @@
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>3.8.0</version>
+            <version>3.8.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -292,7 +292,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>jdktools</artifactId>
-            <version>21.0.21</version>
+            <version>21.0.25</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -303,7 +303,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolbox</artifactId>
-            <version>21.0.25</version>
+            <version>21.0.27</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>

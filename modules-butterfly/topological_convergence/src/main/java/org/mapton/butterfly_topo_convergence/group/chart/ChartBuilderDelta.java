@@ -80,7 +80,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         mDateNull = DateHelper.convertToDate(p.getDateZero());
         var dateAxis = (DateAxis) plot.getDomainAxis();
         var now = LocalDate.now();
-        var nowAsDate = DateHelper.convertToDate(now);
+        var nowAsDate = DateHelper.convertToDate(now.plusDays(1));
         if (isCompleteView()) {
             dateAxis.setRange(DateHelper.convertToDate(p.getDateZero()), nowAsDate);
             setRange(1.05, 1000, p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));

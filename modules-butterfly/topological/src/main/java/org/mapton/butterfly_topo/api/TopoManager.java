@@ -172,6 +172,8 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             Exceptions.printStackTrace(e);
         }
 
+        butterfly.getManipulator().updateMultipleObservationsPerDay(getAllItems());
+
 //        for (var p : butterfly.topo().getControlPoints()) {
 //            try {
 //                populateTrends(p);

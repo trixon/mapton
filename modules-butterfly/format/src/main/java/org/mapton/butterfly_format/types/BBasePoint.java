@@ -71,6 +71,7 @@ public abstract class BBasePoint extends BBase {
 
         private LocalDateTime mDateFirst;
         private LocalDateTime mDateLatest;
+        private transient boolean mMultipleObservationsPerDay = true;
         private transient LinkedHashMap<String, Integer> measuremenCountStats = new LinkedHashMap<>();
         private transient ArrayList<T> observationsAllCalculated;
         private transient ArrayList<T> observationsAllRaw;
@@ -232,6 +233,10 @@ public abstract class BBasePoint extends BBase {
             return storedZeroDateTime;
         }
 
+        public boolean isMultipleObservationsPerDay() {
+            return mMultipleObservationsPerDay;
+        }
+
         public boolean isZeroUnset() {
             return zeroUnset;
         }
@@ -246,6 +251,10 @@ public abstract class BBasePoint extends BBase {
 
         public void setMeasurementCountStats(LinkedHashMap<String, Integer> measuremenCountStats) {
             this.measuremenCountStats = measuremenCountStats;
+        }
+
+        public void setMultipleObservationsPerDay(boolean multipleObservationsPerDay) {
+            this.mMultipleObservationsPerDay = multipleObservationsPerDay;
         }
 
         public void setObservationsAllCalculated(ArrayList<T> observationsCalculated) {

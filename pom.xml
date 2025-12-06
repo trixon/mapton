@@ -256,6 +256,16 @@
                 <artifactId>butterfly-structural-tilt</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-remote</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-remote-insar</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
 
             <!-- Trixon -->
             <dependency>
@@ -379,6 +389,6 @@
         <jackson.version>2.20.1</jackson.version>
         <brandingToken>mapton</brandingToken>
         <mapton.version>25.10x</mapton.version>
-        <geotools.version>34.0</geotools.version>
+        <geotools.version>34.1</geotools.version>
     </properties>
 </project>

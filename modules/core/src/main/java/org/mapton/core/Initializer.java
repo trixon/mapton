@@ -86,6 +86,10 @@ public class Initializer implements Runnable {
 
             preferences = NbPreferences.root().node("org/netbeans/swing/laf/flatlaf");
             PrefsHelper.putIfAbsent(preferences, "accentColor", brandingAccent);
+
+            //Disable auto open of favorites window
+            preferences = NbPreferences.root().node("org/netbeans/modules/favorites");
+            preferences.put("initial-open-done", "true");
         } catch (BackingStoreException ex) {
             //Exceptions.printStackTrace(ex);
         }
