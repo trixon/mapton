@@ -35,6 +35,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.math3.util.FastMath;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.operation.TransformException;
@@ -43,6 +44,7 @@ import org.locationtech.jts.io.WKTReader;
 import org.mapton.api.MArea;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MCooTrans;
+import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.api.MSearchProviderManager;
 import org.mapton.api.Mapton;
@@ -112,6 +114,20 @@ public class ButterflyManager {
                 var wgs84 = getCooTrans().toWgs84(y, x);
                 cp.setLat(MathHelper.round(wgs84.getY(), 6));
                 cp.setLon(MathHelper.round(wgs84.getX(), 6));
+                cp.setValue("MLATLON", new MLatLon(wgs84.getY(), wgs84.getX()));
+            }
+        }
+    }
+
+    public void calculateLatLonsTmo(ArrayList<? extends BBasObjekt> baseControlPoints) {
+        for (var cp : baseControlPoints) {
+            var x = cp.getX();
+            var y = cp.getY();
+
+            if (ObjectUtils.allNotNull(x, y)) {
+                var wgs84 = getCooTrans().toWgs84(y, x);
+                cp.setLat(MathHelper.round(wgs84.getY(), 6));
+                cp.setLon(MathHelper.round(wgs84.getX(), 6));
             }
         }
     }
@@ -150,6 +166,10 @@ public class ButterflyManager {
         }
     }
 
+    public File getSource() {
+        return mSource;
+    }
+
     public synchronized void load(File file) {
         mButterflyMonitor.stop();
         var taskName = Dict.OPENING_S.toString().formatted("Butterfly");
@@ -161,9 +181,9 @@ public class ButterflyManager {
             mSource = file;
             var ext = FilenameUtils.getExtension(file.getName());
             BundleMode bundleMode;
-            if (StringUtils.equalsIgnoreCase(ext, "bfl")) {
+            if (Strings.CI.equals(ext, "bfl")) {
                 bundleMode = BundleMode.DIR;
-            } else if (StringUtils.equalsIgnoreCase(ext, "bfz")) {
+            } else if (Strings.CI.equals(ext, "bfz")) {
                 bundleMode = BundleMode.ZIP;
             } else {
                 System.out.println("ButterflyManager: Invalid Butterfly file. Cancelling load.");
@@ -280,20 +300,6 @@ public class ButterflyManager {
 
         calculateLatLons(butterfly.noise().getVibrationPoints());
         calculateLatLons(butterfly.geotechnical().getExtensometers());
-        calculateLatLons(butterfly.remote().getInsarPoints());
-    }
-
-    private void calculateLatLonsTmo(ArrayList<? extends BBasObjekt> baseControlPoints) {
-        for (var cp : baseControlPoints) {
-            var x = cp.getX();
-            var y = cp.getY();
-
-            if (ObjectUtils.allNotNull(x, y)) {
-                var wgs84 = getCooTrans().toWgs84(y, x);
-                cp.setLat(MathHelper.round(wgs84.getY(), 6));
-                cp.setLon(MathHelper.round(wgs84.getX(), 6));
-            }
-        }
     }
 
     private void createBufferedArea(BAreaBase area) throws ParseException, MismatchedDimensionException, TransformException {
