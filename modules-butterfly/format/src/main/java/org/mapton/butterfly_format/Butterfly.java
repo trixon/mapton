@@ -579,6 +579,13 @@ public class Butterfly {
                     p.setOrigin(defaults.getString("ORIGIN"));
                     p.setOperator(defaults.getString("OPERATOR"));
                     p.setAlarm1Id(defaults.getString("ALARM_H"));
+                    var cat = p.getCategory();
+                    var catB = defaults.getString("CAT_B", cat);
+                    var catG = defaults.getString("CAT_G", cat);
+                    cat = StringUtils.replaceEach(cat,
+                            new String[]{"B", "G"},
+                            new String[]{catB, catG});
+                    p.setCategory(cat);
                 }
             }
         }
