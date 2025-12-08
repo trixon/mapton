@@ -18,6 +18,7 @@ package org.mapton.butterfly_remote.insar;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import java.awt.Color;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 
@@ -30,6 +31,7 @@ public class InsarAttributeManager extends BaseAttributeManager {
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mInsarAttribute;
     private BasicShapeAttributes mSurfaceAttributes;
+    private ColorBy mColorBy;
 
     public static InsarAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -47,6 +49,50 @@ public class InsarAttributeManager extends BaseAttributeManager {
         }
 
         return mComponentEllipsoidAttributes;
+    }
+
+    public ColorBy getColorBy() {
+        return mColorBy;
+    }
+
+    private Color getColor(BRemoteInsarPoint p) {
+        return Color.MAGENTA;
+//        switch (mColorBy) {
+//            case STYLE -> {
+//                if (mTopoConfig == null) {
+//                    //TODO Make proper fix
+//                    mTopoConfig = new TopoConfig();
+//                }
+//                return mTopoConfig.getColor(p);
+//            }
+//            case FREQUENCY -> {
+//                return getColorForFrequency(p);
+//            }
+//            case MEAS_NEED -> {
+//                return getColorForMeasNeed(p);
+//            }
+//            case ORIGIN -> {
+//                return getColorForOrigin(p);
+//            }
+//            case CLASSIFICATION -> {
+//                return getColorForClassification(p);
+//            }
+//            case VERTICAL_DIRECTION -> {
+//                return getColorForVerticalDirection(p);
+//            }
+//            default ->
+//                throw new AssertionError();
+//        }
+    }
+
+    public BasicShapeAttributes getSymbolAttributes(BRemoteInsarPoint p) {
+        var attrs = getAlarmInteriorAttributes(InsarHelper.getAlarmLevel(p));
+        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
+            attrs = new BasicShapeAttributes(attrs);
+            attrs.setInteriorMaterial(new Material(getColor(p)));
+        }
+
+        return attrs;
     }
 
     public BasicShapeAttributes getInsarAttribute() {

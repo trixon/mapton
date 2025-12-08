@@ -81,7 +81,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
     @Override
     public void setFilterSection(BFilterSectionDisruptor filterSection) {
         mFilterSectionDisruptor = filterSection;
-        mFilterSectionDisruptor.initListeners(mChangeListenerObject, mListChangeListener);
+        // mFilterSectionDisruptor.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override

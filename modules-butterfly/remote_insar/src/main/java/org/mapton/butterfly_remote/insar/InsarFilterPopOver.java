@@ -57,7 +57,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         createUI();
         initListeners();
         initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
-
+        mManager.setFilterPopoverPopulateRunnable(() -> populate());
         populate();
     }
 

@@ -17,12 +17,14 @@ package org.mapton.butterfly_remote.insar;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
+import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.airspaces.Polygon;
 import java.util.ArrayList;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
@@ -42,7 +44,7 @@ import se.trixon.almond.nbp.Almond;
 public class InsarLayerBundle extends BfLayerBundle {
 
     private final double SYMBOL_HEIGHT = .1;
-    private final double SYMBOL_RADIUS = 0.5;
+    private final double SYMBOL_RADIUS = 1.5;
 
     private final InsarAttributeManager mAttributeManager = InsarAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
@@ -184,19 +186,28 @@ public class InsarLayerBundle extends BfLayerBundle {
 
     private ArrayList<AVListImpl> plotSymbol(BRemoteInsarPoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
-        var cylinder = new Cylinder(position, SYMBOL_HEIGHT, SYMBOL_RADIUS);
-        var attrs = mAttributeManager.getSurfaceAttributes();
-//        var attrs = mAttributeManager.getAlarmInteriorAttributes(InsarHelper.getAlarmLevel(p));
-
-        cylinder.setAttributes(attrs);
-        mapObjects.add(cylinder);
-        mSymbolLayer.addRenderable(cylinder);
+        var attrs = mAttributeManager.getSymbolAttributes(p);
+        var group = p.getGroup();
+        var polygon = new Polygon();
+        ArrayList<LatLon> nodes;
+        if (Strings.CI.equals(group, "ascending")) {
+            nodes = WWHelper.createNodes(position, SYMBOL_RADIUS, 3);
+        } else if (Strings.CI.equals(group, "descending")) {
+            nodes = WWHelper.createNodes(position, SYMBOL_RADIUS, 3, 180);
+        } else {
+            nodes = WWHelper.createNodes(position, SYMBOL_RADIUS, 6);
+        }
+        polygon.setLocations(nodes);
+        polygon.setAltitudes(0, SYMBOL_HEIGHT);
+        polygon.setAttributes(attrs);
+        mapObjects.add(polygon);
+        mSymbolLayer.addRenderable(polygon);
 
         if (labelPlacemark != null) {
-            cylinder.setValue(WWHelper.KEY_RUNNABLE_HOOVER_ON, (Runnable) () -> {
+            polygon.setValue(WWHelper.KEY_RUNNABLE_HOOVER_ON, (Runnable) () -> {
                 labelPlacemark.setHighlighted(true);
             });
-            cylinder.setValue(WWHelper.KEY_RUNNABLE_HOOVER_OFF, (Runnable) () -> {
+            polygon.setValue(WWHelper.KEY_RUNNABLE_HOOVER_OFF, (Runnable) () -> {
                 labelPlacemark.setHighlighted(false);
             });
         }
