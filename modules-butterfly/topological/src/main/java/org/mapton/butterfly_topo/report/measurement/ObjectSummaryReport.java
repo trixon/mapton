@@ -16,8 +16,6 @@
 package org.mapton.butterfly_topo.report.measurement;
 
 import static j2html.TagCreator.body;
-import static j2html.TagCreator.h1;
-import static j2html.TagCreator.hr;
 import static j2html.TagCreator.html;
 import static j2html.TagCreator.pre;
 import j2html.tags.ContainerTag;
@@ -109,9 +107,10 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
         });
 
         Consumer<BTopoControlPoint> topListConsumer = p -> {
+
             var delta = p.getDimension() == BDimension._1d
-                    ? p.ext().deltaZero().getDelta1(3)
-                    : p.ext().deltaZero().getDelta(3);
+                    ? p.ext().deltaZero().getDelta1(0, 1000, true)
+                    : p.ext().deltaZero().getDelta1d2d(0, 1000);
             addRow(rows,
                     "",
                     p.getName(),
@@ -120,7 +119,7 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
             );
         };
 
-        addRow(rows, "Grupp/objekt");
+//        addRow(rows, "Grupp/objekt");
         addRow(rows, "Rapportdatum", LocalDate.now().toString());
         if (!dates.isEmpty()) {
             addRow(rows, "Senaste mätning", dates.getLast().toString());
@@ -134,7 +133,7 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
                 map.get("antalPrismor"),
                 map.getOrDefault("antalDubbar", 0) + map.getOrDefault("antalPrismor", 0)
         );
-        addBlankRow(rows);
+//        addBlankRow(rows);
         addRow(rows, "På larmnivå");
         for (var val : List.of(0, 1, 2)) {
             var s = String.valueOf(val);
@@ -146,7 +145,7 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
                     map.getOrDefault(hKey, 0) + map.getOrDefault(pKey, 0)
             );
         }
-        addBlankRow(rows);
+//        addBlankRow(rows);
 
         addRow(rows, "Ålder upp till");
         for (var val : List.of(1, 4, 26, 52)) {
@@ -189,8 +188,6 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
 
         var html = html(
                 body(
-                        h1(mName),
-                        hr(),
                         pre(sb.toString())
                 )
         );
