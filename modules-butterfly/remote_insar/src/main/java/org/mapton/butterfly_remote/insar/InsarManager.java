@@ -20,9 +20,11 @@ import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
@@ -31,9 +33,13 @@ import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MTemporalRange;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_core.api.ButterflyManager;
+import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.BTrendPeriod;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPointObservation;
 import org.mapton.butterfly_remote.insar.chart.ChartAggregate;
@@ -58,6 +64,7 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
     private Runnable mFilterPopoverPopulateRunnable;
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
     private final InsarPropertiesBuilder mPropertiesBuilder = new InsarPropertiesBuilder();
+    private final InsarTrendsBuilder mTrendsBuilder = new InsarTrendsBuilder();
 
     public static InsarManager getInstance() {
         return Holder.INSTANCE;
@@ -84,6 +91,11 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
     @Override
     public Object getObjectProperties(BRemoteInsarPoint selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
+    }
+
+    @Override
+    public Object getObjectTrends(BRemoteInsarPoint selectedObject) {
+        return mTrendsBuilder.build(selectedObject);
     }
 
     @Override
@@ -164,8 +176,17 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
 //            FxHelper.runLater(() -> {
 //            });
 //        });
-        setItemsTimeFiltered(timeFilteredItems);
+        if (mTrendLoadCounter++ < 3) {
+            for (var p : timeFilteredItems) {
+                try {
+                    populateTrends(p);
+                } catch (Exception e) {
+                    //System.err.println(e);
+                }
+            }
+        }
 
+        setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override
@@ -242,6 +263,34 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
 
         SystemHelper.runLaterDelayed(1000, task);
 //        Thread.ofVirtual().start(task);
+    }
+
+    private void populateTrend(BRemoteInsarPoint p, BTrendPeriod period, LocalDateTime startDate, LocalDateTime endDate) {
+        populateTrend(p, BKey.TRENDS_H, period, startDate, endDate, o -> o.ext().getDelta1d());
+    }
+
+    private void populateTrend(BRemoteInsarPoint p, String mode, BTrendPeriod period, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function) {
+        var trend = TrendHelper.createTrend(p, true, startDate, endDate, function);
+        HashMap<BTrendPeriod, TrendHelper.Trend> map = (HashMap<BTrendPeriod, TrendHelper.Trend>) p.getValue(mode, new HashMap<>());
+        map.put(period, trend);
+        p.setValue(mode, map);
+    }
+
+    private void populateTrends(BRemoteInsarPoint p) {
+        var startDateFirst = p.ext().getDateFirst();
+        var startDateZero = p.getDateZero().atStartOfDay();
+        var endDate = p.ext().getDateLatest();
+        var startDateMinus6m = endDate.minusMonths(6);
+        var startDateMinus3m = endDate.minusMonths(3);
+        var startDateMinus1m = endDate.minusMonths(1);
+        var startDateMinus1w = endDate.minusWeeks(1);
+
+        populateTrend(p, BTrendPeriod.FIRST, startDateFirst, endDate);
+        populateTrend(p, BTrendPeriod.ZERO, startDateZero, endDate);
+        populateTrend(p, BTrendPeriod.HALF_YEAR, startDateMinus6m, endDate);
+        populateTrend(p, BTrendPeriod.QUARTER, startDateMinus3m, endDate);
+        populateTrend(p, BTrendPeriod.MONTH, startDateMinus1m, endDate);
+        populateTrend(p, BTrendPeriod.WEEK, startDateMinus1w, endDate);
     }
 
     @ServiceProvider(service = MDisruptorProvider.class)

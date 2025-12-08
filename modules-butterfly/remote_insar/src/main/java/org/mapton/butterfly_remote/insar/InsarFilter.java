@@ -29,6 +29,8 @@ import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
+import org.mapton.butterfly_core.api.BFilterSectionTrend;
+import org.mapton.butterfly_core.api.BFilterSectionTrendProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
@@ -41,12 +43,14 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
+        BFilterSectionTrendProvider,
         BFilterSectionDisruptorProvider {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(InsarFilter.class);
     private BFilterSectionDate mFilterSectionDate;
     private BFilterSectionDisruptor mFilterSectionDisruptor;
     private BFilterSectionPoint mFilterSectionPoint;
+    private BFilterSectionTrend mFilterSectionTrend;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final InsarManager mManager = InsarManager.getInstance();
 
@@ -64,6 +68,12 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
     @Override
     public SimpleBooleanProperty invertProperty() {
         return mInvertProperty;
+    }
+
+    @Override
+    public void setFilterSection(BFilterSectionTrend filterSection) {
+        mFilterSectionTrend = filterSection;
+        mFilterSectionTrend.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
@@ -94,6 +104,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
+                .filter(p -> mFilterSectionTrend.filter(p))
                 .toList();
 
         if (mInvertProperty.get()) {
@@ -114,6 +125,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         mFilterSectionPoint.createInfoContent(map);
         mFilterSectionDate.createInfoContent(map);
         mFilterSectionDisruptor.createInfoContent(map);
+        mFilterSectionTrend.createInfoContent(map);
 
         return createHtmlFilterInfo(map);
     }

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Strings;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
@@ -73,7 +74,7 @@ public class InsarLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_InsarAction(), RemoteHelper.CAT_REMOTE, "InsarTopComponent");
+        initCommons(Mapton.addWarning(Bundle.CTL_InsarAction(), 3), RemoteHelper.CAT_REMOTE, "InsarTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);

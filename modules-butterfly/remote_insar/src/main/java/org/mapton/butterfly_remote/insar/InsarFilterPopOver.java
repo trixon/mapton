@@ -23,8 +23,10 @@ import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BFilterSectionTrend;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
@@ -40,6 +42,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
     private final BFilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
+    private final BFilterSectionTrend<BRemoteInsarPoint> mFilterSectionTrend;
     private final InsarManager mManager = InsarManager.getInstance();
 
     public InsarFilterPopOver(InsarFilter filter) {
@@ -47,11 +50,13 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMisc = new BFilterSectionMisc();
+        mFilterSectionTrend = new BFilterSectionTrend<>();
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
         mFilter.setFilterSection(mFilterSectionDisruptor);
+        mFilter.setFilterSection(mFilterSectionTrend);
 
         setFilter(filter);
         createUI();
@@ -70,6 +75,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
         mFilterSectionMisc.clear();
+        mFilterSectionTrend.clear();
     }
 
     @Override
@@ -93,6 +99,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDisruptor.load();
         mFilterSectionDate.load(mManager.getTemporalRange());
         mFilterSectionMisc.load();
+        mFilterSectionTrend.load();
     }
 
     @Override
@@ -125,7 +132,8 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),
                 mFilterSectionDate.getTab(),
-                mFilterSectionDisruptor.getTab()
+                mFilterSectionDisruptor.getTab(),
+                mFilterSectionTrend.getTab()
         );
 
         setContentNode(root);
@@ -148,6 +156,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
+        mFilterSectionTrend.initSession(sessionManager);
 
         sessionManager.register("filter.measPoint.freeText", mFilter.freeTextProperty());
 
