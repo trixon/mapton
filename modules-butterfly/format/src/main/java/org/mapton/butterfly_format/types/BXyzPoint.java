@@ -740,7 +740,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                     case _1d ->
                         getDelta1(decimals, factor, true);
                     case _2d ->
-                        getDelta2(decimals, factor, true);
+                        getDelta2(decimals, factor, false);
                     default ->
                         StringHelper.joinNonNulls(", ",
                         getDelta1(decimals, factor, true),
