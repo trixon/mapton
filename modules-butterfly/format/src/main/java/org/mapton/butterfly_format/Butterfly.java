@@ -17,6 +17,7 @@ package org.mapton.butterfly_format;
 
 import internal.org.mapton.butterfly_format.monmon.MonmonConfig;
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,6 +55,7 @@ import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation
 import org.mapton.butterfly_format.types.monmon.BMonmon;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPointObservation;
+import org.mapton.butterfly_format.types.remote.RemoteInsarPointDefaultsConfig;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
@@ -88,10 +90,7 @@ public class Butterfly {
     private final ArrayList<BAcousticBlast> mBlasts = new ArrayList<>();
     private final ArrayList<BCoordinate> mCoordinates = new ArrayList<>();
     private final Dev mDev = new Dev();
-    private final Remote mRemote = new Remote();
     private final ArrayList<BGeoExtensometer> mGeoExtensometers = new ArrayList<>();
-    private final ArrayList<BRemoteInsarPoint> mRemoteInsarPoints = new ArrayList<>();
-    private final ArrayList<BRemoteInsarPointObservation> mRemoteInsarPointsObservations = new ArrayList<>();
     private final ArrayList<BGeoExtensometerPoint> mGeoExtensometersPoints = new ArrayList<>();
     private final ArrayList<BGeoExtensometerPointObservation> mGeoExtensometersPointsObservations = new ArrayList<>();
     private final ArrayList<BGeoInclinometerPoint> mGeoInclinometerPoints = new ArrayList<>();
@@ -104,6 +103,10 @@ public class Butterfly {
     private final ButterflyManipulator mManipulator = new ButterflyManipulator();
     private final ArrayList<BMonmon> mMonmons = new ArrayList<>();
     private final Noise mNoise = new Noise();
+    private final Remote mRemote = new Remote();
+    private final ArrayList<BRemoteInsarPoint> mRemoteInsarPoints = new ArrayList<>();
+    private final ArrayList<BRemoteInsarPointObservation> mRemoteInsarPointsObservations = new ArrayList<>();
+    private File mSourceDir;
     private final Structural mStructural = new Structural();
     private final ArrayList<BStructuralCrackPoint> mStructuralCrackPoints = new ArrayList<>();
     private final ArrayList<BStructuralCrackPointObservation> mStructuralCrackPointsObservations = new ArrayList<>();
@@ -166,16 +169,27 @@ public class Butterfly {
         return mMonmons;
     }
 
-    public Remote remote() {
-        return mRemote;
-    }
-
     public Hydro hydro() {
         return mHydro;
     }
 
+    public void loadManual() {
+        //Remote
+        new ImportFromCsv<BRemoteInsarPoint>(BRemoteInsarPoint.class) {
+        }.load(mSourceDir, "remoteInsarPoints.csv", mRemoteInsarPoints);
+
+        new ImportFromCsv<BRemoteInsarPointObservation>(BRemoteInsarPointObservation.class) {
+        }.load(mSourceDir, "remoteInsarPointsObservations.csv", mRemoteInsarPointsObservations);
+
+        postLoadManual();
+    }
+
     public Noise noise() {
         return mNoise;
+    }
+
+    public Remote remote() {
+        return mRemote;
     }
 
     public Structural structural() {
@@ -195,6 +209,7 @@ public class Butterfly {
     }
 
     void load(File sourceDir) {
+        mSourceDir = sourceDir;
         new ImportFromCsv<BCoordinate>(BCoordinate.class) {
         }.load(sourceDir, "coordinates.csv", mCoordinates);
 
@@ -309,13 +324,6 @@ public class Butterfly {
         new ImportFromCsv<BGeoInclinometerPointObservationPre>(BGeoInclinometerPointObservationPre.class) {
         }.load(sourceDir, "geoInclinometerPointsObservations.csv", mGeoInclinometerPointsObservationsPre);
 
-        //Remote
-        new ImportFromCsv<BRemoteInsarPoint>(BRemoteInsarPoint.class) {
-        }.load(sourceDir, "remoteInsarPoints.csv", mRemoteInsarPoints);
-
-        new ImportFromCsv<BRemoteInsarPointObservation>(BRemoteInsarPointObservation.class) {
-        }.load(sourceDir, "remoteInsarPointsObservations.csv", mRemoteInsarPointsObservations);
-
         //System
         new ImportFromCsv<BSystemSearchProvider>(BSystemSearchProvider.class) {
         }.load(sourceDir, "systemSearchProviders.csv", mSystemSearchProviders);
@@ -334,8 +342,7 @@ public class Butterfly {
                 mTopoConvergenceGroups,
                 mTopoControlPoints,
                 mGeoExtensometers,
-                mGeoInclinometerPoints,
-                mRemoteInsarPoints
+                mGeoInclinometerPoints
         ).forEach(items -> items.forEach(item -> item.setButterfly(this)));
 
         for (var a : mAlarms) {
@@ -368,12 +375,20 @@ public class Butterfly {
         structural().postLoad();
         topo().postLoad();
         geotechnical().postLoad();
-        remote().postLoad();
+
         try {
             populateMonmon();
         } catch (Exception e) {
 //            System.err.println(e.getMessage());
         }
+    }
+
+    void postLoadManual() {
+        List.of(
+                mRemoteInsarPoints
+        ).forEach(items -> items.forEach(item -> item.setButterfly(this)));
+
+        remote().postLoad();
     }
 
     private void calcFreqHighBuffer(BXyzPoint p) {
@@ -482,44 +497,6 @@ public class Butterfly {
         }
     }
 
-    public class Remote {
-
-        private final HashMap<String, BRemoteInsarPoint> mNameToInsarPoint = new HashMap<>();
-
-        public ArrayList<BRemoteInsarPoint> getInsarPoints() {
-            return mRemoteInsarPoints;
-        }
-
-        public ArrayList<BRemoteInsarPointObservation> getInsarPointsObservations() {
-            return mRemoteInsarPointsObservations;
-        }
-
-        public BRemoteInsarPoint getInsarPointByName(String name) {
-            return mNameToInsarPoint.get(name);
-        }
-
-        private void postLoad() {
-            mNameToInsarPoint.clear();
-            var groupMap = new HashMap<String, String>();
-            groupMap.put("asc", "Ascending");
-            groupMap.put("desc", "Descending");
-
-            for (var p : mRemoteInsarPoints) {
-                mNameToInsarPoint.put(p.getName(), p);
-                p.setDimension(BDimension._1d);
-                p.setMeasurementMode(BMeasurementMode.AUTOMATIC);
-                p.setFrequency(14);
-                p.setFrequencyDefault(14);
-                p.setFrequencyHigh(14);
-                p.setNumOfDecXY(1);
-                p.setNumOfDecZ(4);
-                p.setUnit("m");
-                p.setUnitDiff("mm");
-                p.setGroup(groupMap.computeIfAbsent(p.getGroup(), s -> s));
-            }
-        }
-    }
-
     public class Hydro {
 
         public ArrayList<BHydroGroundwaterPoint> getGroundwaterPoints() {
@@ -552,6 +529,58 @@ public class Butterfly {
 
         public ArrayList<BAcousticVibrationPoint> getVibrationPoints() {
             return mVibrationPoints;
+        }
+    }
+
+    public class Remote {
+
+        private final HashMap<String, BRemoteInsarPoint> mNameToInsarPoint = new HashMap<>();
+
+        public ArrayList<BRemoteInsarPoint> getInsarPoints() {
+            return mRemoteInsarPoints;
+        }
+
+        public ArrayList<BRemoteInsarPointObservation> getInsarPointsObservations() {
+            return mRemoteInsarPointsObservations;
+        }
+
+        public BRemoteInsarPoint getInsarPointByName(String name) {
+            return mNameToInsarPoint.get(name);
+        }
+
+        public HashMap<String, BRemoteInsarPoint> getNameToInsarPoint() {
+            return mNameToInsarPoint;
+        }
+
+        private void postLoad() {
+            mNameToInsarPoint.clear();
+            var groupMap = new HashMap<String, String>();
+            groupMap.put("asc", "Ascending");
+            groupMap.put("desc", "Descending");
+            var now = LocalDateTime.now();
+            var defaults = RemoteInsarPointDefaultsConfig.getInstance().getConfig();
+            for (var p : mRemoteInsarPoints) {
+                mNameToInsarPoint.put(p.getName(), p);
+                p.setDimension(BDimension._1d);
+                p.setMeasurementMode(BMeasurementMode.AUTOMATIC);
+                p.setFrequency(14);
+                p.setFrequencyDefault(14);
+                p.setFrequencyHigh(14);
+                p.setNumOfDecXY(1);
+                p.setNumOfDecZ(4);
+                p.setUnit("m");
+                p.setUnitDiff("mm");
+                p.setGroup(groupMap.computeIfAbsent(p.getGroup(), s -> s));
+                p.setDateCreated(now);
+                p.setDateChanged(now);
+                p.setVisible(true);
+                if (defaults != null) {
+                    p.setStatus(defaults.getString("STATUS"));
+                    p.setOrigin(defaults.getString("ORIGIN"));
+                    p.setOperator(defaults.getString("OPERATOR"));
+                    p.setAlarm1Id(defaults.getString("ALARM_H"));
+                }
+            }
         }
     }
 

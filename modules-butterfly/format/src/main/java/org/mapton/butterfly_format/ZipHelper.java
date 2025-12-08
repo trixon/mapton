@@ -59,7 +59,11 @@ public class ZipHelper {
                 var file = File.createTempFile("butterfly", "bfz");
                 FileUtils.copyInputStreamToFile(is, file);
                 file.deleteOnExit();
-
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    Exceptions.printStackTrace(e);
+                }
                 return file;
             } catch (IOException ex) {
                 System.out.println("ZIP: Failed to extract content: " + path);
