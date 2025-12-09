@@ -15,13 +15,13 @@
  */
 package org.mapton.butterfly_remote.insar;
 
-import org.mapton.butterfly_remote.insar.graphics.GraphicItem;
 import java.util.stream.Stream;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BOptionsView;
 import org.mapton.butterfly_core.api.LabelBy;
+import org.mapton.butterfly_remote.insar.graphics.GraphicItem;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
@@ -33,8 +33,8 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public class InsarOptionsView extends BOptionsView {
 
-    private static final InsarLabelBy DEFAULT_LABEL_BY = InsarLabelBy.NAME;
-    private static final InsarPointBy DEFAULT_POINT_BY = InsarPointBy.PIN;
+    private static final InsarLabelBy DEFAULT_LABEL_BY = InsarLabelBy.NONE;
+    private static final InsarPointBy DEFAULT_POINT_BY = InsarPointBy.SYMBOL;
 
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SessionComboBox<InsarPointBy> mPointScb = new SessionComboBox<>();

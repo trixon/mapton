@@ -257,7 +257,9 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
                     Exceptions.printStackTrace(e);
                 }
             });
-            mFilterPopoverPopulateRunnable.run();
+            if (mFilterPopoverPopulateRunnable != null) {
+                mFilterPopoverPopulateRunnable.run();
+            }
             SystemHelper.runGcDelayed(50);
         };
 
