@@ -65,7 +65,12 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BRemoteInsarPoint
             var date = isCompleteView() ? mDateNull : Date.from(Instant.now().minus(getRecentDays(), ChronoUnit.DAYS));
             setDateRangeNullNow(plot, p, date);
             plot.clearRangeMarkers();
-            plotAlarmIndicators(p, InsarHelper.getScaleFactor(p));
+            if (this instanceof ChartBuilderTrend) {
+                plot.getDomainAxis().setAutoRange(true);
+                plot.getRangeAxis().setAutoRange(true);
+            } else {
+                plotAlarmIndicators(p, InsarHelper.getScaleFactor(p));
+            }
 
             return getChartPanel();
         };

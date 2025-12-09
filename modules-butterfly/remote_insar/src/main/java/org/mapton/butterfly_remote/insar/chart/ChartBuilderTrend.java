@@ -26,11 +26,9 @@ import org.jfree.data.general.DatasetUtils;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.mapton.butterfly_core.api.TrendHelper;
-import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
-import org.mapton.butterfly_remote.insar.InsarHelper;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -49,7 +47,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         mDimension = dimension;
         mFunction = function;
         mTimeSeries = new TimeSeries(Dict.Geometry.HEIGHT.toString());
-        initChart("mm", "0.0");
+        initChart("mm/år", "0.0");
     }
 
     @Override
@@ -74,8 +72,6 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
-            addNEMarkers(plot, o, true);
-
             var minute = ChartHelper.convertToMinute(o.getDate());
             mSubSetLastMinute = minute;
             if (o.isZeroMeasurement()) {
@@ -87,13 +83,11 @@ public class ChartBuilderTrend extends ChartBuilderBase {
             mDateEnd = DateHelper.convertToDate(o.getDate());
         });
 
-        if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
-            getDataset().addSeries(mTimeSeries);
-            var renderer = new XYLineAndShapeRenderer(true, false);
-            plot.setRenderer(0, renderer);
+        getDataset().addSeries(mTimeSeries);
+        var renderer = new XYLineAndShapeRenderer(true, false);
+        plot.setRenderer(0, renderer);
 
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeries.getKey()), mDimension == BDimension._1d ? Color.RED : Color.BLUE);
-        }
+        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeries.getKey()), mDimension == BDimension._1d ? Color.RED : Color.BLUE);
 
         var startDateFirst = p.ext().getDateFirst();
         var startDateZero = p.getDateZero().atStartOfDay();
@@ -115,8 +109,6 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         plot(p, "3m", startDateMinus3m, startDateZero, Color.YELLOW, index++, null);
         plot(p, "1m", startDateMinus1m, startDateZero, Color.ORANGE, index++, null);
         plot(p, "1w", startDateMinus1w, startDateZero, Color.RED, index++, null);
-
-        setRange(1.05, InsarHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
     }
 
     private void plot(BRemoteInsarPoint p, String title, LocalDateTime startDate, LocalDateTime limitDate, Color color, int index, Integer percentile) {
