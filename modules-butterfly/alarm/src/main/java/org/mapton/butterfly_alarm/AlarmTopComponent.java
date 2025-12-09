@@ -39,7 +39,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-alarm.AlarmTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Menu/MapTools/Butterfly", position = 1001, separatorBefore = 1000)
+    @ActionReference(path = "Menu/MapTools/Butterfly/Misc", position = 10)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_AlarmAction",

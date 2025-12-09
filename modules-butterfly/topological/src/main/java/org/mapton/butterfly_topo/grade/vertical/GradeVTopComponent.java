@@ -42,7 +42,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-topo.GradeVTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Menu/MapTools/Butterfly", position = 11)
+    @ActionReference(path = "Menu/MapTools/Butterfly/Topo", position = 11)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_GradeVAction",

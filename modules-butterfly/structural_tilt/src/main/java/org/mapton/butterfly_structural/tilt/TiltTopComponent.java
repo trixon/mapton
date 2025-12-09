@@ -39,7 +39,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-structural.TiltTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Menu/MapTools/Butterfly", position = 999)
+    @ActionReference(path = "Menu/MapTools/Butterfly/Structural", position = 999)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_TiltAction",

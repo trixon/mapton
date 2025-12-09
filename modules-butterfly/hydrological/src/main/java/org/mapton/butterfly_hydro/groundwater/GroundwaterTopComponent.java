@@ -39,7 +39,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-hydro.GroundwaterTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Menu/MapTools/Butterfly", position = 1)
+    @ActionReference(path = "Menu/MapTools/Butterfly/Hydro", position = 1)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_GroundwaterAction",

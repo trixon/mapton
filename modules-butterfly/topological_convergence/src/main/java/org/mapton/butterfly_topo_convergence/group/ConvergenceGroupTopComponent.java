@@ -39,7 +39,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-topo-convergence.ConvergenceGroupTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Menu/MapTools/Butterfly", position = 1)
+    @ActionReference(path = "Menu/MapTools/Butterfly/Topo", position = 1)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ConvergenceGroupAction",

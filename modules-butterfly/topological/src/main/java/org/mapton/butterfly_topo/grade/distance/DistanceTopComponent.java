@@ -42,7 +42,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-topo.DistanceTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Menu/MapTools/Butterfly", position = 10)
+    @ActionReference(path = "Menu/MapTools/Butterfly/Topo", position = 10)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_DistanceAction",
