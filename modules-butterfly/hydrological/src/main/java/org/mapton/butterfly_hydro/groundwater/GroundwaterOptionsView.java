@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_hydro.groundwater;
 
+import org.mapton.butterfly_hydro.groundwater.graphics.GraphicItem;
 import java.util.stream.Stream;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -35,7 +36,7 @@ public class GroundwaterOptionsView extends BOptionsView {
     private static final GroundwaterLabelBy DEFAULT_LABEL_BY = GroundwaterLabelBy.NAME;
     private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;
 
-    private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public GroundwaterOptionsView(GroundwaterLayerBundle layerBundle) {
@@ -46,7 +47,7 @@ public class GroundwaterOptionsView extends BOptionsView {
         initSession();
     }
 
-    public IndexedCheckModel<GraphicRendererItem> getGraphicCheckModel() {
+    public IndexedCheckModel<GraphicItem> getGraphicCheckModel() {
         return mGraphicSccb.getCheckModel();
     }
 
@@ -59,7 +60,7 @@ public class GroundwaterOptionsView extends BOptionsView {
         mPointScb.setValue(DEFAULT_POINT_BY);
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
-        mGraphicSccb.getItems().setAll(GraphicRendererItem.values());
+        mGraphicSccb.getItems().setAll(GraphicItem.values());
 
         LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), GroundwaterLabelBy.values());
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro.groundwater;
+package org.mapton.butterfly_hydro.groundwater.graphics;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -28,14 +28,14 @@ import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
  *
  * @author Patrik Karlström
  */
-public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BHydroGroundwaterPoint> {
+public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicItem, BHydroGroundwaterPoint> {
 
-    protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
+    protected static IndexedCheckModel<GraphicItem> sCheckModel;
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
 
     static {
-        for (var renderItem : GraphicRendererItem.values()) {
+        for (var renderItem : GraphicItem.values()) {
             sPlotLimiter.setLimit(renderItem, renderItem.getPlotLimit());
         }
     }

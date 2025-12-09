@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro.groundwater;
+package org.mapton.butterfly_hydro.groundwater.graphics;
 
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 import se.trixon.almond.util.Dict;
@@ -23,7 +23,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
+public enum GraphicItem implements GraphicRenderItemLimitProvider {
 
     LEVEL_3("%s, 3 %s".formatted(SDict.LEVEL.toString(), Dict.Time.MONTHS.toLower()), 10_000),
     LEVEL_6("%s, 6 %s".formatted(SDict.LEVEL.toString(), Dict.Time.MONTHS.toLower()), 10_000),
@@ -33,7 +33,7 @@ public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     private final String mName;
     private final int mPlotLimit;
 
-    private GraphicRendererItem(String name, int plotLimit) {
+    private GraphicItem(String name, int plotLimit) {
         mName = name;
         mPlotLimit = plotLimit;
     }

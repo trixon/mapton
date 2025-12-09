@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro.groundwater;
+package org.mapton.butterfly_hydro.groundwater.graphics;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -30,6 +30,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
+import org.mapton.butterfly_hydro.groundwater.GroundwaterAttributeManager;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -46,7 +47,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     private final GroundwaterAttributeManager mAttributeManager = GroundwaterAttributeManager.getInstance();
 
-    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer);
         sCheckModel = checkModel;
     }
@@ -54,11 +55,11 @@ public class GraphicRenderer extends GraphicRendererBase {
     public void plot(BHydroGroundwaterPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         GraphicRendererBase.sMapObjects = mapObjects;
 
-        plotTrace(p, position, GraphicRendererItem.LEVEL_3, 3);
-        plotTrace(p, position, GraphicRendererItem.LEVEL_6, 6);
-        plotTrace(p, position, GraphicRendererItem.LEVEL_12, 12);
-        plotTrace(p, position, GraphicRendererItem.LEVEL_18, 18);
-        plotTrace(p, position, GraphicRendererItem.LEVEL_ALL, Integer.MAX_VALUE);
+        plotTrace(p, position, GraphicItem.LEVEL_3, 3);
+        plotTrace(p, position, GraphicItem.LEVEL_6, 6);
+        plotTrace(p, position, GraphicItem.LEVEL_12, 12);
+        plotTrace(p, position, GraphicItem.LEVEL_18, 18);
+        plotTrace(p, position, GraphicItem.LEVEL_ALL, Integer.MAX_VALUE);
     }
 
     private Double getMedian(BHydroGroundwaterPoint p) {
@@ -77,7 +78,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         return median;
     }
 
-    private void plotTrace(BHydroGroundwaterPoint p, Position position, List<BHydroGroundwaterPointObservation> list, GraphicRendererItem rendererItem) {
+    private void plotTrace(BHydroGroundwaterPoint p, Position position, List<BHydroGroundwaterPointObservation> list, GraphicItem rendererItem) {
         var prevDate = LocalDateTime.now();
         var altitude = 0.0;
         var prevHeight = 0.0;
@@ -146,7 +147,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     }
 
-    private void plotTrace(BHydroGroundwaterPoint p, Position position, GraphicRendererItem rendererItem, int months) {
+    private void plotTrace(BHydroGroundwaterPoint p, Position position, GraphicItem rendererItem, int months) {
         if (!sCheckModel.isChecked(rendererItem)
                 || isPlotLimitReached(p, rendererItem, position)) {
             return;
