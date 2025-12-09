@@ -16,8 +16,9 @@
 package org.mapton.butterfly_remote.insar;
 
 import java.util.stream.Stream;
+import javafx.beans.property.ObjectProperty;
 import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BOptionsView;
 import org.mapton.butterfly_core.api.LabelBy;
@@ -33,9 +34,10 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public class InsarOptionsView extends BOptionsView {
 
+    private static final ColorBy DEFAULT_COLOR_BY = ColorBy.ALARM;
     private static final InsarLabelBy DEFAULT_LABEL_BY = InsarLabelBy.NONE;
     private static final InsarPointBy DEFAULT_POINT_BY = InsarPointBy.SYMBOL;
-
+    private final SessionComboBox<ColorBy> mColorScb = new SessionComboBox<>();
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SessionComboBox<InsarPointBy> mPointScb = new SessionComboBox<>();
 
@@ -45,6 +47,14 @@ public class InsarOptionsView extends BOptionsView {
         createUI();
         initListeners();
         initSession();
+    }
+
+    public ObjectProperty<ColorBy> colorByProperty() {
+        return mColorScb.valueProperty();
+    }
+
+    public ColorBy getColorBy() {
+        return mColorScb.valueProperty().get();
     }
 
     public IndexedCheckModel<GraphicItem> getGraphicCheckModel() {
@@ -58,6 +68,8 @@ public class InsarOptionsView extends BOptionsView {
     private void createUI() {
         mPointScb.getItems().setAll(InsarPointBy.values());
         mPointScb.setValue(DEFAULT_POINT_BY);
+        mColorScb.getItems().setAll(ColorBy.values());
+        mColorScb.setValue(DEFAULT_COLOR_BY);
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
@@ -67,27 +79,41 @@ public class InsarOptionsView extends BOptionsView {
 
         var pointLabel = new Label(Dict.Geometry.POINT.toString());
         var labelLabel = new Label(Dict.LABEL.toString());
+        var colorLabel = new Label(Dict.COLOR.toString());
+        var graphicLabel = new Label(Dict.GRAPHICS.toString());
 
-        var box = new VBox(
-                pointLabel,
-                mPointScb,
-                labelLabel,
-                mLabelMenuButton,
-                mGraphicSccb
-        );
-        box.setPadding(FxHelper.getUIScaledInsets(8));
+//        var box = new VBox(
+//                pointLabel,
+//                mPointScb,
+//                labelLabel,
+//                mLabelMenuButton,
+//                mGraphicSccb
+//        );
+//        box.setPadding(FxHelper.getUIScaledInsets(8));
+        int row = 0;
+        var gp = new GridPane(FxHelper.getUIScaled(8), FxHelper.getUIScaled(2));
+        gp.addRow(row++, pointLabel, colorLabel);
+        gp.addRow(row++, mPointScb, mColorScb);
+        gp.addRow(row++, labelLabel);
+        gp.add(mLabelMenuButton, 0, row++, GridPane.REMAINING, 1);
+        gp.addRow(row++, graphicLabel);
+        gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
+//                mIndicatorSccb,
+        gp.setPadding(FxHelper.getUIScaledInsets(8));
+        FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
 
-        setCenter(box);
-
+        setCenter(gp);
     }
 
     private void initListeners() {
         initListenersSuper();
 
         mPointScb.valueProperty().addListener(getChangeListener());
+        mColorScb.valueProperty().addListener(getChangeListener());
 
         Stream.of(
-                mGraphicSccb)
+                mGraphicSccb
+        )
                 .forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
 
     }
@@ -95,6 +121,7 @@ public class InsarOptionsView extends BOptionsView {
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
+        sessionManager.register(getKeyOptions("colorBy"), mColorScb.selectedIndexProperty());
         sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
         sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
         initSession(sessionManager);

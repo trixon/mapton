@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_remote.insar;
 
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
 /**
@@ -24,13 +23,11 @@ import se.trixon.almond.util.SDict;
  */
 public enum ColorBy {
     ALARM(SDict.ALARM.toString()),
-    CLASSIFICATION("Klassning"),
-    FREQUENCY(SDict.FREQUENCY.toString()),
-    GRADIENT("Gradient"),
-    MEAS_NEED(SDict.MEASUREMENT_NEED.toString()),
-    ORIGIN(Dict.ORIGIN.toString()),
-    STYLE(Dict.STYLE.toString()),
-    VERTICAL_DIRECTION("Vertikal riktning");
+    DISPLACEMENT("Rörelse"),
+    VELOCITY("Hastighet"),
+    VELOCITY_3("Hastighet, 3 månader"),
+    VELOCITY_6("Hastighet, 6 månader"),
+    ACCELERATION("Acceleration");
     private final String mName;
 
     private ColorBy(String name) {

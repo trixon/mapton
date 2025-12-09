@@ -24,7 +24,6 @@ import gov.nasa.worldwind.render.airspaces.Polygon;
 import java.util.ArrayList;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.Strings;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
@@ -36,6 +35,7 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -58,6 +58,7 @@ public class InsarLayerBundle extends BfLayerBundle {
         mOptionsView = new InsarOptionsView(this);
         mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
+        mAttributeManager.setColorBy(mOptionsView.getColorBy());
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
@@ -83,6 +84,13 @@ public class InsarLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
+        mOptionsView.colorByProperty().addListener((p, o, n) -> {
+            mAttributeManager.setColorBy(n);
+            SwingHelper.runLaterDelayed(250, () -> {
+                repaint();
+            });
+        });
+
         mOptionsView.registerLayerBundle(this);
         mManager.registerLayerBundle(this, mOptionsView);
     }
@@ -188,15 +196,29 @@ public class InsarLayerBundle extends BfLayerBundle {
     private ArrayList<AVListImpl> plotSymbol(BRemoteInsarPoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
         var attrs = mAttributeManager.getSymbolAttributes(p);
-        var group = p.getGroup();
+        var value = switch (mOptionsView.getColorBy()) {
+            case ACCELERATION ->
+                p.getAcceleration();
+            case ALARM, DISPLACEMENT ->
+                p.ext().deltaZero().getDeltaZ();
+            case VELOCITY ->
+                p.getVelocity();
+            case VELOCITY_3 ->
+                p.getVelocity3m();
+            case VELOCITY_6 ->
+                p.getVelocity6m();
+            default ->
+                Double.MAX_VALUE;
+        };
+
         var polygon = new Polygon();
         ArrayList<LatLon> nodes;
-        if (Strings.CI.equals(group, "ascending")) {
-            nodes = WWHelper.createNodes(position, SYMBOL_RADIUS, 3);
-        } else if (Strings.CI.equals(group, "descending")) {
-            nodes = WWHelper.createNodes(position, SYMBOL_RADIUS, 3, 180);
-        } else {
+        if (Math.abs(value) <= 0.005) {
             nodes = WWHelper.createNodes(position, SYMBOL_RADIUS, 6);
+        } else if (value > 0) {
+            nodes = WWHelper.createNodes(position, SYMBOL_RADIUS, 3);
+        } else {
+            nodes = WWHelper.createNodes(position, SYMBOL_RADIUS, 3, 180);
         }
         polygon.setLocations(nodes);
         polygon.setAltitudes(0, SYMBOL_HEIGHT);

@@ -29,6 +29,7 @@ import se.trixon.almond.util.StringHelper;
 class InsarListCell extends BListCell<BRemoteInsarPoint> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
+    private final InsarAttributeManager mAttributeManager = InsarAttributeManager.getInstance();
     private final Label mDesc1Label = new Label();
     private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
@@ -95,7 +96,7 @@ class InsarListCell extends BListCell<BRemoteInsarPoint> {
 
         @Override
         public void update(BRemoteInsarPoint p) {
-            m1dShape.setFill(InsarHelper.getAlarmColorHeightFx(p));
+            m1dShape.setFill(mAttributeManager.getColorFx(p));
         }
 
     }
