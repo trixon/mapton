@@ -66,7 +66,7 @@ public class BlastLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_BlastAction(), SDict.ACOUSTIC.toString(), "BlastTopComponent");
+        initCommons(Bundle.CTL_BlastAction(), SDict.ROCK_MECHANICS.toString(), "BlastTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);

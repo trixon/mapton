@@ -73,7 +73,7 @@ public class ConvergenceGroupLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_ConvergenceGroupAction(), SDict.TOPOGRAPHY.toString(), "ConvergenceGroupTopComponent");
+        initCommons(Bundle.CTL_ConvergenceGroupAction(), SDict.ROCK_MECHANICS.toString(), "ConvergenceGroupTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);

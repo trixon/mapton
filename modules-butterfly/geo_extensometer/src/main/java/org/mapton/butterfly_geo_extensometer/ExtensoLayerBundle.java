@@ -26,11 +26,11 @@ import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
-import org.mapton.butterfly_geo.api.GeotechnicalHelper;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.SDict;
 
 /**
  *
@@ -66,7 +66,7 @@ public class ExtensoLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_ExtensometerAction(), GeotechnicalHelper.CAT_GEO, "ExtensoTopComponent");
+        initCommons(Bundle.CTL_ExtensometerAction(), SDict.ROCK_MECHANICS.toString(), "ExtensoTopComponent");
 
         mLabelLayer.setEnabled(true);
         mLayer.setMaxActiveAltitude(6000);
