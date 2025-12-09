@@ -145,8 +145,8 @@ public class ParameterEditorBasic extends ParameterEditorBase {
             addConditionlly(sb, mDagDefCheckBox.isSelected(), "DefaultDag=%d".formatted(mDagDefSpinner.getValue()));
             addConditionlly(sb, mDagIntCheckBox.isSelected(), "IntenseDag=%d".formatted(mDagIntSpinner.getValue()));
             addConditionlly(sb, mDagIntParamCheckBox.isSelected(), "IntenseDagParam=%s".formatted(mDagIntParamTextField.getText()));
-            addConditionlly(sb, mClassCheckBox.isSelected(), "Classification=%s".formatted(mClassComboBox.getValue()));
             addConditionlly(sb, mStatusCheckBox.isSelected(), mStatusComboBox.getValue());
+            addConditionlly(sb, mClassCheckBox.isSelected(), "Classification=%s".formatted(mClassComboBox.getValue()));
             addConditionlly(sb, mGruppCheckBox.isSelected(), mGruppComboBox.getValue());
             addConditionlly(sb, mKategoriCheckBox.isSelected(), mKategoriComboBox.getValue());
             addConditionlly(sb, larm != null, larm);
