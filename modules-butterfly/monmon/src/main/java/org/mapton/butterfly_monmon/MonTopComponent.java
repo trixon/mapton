@@ -39,7 +39,6 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-monmon.MonmonTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DO-M"),
     @ActionReference(path = "Menu/MapTools/Butterfly", position = 100)
 })
 @TopComponent.OpenActionRegistration(

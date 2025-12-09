@@ -39,7 +39,6 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-acoustic.vibration.VibrationTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DO-V"),
     @ActionReference(path = "Menu/MapTools/Butterfly/Acoustic", position = 1)
 })
 @TopComponent.OpenActionRegistration(
