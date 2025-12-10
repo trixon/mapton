@@ -177,13 +177,15 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
 //            });
 //        });
         if (mTrendLoadCounter++ < 3) {
-            for (var p : timeFilteredItems) {
-                try {
-                    populateTrends(p);
-                } catch (Exception e) {
-                    //System.err.println(e);
+            SystemHelper.runLaterDelayed(10, () -> {
+                for (var p : timeFilteredItems) {
+                    try {
+                        populateTrends(p);
+                    } catch (Exception e) {
+                        //System.err.println(e);
+                    }
                 }
-            }
+            });
         }
 
         setItemsTimeFiltered(timeFilteredItems);
@@ -264,7 +266,6 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
         };
 
         SystemHelper.runLaterDelayed(1000, task);
-//        Thread.ofVirtual().start(task);
     }
 
     private void populateTrend(BRemoteInsarPoint p, BTrendPeriod period, LocalDateTime startDate, LocalDateTime endDate) {

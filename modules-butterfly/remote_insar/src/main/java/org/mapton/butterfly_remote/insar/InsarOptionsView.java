@@ -40,6 +40,7 @@ public class InsarOptionsView extends BOptionsView {
     private final SessionComboBox<ColorBy> mColorScb = new SessionComboBox<>();
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SessionComboBox<InsarPointBy> mPointScb = new SessionComboBox<>();
+    private final OptionsManager mOptionsManager = OptionsManager.getInstance();
 
     public InsarOptionsView(InsarLayerBundle layerBundle) {
         super(layerBundle, Bundle.CTL_InsarAction());
@@ -66,6 +67,7 @@ public class InsarOptionsView extends BOptionsView {
     }
 
     private void createUI() {
+        mOptionsManager.colorProperty().bind(mColorScb.valueProperty());
         mPointScb.getItems().setAll(InsarPointBy.values());
         mPointScb.setValue(DEFAULT_POINT_BY);
         mColorScb.getItems().setAll(ColorBy.values());
@@ -82,14 +84,6 @@ public class InsarOptionsView extends BOptionsView {
         var colorLabel = new Label(Dict.COLOR.toString());
         var graphicLabel = new Label(Dict.GRAPHICS.toString());
 
-//        var box = new VBox(
-//                pointLabel,
-//                mPointScb,
-//                labelLabel,
-//                mLabelMenuButton,
-//                mGraphicSccb
-//        );
-//        box.setPadding(FxHelper.getUIScaledInsets(8));
         int row = 0;
         var gp = new GridPane(FxHelper.getUIScaled(8), FxHelper.getUIScaled(2));
         gp.addRow(row++, pointLabel, colorLabel);
@@ -98,7 +92,6 @@ public class InsarOptionsView extends BOptionsView {
         gp.add(mLabelMenuButton, 0, row++, GridPane.REMAINING, 1);
         gp.addRow(row++, graphicLabel);
         gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
-//                mIndicatorSccb,
         gp.setPadding(FxHelper.getUIScaledInsets(8));
         FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
 

@@ -113,6 +113,9 @@ public class InsarPropertiesBuilder extends BPropertiesBuilder<BRemoteInsarPoint
         map.put(getCatKeyNum(category, "CumulativeDisplacement"), p.getCumulativeDisplacement());
         map.put(getCatKeyNum(category, "EffArea"), p.getEffArea());
         map.put(getCatKeyNum(category, "SeasonAmp"), p.getSeasonAmp());
+        map.put(getCatKeyNum(category, "Velocity"), p.getVelocity());
+        map.put(getCatKeyNum(category, "Velocity3m"), p.getVelocity3m());
+        map.put(getCatKeyNum(category, "Velocity6m"), p.getVelocity6m());
         map.put(getCatKeyNum(category, "StDef"), p.getStDef());
         map.put(getCatKeyNum(category, "StDevAcceleration"), p.getStDevAcceleration());
         map.put(getCatKeyNum(category, "StDevHeight"), p.getStDevHeight());
@@ -120,9 +123,6 @@ public class InsarPropertiesBuilder extends BPropertiesBuilder<BRemoteInsarPoint
         map.put(getCatKeyNum(category, "StDevVelocity"), p.getStDevVelocity());
         map.put(getCatKeyNum(category, "StDevVelocity3m"), p.getStDevVelocity3m());
         map.put(getCatKeyNum(category, "StDevVelocity6m"), p.getStDevVelocity6m());
-        map.put(getCatKeyNum(category, "Velocity"), p.getVelocity());
-        map.put(getCatKeyNum(category, "Velocity3m"), p.getVelocity3m());
-        map.put(getCatKeyNum(category, "Velocity6m"), p.getVelocity6m());
 
         return map;
     }

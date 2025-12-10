@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_remote.insar;
 
-import java.time.LocalDate;
 import javafx.scene.control.Label;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BListCell;
@@ -51,28 +50,14 @@ class InsarListCell extends BListCell<BRemoteInsarPoint> {
             header = "%s [%s]".formatted(header, p.getStatus());
         }
 
-        var sign = "⇐";
-        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), p.getAlarm1Id());
-        var dateSB = new StringBuilder(StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE"));
-//        var nextDate = p.ext().getObservationRawNextDate();
-        LocalDate nextDate = null;
-        if (nextDate != null) {
-            dateSB.append(" (").append(nextDate.toString()).append(")");
-            if (nextDate.isBefore(LocalDate.now())) {
-                dateSB.append(" ").append(sign);
-            }
-        }
-
-        var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
-        var desc3 = "%s: %s".formatted(dateRolling, "p.ext().getDeltaRolling()");
-
+        var descGrpCat = "%s: %s".formatted(p.getGroup(), p.getCategory());
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
-        var desc4 = "%s: %s".formatted(dateZero, "p.ext().getDeltaZero()");
+        var dateZeroAndValue = "%s: %s".formatted(dateZero, p.ext().deltaZero().getDelta1(1, 1000, true));
         mHeaderLabel.setText(header);
-        mDesc1Label.setText(desc1);
-        mDesc2Label.setText(dateSB.toString());
-        mDesc3Label.setText(desc3);
-        mDesc4Label.setText(desc4);
+        mDesc1Label.setText(descGrpCat);
+        mDesc2Label.setText(mAttributeManager.getValueByColorByWithHeader(p));
+        mDesc3Label.setText(getDateLatestAndNext(p));
+        mDesc4Label.setText(dateZeroAndValue);
     }
 
     private void createUI() {

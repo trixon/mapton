@@ -213,7 +213,7 @@ public class InsarLayerBundle extends BfLayerBundle {
 
         var polygon = new Polygon();
         ArrayList<LatLon> nodes;
-        if (Math.abs(value) <= 0.005) {
+        if (Math.abs(value) <= 0.004) {
             nodes = WWHelper.createNodes(position, SYMBOL_RADIUS, 6);
         } else if (value > 0) {
             nodes = WWHelper.createNodes(position, SYMBOL_RADIUS, 3);

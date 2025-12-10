@@ -32,7 +32,6 @@ import se.trixon.almond.util.swing.SwingHelper;
 public class InsarAttributeManager extends BaseAttributeManager {
 
     private ColorBy mColorBy;
-
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mInsarAttribute;
     private BasicShapeAttributes mSurfaceAttributes;
@@ -48,10 +47,61 @@ public class InsarAttributeManager extends BaseAttributeManager {
         return SwingHelper.colorToColor(getColor(p));
     }
 
+    public String getValueByColorByWithHeader(BRemoteInsarPoint p) {
+        var format = "%s: %+.1f %s";
+        switch (mColorBy) {
+            case ALARM, DISPLACEMENT -> {
+                return format.formatted("Δ", p.ext().deltaZero().getDeltaZ() * 1000, "mm");
+            }
+            case VELOCITY -> {
+                return format.formatted("Hastighet", p.getVelocity(), "mm/år");
+            }
+            case VELOCITY_3 -> {
+                return format.formatted("Hastighet 3m", p.getVelocity3m(), "mm/år");
+            }
+            case VELOCITY_6 -> {
+                return format.formatted("Hastighet 6m", p.getVelocity6m(), "mm/år");
+            }
+            case ACCELERATION -> {
+                return format.formatted("Acceleration", p.getAcceleration(), "mm/år^2");
+            }
+            default ->
+                throw new AssertionError();
+        }
+
+    }
+
+    public String getValueByColorBy(BRemoteInsarPoint p) {
+        var format = "%+.1f";
+        switch (mColorBy) {
+            case ALARM, DISPLACEMENT -> {
+                return format.formatted(p.ext().deltaZero().getDeltaZ() * 1000);
+            }
+            case VELOCITY -> {
+                return format.formatted(p.getVelocity());
+            }
+            case VELOCITY_3 -> {
+                return format.formatted(p.getVelocity3m());
+            }
+            case VELOCITY_6 -> {
+                return format.formatted(p.getVelocity6m());
+            }
+            case ACCELERATION -> {
+                return format.formatted(p.getAcceleration());
+            }
+            default ->
+                throw new AssertionError();
+        }
+
+    }
+
     public Color getColor(BRemoteInsarPoint p) {
         switch (mColorBy) {
+            case ALARM -> {
+                return InsarHelper.getAlarmColorAwt(p);
+            }
             case DISPLACEMENT -> {
-                return ButterflyHelper.getRangeColor(p.ext().deltaZero().getDeltaZ(), 0.05);
+                return ButterflyHelper.getRangeColor(p.ext().deltaZero().getDeltaZ(), 0.01);
             }
             case VELOCITY -> {
                 return ButterflyHelper.getRangeColor(p.getVelocity(), 10);
