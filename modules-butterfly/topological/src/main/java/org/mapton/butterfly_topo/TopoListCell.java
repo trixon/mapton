@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo;
 
-import java.time.LocalDate;
 import javafx.scene.control.Label;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
@@ -68,16 +67,7 @@ class TopoListCell extends BListCell<BTopoControlPoint> {
                 Strings.CI.removeEnd(p.getAlarm1Id(), "_h"),
                 Strings.CI.removeEnd(p.getAlarm2Id(), "_p")
         );
-        var sign = "⇐";
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), alarms);
-        var dateSB = new StringBuilder(StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE"));
-        var nextDate = p.ext().getObservationRawNextDate();
-        if (nextDate != null) {
-            dateSB.append(" (").append(nextDate.toString()).append(")");
-            if (nextDate.isBefore(LocalDate.now())) {
-                dateSB.append(" ").append(sign);
-            }
-        }
 
         var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
 
@@ -90,7 +80,7 @@ class TopoListCell extends BListCell<BTopoControlPoint> {
 
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
-        mDesc2Label.setText(dateSB.toString());
+        mDesc2Label.setText(getDateLatestAndNext(p));
         mDesc3Label.setText(desc3);
         mDesc4Label.setText(desc4);
     }
