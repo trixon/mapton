@@ -32,6 +32,8 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
+import org.mapton.api.MBaseDataManager;
+import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.openide.util.NbBundle;
@@ -53,11 +55,13 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
 //    private RangeSliderPane mDeltaRRangeSlider;
     private SliderPane mDeltaRSlider;
     private final DistanceMeasure mDistanceMeasure;
+    private final FormFilter<? extends MBaseDataManager> mFilter;
     private final CheckBox mInvertCheckbox = new CheckBox();
     private final GridPane mRoot = new GridPane(columnGap, rowGap);
 
-    public BFilterSectionMisc() {
+    public BFilterSectionMisc(FormFilter<? extends MBaseDataManager> filter) {
         super(Dict.MISCELLANEOUS.toString());
+        mFilter = filter;
         mDistanceMeasure = (DistanceMeasure) (double[] a, double[] b) -> {
             var plane = Math.hypot(b[1] - a[1], b[0] - a[0]);
             var height = Math.abs(b[2] - a[2]);
@@ -172,12 +176,13 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
     @Override
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
-        mDeltaHRangeSlider.initSession(getKeyFilter("DistanceH"), sessionManager);
+        sessionManager.register(getKeyFilter("freeText"), mFilter.freeTextProperty());
+        mDeltaHRangeSlider.initSession(getKeyFilter("distanceH"), sessionManager);
 //        mDeltaRRangeSlider.initSession(getKeyFilter("DeltaR"), sessionManager);
-        mDeltaRSlider.initSession(getKeyFilter("DistanceR"), sessionManager);
+        mDeltaRSlider.initSession(getKeyFilter("distanceR"), sessionManager);
 
-        sessionManager.register("filter.autocluster", mClusterCheckbox.selectedProperty());
-        sessionManager.register("filter.invert", invertSelectionProperty());
+        sessionManager.register(getKeyFilter("autocluster"), mClusterCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("invert"), invertSelectionProperty());
     }
 
     public BooleanProperty invertSelectionProperty() {

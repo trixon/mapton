@@ -42,7 +42,7 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
     public BlastFilterPopOver(BlastFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
-        mFilterSectionMisc = new BFilterSectionMisc();
+        mFilterSectionMisc = new BFilterSectionMisc(filter);
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
@@ -153,8 +153,6 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionPoint.initSession(sessionManager);
         mFilterSectionDate.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
-
-        sessionManager.register("filter.blast.freeText", mFilter.freeTextProperty());
 
         return sessionManager;
     }

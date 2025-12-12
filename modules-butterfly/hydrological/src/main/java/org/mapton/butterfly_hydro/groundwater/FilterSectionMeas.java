@@ -89,12 +89,12 @@ public class FilterSectionMeas extends MBaseFilterSection {
     @Override
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
-        sessionManager.register("filter.section.meas", selectedProperty());
-        sessionManager.register("filter.levelPeriod", mLevelPeriodCheckbox.selectedProperty());
-        sessionManager.register("filter.levelPeriod.Value", mLevelPeriodAllSds.sessionValueProperty());
-        sessionManager.register("filter.levelPeriod.DateLow", mLeverPeriodDateRangePane.lowStringProperty());
-        sessionManager.register("filter.levelPeriod.DateHigh", mLeverPeriodDateRangePane.highStringProperty());
-        sessionManager.register("filter.levelPeriod.Direction", mLevelPeriodDirectionScb.selectedIndexProperty());
+        sessionManager.register(getKeyFilter("section"), selectedProperty());
+        sessionManager.register(getKeyFilter("levelPeriod"), mLevelPeriodCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("levelPeriod.Value"), mLevelPeriodAllSds.sessionValueProperty());
+        sessionManager.register(getKeyFilter("levelPeriod.DateLow"), mLeverPeriodDateRangePane.lowStringProperty());
+        sessionManager.register(getKeyFilter("levelPeriod.DateHigh"), mLeverPeriodDateRangePane.highStringProperty());
+        sessionManager.register(getKeyFilter("levelPeriod.Direction"), mLevelPeriodDirectionScb.selectedIndexProperty());
     }
 
     @Override
@@ -139,8 +139,8 @@ public class FilterSectionMeas extends MBaseFilterSection {
         mLevelPeriodDirectionScb.load();
 
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.DateLevelPeriodLow", mLeverPeriodDateRangePane.lowStringProperty());
-        sessionManager.register("filter.DatePeriodHigh", mLeverPeriodDateRangePane.highStringProperty());
+        sessionManager.register(getKeyFilter("dateLevelPeriodLow"), mLeverPeriodDateRangePane.lowStringProperty());
+        sessionManager.register(getKeyFilter("datePeriodHigh"), mLeverPeriodDateRangePane.highStringProperty());
     }
 
     private SimpleObjectProperty<LocalDate> levelPeriodDateHighProperty() {

@@ -52,7 +52,7 @@ import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
 class FilterSectionMeas extends MBaseFilterSection {
 
     private final SessionCheckComboBox<AlarmLevelFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
-    private final DateDiffPane mDateDiffPane = new DateDiffPane();
+    private final DateDiffPane mDateDiffPane;
     private final int mDefaultAlarmLevelAgeValue = -7;
     private final int mDefaultDiffPercentageValue = 80;
     private final double mDefaultDiffValue = 0.020;
@@ -95,6 +95,7 @@ class FilterSectionMeas extends MBaseFilterSection {
 
     public FilterSectionMeas() {
         super(SDict.MEASUREMENTS.toString());
+        mDateDiffPane = new DateDiffPane(this);
         init();
         setContent(mRoot);
     }
@@ -140,36 +141,36 @@ class FilterSectionMeas extends MBaseFilterSection {
 
     @Override
     public void initSession(SessionManager sessionManager) {
-        sessionManager.register("filter.section.meas", selectedProperty());
-        sessionManager.register("filter.measCheckedMeasCode", mMeasCodeSccb.checkedStringProperty());
-        sessionManager.register("filter.measCheckedOperators", mMeasOperatorSccb.checkedStringProperty());
-        sessionManager.register("filter.measDiffAll", mDiffMeasAllCheckbox.selectedProperty());
-        sessionManager.register("filter.measDiffPercentageH", mDiffMeasPercentageHCheckbox.selectedProperty());
-        sessionManager.register("filter.measDiffPercentageP", mDiffMeasPercentagePCheckbox.selectedProperty());
-        sessionManager.register("filter.measTopList", mMeasTopListCheckbox.selectedProperty());
-        sessionManager.register("filter.measTopListSizeValue", mMeasTopListSizeSds.sessionValueProperty());
-        sessionManager.register("filter.measTopListUnit", mMeasTopListUnitScb.selectedIndexProperty());
-        sessionManager.register("filter.measTopListLimit", mMeasTopListLimitSis.sessionValueProperty());
-        sessionManager.register("filter.measYoyo", mMeasYoyoCheckbox.selectedProperty());
-        sessionManager.register("filter.measDiffAllValue", mDiffMeasAllSds.sessionValueProperty());
-        sessionManager.register("filter.measDiffPercentageHValue", mDiffMeasPercentageHSis.sessionValueProperty());
-        sessionManager.register("filter.measDiffPercentagePValue", mDiffMeasPercentagePSis.sessionValueProperty());
-        sessionManager.register("filter.measYoyoCountValue", mMeasYoyoCountSds.sessionValueProperty());
-        sessionManager.register("filter.measYoyoSizeValue", mMeasYoyoSizeSds.sessionValueProperty());
-        sessionManager.register("filter.measDiffLatest", mDiffMeasLatestCheckbox.selectedProperty());
-        sessionManager.register("filter.measDiffLatestValue", mDiffMeasLatestSds.sessionValueProperty());
-        sessionManager.register("filter.measLatestOperator", mMeasLatestOperatorCheckbox.selectedProperty());
-        sessionManager.register("filter.measNumOfMeas", mNumOfMeasCheckbox.selectedProperty());
-        sessionManager.register("filter.measNumOfValue", mMeasNumOfSis.sessionValueProperty());
-        sessionManager.register("filter.measAlarmLevelAge", mMeasAlarmLevelAgeCheckbox.selectedProperty());
-        sessionManager.register("filter.measAlarmLevelAgeValue", mMeasAlarmLevelAgeSis.sessionValueProperty());
-        sessionManager.register("filter.measAlarmLevelChange", mMeasAlarmLevelChangeCheckbox.selectedProperty());
-        sessionManager.register("filter.measAlarmLevelChangeMode", mMeasAlarmLevelChangeModeScb.selectedIndexProperty());
-        sessionManager.register("filter.measAlarmLevelChangeUnit", mMeasAlarmLevelChangeUnitScb.selectedIndexProperty());
-        sessionManager.register("filter.measAlarmLevelChangeValue", mMeasAlarmLevelChangeValueSis.sessionValueProperty());
-        sessionManager.register("filter.measAlarmLevelChangeLimit", mMeasAlarmLevelChangeLimitSis.sessionValueProperty());
-        sessionManager.register("filter.checkedNextAlarm", mAlarmSccb.checkedStringProperty());
-        mMeasBearingRangeSlider.initSession("filter.measBearing", sessionManager);
+        sessionManager.register(getKeyFilter("section"), selectedProperty());
+        sessionManager.register(getKeyFilter("checkedMeasCode"), mMeasCodeSccb.checkedStringProperty());
+        sessionManager.register(getKeyFilter("CheckedOperators"), mMeasOperatorSccb.checkedStringProperty());
+        sessionManager.register(getKeyFilter("diffAll"), mDiffMeasAllCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("diffPercentageH"), mDiffMeasPercentageHCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("diffPercentageP"), mDiffMeasPercentagePCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("topList"), mMeasTopListCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("topListSizeValue"), mMeasTopListSizeSds.sessionValueProperty());
+        sessionManager.register(getKeyFilter("topListUnit"), mMeasTopListUnitScb.selectedIndexProperty());
+        sessionManager.register(getKeyFilter("topListLimit"), mMeasTopListLimitSis.sessionValueProperty());
+        sessionManager.register(getKeyFilter("yoyo"), mMeasYoyoCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("diffAllValue"), mDiffMeasAllSds.sessionValueProperty());
+        sessionManager.register(getKeyFilter("diffPercentageHValue"), mDiffMeasPercentageHSis.sessionValueProperty());
+        sessionManager.register(getKeyFilter("diffPercentagePValue"), mDiffMeasPercentagePSis.sessionValueProperty());
+        sessionManager.register(getKeyFilter("yoyoCountValue"), mMeasYoyoCountSds.sessionValueProperty());
+        sessionManager.register(getKeyFilter("yoyoSizeValue"), mMeasYoyoSizeSds.sessionValueProperty());
+        sessionManager.register(getKeyFilter("diffLatest"), mDiffMeasLatestCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("diffLatestValue"), mDiffMeasLatestSds.sessionValueProperty());
+        sessionManager.register(getKeyFilter("latestOperator"), mMeasLatestOperatorCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("numOfMeas"), mNumOfMeasCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("numOfValue"), mMeasNumOfSis.sessionValueProperty());
+        sessionManager.register(getKeyFilter("alarmLevelAge"), mMeasAlarmLevelAgeCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("alarmLevelAgeValue"), mMeasAlarmLevelAgeSis.sessionValueProperty());
+        sessionManager.register(getKeyFilter("alarmLevelChange"), mMeasAlarmLevelChangeCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("alarmLevelChangeMode"), mMeasAlarmLevelChangeModeScb.selectedIndexProperty());
+        sessionManager.register(getKeyFilter("alarmLevelChangeUnit"), mMeasAlarmLevelChangeUnitScb.selectedIndexProperty());
+        sessionManager.register(getKeyFilter("alarmLevelChangeValue"), mMeasAlarmLevelChangeValueSis.sessionValueProperty());
+        sessionManager.register(getKeyFilter("alarmLevelChangeLimit"), mMeasAlarmLevelChangeLimitSis.sessionValueProperty());
+        sessionManager.register(getKeyFilter("checkedNextAlarm"), mAlarmSccb.checkedStringProperty());
+        mMeasBearingRangeSlider.initSession(getKeyFilter("bearing"), sessionManager);
         mDateDiffPane.initSession(sessionManager);
     }
 

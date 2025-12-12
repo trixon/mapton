@@ -46,7 +46,7 @@ public class InclinoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
-        mFilterSectionMisc = new BFilterSectionMisc();
+        mFilterSectionMisc = new BFilterSectionMisc(filter);
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
@@ -153,8 +153,6 @@ public class InclinoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
-
-        sessionManager.register("filter.measPoint.freeText", mFilter.freeTextProperty());
 
         return sessionManager;
     }

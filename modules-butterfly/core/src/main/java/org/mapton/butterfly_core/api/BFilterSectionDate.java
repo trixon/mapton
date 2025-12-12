@@ -53,16 +53,16 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public class BFilterSectionDate extends MBaseFilterSection {
 
-    public static final String KEY_DATE_FIRST_FROM_START = "filter.date.FirstFromStart";
-    public static final String KEY_DATE_FIRST_HIGH = "filter.date.FirstHigh";
-    public static final String KEY_DATE_FIRST_LOW = "filter.date.FirstLow";
-    public static final String KEY_DATE_FIRST_TO_END = "filter.date.FirstToEnd";
-    public static final String KEY_DATE_LAST_FROM_START = "filter.date.LastFromStart";
-    public static final String KEY_DATE_LAST_HIGH = "filter.date.LastHigh";
-    public static final String KEY_DATE_LAST_LOW = "filter.date.LastLow";
-    public static final String KEY_DATE_LAST_TO_END = "filter.date.LastToEnd";
-    private static final String KEY_DATE_FORMULA_FIRST = "filter.date.formula.first";
-    private static final String KEY_DATE_FORMULA_LAST = "filter.date.formula.last";
+    public static final String KEY_FIRST_FROM_START = "firstFromStart";
+    public static final String KEY_FIRST_HIGH = "firstHigh";
+    public static final String KEY_FIRST_LOW = "firstLow";
+    public static final String KEY_FIRST_TO_END = "firstToEnd";
+    public static final String KEY_LAST_FROM_START = "lastFromStart";
+    public static final String KEY_LAST_HIGH = "lastHigh";
+    public static final String KEY_LAST_LOW = "lastLow";
+    public static final String KEY_LAST_TO_END = "lastToEnd";
+    private static final String KEY_FORMULA_FIRST = "formula.first";
+    private static final String KEY_FORMULA_LAST = "formula.last";
     private Node mDateFirstBorderBox;
     private boolean mDateFirstFromStart;
     private boolean mDateFirstToEnd;
@@ -199,7 +199,7 @@ public class BFilterSectionDate extends MBaseFilterSection {
     @Override
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
-        sessionManager.register("filter.section.date", selectedProperty());
+        sessionManager.register(getKeyFilter("section"), selectedProperty());
         var preferences = sessionManager.getPreferences();
         String dateFormulaFirst = null;
         String dateFormulaLast = null;
@@ -210,17 +210,17 @@ public class BFilterSectionDate extends MBaseFilterSection {
         var isPreset = Strings.CI.contains(preferences.absolutePath(), MFilterPresetPopOver.FILTER_PRESET_NODE);
 
         if (isPreset) {
-            mDateFirstToEnd = preferences.getBoolean(KEY_DATE_FIRST_TO_END, true);
-            mDateFirstFromStart = preferences.getBoolean(KEY_DATE_FIRST_FROM_START, true);
-            mDateLastToEnd = preferences.getBoolean(KEY_DATE_LAST_TO_END, true);
-            mDateLastFromStart = preferences.getBoolean(KEY_DATE_LAST_FROM_START, true);
+            mDateFirstToEnd = preferences.getBoolean(getKeyFilter(KEY_FIRST_TO_END), true);
+            mDateFirstFromStart = preferences.getBoolean(getKeyFilter(KEY_FIRST_FROM_START), true);
+            mDateLastToEnd = preferences.getBoolean(getKeyFilter(KEY_LAST_TO_END), true);
+            mDateLastFromStart = preferences.getBoolean(getKeyFilter(KEY_LAST_FROM_START), true);
             dateFirstFromStart = mDateFirstFromStart;
             dateFirstToEnd = mDateFirstToEnd;
             dateLastFromStart = mDateLastFromStart;
             dateLastToEnd = mDateLastToEnd;
 
-            mDateFormulaFirst = preferences.get(KEY_DATE_FORMULA_FIRST, "");
-            mDateFormulaLast = preferences.get(KEY_DATE_FORMULA_LAST, "");
+            mDateFormulaFirst = preferences.get(getKeyFilter(KEY_FORMULA_FIRST), "");
+            mDateFormulaLast = preferences.get(getKeyFilter(KEY_FORMULA_LAST), "");
             dateFormulaFirst = mDateFormulaFirst;
             dateFormulaLast = mDateFormulaLast;
         } else {
@@ -232,19 +232,19 @@ public class BFilterSectionDate extends MBaseFilterSection {
             mDateFormulaLast = mDateRangeLastPane.dateFormulaProperty().get();
         }
 
-        sessionManager.register("filter.checkedDateFromTo", mHasDateFromToSccb.checkedStringProperty());
+        sessionManager.register(getKeyFilter("checkedDateFromTo"), mHasDateFromToSccb.checkedStringProperty());
 
-        sessionManager.register(KEY_DATE_FORMULA_FIRST, mDateRangeFirstPane.dateFormulaProperty());
-        sessionManager.register(KEY_DATE_FIRST_HIGH, mDateRangeFirstPane.highStringProperty());
-        sessionManager.register(KEY_DATE_FIRST_LOW, mDateRangeFirstPane.lowStringProperty());
-        sessionManager.register(KEY_DATE_FIRST_FROM_START, mDateRangeFirstPane.selectedFromStartProperty());
-        sessionManager.register(KEY_DATE_FIRST_TO_END, mDateRangeFirstPane.selectedToEndProperty());
+        sessionManager.register(getKeyFilter(KEY_FORMULA_FIRST), mDateRangeFirstPane.dateFormulaProperty());
+        sessionManager.register(getKeyFilter(KEY_FIRST_HIGH), mDateRangeFirstPane.highStringProperty());
+        sessionManager.register(getKeyFilter(KEY_FIRST_LOW), mDateRangeFirstPane.lowStringProperty());
+        sessionManager.register(getKeyFilter(KEY_FIRST_FROM_START), mDateRangeFirstPane.selectedFromStartProperty());
+        sessionManager.register(getKeyFilter(KEY_FIRST_TO_END), mDateRangeFirstPane.selectedToEndProperty());
 
-        sessionManager.register(KEY_DATE_FORMULA_LAST, mDateRangeLastPane.dateFormulaProperty());
-        sessionManager.register(KEY_DATE_LAST_HIGH, mDateRangeLastPane.highStringProperty());
-        sessionManager.register(KEY_DATE_LAST_LOW, mDateRangeLastPane.lowStringProperty());
-        sessionManager.register(KEY_DATE_LAST_FROM_START, mDateRangeLastPane.selectedFromStartProperty());
-        sessionManager.register(KEY_DATE_LAST_TO_END, mDateRangeLastPane.selectedToEndProperty());
+        sessionManager.register(getKeyFilter(KEY_FORMULA_LAST), mDateRangeLastPane.dateFormulaProperty());
+        sessionManager.register(getKeyFilter(KEY_LAST_HIGH), mDateRangeLastPane.highStringProperty());
+        sessionManager.register(getKeyFilter(KEY_LAST_LOW), mDateRangeLastPane.lowStringProperty());
+        sessionManager.register(getKeyFilter(KEY_LAST_FROM_START), mDateRangeLastPane.selectedFromStartProperty());
+        sessionManager.register(getKeyFilter(KEY_LAST_TO_END), mDateRangeLastPane.selectedToEndProperty());
         mLatestAgeHoursSliderPane.initSession(getKeyFilter("ageLatestMeas"), sessionManager);
 
         if (isPreset) {
@@ -286,23 +286,23 @@ public class BFilterSectionDate extends MBaseFilterSection {
             mDateRangeFirstPane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
             mDateRangeLastPane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
         }
-        sessionManager.register(KEY_DATE_FIRST_LOW, mDateRangeFirstPane.lowStringProperty());
-        sessionManager.register(KEY_DATE_FIRST_HIGH, mDateRangeFirstPane.highStringProperty());
-        sessionManager.register(KEY_DATE_FIRST_FROM_START, mDateRangeFirstPane.selectedFromStartProperty());
-        sessionManager.register(KEY_DATE_FIRST_TO_END, mDateRangeFirstPane.selectedToEndProperty());
+        sessionManager.register(getKeyFilter(KEY_FIRST_LOW), mDateRangeFirstPane.lowStringProperty());
+        sessionManager.register(getKeyFilter(KEY_FIRST_HIGH), mDateRangeFirstPane.highStringProperty());
+        sessionManager.register(getKeyFilter(KEY_FIRST_FROM_START), mDateRangeFirstPane.selectedFromStartProperty());
+        sessionManager.register(getKeyFilter(KEY_FIRST_TO_END), mDateRangeFirstPane.selectedToEndProperty());
 
-        sessionManager.register(KEY_DATE_LAST_LOW, mDateRangeLastPane.lowStringProperty());
-        sessionManager.register(KEY_DATE_LAST_HIGH, mDateRangeLastPane.highStringProperty());
-        sessionManager.register(KEY_DATE_LAST_FROM_START, mDateRangeLastPane.selectedFromStartProperty());
-        sessionManager.register(KEY_DATE_LAST_TO_END, mDateRangeLastPane.selectedToEndProperty());
+        sessionManager.register(getKeyFilter(KEY_LAST_LOW), mDateRangeLastPane.lowStringProperty());
+        sessionManager.register(getKeyFilter(KEY_LAST_HIGH), mDateRangeLastPane.highStringProperty());
+        sessionManager.register(getKeyFilter(KEY_LAST_FROM_START), mDateRangeLastPane.selectedFromStartProperty());
+        sessionManager.register(getKeyFilter(KEY_LAST_TO_END), mDateRangeLastPane.selectedToEndProperty());
 
         var p = getSessionManager().getPreferences();
-        mDateFirstFromStart = p.getBoolean(KEY_DATE_FIRST_FROM_START, true);
-        mDateFirstToEnd = p.getBoolean(KEY_DATE_FIRST_TO_END, true);
-        mDateLastFromStart = p.getBoolean(KEY_DATE_LAST_FROM_START, true);
-        mDateLastToEnd = p.getBoolean(KEY_DATE_LAST_TO_END, true);
-        mDateFormulaFirst = p.get(KEY_DATE_FORMULA_FIRST, "");
-        mDateFormulaLast = p.get(KEY_DATE_FORMULA_LAST, "");
+        mDateFirstFromStart = p.getBoolean(getKeyFilter(KEY_FIRST_FROM_START), true);
+        mDateFirstToEnd = p.getBoolean(getKeyFilter(KEY_FIRST_TO_END), true);
+        mDateLastFromStart = p.getBoolean(getKeyFilter(KEY_LAST_FROM_START), true);
+        mDateLastToEnd = p.getBoolean(getKeyFilter(KEY_LAST_TO_END), true);
+        mDateFormulaFirst = p.get(getKeyFilter(KEY_FORMULA_FIRST), "");
+        mDateFormulaLast = p.get(getKeyFilter(KEY_FORMULA_LAST), "");
         initSession(sessionManager);
     }
 

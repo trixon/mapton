@@ -40,6 +40,7 @@ public class DateDiffPane {
     private final DateRangePane mDateRangePane = new DateRangePane();
     private final double mDefaultDiffMeters = 0.020;
     private final int mDefaultDiffPercent = 50;
+    private final MBaseFilterSection mFilterSection;
     private final SessionComboBox<AlarmLevelChangeMode> mMeasAlarmLevelChangeModeScb = new SessionComboBox<>();
     private final SessionCheckBox mMeters1dCheckbox = new SessionCheckBox("1d (meter)");
     private final SessionDoubleSpinner mMeters1dSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffMeters, 0.001);
@@ -51,7 +52,8 @@ public class DateDiffPane {
     private final SessionIntegerSpinner mPercent2dSis = new SessionIntegerSpinner(0, 200, mDefaultDiffPercent, 5);
     private final GridPane mRoot = new GridPane(MBaseFilterSection.GAP_H, MBaseFilterSection.GAP_V);
 
-    public DateDiffPane() {
+    public DateDiffPane(MBaseFilterSection filterSection) {
+        mFilterSection = filterSection;
         init();
     }
 
@@ -80,17 +82,15 @@ public class DateDiffPane {
     }
 
     public void initSession(SessionManager sessionManager) {
-        sessionManager.register("filter.measDateMeters1d", mMeters1dCheckbox.selectedProperty());
-        sessionManager.register("filter.measDateMeters1dValue", mMeters1dSds.sessionValueProperty());
-        sessionManager.register("filter.measDateMeters2d", mMeters2dCheckbox.selectedProperty());
-        sessionManager.register("filter.measDateMeters2dValue", mMeters2dSds.sessionValueProperty());
-
-        sessionManager.register("filter.measDatePercent1d", mPercent1dCheckbox.selectedProperty());
-        sessionManager.register("filter.measDatePercent1dValue", mPercent1dSis.sessionValueProperty());
-        sessionManager.register("filter.measDatePercent2d", mPercent2dCheckbox.selectedProperty());
-        sessionManager.register("filter.measDatePercent2dValue", mPercent2dSis.sessionValueProperty());
-
-        sessionManager.register("filter.measDateDiffChangeMode", mMeasAlarmLevelChangeModeScb.selectedIndexProperty());
+        sessionManager.register(mFilterSection.getKeyFilter("dateMeters1d"), mMeters1dCheckbox.selectedProperty());
+        sessionManager.register(mFilterSection.getKeyFilter("dateMeters1dValue"), mMeters1dSds.sessionValueProperty());
+        sessionManager.register(mFilterSection.getKeyFilter("dateMeters2d"), mMeters2dCheckbox.selectedProperty());
+        sessionManager.register(mFilterSection.getKeyFilter("dateMeters2dValue"), mMeters2dSds.sessionValueProperty());
+        sessionManager.register(mFilterSection.getKeyFilter("datePercent1d"), mPercent1dCheckbox.selectedProperty());
+        sessionManager.register(mFilterSection.getKeyFilter("datePercent1dValue"), mPercent1dSis.sessionValueProperty());
+        sessionManager.register(mFilterSection.getKeyFilter("datePercent2d"), mPercent2dCheckbox.selectedProperty());
+        sessionManager.register(mFilterSection.getKeyFilter("datePercent2dValue"), mPercent2dSis.sessionValueProperty());
+        sessionManager.register(mFilterSection.getKeyFilter("dateDiffChangeMode"), mMeasAlarmLevelChangeModeScb.selectedIndexProperty());
     }
 
     public void load(ArrayList<BTopoControlPoint> items) {

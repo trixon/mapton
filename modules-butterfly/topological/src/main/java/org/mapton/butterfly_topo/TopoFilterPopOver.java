@@ -27,6 +27,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
@@ -65,7 +67,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMeas = new FilterSectionMeas();
-        mFilterSectionMisc = new BFilterSectionMisc();
+        mFilterSectionMisc = new BFilterSectionMisc(filter);
         mFilterSectionTrend = new BFilterSectionTrend<>();
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
@@ -223,18 +225,30 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMisc.initSession(sessionManager);
         mFilterSectionTrend.initSession(sessionManager);
 
-        sessionManager.register("filter.freeText", mFilter.freeTextProperty());
-
-        sessionManager.register("filter.checkedDimension1", mDimens1Checkbox.selectedProperty());
-        sessionManager.register("filter.checkedDimension2", mDimens2Checkbox.selectedProperty());
-        sessionManager.register("filter.checkedDimension3", mDimens3Checkbox.selectedProperty());
-        sessionManager.register("filter.checkedDimension1dCloseToAuto", m1dCloseToAutoCheckbox.selectedProperty());
-
-        sessionManager.register("filter.measIncludeWithout", mMeasIncludeWithoutCheckbox.selectedProperty());
-
-        sessionManager.register("filter.sameAlarm", mSameAlarmCheckbox.selectedProperty());
+        var filterSectionTopo = new FilterSectionTopo();
+        sessionManager.register(filterSectionTopo.getKeyFilter("checkedDimension1"), mDimens1Checkbox.selectedProperty());
+        sessionManager.register(filterSectionTopo.getKeyFilter("checkedDimension2"), mDimens2Checkbox.selectedProperty());
+        sessionManager.register(filterSectionTopo.getKeyFilter("checkedDimension3"), mDimens3Checkbox.selectedProperty());
+        sessionManager.register(filterSectionTopo.getKeyFilter("checkedDimension1dCloseToAuto"), m1dCloseToAutoCheckbox.selectedProperty());
+        sessionManager.register(filterSectionTopo.getKeyFilter("measIncludeWithout"), mMeasIncludeWithoutCheckbox.selectedProperty());
+        sessionManager.register(filterSectionTopo.getKeyFilter("sameAlarm"), mSameAlarmCheckbox.selectedProperty());
 
         return sessionManager;
     }
 
+    private class FilterSectionTopo extends MBaseFilterSection {
+
+        public FilterSectionTopo() {
+            super("INTERNAL");
+        }
+
+        @Override
+        public void onShownFirstTime() {
+        }
+
+        @Override
+        public void reset(PropertiesConfiguration filterConfig) {
+        }
+
+    }
 }

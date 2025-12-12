@@ -22,8 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.property.SimpleBooleanProperty;
-import org.mapton.butterfly_core.api.BFilterSectionDate;
-import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
@@ -34,6 +32,7 @@ import org.mapton.butterfly_core.api.BFilterSectionTrendProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -42,15 +41,15 @@ import se.trixon.almond.util.Dict;
 public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
-        BFilterSectionDateProvider,
         BFilterSectionTrendProvider,
-        BFilterSectionDisruptorProvider {
+        BFilterSectionDisruptorProvider,
+        FilterSectionMeasProvider {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(InsarFilter.class);
-    private BFilterSectionDate mFilterSectionDate;
     private BFilterSectionDisruptor mFilterSectionDisruptor;
     private BFilterSectionPoint mFilterSectionPoint;
     private BFilterSectionTrend mFilterSectionTrend;
+    private FilterSectionMeas mFilterSectionMeas;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final InsarManager mManager = InsarManager.getInstance();
 
@@ -77,12 +76,6 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
     }
 
     @Override
-    public void setFilterSection(BFilterSectionDate filterSectionDate) {
-        mFilterSectionDate = filterSectionDate;
-        mFilterSectionDate.initListeners(mChangeListenerObject, mListChangeListener);
-    }
-
-    @Override
     public void setFilterSection(BFilterSectionPoint filterSection) {
         mFilterSectionPoint = filterSection;
         mFilterSectionPoint.initListeners(mChangeListenerObject, mListChangeListener);
@@ -95,6 +88,12 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
     }
 
     @Override
+    public void setFilterSection(FilterSectionMeas filterSection) {
+        mFilterSectionMeas = filterSection;
+        mFilterSectionMeas.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
@@ -102,9 +101,9 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
-                .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
                 .filter(p -> mFilterSectionTrend.filter(p))
+                .filter(p -> mFilterSectionMeas.filter(p))
                 .toList();
 
         if (mInvertProperty.get()) {
@@ -123,7 +122,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         var map = new LinkedHashMap<String, String>();
         map.put(Dict.TEXT.toString(), getFreeText());
         mFilterSectionPoint.createInfoContent(map);
-        mFilterSectionDate.createInfoContent(map);
+        mFilterSectionMeas.createInfoContent(map);
         mFilterSectionDisruptor.createInfoContent(map);
         mFilterSectionTrend.createInfoContent(map);
 
@@ -134,5 +133,9 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         List.of(
                 mInvertProperty
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
+
+        OptionsManager.getInstance().colorProperty().addListener((p, o, n) -> {
+            FxHelper.runLater(() -> update());
+        });
     }
 }
