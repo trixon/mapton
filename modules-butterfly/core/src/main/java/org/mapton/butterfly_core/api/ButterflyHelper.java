@@ -29,6 +29,12 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class ButterflyHelper {
 
+    public static final Color[] sSpeedColors;
+    public static final Material[] sSpeedMaterials;
+    public static final Color[] sVerticalNegColors;
+    public static final Material[] sVerticalNegMaterials;
+    public static final Color[] sVerticalPosColors;
+    public static final Material[] sVerticalPosMaterials;
     private static final java.awt.Color[] mAlarmColorsAwt = new Color[]{
         java.awt.Color.BLUE,
         java.awt.Color.GREEN,
@@ -50,6 +56,63 @@ public class ButterflyHelper {
         Material.RED,
         new Material(Color.RED.darker())
     };
+
+    static {
+        sSpeedColors = new Color[]{
+            //https://colordesigner.io/gradient-generator/?mode=lch#ACF0F2-2C1DFF
+            Color.decode("#acf0f2"),
+            Color.decode("#77e2f2"),
+            Color.decode("#22d2f8"),
+            Color.decode("#00c0fa"),
+            Color.decode("#00adee"),
+            Color.decode("#009be1"),
+            Color.decode("#008ad2"),
+            Color.decode("#007ac8"),
+            Color.decode("#0066cd"),
+            Color.decode("#2c1dff"),
+            Color.decode("#FF00FF")
+        };
+
+        sSpeedMaterials = new Material[sSpeedColors.length];
+        for (int i = 0; i < sSpeedMaterials.length; i++) {
+            sSpeedMaterials[i] = new Material(sSpeedColors[i]);
+        }
+
+        sVerticalNegColors = new Color[]{
+            //https://colordesigner.io/gradient-generator/?mode=oklab#FFFFFF-FF0000
+            Color.decode("#00ff00"),
+            Color.decode("#ffe5df"),
+            Color.decode("#ffcac0"),
+            Color.decode("#ffafa1"),
+            Color.decode("#ff9281"),
+            Color.decode("#ff7361"),
+            Color.decode("#ff4e3e"),
+            Color.decode("#ff0000"),
+            Color.decode("#aa0000")
+        };
+
+        sVerticalPosColors = new Color[]{
+            //https://colordesigner.io/gradient-generator/?mode=oklab#0000FF-FFFFFF
+            Color.decode("#00ff00"),
+            Color.decode("#d6e6ff"),
+            Color.decode("#aeccff"),
+            Color.decode("#87b1ff"),
+            Color.decode("#6094ff"),
+            Color.decode("#3a75ff"),
+            Color.decode("#1250ff"),
+            Color.decode("#0000ff"),
+            Color.decode("#0000aa")
+        };
+
+        sVerticalPosMaterials = new Material[sVerticalPosColors.length];
+        for (int i = 0; i < sVerticalPosMaterials.length; i++) {
+            sVerticalPosMaterials[i] = new Material(sVerticalPosColors[i]);
+        }
+        sVerticalNegMaterials = new Material[sVerticalNegColors.length];
+        for (int i = 0; i < sVerticalNegMaterials.length; i++) {
+            sVerticalNegMaterials[i] = new Material(sVerticalNegColors[i]);
+        }
+    }
 
     public static java.awt.Color getAlarmColorAwt(int alarmLevel) {
         return mAlarmColorsAwt[1 + alarmLevel];
@@ -73,6 +136,32 @@ public class ButterflyHelper {
 
     public static Material[] getAlarmMaterials() {
         return mAlarmMaterials;
+    }
+
+    public static int getColorIndex(int length, double limit, double value) {
+        int index = (int) Math.min(length - 1, (Math.abs(value) / limit) * (length - 1));
+
+        return index;
+    }
+
+    public static Color getRangeColor(Double value, double limit) {
+        if (value == null) {
+            return Color.YELLOW;
+        } else if (value < 0) {
+            return sVerticalNegColors[getColorIndex(sVerticalNegMaterials.length, limit, value)];
+        } else {
+            return sVerticalPosColors[getColorIndex(sVerticalPosMaterials.length, limit, value)];
+        }
+    }
+
+    public static Material getRangeMaterial(Double value, double limit) {
+        if (value == null) {
+            return Material.YELLOW;
+        } else if (value < 0) {
+            return sVerticalNegMaterials[getColorIndex(sVerticalNegMaterials.length, limit, value)];
+        } else {
+            return sVerticalPosMaterials[getColorIndex(sVerticalPosMaterials.length, limit, value)];
+        }
     }
 
     public static void refreshTitle() {

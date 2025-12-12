@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.time.LocalDate;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -29,6 +30,7 @@ import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly_format.types.BXyzPoint;
+import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -46,6 +48,20 @@ public abstract class BListCell<T extends BXyzPoint> extends ListCell<T> {
     public BListCell() {
         mHeaderLabel.setStyle(mStyleBold);
         mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
+    }
+
+    public String getDateLatestAndNext(T p) {
+        var sb = new StringBuilder(StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE"));
+        var nextDate = p.extOrNull().getObservationRawNextDate();
+        if (nextDate != null) {
+            var sign = "⇐";
+            sb.append(" (").append(nextDate.toString()).append(")");
+            if (nextDate.isBefore(LocalDate.now())) {
+                sb.append(" ").append(sign);
+            }
+        }
+
+        return sb.toString();
     }
 
     protected void activateTooltip() {
