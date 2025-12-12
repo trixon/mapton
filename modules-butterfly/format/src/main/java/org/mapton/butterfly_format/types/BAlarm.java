@@ -276,8 +276,19 @@ public class BAlarm extends BBasePoint {
         }
 
         public void populateRanges() {
-            populateRangesLimit();
-            populateRangesRatio();
+            try {
+                populateRangesLimit();
+            } catch (Exception e) {
+                System.out.println("Error parsing alarm limit: " + getName());
+                System.out.println(e);
+            }
+
+            try {
+                populateRangesRatio();
+            } catch (Exception e) {
+                System.out.println("Error parsing alarm ratio: " + getName());
+                System.out.println(e);
+            }
         }
 
         private void populateRangesLimit() {

@@ -554,9 +554,9 @@ public class Butterfly {
 
         private void postLoad() {
             mNameToInsarPoint.clear();
-            var groupMap = new HashMap<String, String>();
-            groupMap.put("asc", "Ascending");
-            groupMap.put("desc", "Descending");
+            var categoryMap = new HashMap<String, String>();
+            categoryMap.put("asc", "Ascending");
+            categoryMap.put("desc", "Descending");
             var now = LocalDateTime.now();
             var defaults = RemoteInsarPointDefaultsConfig.getInstance().getConfig();
             for (var p : mRemoteInsarPoints) {
@@ -570,7 +570,6 @@ public class Butterfly {
                 p.setNumOfDecZ(4);
                 p.setUnit("m");
                 p.setUnitDiff("mm");
-                p.setGroup(groupMap.computeIfAbsent(p.getGroup(), s -> s));
                 p.setDateCreated(now);
                 p.setDateChanged(now);
                 p.setVisible(true);
@@ -579,13 +578,23 @@ public class Butterfly {
                     p.setOrigin(defaults.getString("ORIGIN"));
                     p.setOperator(defaults.getString("OPERATOR"));
                     p.setAlarm1Id(defaults.getString("ALARM_H"));
-                    var cat = p.getCategory();
-                    var catB = defaults.getString("CAT_B", cat);
-                    var catG = defaults.getString("CAT_G", cat);
-                    cat = StringUtils.replaceEach(cat,
+                    var grp = p.getGroup();
+                    var grpB = defaults.getString("GRP_B", grp);
+                    var grpG = defaults.getString("GRP_G", grp);
+                    grp = StringUtils.replaceEach(grp,
                             new String[]{"B", "G"},
-                            new String[]{catB, catG});
+                            new String[]{grpB, grpG});
+                    p.setGroup(grp);
+
+                    var cat = p.getCategory();
+                    var catAsc = defaults.getString("CAT_ASC", cat);
+                    var catDesc = defaults.getString("CAT_DESC", cat);
+                    cat = StringUtils.replaceEach(cat,
+                            new String[]{"asc", "desc"},
+                            new String[]{catAsc, catDesc});
                     p.setCategory(cat);
+                } else {
+                    p.setCategory(categoryMap.computeIfAbsent(p.getCategory(), s -> s));
                 }
             }
         }
