@@ -30,9 +30,14 @@ import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_remote.api.RemoteHelper;
+import org.mapton.butterfly_remote.insar.graphics.GraphicItem;
 import org.mapton.butterfly_remote.insar.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
+import org.mapton.worldwind.api.analytic.AnalyticGrid;
+import org.mapton.worldwind.api.analytic.CellAggregate;
+import org.mapton.worldwind.api.analytic.GridData;
+import org.mapton.worldwind.api.analytic.GridValue;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -155,6 +160,24 @@ public class InsarLayerBundle extends BfLayerBundle {
                 }
             }
 
+            if (mOptionsView.getGraphicCheckModel().isChecked(GraphicItem.HEAT_MAP)) {
+                var values = mManager.getTimeFilteredItems().stream()
+                        .map(p -> new GridValue(p.getLat(), p.getLon(), p.ext().deltaZero().getDeltaZ() * 1000))
+                        //                        .map(p -> new GridValue(p.getLat(), p.getLon(), p.getVelocity()))
+                        .toList();
+
+                int width = 600;
+                int height = 600;
+
+                var gridData = new GridData(width, height, values, CellAggregate.MIN);
+                var analyticGrid = new AnalyticGrid(mLayer, 50, -10, +10);
+                analyticGrid.setNullOpacity(0.0);
+                analyticGrid.setZeroOpacity(0.3);
+                analyticGrid.setZeroValueSearchRange(5);
+                analyticGrid.setGridData(gridData);
+                var surface = analyticGrid.getSurface();
+                mSurfaceLayer.addRenderable(surface);
+            }
             setDragEnabled(false);
         });
     }
