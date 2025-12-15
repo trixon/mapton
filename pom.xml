@@ -203,11 +203,6 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>butterfly-topo-convergence</artifactId>
-                <version>${mapton.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mapton</groupId>
                 <artifactId>butterfly-hydro</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
@@ -223,12 +218,22 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>butterfly-geo-extensometer</artifactId>
+                <artifactId>butterfly-geo-inclinometer</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>butterfly-geo-inclinometer</artifactId>
+                <artifactId>butterfly-rock</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-rock-convergence</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-rock-extensometer</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>

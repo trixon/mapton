@@ -291,11 +291,6 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>butterfly-topo-convergence</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-projektnav</artifactId>
                     <version>${project.version}</version>
                 </dependency>
@@ -315,11 +310,19 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>butterfly-geo-extensometer</artifactId>
+                    <artifactId>butterfly-geo-inclinometer</artifactId>
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>butterfly-geo-inclinometer</artifactId>
+                    <artifactId>butterfly-rock</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-rock-convergence</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-rock-extensometer</artifactId>
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
@@ -344,12 +347,10 @@
                 <dependency>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-remote</artifactId>
-                    <version>${mapton.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-remote-insar</artifactId>
-                    <version>${mapton.version}</version>
                 </dependency>
             </dependencies>
         </profile>
