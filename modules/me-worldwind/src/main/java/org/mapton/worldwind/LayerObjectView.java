@@ -325,7 +325,7 @@ public class LayerObjectView extends BorderPane implements MActivatable {
         mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             refresh(mMap);
         });
-
+        var delayedResetRunner = new DelayedResetRunner(500, () -> System.gc());
         mCheckModel.getCheckedItems().addListener((ListChangeListener.Change<? extends TreeItem<Layer>> c) -> {
             synchronized (this) {
                 while (c.next()) {
@@ -345,6 +345,7 @@ public class LayerObjectView extends BorderPane implements MActivatable {
                         });
                     }
                 }
+                delayedResetRunner.reset();
             }
         });
 
@@ -391,17 +392,20 @@ public class LayerObjectView extends BorderPane implements MActivatable {
                 layer.addPropertyChangeListener("Enabled", pce -> {
                     boolean newValue = (boolean) pce.getNewValue();
                     if (newValue) {
-                        mCheckModel.check(treeItem);
+//                        synchronized (mCheckModel) {
+                        FxHelper.runLaterDelayed(10, () -> mCheckModel.check(treeItem));
+//                        }
                     } else {
                         try {
-                            mCheckModel.clearCheck(treeItem);
+//                            synchronized (mCheckModel) {
+                            FxHelper.runLaterDelayed(10, () -> mCheckModel.clearCheck(treeItem));
+//                            }
                         } catch (UnsupportedOperationException e) {
 //                            System.err.println("Error detected in WWLayerObjectView while clearing check");
 //                            System.err.println(e.toString());
                             Exceptions.printStackTrace(e);
                         }
                     }
-
                     mVisibilityPreferences.putBoolean(WWHelper.getLayerPath(treeItem.getValue()), newValue);
                 });
             }
