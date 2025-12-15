@@ -67,6 +67,7 @@ public class InsarOptionsView extends BOptionsView {
     }
 
     private void createUI() {
+        getPlotDebtScbx().setDisable(true);
         mOptionsManager.colorProperty().bind(mColorScb.valueProperty());
         mPointScb.getItems().setAll(InsarPointBy.values());
         mPointScb.setValue(DEFAULT_POINT_BY);
@@ -96,6 +97,7 @@ public class InsarOptionsView extends BOptionsView {
         FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
 
         setCenter(gp);
+
     }
 
     private void initListeners() {
