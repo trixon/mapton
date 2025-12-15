@@ -61,7 +61,7 @@ public abstract class MOptionsView {
      * @return a key with simple class name and options as prefix
      */
     public String getKeyOptions(String key) {
-        return "%s.options.%s".formatted(getClass().getSimpleName(), key);
+        return "options.%s.%s".formatted(getClass().getSimpleName(), key);
     }
 
     public SessionManager getSessionManager() {
