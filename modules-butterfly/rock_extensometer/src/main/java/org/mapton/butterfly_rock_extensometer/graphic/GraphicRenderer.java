@@ -35,8 +35,8 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
+import org.mapton.butterfly_format.types.rock.BRockExtensometer;
+import org.mapton.butterfly_format.types.rock.BRockExtensometerPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_rock_extensometer.ExtensoAttributeManager;
 import org.mapton.butterfly_rock_extensometer.ExtensoManager;
@@ -60,7 +60,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         mCheckModel = checkModel;
     }
 
-    public void plot(BGeoExtensometer extenso, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BRockExtensometer extenso, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
 
         if (mCheckModel.isChecked(GraphicItem.INDICATORS)) {
@@ -94,7 +94,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
     }
 
-    private void plotIndicators(BGeoExtensometer extenso, Position position) {
+    private void plotIndicators(BRockExtensometer extenso, Position position) {
         var scale = 2d;
         var ground = 1 * scale + Math.abs(ExtensoManager.getInstance().getMinimumDepth() * scale);
         if (Double.isInfinite(ground)) {
@@ -174,7 +174,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
     }
 
-    private void plotLabel(BGeoExtensometer extenso, Function<BGeoExtensometerPoint, String> function, double offset) {
+    private void plotLabel(BRockExtensometer extenso, Function<BRockExtensometerPoint, String> function, double offset) {
         extenso.getPoints().forEach(p -> {
             var position = p.<Position>getValue(Position.class);
             var placemark = new PointPlacemark(WWHelper.positionFromPosition(position, position.elevation + offset));
@@ -201,8 +201,8 @@ public class GraphicRenderer extends GraphicRendererBase {
         addRenderable(placemark, true);
     }
 
-    private void plotLabelsAlarm(BGeoExtensometer extenso) {
-        var function = (Function<BGeoExtensometerPoint, String>) p -> "%.1f  %.1f  %.1f".formatted(
+    private void plotLabelsAlarm(BRockExtensometer extenso) {
+        var function = (Function<BRockExtensometerPoint, String>) p -> "%.1f  %.1f  %.1f".formatted(
                 p.getLimit1() * 1000,
                 p.getLimit2() * 1000,
                 p.getLimit3() * 1000
@@ -215,8 +215,8 @@ public class GraphicRenderer extends GraphicRendererBase {
         plotLabel(point, function, .75);
     }
 
-    private void plotLabelsDeltaZ(BGeoExtensometer extenso) {
-        var function = (Function<BGeoExtensometerPoint, String>) p -> "%.2f".formatted(p.ext().getDelta());
+    private void plotLabelsDeltaZ(BRockExtensometer extenso) {
+        var function = (Function<BRockExtensometerPoint, String>) p -> "%.2f".formatted(p.ext().getDelta());
         plotLabel(extenso, function, 0);
     }
 
@@ -225,8 +225,8 @@ public class GraphicRenderer extends GraphicRendererBase {
         plotLabel(point, function, 0);
     }
 
-    private void plotLabelsDepth(BGeoExtensometer extenso) {
-        var function = (Function<BGeoExtensometerPoint, String>) p -> "%.1f".formatted(p.getDepth());
+    private void plotLabelsDepth(BRockExtensometer extenso) {
+        var function = (Function<BRockExtensometerPoint, String>) p -> "%.1f".formatted(p.getDepth());
         plotLabel(extenso, function, -.75);
     }
 
@@ -235,7 +235,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         plotLabel(point, function, -.75);
     }
 
-    private void plotSlice(BGeoExtensometer extenso, Position position) {
+    private void plotSlice(BRockExtensometer extenso, Position position) {
         int numOfSlices = extenso.getPoints().size();
 
         for (int i = 0; i < extenso.getPoints().size(); i++) {
@@ -287,7 +287,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
     }
 
-    private void plotTrace(BGeoExtensometer extenso) {
+    private void plotTrace(BRockExtensometer extenso) {
         int numOfSlices = extenso.getPoints().size();
 
         for (int i = 0; i < extenso.getPoints().size(); i++) {

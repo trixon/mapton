@@ -22,8 +22,8 @@ import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
+import org.mapton.butterfly_format.types.rock.BRockConvergenceObservation;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -31,10 +31,10 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public class ConvergencePropertiesBuilder extends BPropertiesBuilder<BTopoConvergenceGroup> {
+public class ConvergencePropertiesBuilder extends BPropertiesBuilder<BRockConvergence> {
 
     @Override
-    public Object build(BTopoConvergenceGroup p) {
+    public Object build(BRockConvergence p) {
         if (p == null) {
             return p;
         }
@@ -92,7 +92,7 @@ public class ConvergencePropertiesBuilder extends BPropertiesBuilder<BTopoConver
         propertyMap.put("Antal linjer", p.ext().getPairs().size());
         propertyMap.put("Punkter", Strings.CI.remove(p.getRef(), p.getName()));
 
-        var function = BTopoConvergenceObservation.FUNCTION_3D;
+        var function = BRockConvergenceObservation.FUNCTION_3D;
 
         p.ext().getPairsOrderedByDeltaDesc(function, 5)
                 .forEachOrdered(pair -> {

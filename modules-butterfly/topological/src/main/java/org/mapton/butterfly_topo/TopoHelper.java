@@ -20,8 +20,8 @@ import java.awt.Color;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
+import org.mapton.butterfly_format.types.rock.BRockConvergencePair;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_format.types.topo.BTopoGradeDiff;
 
@@ -31,11 +31,11 @@ import org.mapton.butterfly_format.types.topo.BTopoGradeDiff;
  */
 public class TopoHelper {
 
-    public static Color getAlarmColorAwt(BTopoConvergenceGroup p) {
+    public static Color getAlarmColorAwt(BRockConvergence p) {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
     }
 
-    public static Color getAlarmColorAwt(BTopoConvergencePair p) {
+    public static Color getAlarmColorAwt(BRockConvergencePair p) {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
     }
 
@@ -51,11 +51,11 @@ public class TopoHelper {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
     }
 
-    public static javafx.scene.paint.Color getAlarmColorFx(BTopoConvergenceGroup p) {
+    public static javafx.scene.paint.Color getAlarmColorFx(BRockConvergence p) {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevel(p));
     }
 
-    public static javafx.scene.paint.Color getAlarmColorFx(BTopoConvergencePair p) {
+    public static javafx.scene.paint.Color getAlarmColorFx(BRockConvergencePair p) {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevel(p));
     }
 
@@ -111,11 +111,11 @@ public class TopoHelper {
         }
     }
 
-    public static int getAlarmLevel(BTopoConvergenceGroup p) {
+    public static int getAlarmLevel(BRockConvergence p) {
         return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
     }
 
-    public static int getAlarmLevel(BTopoConvergencePair p) {
+    public static int getAlarmLevel(BRockConvergencePair p) {
         return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
     }
 

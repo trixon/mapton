@@ -22,7 +22,7 @@ import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
+import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
 
@@ -35,7 +35,7 @@ public class ExtensoView {
     private final ExtensoFilter mFilter = new ExtensoFilter();
     private final ExtensoFilterPopOver mFilterPopOver = new ExtensoFilterPopOver(mFilter);
     private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "geo.extenso");
-    private final SingleListForm<ExtensoManager, BGeoExtensometer> mListForm;
+    private final SingleListForm<ExtensoManager, BRockExtensometer> mListForm;
     private final ExtensoManager mManager = ExtensoManager.getInstance();
 
     public ExtensoView() {

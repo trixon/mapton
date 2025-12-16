@@ -25,7 +25,7 @@ import javafx.scene.shape.Shape;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BListCell;
 import org.mapton.butterfly_core.api.ButterflyHelper;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
+import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -33,7 +33,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-class ExtensoListCell extends BListCell<BGeoExtensometer> {
+class ExtensoListCell extends BListCell<BRockExtensometer> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
@@ -46,7 +46,7 @@ class ExtensoListCell extends BListCell<BGeoExtensometer> {
     }
 
     @Override
-    protected void addContent(BGeoExtensometer ext) {
+    protected void addContent(BRockExtensometer ext) {
         setText(null);
         setGraphic(mVBox);
         mAlarmIndicator.update(ext);
@@ -82,14 +82,14 @@ class ExtensoListCell extends BListCell<BGeoExtensometer> {
         mAlarmIndicator.setSpacing(FxHelper.getUIScaled(3));
     }
 
-    private class AlarmIndicator extends BAlarmIndicator<BGeoExtensometer> {
+    private class AlarmIndicator extends BAlarmIndicator<BRockExtensometer> {
 
         public AlarmIndicator() {
             addNodes(m1dShape, m2dShape);
         }
 
         @Override
-        public void update(BGeoExtensometer ext) {
+        public void update(BRockExtensometer ext) {
             mAlarmIndicator.getChildren().clear();
 
             for (var p : ext.getPoints()) {

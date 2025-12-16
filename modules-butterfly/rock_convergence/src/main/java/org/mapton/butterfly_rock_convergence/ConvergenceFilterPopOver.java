@@ -86,7 +86,7 @@ public class ConvergenceFilterPopOver extends BaseTabbedFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var items = butterfly.topo().getConvergenceGroups();
+        var items = butterfly.rock().getConvergence();
 
         mFilterSectionPoint.load(items);
         mFilterSectionDisruptor.load();

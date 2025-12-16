@@ -45,7 +45,7 @@ import org.mapton.api.MTemporalManager;
 import org.mapton.api.Mapton;
 import org.mapton.api.ui.forms.ChartBuilder;
 import static org.mapton.butterfly_core.api.XyzChartBuilder.plotBlasts;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import org.mapton.butterfly_format.types.rock.BRockConvergencePair;
 import org.mapton.butterfly_rock_convergence.pair.ConvergencePairManager;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.Dict;
@@ -56,7 +56,7 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
-public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePair> {
+public class ConvergencePairChartBuilder extends ChartBuilder<BRockConvergencePair> {
 
     private JFreeChart mChart;
     private ChartPanel mChartPanel;
@@ -76,7 +76,7 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
     }
 
     @Override
-    public synchronized Callable<ChartPanel> build(BTopoConvergencePair p) {
+    public synchronized Callable<ChartPanel> build(BRockConvergencePair p) {
         if (p == null) {
             return null;
         }
@@ -100,12 +100,12 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
     }
 
     @Override
-    public void setTitle(BTopoConvergencePair p) {
+    public void setTitle(BRockConvergencePair p) {
         mChart.setTitle(p.getName());
     }
 
     @Override
-    public void updateDataset(BTopoConvergencePair p) {
+    public void updateDataset(BRockConvergencePair p) {
         mDataset.removeAllSeries();
         mTimeSeriesDeltaL.clear();
         mTimeSeriesBlast.clear();

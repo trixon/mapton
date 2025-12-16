@@ -19,15 +19,15 @@ import javafx.scene.control.Label;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BListCell;
 import org.mapton.butterfly_core.api.ButterflyHelper;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
+import org.mapton.butterfly_format.types.rock.BRockConvergenceObservation;
 import se.trixon.almond.util.StringHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class ConvergenceListCell extends BListCell<BTopoConvergenceGroup> {
+class ConvergenceListCell extends BListCell<BRockConvergence> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
@@ -40,7 +40,7 @@ class ConvergenceListCell extends BListCell<BTopoConvergenceGroup> {
     }
 
     @Override
-    protected void addContent(BTopoConvergenceGroup g) {
+    protected void addContent(BRockConvergence g) {
         setText(null);
         setGraphic(mVBox);
         loadTooltip(g);
@@ -55,9 +55,9 @@ class ConvergenceListCell extends BListCell<BTopoConvergenceGroup> {
         var date = "%s — %s  (%d)".formatted(dateZero, dateLast, g.ext().getPairs().size());
 
         mHeaderLabel.setText(header);
-        mDesc1Label.setText(g.ext().getDeltaString("1d", BTopoConvergenceObservation.FUNCTION_1D));
-        mDesc2Label.setText(g.ext().getDeltaString("2d", BTopoConvergenceObservation.FUNCTION_2D));
-        mDesc3Label.setText(g.ext().getDeltaString("3d", BTopoConvergenceObservation.FUNCTION_3D));
+        mDesc1Label.setText(g.ext().getDeltaString("1d", BRockConvergenceObservation.FUNCTION_1D));
+        mDesc2Label.setText(g.ext().getDeltaString("2d", BRockConvergenceObservation.FUNCTION_2D));
+        mDesc3Label.setText(g.ext().getDeltaString("3d", BRockConvergenceObservation.FUNCTION_3D));
         mDesc4Label.setText(date);
     }
 
@@ -74,17 +74,17 @@ class ConvergenceListCell extends BListCell<BTopoConvergenceGroup> {
         activateTooltip();
     }
 
-    private class AlarmIndicator extends BAlarmIndicator<BTopoConvergenceGroup> {
+    private class AlarmIndicator extends BAlarmIndicator<BRockConvergence> {
 
         public AlarmIndicator() {
             addNodes(m1dShape, m2dShape, m3dShape);
         }
 
         @Override
-        public void update(BTopoConvergenceGroup p) {
-            var color1 = ButterflyHelper.getAlarmColorFx(p.ext().getAlarmLevel(BTopoConvergenceObservation.FUNCTION_1D));
-            var color2 = ButterflyHelper.getAlarmColorFx(p.ext().getAlarmLevel(BTopoConvergenceObservation.FUNCTION_2D));
-            var color3 = ButterflyHelper.getAlarmColorFx(p.ext().getAlarmLevel(BTopoConvergenceObservation.FUNCTION_3D));
+        public void update(BRockConvergence p) {
+            var color1 = ButterflyHelper.getAlarmColorFx(p.ext().getAlarmLevel(BRockConvergenceObservation.FUNCTION_1D));
+            var color2 = ButterflyHelper.getAlarmColorFx(p.ext().getAlarmLevel(BRockConvergenceObservation.FUNCTION_2D));
+            var color3 = ButterflyHelper.getAlarmColorFx(p.ext().getAlarmLevel(BRockConvergenceObservation.FUNCTION_3D));
 
             m1dShape.setFill(color1);
             m2dShape.setFill(color2);

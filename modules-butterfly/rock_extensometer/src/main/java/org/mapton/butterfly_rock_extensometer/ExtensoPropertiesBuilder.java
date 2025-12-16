@@ -20,17 +20,17 @@ import java.util.LinkedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.BXyzPoint;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
+import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ExtensoPropertiesBuilder extends BPropertiesBuilder<BGeoExtensometer> {
+public class ExtensoPropertiesBuilder extends BPropertiesBuilder<BRockExtensometer> {
 
     @Override
-    public Object build(BGeoExtensometer p) {
+    public Object build(BRockExtensometer p) {
         if (p == null) {
             return p;
         }

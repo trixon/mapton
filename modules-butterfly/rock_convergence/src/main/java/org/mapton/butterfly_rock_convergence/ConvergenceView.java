@@ -22,7 +22,7 @@ import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
 import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
 import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
@@ -36,7 +36,7 @@ public class ConvergenceView {
     private final ConvergenceFilter mFilter = new ConvergenceFilter();
     private final ConvergenceFilterPopOver mFilterPopOver = new ConvergenceFilterPopOver(mFilter);
     private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "topo.convergence");
-    private final SingleListForm<ConvergenceManager, BTopoConvergenceGroup> mListForm;
+    private final SingleListForm<ConvergenceManager, BRockConvergence> mListForm;
     private final ConvergenceManager mManager = ConvergenceManager.getInstance();
 
     public ConvergenceView() {

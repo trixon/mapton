@@ -52,7 +52,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
+import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -61,7 +61,7 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
-public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
+public class ExtensoChartBuilder extends ChartBuilder<BRockExtensometer> {
 
     private JFreeChart mChart;
     private ChartPanel mChartPanel;
@@ -78,7 +78,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
     }
 
     @Override
-    public synchronized Callable<ChartPanel> build(BGeoExtensometer p) {
+    public synchronized Callable<ChartPanel> build(BRockExtensometer p) {
         if (p == null) {
             return null;
         }
@@ -97,14 +97,14 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
     }
 
     @Override
-    public void setTitle(BGeoExtensometer p) {
+    public void setTitle(BRockExtensometer p) {
         var colors = List.of(Color.BLUE, Color.GREEN.darker(), Color.YELLOW, Color.RED, Color.ORANGE);
         mChart.setTitle(mCompleteView ? p.getName() : "Senaste %d dygnen".formatted(mRecentDays));
         mChart.getTitle().setPaint(colors.get(p.ext().getAlarmLevel() + 1));
     }
 
     @Override
-    public void updateDataset(BGeoExtensometer extenso) {
+    public void updateDataset(BRockExtensometer extenso) {
         var plot = (CombinedDomainXYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
         new ArrayList<>(plot.getSubplots()).stream().forEach(p -> plot.remove(p));

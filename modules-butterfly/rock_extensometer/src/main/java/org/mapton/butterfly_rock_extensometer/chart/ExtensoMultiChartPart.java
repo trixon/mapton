@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
-import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
+import org.mapton.butterfly_format.types.rock.BRockBlast;
+import org.mapton.butterfly_format.types.rock.BRockExtensometerPoint;
+import org.mapton.butterfly_format.types.rock.BRockExtensometerPointObservation;
 import org.mapton.butterfly_rock_extensometer.ExtensoManager;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.DateHelper;
@@ -48,7 +48,7 @@ public class ExtensoMultiChartPart extends BMultiChartPart {
 
     @Override
     public String getCategory() {
-        return BAcousticBlast.class.getName();
+        return BRockBlast.class.getName();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ExtensoMultiChartPart extends BMultiChartPart {
     }
 
     @Override
-    public ArrayList<BGeoExtensometerPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
+    public ArrayList<BRockExtensometerPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = ExtensoManager.getInstance().getTimeFilteredItems().stream()
                 .filter(p -> {
                     return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= LIMIT_DISTANCE_BLAST;
@@ -86,13 +86,13 @@ public class ExtensoMultiChartPart extends BMultiChartPart {
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        var pointsToExclude = new ArrayList<BGeoExtensometerPoint>();
+        var pointsToExclude = new ArrayList<BRockExtensometerPoint>();
         for (var p : pointList) {
             var observations = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
                     .filter(o -> o.getMeasuredZ() != null)
                     .map(o -> {
-                        var oo = new BGeoExtensometerPointObservation();
+                        var oo = new BRockExtensometerPointObservation();
                         oo.setDate(o.getDate());
                         oo.setMeasuredZ(o.getMeasuredZ());
                         oo.ext().setAccuZ(o.ext().getAccuZ());

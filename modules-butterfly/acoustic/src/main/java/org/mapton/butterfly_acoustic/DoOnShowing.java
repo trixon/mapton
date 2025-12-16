@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 package org.mapton.butterfly_acoustic;
 
 import org.openide.windows.OnShowing;
-import se.trixon.almond.nbp.Almond;
 
 /**
  *
@@ -27,8 +26,6 @@ public class DoOnShowing implements Runnable {
 
     @Override
     public void run() {
-        //Pre-load but don't display
-        Almond.getTopComponent("BlastTopComponent");
     }
 
 }

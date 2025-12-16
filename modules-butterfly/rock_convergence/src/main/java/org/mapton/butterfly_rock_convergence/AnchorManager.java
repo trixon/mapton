@@ -28,9 +28,9 @@ import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePairObservation;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
+import org.mapton.butterfly_format.types.rock.BRockConvergencePair;
+import org.mapton.butterfly_format.types.rock.BRockConvergencePairObservation;
 import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
 import org.mapton.butterfly_rock_convergence.chart.AnchorChartBuilder;
 import org.mapton.butterfly_rock_convergence.pair.PairHelper;
@@ -41,10 +41,10 @@ import org.mapton.worldwind.api.WWHelper;
  *
  * @author Patrik Karlström
  */
-public class AnchorManager extends BaseManager<BTopoConvergencePair> {
+public class AnchorManager extends BaseManager<BRockConvergencePair> {
 
     private final AnchorChartBuilder mChartBuilder = new AnchorChartBuilder();
-    private final ConvergenceManager mGroupManager = ConvergenceManager.getInstance();
+    private final ConvergenceManager mConvergenceManager = ConvergenceManager.getInstance();
     private final AnchorPropertiesBuilder mPropertiesBuilder = new AnchorPropertiesBuilder();
     private final TopoManager mTopoManager = TopoManager.getInstance();
 
@@ -53,13 +53,13 @@ public class AnchorManager extends BaseManager<BTopoConvergencePair> {
     }
 
     private AnchorManager() {
-        super(BTopoConvergencePair.class);
+        super(BRockConvergencePair.class);
 
         initListeners();
     }
 
     @Override
-    public Object getMapIndicator(BTopoConvergencePair pair) {
+    public Object getMapIndicator(BRockConvergencePair pair) {
         if (pair == null) {
             return null;
         }
@@ -89,12 +89,12 @@ public class AnchorManager extends BaseManager<BTopoConvergencePair> {
     }
 
     @Override
-    public Object getObjectChart(BTopoConvergencePair selectedObject) {
+    public Object getObjectChart(BRockConvergencePair selectedObject) {
         return mChartBuilder.build(selectedObject);
     }
 
     @Override
-    public Object getObjectProperties(BTopoConvergencePair selectedObject) {
+    public Object getObjectProperties(BRockConvergencePair selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
@@ -113,31 +113,31 @@ public class AnchorManager extends BaseManager<BTopoConvergencePair> {
     }
 
     @Override
-    protected void load(ArrayList<BTopoConvergencePair> items) {
+    protected void load(ArrayList<BRockConvergencePair> items) {
     }
 
     private void initListeners() {
-        mGroupManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoConvergenceGroup> c) -> {
+        mConvergenceManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BRockConvergence> c) -> {
             load();
         });
     }
 
     private void load() {
         var cooTrans = MOptions.getInstance().getMapCooTrans();
-        var pairs = new ArrayList<BTopoConvergencePair>();
-        var offset = mGroupManager.getOffset();
+        var pairs = new ArrayList<BRockConvergencePair>();
+        var offset = mConvergenceManager.getOffset();
 
-        for (var group : mGroupManager.getTimeFilteredItems()) {
+        for (var convergence : mConvergenceManager.getTimeFilteredItems()) {
             var existingPairs = new HashSet<String>();
-            for (var p1 : group.ext().getControlPoints()) {
-                for (var p2 : group.ext().getControlPoints()) {
+            for (var p1 : convergence.ext().getControlPoints()) {
+                for (var p2 : convergence.ext().getControlPoints()) {
                     if (p1 == p2 || existingPairs.contains("%s-%s".formatted(p2.getName(), p1.getName()))) {
                         continue;
                     }
 
                     existingPairs.add("%s-%s".formatted(p1.getName(), p2.getName()));
                     try {
-                        var pair = new BTopoConvergencePair(group, p1, p2, offset);
+                        var pair = new BRockConvergencePair(convergence, p1, p2, offset);
                         var point = cooTrans.toWgs84(pair.getZeroY(), pair.getZeroX());
                         pair.setLat(point.getY());
                         pair.setLon(point.getX());
@@ -151,7 +151,7 @@ public class AnchorManager extends BaseManager<BTopoConvergencePair> {
         }
 
         for (var pair : pairs) {
-            var observations = new ArrayList<BTopoConvergencePairObservation>();
+            var observations = new ArrayList<BRockConvergencePairObservation>();
             var dateToObservation1 = new HashMap<LocalDateTime, BXyzPointObservation>();
             var dateToObservation2 = new HashMap<LocalDateTime, BXyzPointObservation>();
 
@@ -170,7 +170,7 @@ public class AnchorManager extends BaseManager<BTopoConvergencePair> {
                         var p1 = new Point3D(o1.getMeasuredX(), o1.getMeasuredY(), o1.getMeasuredZ());
                         var p2 = new Point3D(o2.getMeasuredX(), o2.getMeasuredY(), o2.getMeasuredZ());
 
-                        var pairObservation = new BTopoConvergencePairObservation(pair, date, p1, p2);
+                        var pairObservation = new BRockConvergencePairObservation(pair, date, p1, p2);
                         observations.add(pairObservation);
                     }
                 } catch (NullPointerException e) {

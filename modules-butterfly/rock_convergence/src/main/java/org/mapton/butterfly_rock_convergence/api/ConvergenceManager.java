@@ -33,24 +33,24 @@ import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BMeasurementMode;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
+import org.mapton.butterfly_format.types.rock.BRockConvergenceObservation;
+import org.mapton.butterfly_format.types.rock.BRockConvergencePair;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
-import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_rock_convergence.ConvergencePropertiesBuilder;
 import org.mapton.butterfly_rock_convergence.chart.ChartAggregate;
-import org.mapton.butterfly_rock_convergence.chart.ConvergenceGroupChartBuilder;
+import org.mapton.butterfly_rock_convergence.chart.ConvergenceChartBuilder;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ConvergenceManager extends BaseManager<BTopoConvergenceGroup> {
+public class ConvergenceManager extends BaseManager<BRockConvergence> {
 
     private final ChartAggregate mChartAggregate = new ChartAggregate();
-    private final ConvergenceGroupChartBuilder mChartBuilder = new ConvergenceGroupChartBuilder();
+    private final ConvergenceChartBuilder mChartBuilder = new ConvergenceChartBuilder();
     private Runnable mFilterReloadRunnable;
     private final ConvergencePropertiesBuilder mPropertiesBuilder = new ConvergencePropertiesBuilder();
 
@@ -59,7 +59,7 @@ public class ConvergenceManager extends BaseManager<BTopoConvergenceGroup> {
     }
 
     private ConvergenceManager() {
-        super(BTopoConvergenceGroup.class);
+        super(BRockConvergence.class);
 
         Mapton.getGlobalState().addListener(gsce -> {
             load2(gsce.getValue());
@@ -71,7 +71,7 @@ public class ConvergenceManager extends BaseManager<BTopoConvergenceGroup> {
     }
 
     @Override
-    public Object getObjectChart(BTopoConvergenceGroup selectedObject) {
+    public Object getObjectChart(BRockConvergence selectedObject) {
         boolean isCtrlPressed = KeyboardUtils.isPressed(KeyEvent.VK_CONTROL);
         if (isCtrlPressed) {
             return mChartBuilder.build(selectedObject);
@@ -81,7 +81,7 @@ public class ConvergenceManager extends BaseManager<BTopoConvergenceGroup> {
     }
 
     @Override
-    public Object getObjectProperties(BTopoConvergenceGroup selectedObject) {
+    public Object getObjectProperties(BRockConvergence selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
@@ -110,13 +110,13 @@ public class ConvergenceManager extends BaseManager<BTopoConvergenceGroup> {
 
     public void load2(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.topo().getConvergenceGroups());
+            initAllItems(butterfly.rock().getConvergence());
             initObjectToItemMap();
-            var groupToObservations = butterfly.topo().getConvergenceObservations().stream()
+            var convergenceToObservations = butterfly.rock().getConvergenceObservations().stream()
                     .collect(Collectors.groupingBy(o -> o.getName()));
 
             var dates = new TreeSet<LocalDateTime>();
-            for (var g : butterfly.topo().getConvergenceGroups()) {
+            for (var g : butterfly.rock().getConvergence()) {
                 g.ext().getObservationsAllRaw().clear();
                 var controlPoints = Arrays.stream(StringUtils.split(g.getRef(), ","))
                         .map(s -> butterfly.topo().getControlPointByName(s))
@@ -125,10 +125,10 @@ public class ConvergenceManager extends BaseManager<BTopoConvergenceGroup> {
                         .collect(Collectors.toCollection(ArrayList::new));
 
                 g.ext().setControlPoints(controlPoints);
-                var pairToObservations = groupToObservations.get(g.getName()).stream()
+                var pairToObservations = convergenceToObservations.get(g.getName()).stream()
                         .collect(Collectors.groupingBy(item -> item.getP1Name() + "::" + item.getP2Name(), Collectors.toCollection(ArrayList::new)));
 
-                var pairs = new ArrayList<BTopoConvergencePair>();
+                var pairs = new ArrayList<BRockConvergencePair>();
                 int n = controlPoints.size();
                 var offset = 10.0;//TODO Calculate it?
                 var anchorPoint = g.ext().getAnchorPoint();
@@ -145,9 +145,9 @@ public class ConvergenceManager extends BaseManager<BTopoConvergenceGroup> {
                         if (pointJ == anchorPoint) {
                             continue j;
                         }
-                        var pair = new BTopoConvergencePair(g, pointI, pointJ, offset);
+                        var pair = new BRockConvergencePair(g, pointI, pointJ, offset);
                         var observations = pairToObservations.getOrDefault(pair.getP1().getName() + "::" + pair.getP2().getName(), new ArrayList<>());
-                        observations.sort(Comparator.comparing(BTopoConvergenceObservation::getDate));
+                        observations.sort(Comparator.comparing(BRockConvergenceObservation::getDate));
                         for (var o : observations) {
                             o.ext().setParent(g);
                             o.ext().setPair(pair);
@@ -167,7 +167,7 @@ public class ConvergenceManager extends BaseManager<BTopoConvergenceGroup> {
                 g.ext().getPairs().addAll(pairs);
             }
 
-            for (var g : butterfly.topo().getConvergenceGroups()) {
+            for (var g : butterfly.rock().getConvergence()) {
                 var maxPoint = g.ext().getControlPointsWithoutAnchor().stream()
                         .max(Comparator.comparingDouble(BTopoControlPoint::getZeroZ));
 
@@ -179,14 +179,14 @@ public class ConvergenceManager extends BaseManager<BTopoConvergenceGroup> {
                     g.setLon(p.getLon());
                 });
 
-                var maxObservationsPerDate = groupToObservations.get(g.getName()).stream()
-                        .collect(Collectors.groupingBy(BTopoConvergenceObservation::getDate))
+                var maxObservationsPerDate = convergenceToObservations.get(g.getName()).stream()
+                        .collect(Collectors.groupingBy(BRockConvergenceObservation::getDate))
                         .values()
                         .stream()
                         .flatMap(entry -> entry.stream()
                         .max(Comparator.comparingDouble(value -> Math.abs(value.getMeasuredZ())))
                         .stream())
-                        .sorted(Comparator.comparing(BTopoConvergenceObservation::getDate))
+                        .sorted(Comparator.comparing(BRockConvergenceObservation::getDate))
                         .collect(Collectors.toList());
                 maxObservationsPerDate.forEach(o -> o.ext().setDeltaZ(o.ext().getDeltaZ()));
                 g.ext().getObservationsAllRaw().addAll(maxObservationsPerDate);
@@ -223,7 +223,7 @@ public class ConvergenceManager extends BaseManager<BTopoConvergenceGroup> {
 
     @Override
     protected void applyTemporalFilter() {
-        var timeFilteredItems = new ArrayList<BTopoConvergenceGroup>();
+        var timeFilteredItems = new ArrayList<BRockConvergence>();
 
         p:
         for (var g : getFilteredItems()) {
@@ -252,17 +252,17 @@ public class ConvergenceManager extends BaseManager<BTopoConvergenceGroup> {
     }
 
     @Override
-    protected void load(ArrayList<BTopoConvergenceGroup> items) {
+    protected void load(ArrayList<BRockConvergence> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private void calculateDynamicFreq(Butterfly butterfly) {
-        var blasts = butterfly.noise().getBlasts().stream()
+        var blasts = butterfly.rock().getBlasts().stream()
                 .filter(b -> b.getDateLatest().isAfter(LocalDateTime.now().minusMonths(3)))
                 .toList();
 
         g:
-        for (var g : butterfly.topo().getConvergenceGroups()) {
+        for (var g : butterfly.rock().getConvergence()) {
             if (g.getMeasurementMode() != BMeasurementMode.MANUAL) {
                 continue;
             }

@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.LabelBy;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -147,10 +147,10 @@ public enum ConvergenceLabelBy implements LabelBy.Operations {
         return LabelBy.measNeedFreq(p);
     });
     private final String mCategory;
-    private final Function<BTopoConvergenceGroup, String> mFunction;
+    private final Function<BRockConvergence, String> mFunction;
     private final String mName;
 
-    private ConvergenceLabelBy(String category, String name, Function<BTopoConvergenceGroup, String> function) {
+    private ConvergenceLabelBy(String category, String name, Function<BRockConvergence, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -170,7 +170,7 @@ public enum ConvergenceLabelBy implements LabelBy.Operations {
         }
     }
 
-    public String getLabel(BTopoConvergenceGroup o) {
+    public String getLabel(BRockConvergence o) {
         return mFunction.apply(o);
     }
 

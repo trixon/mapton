@@ -318,6 +318,10 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-rock-blast</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-rock-convergence</artifactId>
                 </dependency>
                 <dependency>

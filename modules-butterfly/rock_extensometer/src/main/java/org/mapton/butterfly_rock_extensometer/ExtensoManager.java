@@ -28,9 +28,9 @@ import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
+import org.mapton.butterfly_format.types.rock.BRockExtensometer;
+import org.mapton.butterfly_format.types.rock.BRockExtensometerPoint;
+import org.mapton.butterfly_format.types.rock.BRockExtensometerPointObservation;
 import org.mapton.butterfly_rock_extensometer.chart.ExtensoChartBuilderSplit;
 import org.openide.util.Exceptions;
 
@@ -38,7 +38,7 @@ import org.openide.util.Exceptions;
  *
  * @author Patrik Karlström
  */
-public class ExtensoManager extends BaseManager<BGeoExtensometer> {
+public class ExtensoManager extends BaseManager<BRockExtensometer> {
 
     private final ExtensoChartBuilderSplit mChartBuilderSplit = new ExtensoChartBuilderSplit();
     private double mMinimumDepth = 0.0;
@@ -49,7 +49,7 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
     }
 
     private ExtensoManager() {
-        super(BGeoExtensometer.class);
+        super(BRockExtensometer.class);
         initListeners();
     }
 
@@ -58,22 +58,22 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
     }
 
     @Override
-    public Object getObjectChart(BGeoExtensometer selectedObject) {
+    public Object getObjectChart(BRockExtensometer selectedObject) {
         return mChartBuilderSplit.build(selectedObject);
     }
 
     @Override
-    public Object getObjectProperties(BGeoExtensometer selectedObject) {
+    public Object getObjectProperties(BRockExtensometer selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
     @Override
     public void load(Butterfly butterfly) {
         try {
-            var geotechnical = butterfly.geotechnical();
-            var extensometers = geotechnical.getExtensometers();
-            var extensometersPoints = geotechnical.getExtensometersPoints();
-            var extensometersPointsObservations = geotechnical.getExtensometersPointsObservations();
+            var rock = butterfly.rock();
+            var extensometers = rock.getExtensometers();
+            var extensometersPoints = rock.getExtensometersPoints();
+            var extensometersPointsObservations = rock.getExtensometersPointsObservations();
 
             initAllItems(extensometers);
             initObjectToItemMap();
@@ -83,8 +83,8 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
                 p.getExtensometer();
             }
 
-            var nameToPoint = extensometersPoints.stream().collect(Collectors.toMap(BGeoExtensometerPoint::getName, Function.identity()));
-            var nameToObservations = new LinkedHashMap<String, ArrayList<BGeoExtensometerPointObservation>>();
+            var nameToPoint = extensometersPoints.stream().collect(Collectors.toMap(BRockExtensometerPoint::getName, Function.identity()));
+            var nameToObservations = new LinkedHashMap<String, ArrayList<BRockExtensometerPointObservation>>();
             for (var o : extensometersPointsObservations) {
                 nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
             }
@@ -158,7 +158,7 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
 
     @Override
     protected void applyTemporalFilter() {
-        var timeFilteredItems = new ArrayList<BGeoExtensometer>();
+        var timeFilteredItems = new ArrayList<BRockExtensometer>();
 
         p:
         for (var extenso : getFilteredItems()) {
@@ -190,7 +190,7 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
                 p.ext().calculateObservations(timeFilteredObservations);
                 ext.ext().getObservationsTimeFiltered().addAll(timeFilteredObservations);
             }
-            ext.ext().getObservationsTimeFiltered().sort(Comparator.comparing(BGeoExtensometerPointObservation::getDate));
+            ext.ext().getObservationsTimeFiltered().sort(Comparator.comparing(BRockExtensometerPointObservation::getDate));
         });
 
         mMinimumDepth = Double.MAX_VALUE;
@@ -204,7 +204,7 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
     }
 
     @Override
-    protected void load(ArrayList<BGeoExtensometer> items) {
+    protected void load(ArrayList<BRockExtensometer> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -277,7 +277,7 @@ public class ButterflyManager {
         calculateLatLons(butterfly.hydro().getGroundwaterPoints());
         calculateLatLons(butterfly.structural().getTiltPoints());
         calculateLatLons(butterfly.topo().getControlPoints());
-        calculateLatLons(butterfly.topo().getConvergenceGroups());
+        calculateLatLons(butterfly.rock().getConvergence());
 
         for (var alarm : butterfly.getAlarms()) {
             var points = alarm.ext().getPoints();
@@ -299,7 +299,7 @@ public class ButterflyManager {
         calculateLatLonsTmo(butterfly.tmo().getVattenkemi());
 
         calculateLatLons(butterfly.noise().getVibrationPoints());
-        calculateLatLons(butterfly.geotechnical().getExtensometers());
+        calculateLatLons(butterfly.rock().getExtensometers());
     }
 
     private void createBufferedArea(BAreaBase area) throws ParseException, MismatchedDimensionException, TransformException {

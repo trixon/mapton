@@ -39,9 +39,9 @@ import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
+import org.mapton.butterfly_format.types.rock.BRockConvergenceObservation;
+import org.mapton.butterfly_format.types.rock.BRockConvergencePair;
 import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
 import org.mapton.butterfly_rock_convergence.AnchorManager;
 import org.mapton.butterfly_rock_convergence.pair.PairHelper;
@@ -66,7 +66,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     @Override
-    public void plot(BTopoConvergenceGroup convergence, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BRockConvergence convergence, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
         sMapObjects = mapObjects;
         mOffset = ConvergenceManager.getInstance().getOffset();
@@ -103,7 +103,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         mPlottedLabels.clear();
     }
 
-    private void plotLabel(BTopoConvergencePair pair, BTopoControlPoint controlPoint) {
+    private void plotLabel(BRockConvergencePair pair, BTopoControlPoint controlPoint) {
         var name = controlPoint.getName();
 
         if (!mPlottedLabels.contains(name)) {
@@ -112,13 +112,13 @@ public class GraphicRenderer extends GraphicRendererBase {
             placemark.setAltitudeMode(WorldWind.ABSOLUTE);
             placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
             placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-            placemark.setLabelText(Strings.CS.remove(controlPoint.getName(), pair.getConvergenceGroup().getName()));
+            placemark.setLabelText(Strings.CS.remove(controlPoint.getName(), pair.getConvergence().getName()));
             addRenderable(placemark, true, null, sMapObjects);
             mPlottedLabels.add(name);
         }
     }
 
-    private void plotLabels(BTopoConvergenceGroup convergence) {
+    private void plotLabels(BRockConvergence convergence) {
         for (var pair : convergence.ext().getPairs()) {
 
             plotLabel(pair, pair.getP1());
@@ -126,7 +126,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
     }
 
-    private void plotLine(BTopoConvergenceGroup convergence) {
+    private void plotLine(BRockConvergence convergence) {
         for (var pair : convergence.ext().getPairs()) {
             if (pair.ext().getObservationsTimeFiltered().isEmpty()) {
                 continue;
@@ -137,7 +137,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
             var path = new Path(pos1, pos2);
             var attrs = new BasicShapeAttributes(mAttributeManager.getPairPathAttributes());
-            var function = BTopoConvergenceObservation.FUNCTION_3D;
+            var function = BRockConvergenceObservation.FUNCTION_3D;
             var alarmLevel = pair.ext().getAlarmLevel(function);
 
             attrs.setOutlineMaterial(ButterflyHelper.getAlarmMaterial(alarmLevel));
@@ -180,9 +180,9 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
     }
 
-    private void plotNodes(BTopoConvergenceGroup convergence) {
+    private void plotNodes(BRockConvergence convergence) {
         var map = new HashMap<String, Integer>();
-        convergence.ext().getPairsOrderedByDeltaDesc(BTopoConvergenceObservation.FUNCTION_3D, 5)
+        convergence.ext().getPairsOrderedByDeltaDesc(BRockConvergenceObservation.FUNCTION_3D, 5)
                 .forEachOrdered(pair -> {
                     CollectionHelper.incInteger(map, pair.getP1().getName());
                     CollectionHelper.incInteger(map, pair.getP2().getName());
@@ -200,19 +200,19 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
     }
 
-    private void plotValues(BTopoConvergenceGroup convergence, GraphicItem graphicItem) {
-        Function<BTopoConvergenceObservation, Double> function = null;
+    private void plotValues(BRockConvergence convergence, GraphicItem graphicItem) {
+        Function<BRockConvergenceObservation, Double> function = null;
         var verticalOffset = 0.0;
         switch (graphicItem) {
             case VALUE_1D:
-                function = BTopoConvergenceObservation.FUNCTION_1D;
+                function = BRockConvergenceObservation.FUNCTION_1D;
                 verticalOffset = -0.5;
                 break;
             case VALUE_2D:
-                function = BTopoConvergenceObservation.FUNCTION_2D;
+                function = BRockConvergenceObservation.FUNCTION_2D;
                 break;
             case VALUE_3D:
-                function = BTopoConvergenceObservation.FUNCTION_3D;
+                function = BRockConvergenceObservation.FUNCTION_3D;
                 verticalOffset = +0.5;
                 break;
         }

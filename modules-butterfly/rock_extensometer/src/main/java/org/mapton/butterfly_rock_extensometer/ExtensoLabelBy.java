@@ -18,7 +18,7 @@ package org.mapton.butterfly_rock_extensometer;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.LabelBy;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
+import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -207,10 +207,10 @@ public enum ExtensoLabelBy implements LabelBy.Operations {
 //        return p.ext().deltaRolling().getDelta1(3);
     });
     private final String mCategory;
-    private final Function<BGeoExtensometer, String> mFunction;
+    private final Function<BRockExtensometer, String> mFunction;
     private final String mName;
 
-    private ExtensoLabelBy(String category, String name, Function<BGeoExtensometer, String> function) {
+    private ExtensoLabelBy(String category, String name, Function<BRockExtensometer, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -230,7 +230,7 @@ public enum ExtensoLabelBy implements LabelBy.Operations {
         }
     }
 
-    public String getLabel(BGeoExtensometer o) {
+    public String getLabel(BRockExtensometer o) {
         return mFunction.apply(o);
     }
 

@@ -25,7 +25,7 @@ import org.mapton.butterfly_acoustic.vibration.VibrationManager;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.BXyzPoint;
-import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
+import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationObservation;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.openide.util.lookup.ServiceProvider;
@@ -48,7 +48,7 @@ public class VibrationMultiChartPart extends BMultiChartPart {
 
     @Override
     public String getCategory() {
-        return BAcousticBlast.class.getName();
+        return BRockBlast.class.getName();
     }
 
     @Override

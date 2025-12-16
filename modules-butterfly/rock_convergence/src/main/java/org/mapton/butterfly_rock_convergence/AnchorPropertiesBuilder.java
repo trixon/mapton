@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import org.mapton.api.ui.forms.PropertiesBuilder;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import org.mapton.butterfly_format.types.rock.BRockConvergencePair;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 
@@ -27,10 +27,10 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class AnchorPropertiesBuilder extends PropertiesBuilder<BTopoConvergencePair> {
+public class AnchorPropertiesBuilder extends PropertiesBuilder<BRockConvergencePair> {
 
     @Override
-    public Object build(BTopoConvergencePair p) {
+    public Object build(BRockConvergencePair p) {
         if (p == null) {
             return p;
         }
@@ -41,7 +41,7 @@ public class AnchorPropertiesBuilder extends PropertiesBuilder<BTopoConvergenceP
         var lastDate = Objects.toString(DateHelper.toDateString(p.ext().getDateLatest()), "-");
 
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
-        propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getConvergenceGroup().getName());
+        propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getConvergence().getName());
         propertyMap.put(getCatKey(cat1, "Gränsvärde (grupp)"), 666);
         propertyMap.put(getCatKey(cat1, "P1"), p.getP1().getName());
         propertyMap.put(getCatKey(cat1, "P2"), p.getP2().getName());

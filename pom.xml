@@ -228,6 +228,11 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
+                <artifactId>butterfly-rock-blast</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
                 <artifactId>butterfly-rock-convergence</artifactId>
                 <version>${mapton.version}</version>
             </dependency>

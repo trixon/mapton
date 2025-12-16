@@ -26,7 +26,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
+import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -132,7 +132,7 @@ public class ExtensoLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BGeoExtensometer p, ExtensoLabelBy labelBy, Position position) {
+    private PointPlacemark plotLabel(BRockExtensometer p, ExtensoLabelBy labelBy, Position position) {
         if (labelBy == ExtensoLabelBy.NONE) {
             return null;
         } else {
@@ -144,7 +144,7 @@ public class ExtensoLayerBundle extends BfLayerBundle {
         }
     }
 
-    private PointPlacemark plotPin(BGeoExtensometer extenso, Position position, PointPlacemark labelPlacemark) {
+    private PointPlacemark plotPin(BRockExtensometer extenso, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(0);
         attrs = PinPaddle.E_BLANK.applyToCopy(attrs);
         var placemark = new PointPlacemark(position);

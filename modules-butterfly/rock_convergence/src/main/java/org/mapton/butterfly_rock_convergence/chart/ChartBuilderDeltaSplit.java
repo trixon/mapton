@@ -20,7 +20,7 @@ import java.awt.GridBagLayout;
 import java.util.concurrent.Callable;
 import javax.swing.JPanel;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
 
 /**
  *
@@ -36,7 +36,7 @@ public class ChartBuilderDeltaSplit {
         mLatestChartBuilder = new ChartBuilderDelta(7, dimension);
     }
 
-    public synchronized Callable<JPanel> build(BTopoConvergenceGroup p) {
+    public synchronized Callable<JPanel> build(BRockConvergence p) {
         if (p == null) {
             return null;
         }

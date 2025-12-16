@@ -27,7 +27,7 @@ import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MTemporalManager;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import org.mapton.butterfly_format.types.rock.BRockConvergencePair;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -35,7 +35,7 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
+public class AnchorChartBuilder extends XyzChartBuilder<BRockConvergencePair> {
 
     private TextTitle mDateSubTextTitle;
     private TextTitle mDeltaSubTextTitle;
@@ -49,7 +49,7 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
     }
 
     @Override
-    public synchronized Callable<ChartPanel> build(BTopoConvergencePair p) {
+    public synchronized Callable<ChartPanel> build(BRockConvergencePair p) {
         if (p == null) {
             return null;
         }
@@ -75,7 +75,7 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
     }
 
     @Override
-    public void setTitle(BTopoConvergencePair p) {
+    public void setTitle(BRockConvergencePair p) {
         super.setTitle(p);
 //        Color color = TopoHelper.getAlarmColorAwt(p);
         Color color = Color.BLUE;
@@ -90,7 +90,7 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
     }
 
     @Override
-    public void updateDataset(BTopoConvergencePair p) {
+    public void updateDataset(BRockConvergencePair p) {
         mTimeSeriesAnchor.clear();
         mTimeSeriesPoint.clear();
         mTimeSeriesDeltaZ.clear();
@@ -114,11 +114,11 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
         plotBlasts(plot, p, p.ext().getDateFirst().toLocalDate(), p.ext().getDateLatest().toLocalDate());
     }
 
-    private void plotZ(BTopoConvergencePair pair, BTopoControlPoint p) {
+    private void plotZ(BRockConvergencePair pair, BTopoControlPoint p) {
         var plot = (XYPlot) mChart.getPlot();
         var firstDate = pair.ext().getObservationsAllRaw().getFirst().getDate().toLocalDate();
         var lastDate = pair.ext().getObservationsAllRaw().getLast().getDate().toLocalDate();
-        var series = pair.getConvergenceGroup().ext().getAnchorPoint() == p ? mTimeSeriesAnchor : mTimeSeriesPoint;
+        var series = pair.getConvergence().ext().getAnchorPoint() == p ? mTimeSeriesAnchor : mTimeSeriesPoint;
         p.ext().getObservationsAllRaw().stream()
                 .filter(o -> DateHelper.isBetween(
                 firstDate,

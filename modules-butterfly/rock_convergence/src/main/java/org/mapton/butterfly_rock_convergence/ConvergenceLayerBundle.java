@@ -27,8 +27,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.ButterflyHelper;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
+import org.mapton.butterfly_format.types.rock.BRockConvergenceObservation;
 import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
 import org.mapton.butterfly_rock_convergence.graphic.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
@@ -72,7 +72,7 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_ConvergenceAction(), SDict.ROCK_MECHANICS.toString(), "ConvergenceGroupTopComponent");
+        initCommons(Bundle.CTL_ConvergenceAction(), SDict.ROCK_MECHANICS.toString(), "ConvergenceTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
@@ -138,7 +138,7 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BTopoConvergenceGroup p, ConvergenceLabelBy labelBy, Position position) {
+    private PointPlacemark plotLabel(BRockConvergence p, ConvergenceLabelBy labelBy, Position position) {
         if (labelBy == ConvergenceLabelBy.NONE) {
             return null;
         } else {
@@ -150,10 +150,10 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
         }
     }
 
-    private PointPlacemark plotPin(BTopoConvergenceGroup p, Position position, PointPlacemark labelPlacemark) {
+    private PointPlacemark plotPin(BRockConvergence p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(Color.WHITE);
         attrs = new PointPlacemarkAttributes(attrs);
-        var color = ButterflyHelper.getAlarmColorAwt(p.ext().getAlarmLevel(BTopoConvergenceObservation.FUNCTION_3D));
+        var color = ButterflyHelper.getAlarmColorAwt(p.ext().getAlarmLevel(BRockConvergenceObservation.FUNCTION_3D));
         attrs.setImageColor(color);
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

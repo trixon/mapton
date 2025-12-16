@@ -85,7 +85,7 @@ public class ExtensoFilterPopOver extends BaseTabbedFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var items = butterfly.geotechnical().getExtensometers();
+        var items = butterfly.rock().getExtensometers();
 
         mFilterSectionPoint.load(items);
         mFilterSectionDisruptor.load();

@@ -25,7 +25,7 @@ import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
-import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
+import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
 import org.mapton.butterfly_hydro.groundwater.GroundwaterManager;
@@ -50,7 +50,7 @@ public abstract class BlastMultiChartPart extends BMultiChartPart {
 
     @Override
     public String getCategory() {
-        return BAcousticBlast.class.getName();
+        return BRockBlast.class.getName();
     }
 
     @Override

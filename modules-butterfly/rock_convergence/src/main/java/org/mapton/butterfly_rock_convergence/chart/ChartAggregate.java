@@ -18,7 +18,7 @@ package org.mapton.butterfly_rock_convergence.chart;
 import java.util.concurrent.Callable;
 import javax.swing.JTabbedPane;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
 
 /**
  *
@@ -39,7 +39,7 @@ public class ChartAggregate {
         mTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
     }
 
-    public synchronized Callable<JTabbedPane> build(BTopoConvergenceGroup p) {
+    public synchronized Callable<JTabbedPane> build(BRockConvergence p) {
         if (p == null) {
             return null;
         }

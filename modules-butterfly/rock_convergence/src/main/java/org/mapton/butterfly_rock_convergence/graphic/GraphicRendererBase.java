@@ -27,14 +27,14 @@ import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
 import org.mapton.butterfly_rock_convergence.ConvergenceAttributeManager;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicItem, BTopoConvergenceGroup> {
+public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicItem, BRockConvergence> {
 
     protected static IndexedCheckModel<GraphicItem> sCheckModel;
     protected static ArrayList<AVListImpl> sMapObjects;
@@ -60,7 +60,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         return ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ(), o1.getMeasuredZ(), o2.getMeasuredZ());
     }
 
-    protected boolean isPlotLimitReached(BTopoConvergenceGroup p, Object key, Position position) {
+    protected boolean isPlotLimitReached(BRockConvergence p, Object key, Position position) {
         return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty(), sMapObjects);
     }
 }

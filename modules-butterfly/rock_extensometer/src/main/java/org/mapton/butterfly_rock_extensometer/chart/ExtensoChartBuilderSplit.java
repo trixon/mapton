@@ -19,7 +19,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.concurrent.Callable;
 import javax.swing.JPanel;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
+import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 
 /**
  *
@@ -33,7 +33,7 @@ public class ExtensoChartBuilderSplit {
     public ExtensoChartBuilderSplit() {
     }
 
-    public synchronized Callable<JPanel> build(BGeoExtensometer p) {
+    public synchronized Callable<JPanel> build(BRockExtensometer p) {
         if (p == null) {
             return null;
         }

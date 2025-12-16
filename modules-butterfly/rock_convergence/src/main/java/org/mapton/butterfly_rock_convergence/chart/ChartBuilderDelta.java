@@ -27,9 +27,9 @@ import org.mapton.butterfly_format.types.BDimension;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
+import org.mapton.butterfly_format.types.rock.BRockConvergenceObservation;
+import org.mapton.butterfly_format.types.rock.BRockConvergencePair;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -39,7 +39,7 @@ import se.trixon.almond.util.DateHelper;
  */
 public class ChartBuilderDelta extends ChartBuilderBase {
 
-    private TreeMap<Double, BTopoConvergencePair> mLastWeekDeltaToPair = new TreeMap<>();
+    private TreeMap<Double, BRockConvergencePair> mLastWeekDeltaToPair = new TreeMap<>();
 
     public ChartBuilderDelta(Integer recentDaysDefault, BDimension dimension) {
         mDimension = dimension;
@@ -48,14 +48,14 @@ public class ChartBuilderDelta extends ChartBuilderBase {
 
         switch (dimension) {
             case _1d:
-                mFunction = BTopoConvergenceObservation.FUNCTION_1D;
+                mFunction = BRockConvergenceObservation.FUNCTION_1D;
                 break;
             case _2d:
-                mFunction = BTopoConvergenceObservation.FUNCTION_2D;
+                mFunction = BRockConvergenceObservation.FUNCTION_2D;
 
                 break;
             case _3d:
-                mFunction = BTopoConvergenceObservation.FUNCTION_3D;
+                mFunction = BRockConvergenceObservation.FUNCTION_3D;
 
                 break;
             default:
@@ -65,7 +65,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
     }
 
     @Override
-    public void updateDataset(BTopoConvergenceGroup p) {
+    public void updateDataset(BRockConvergence p) {
         mLastWeekDeltaToPair.clear();
         var plot = (XYPlot) mChart.getPlot();
         var rangeAxis = plot.getRangeAxis();
@@ -97,7 +97,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         }
     }
 
-    private void plotMarkers(BTopoConvergenceGroup p) {
+    private void plotMarkers(BRockConvergence p) {
         var plot = (XYPlot) mChart.getPlot();
         plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
@@ -115,7 +115,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         });
     }
 
-    private void updateDataset(BTopoConvergencePair pair) {
+    private void updateDataset(BRockConvergencePair pair) {
         var timeSeries = new TimeSeries(pair.getSimpleName());
         var startDate = isCompleteView() ? LocalDateTime.MIN : LocalDateTime.now().minusDays(getRecentDays());
         Double firstDelta = null;
