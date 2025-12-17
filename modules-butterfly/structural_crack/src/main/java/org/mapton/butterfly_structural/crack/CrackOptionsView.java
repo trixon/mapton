@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.crack;
 
+import org.mapton.butterfly_structural.crack.graphic.GraphicItem;
 import java.util.stream.Stream;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -35,7 +36,7 @@ public class CrackOptionsView extends BOptionsView {
     private static final CrackLabelBy DEFAULT_LABEL_BY = CrackLabelBy.NAME;
     private static final CrackPointBy DEFAULT_POINT_BY = CrackPointBy.PIN;
 
-    private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SessionComboBox<CrackPointBy> mPointScb = new SessionComboBox<>();
 
     public CrackOptionsView(CrackLayerBundle layerBundle) {
@@ -46,7 +47,7 @@ public class CrackOptionsView extends BOptionsView {
         initSession();
     }
 
-    public IndexedCheckModel<GraphicRendererItem> getGraphicCheckModel() {
+    public IndexedCheckModel<GraphicItem> getGraphicCheckModel() {
         return mGraphicSccb.getCheckModel();
     }
 
@@ -60,7 +61,7 @@ public class CrackOptionsView extends BOptionsView {
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
-        mGraphicSccb.getItems().setAll(GraphicRendererItem.values());
+        mGraphicSccb.getItems().setAll(GraphicItem.values());
 
         LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), CrackLabelBy.values());
 

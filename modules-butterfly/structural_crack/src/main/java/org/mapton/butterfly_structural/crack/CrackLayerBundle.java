@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.crack;
 
+import org.mapton.butterfly_structural.crack.graphic.GraphicRenderer;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
