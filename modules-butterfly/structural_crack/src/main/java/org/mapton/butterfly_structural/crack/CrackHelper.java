@@ -17,6 +17,7 @@ package org.mapton.butterfly_structural.crack;
 
 import java.awt.Color;
 import org.mapton.butterfly_core.api.ButterflyHelper;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 
 /**
@@ -30,19 +31,19 @@ public class CrackHelper {
     }
 
     public static javafx.scene.paint.Color getAlarmColorHeightFx(BStructuralCrackPoint p) {
-        return ButterflyHelper.getAlarmColorFx(getAlarmLevelHeight(p));
+        return ButterflyHelper.getAlarmColorFx(getAlarmLevel(p));
     }
 
     public static int getAlarmLevel(BStructuralCrackPoint p) {
-        return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
+        return p.ext().getAlarmLevel(BComponent.HEIGHT, p.ext().getObservationFilteredLast().ext().getDeltaZ() * getScaleFactor(p));
     }
 
     public static int getScaleFactor(BStructuralCrackPoint p) {
         return p.getUnit().equalsIgnoreCase("m") ? 1000 : 1;
     }
 
-    public static int getAlarmLevelHeight(BStructuralCrackPoint p) {
-        return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
+    public static int getScaleFactor1000(BStructuralCrackPoint p) {
+        return 1000;
     }
 
 }

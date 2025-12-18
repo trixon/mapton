@@ -40,7 +40,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralCrackP
     protected final TimeSeries mTimeSeries1d = new TimeSeries("Spricka");
 
     public ChartBuilderBase() {
-        initChart("mm", "0.000");
+        initChart("mm", "0.00");
     }
 
     @Override

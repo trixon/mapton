@@ -56,7 +56,7 @@ public abstract class BlastMultiChartPart extends BMultiChartPart {
 
     @Override
     public String getDecimalPattern() {
-        return "0.000";
+        return "0.00";
     }
 
     @Override

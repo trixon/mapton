@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_structural.crack;
 
-import org.mapton.butterfly_structural.crack.graphic.GraphicRenderer;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -24,10 +23,12 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_structural.crack.graphic.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -71,7 +72,7 @@ public class CrackLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_CrackAction(), SDict.STRUCTURAL.toString(), "CrackTopComponent");
+        initCommons(Mapton.addWarning(Bundle.CTL_CrackAction(), 5), SDict.STRUCTURAL.toString(), "CrackTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);

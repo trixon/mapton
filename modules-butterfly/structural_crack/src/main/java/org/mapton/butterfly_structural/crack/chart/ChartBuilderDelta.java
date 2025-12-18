@@ -46,7 +46,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         setRecentDaysDefault(recentDaysDefault);
         setRecentDays(recentDaysDefault);
         mPlotAvg = plotAvg;
-        initChart("mm", "0.000");
+        initChart("mm", "0.00");
     }
 
     @Override
@@ -57,10 +57,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         var rangeAxis = plot.getRangeAxis();
         resetPlot(plot);
         plotMarkers(p);
-        var delta1d = 0.0;
-        if (p.getDimension() != BDimension._2d) {
-            delta1d = plot(p, mTimeSeries1d, Color.RED, (BXyzPointObservation o) -> o.ext().getDelta1d());
-        }
+        var delta1d = plot(p, mTimeSeries1d, Color.RED, (BXyzPointObservation o) -> o.ext().getDelta1d());
 
         var dateAxis = (DateAxis) plot.getDomainAxis();
         var now = LocalDate.now();
@@ -70,11 +67,9 @@ public class ChartBuilderDelta extends ChartBuilderBase {
             setRange(1.05, CrackHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
         } else {
             var sb = new StringBuilder();
-            if (p.getDimension() != BDimension._2d) {
-                sb.append("Δ %+.3f".formatted(delta1d));
-                if (p.getDimension() == BDimension._3d) {
-                    sb.append(", ");
-                }
+            sb.append("Δ %+.3f".formatted(delta1d));
+            if (p.getDimension() == BDimension._3d) {
+                sb.append(", ");
             }
             getRightSubTextTitle().setText(sb.toString());
             dateAxis.setRange(DateHelper.convertToDate(now.minusDays(getRecentDays())), nowAsDate);
@@ -91,7 +86,8 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         Double lastDelta = null;
         for (var o : p.ext().getObservationsTimeFiltered()) {
             if (o.getDate().isAfter(startDate)) {
-                var delta = function.apply(o) * CrackHelper.getScaleFactor(p);
+//                var delta = function.apply(o) * 1000;
+                var delta = function.apply(o) * CrackHelper.getScaleFactor1000(p);
                 if (firstDelta == null) {
                     firstDelta = delta;
                 }
