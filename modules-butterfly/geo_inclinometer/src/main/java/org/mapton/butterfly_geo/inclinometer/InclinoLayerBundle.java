@@ -23,6 +23,7 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
@@ -70,7 +71,7 @@ public class InclinoLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_InclinometerAction(), GeotechnicalHelper.CAT_GEO, "InclinometerTopComponent");
+        initCommons(Mapton.addWarning(Bundle.CTL_InclinometerAction(), 5), GeotechnicalHelper.CAT_GEO, "InclinometerTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);

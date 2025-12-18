@@ -52,7 +52,6 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
     private final ResourceBundle mBundle = NbBundle.getBundle(BFilterSectionMisc.class);
     private final CheckBox mClusterCheckbox = new CheckBox("Autokluster");
     private RangeSliderPane mDeltaHRangeSlider;
-//    private RangeSliderPane mDeltaRRangeSlider;
     private SliderPane mDeltaRSlider;
     private final DistanceMeasure mDistanceMeasure;
     private final FormFilter<? extends MBaseDataManager> mFilter;
@@ -220,15 +219,18 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         var minPoints = 1;
         var dbscan = new DBSCANClusterer<BXyzPoint>(epsilon, minPoints, mDistanceMeasure);
         //Calculate and subtract min on order to use dbscan.
-        var minX = items.stream().mapToDouble(p -> p.getZeroX()).min().getAsDouble();
-        var minY = items.stream().mapToDouble(p -> p.getZeroY()).min().getAsDouble();
-        var minZ = items.stream().mapToDouble(p -> p.getZeroZ()).min().getAsDouble();
+        var minX = items.stream().filter(p -> p.getZeroX() != null).mapToDouble(p -> p.getZeroX()).min().getAsDouble();
+        var minY = items.stream().filter(p -> p.getZeroY() != null).mapToDouble(p -> p.getZeroY()).min().getAsDouble();
+        var minZ = items.stream().filter(p -> p.getZeroZ() != null).mapToDouble(p -> p.getZeroZ()).min().getAsDouble();
 
-        items.forEach(p -> {
-            p.setZeroXScaled(p.getZeroX() - minX);
-            p.setZeroYScaled(p.getZeroY() - minY);
-            p.setZeroZScaled(p.getZeroZ() - minZ);
-        });
+        items = items.stream()
+                .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                .filter(p -> {
+                    p.setZeroXScaled(p.getZeroX() - minX);
+                    p.setZeroYScaled(p.getZeroY() - minY);
+                    p.setZeroZScaled(p.getZeroZ() - minZ);
+                    return true;
+                }).toList();
 
         var clusters = dbscan.cluster((Collection<BXyzPoint>) items);
 
