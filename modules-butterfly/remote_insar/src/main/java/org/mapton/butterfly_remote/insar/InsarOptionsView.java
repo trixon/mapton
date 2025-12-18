@@ -34,7 +34,7 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public class InsarOptionsView extends BOptionsView {
 
-    private static final ColorBy DEFAULT_COLOR_BY = ColorBy.ALARM;
+    private static final ColorBy DEFAULT_COLOR_BY = ColorBy.DISPLACEMENT;
     private static final InsarLabelBy DEFAULT_LABEL_BY = InsarLabelBy.NONE;
     private static final InsarPointBy DEFAULT_POINT_BY = InsarPointBy.SYMBOL;
     private final SessionComboBox<ColorBy> mColorScb = new SessionComboBox<>();

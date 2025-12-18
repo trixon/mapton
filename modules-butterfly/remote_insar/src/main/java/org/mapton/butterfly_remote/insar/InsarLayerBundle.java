@@ -80,7 +80,7 @@ public class InsarLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Mapton.addWarning(Bundle.CTL_InsarAction(), 3), RemoteHelper.CAT_REMOTE, "InsarTopComponent");
+        initCommons(Mapton.addWarning(Bundle.CTL_InsarAction(), 0), RemoteHelper.CAT_REMOTE, "InsarTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);

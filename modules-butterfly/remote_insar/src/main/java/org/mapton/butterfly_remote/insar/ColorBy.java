@@ -22,12 +22,12 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public enum ColorBy {
-    ALARM(SDict.ALARM.toString()),
     DISPLACEMENT("Rörelse"),
     VELOCITY("Hastighet"),
     VELOCITY_3("Hastighet, 3 månader"),
     VELOCITY_6("Hastighet, 6 månader"),
-    ACCELERATION("Acceleration");
+    ACCELERATION("Acceleration"),
+    ALARM(SDict.ALARM.toString());
     private final String mName;
 
     private ColorBy(String name) {
