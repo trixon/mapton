@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_hydro.groundwater;
 
-import org.mapton.butterfly_hydro.groundwater.graphics.GraphicRenderer;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -28,6 +27,7 @@ import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
+import org.mapton.butterfly_hydro.groundwater.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;

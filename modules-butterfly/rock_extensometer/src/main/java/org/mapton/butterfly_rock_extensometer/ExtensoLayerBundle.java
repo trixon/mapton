@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_rock_extensometer;
 
-import org.mapton.butterfly_rock_extensometer.graphic.GraphicRenderer;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -27,6 +26,7 @@ import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.rock.BRockExtensometer;
+import org.mapton.butterfly_rock_extensometer.graphic.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
