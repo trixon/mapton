@@ -91,7 +91,7 @@ public class LayerOptionsManager {
         }
 
         private void initListeners() {
-            Lookup.getDefault().lookupResult(LayerBundle.class).addLookupListener(lookupEvent -> {
+            mComboBox.setOnShowing(event -> {
                 populate();
             });
 
@@ -105,7 +105,8 @@ public class LayerOptionsManager {
         private void populate() {
             var layerBundles = new ArrayList<>(Lookup.getDefault().lookupAll(LayerBundle.class)).stream()
                     .filter(lb -> lb.getOptionsView() != null)
-                    .sorted(Comparator.comparing(LayerBundle::getPath))
+                    .sorted(Comparator.comparing(LayerBundle::isVisible).reversed()
+                            .thenComparing(Comparator.comparing(LayerBundle::getPath)))
                     .toList();
             mComboBox.getItems().setAll(layerBundles);
         }

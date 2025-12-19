@@ -161,6 +161,10 @@ public abstract class LayerBundle {
         return mPopulated;
     }
 
+    public boolean isVisible() {
+        return mParentLayer != null && mParentLayer.isEnabled();
+    }
+
     public final StringProperty nameProperty() {
         return mName;
     }

@@ -35,6 +35,7 @@ import org.openide.windows.TopComponent;
 import se.trixon.almond.nbp.core.SelectionLockManager;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.PropertyItem;
 import se.trixon.almond.util.fx.control.LogPanel;
 
@@ -60,7 +61,9 @@ public final class LayerPropertiesTopComponent extends MTopComponent {
     @Override
     protected void initFX() {
         setScene(new Scene(new LayerPropertiesView()));
-        Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES, Mapton.getGlobalState().get(MKey.LAYER_PROPERTIES));
+        FxHelper.runLaterDelayed(1000, () -> {
+            Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES, Mapton.getGlobalState().get(MKey.LAYER_PROPERTIES));
+        });
     }
 
     void readProperties(java.util.Properties p) {
