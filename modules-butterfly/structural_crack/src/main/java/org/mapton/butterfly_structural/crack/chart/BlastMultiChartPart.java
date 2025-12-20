@@ -25,7 +25,7 @@ import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
-import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
+import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
 import org.mapton.butterfly_structural.crack.CrackManager;
@@ -51,12 +51,12 @@ public abstract class BlastMultiChartPart extends BMultiChartPart {
 
     @Override
     public String getCategory() {
-        return BAcousticBlast.class.getName();
+        return BRockBlast.class.getName();
     }
 
     @Override
     public String getDecimalPattern() {
-        return "0.000";
+        return "0.00";
     }
 
     @Override

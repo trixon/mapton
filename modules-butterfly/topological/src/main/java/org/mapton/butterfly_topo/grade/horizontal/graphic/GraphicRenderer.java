@@ -89,7 +89,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         double z1;
         double z2;
 
-        if (Math.signum(p.ext().getDiff().getZPerMille()) > 0) {
+        if (Math.signum(p.ext().getDiff().getZPerMille()) < 0) {
             z1 = MID + z;
             z2 = MID - z;
         } else {

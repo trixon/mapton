@@ -523,9 +523,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             try {
                 double limit;
                 Range<Double> range;
-                if (alarm.ext().getRange2() != null) {
-                    range = alarm.ext().getRange2();
-                } else if (alarm.ext().getRange1() != null) {
+                if (alarm.ext().getRange2() != null || alarm.ext().getRange1() != null) {
                     range = alarm.ext().getRange1();
                 } else {
                     range = alarm.ext().getRange0();
@@ -740,7 +738,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                     case _1d ->
                         getDelta1(decimals, factor, true);
                     case _2d ->
-                        getDelta2(decimals, factor, true);
+                        getDelta2(decimals, factor, false);
                     default ->
                         StringHelper.joinNonNulls(", ",
                         getDelta1(decimals, factor, true),

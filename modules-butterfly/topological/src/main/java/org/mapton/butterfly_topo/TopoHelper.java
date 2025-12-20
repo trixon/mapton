@@ -20,8 +20,8 @@ import java.awt.Color;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
+import org.mapton.butterfly_format.types.rock.BRockConvergencePair;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_format.types.topo.BTopoGradeDiff;
 
@@ -31,75 +31,11 @@ import org.mapton.butterfly_format.types.topo.BTopoGradeDiff;
  */
 public class TopoHelper {
 
-    private static final Color[] sSpeedColors;
-    private static final Material[] sSpeedMaterials;
-    private static final Color[] sVerticalNegColors;
-    private static final Material[] sVerticalNegMaterials;
-    private static final Color[] sVerticalPosColors;
-    private static final Material[] sVerticalPosMaterials;
-
-    static {
-        sSpeedColors = new Color[]{
-            //https://colordesigner.io/gradient-generator/?mode=lch#ACF0F2-2C1DFF
-            Color.decode("#acf0f2"),
-            Color.decode("#77e2f2"),
-            Color.decode("#22d2f8"),
-            Color.decode("#00c0fa"),
-            Color.decode("#00adee"),
-            Color.decode("#009be1"),
-            Color.decode("#008ad2"),
-            Color.decode("#007ac8"),
-            Color.decode("#0066cd"),
-            Color.decode("#2c1dff"),
-            Color.decode("#FF00FF")
-        };
-
-        sSpeedMaterials = new Material[sSpeedColors.length];
-        for (int i = 0; i < sSpeedMaterials.length; i++) {
-            sSpeedMaterials[i] = new Material(sSpeedColors[i]);
-        }
-
-        sVerticalNegColors = new Color[]{
-            //https://colordesigner.io/gradient-generator/?mode=oklab#FFFFFF-FF0000
-            Color.decode("#00ff00"),
-            Color.decode("#ffe5df"),
-            Color.decode("#ffcac0"),
-            Color.decode("#ffafa1"),
-            Color.decode("#ff9281"),
-            Color.decode("#ff7361"),
-            Color.decode("#ff4e3e"),
-            Color.decode("#ff0000"),
-            Color.decode("#aa0000")
-        };
-
-        sVerticalPosColors = new Color[]{
-            //https://colordesigner.io/gradient-generator/?mode=oklab#0000FF-FFFFFF
-            Color.decode("#00ff00"),
-            Color.decode("#d6e6ff"),
-            Color.decode("#aeccff"),
-            Color.decode("#87b1ff"),
-            Color.decode("#6094ff"),
-            Color.decode("#3a75ff"),
-            Color.decode("#1250ff"),
-            Color.decode("#0000ff"),
-            Color.decode("#0000aa")
-        };
-
-        sVerticalPosMaterials = new Material[sVerticalPosColors.length];
-        for (int i = 0; i < sVerticalPosMaterials.length; i++) {
-            sVerticalPosMaterials[i] = new Material(sVerticalPosColors[i]);
-        }
-        sVerticalNegMaterials = new Material[sVerticalNegColors.length];
-        for (int i = 0; i < sVerticalNegMaterials.length; i++) {
-            sVerticalNegMaterials[i] = new Material(sVerticalNegColors[i]);
-        }
-    }
-
-    public static Color getAlarmColorAwt(BTopoConvergenceGroup p) {
+    public static Color getAlarmColorAwt(BRockConvergence p) {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
     }
 
-    public static Color getAlarmColorAwt(BTopoConvergencePair p) {
+    public static Color getAlarmColorAwt(BRockConvergencePair p) {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
     }
 
@@ -115,11 +51,11 @@ public class TopoHelper {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
     }
 
-    public static javafx.scene.paint.Color getAlarmColorFx(BTopoConvergenceGroup p) {
+    public static javafx.scene.paint.Color getAlarmColorFx(BRockConvergence p) {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevel(p));
     }
 
-    public static javafx.scene.paint.Color getAlarmColorFx(BTopoConvergencePair p) {
+    public static javafx.scene.paint.Color getAlarmColorFx(BRockConvergencePair p) {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevel(p));
     }
 
@@ -175,11 +111,11 @@ public class TopoHelper {
         }
     }
 
-    public static int getAlarmLevel(BTopoConvergenceGroup p) {
+    public static int getAlarmLevel(BRockConvergence p) {
         return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
     }
 
-    public static int getAlarmLevel(BTopoConvergencePair p) {
+    public static int getAlarmLevel(BRockConvergencePair p) {
         return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
     }
 
@@ -223,9 +159,9 @@ public class TopoHelper {
         var gradeDiff = p.ext().getDiff();
         var dZ = gradeDiff.getPartialDiffDistance() / 1000.0;
         if (dZ < 0) {
-            return sVerticalNegColors[getColorIndex(sVerticalNegMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalNegColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.025, dZ)];
         } else {
-            return sVerticalPosColors[getColorIndex(sVerticalPosMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalPosColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalPosMaterials.length, 0.025, dZ)];
         }
     }
 
@@ -233,9 +169,9 @@ public class TopoHelper {
         var gradeDiff = p.ext().getDiff();
         var dZ = gradeDiff.getPartialDiffDistance() / 1000.0;
         if (dZ < 0) {
-            return sVerticalNegMaterials[getColorIndex(sVerticalNegMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalNegMaterials[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.025, dZ)];
         } else {
-            return sVerticalPosMaterials[getColorIndex(sVerticalPosMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalPosMaterials[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalPosMaterials.length, 0.025, dZ)];
         }
     }
 
@@ -244,9 +180,9 @@ public class TopoHelper {
         if (dZ == null) {
             return Color.YELLOW;
         } else if (dZ < 0) {
-            return sVerticalNegColors[getColorIndex(sVerticalNegMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalNegColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.025, dZ)];
         } else {
-            return sVerticalPosColors[getColorIndex(sVerticalPosMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalPosColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalPosMaterials.length, 0.025, dZ)];
         }
     }
 
@@ -255,16 +191,10 @@ public class TopoHelper {
         if (dZ == null) {
             return Material.YELLOW;
         } else if (dZ < 0) {
-            return sVerticalNegMaterials[getColorIndex(sVerticalNegMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalNegMaterials[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.025, dZ)];
         } else {
-            return sVerticalPosMaterials[getColorIndex(sVerticalPosMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalPosMaterials[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalPosMaterials.length, 0.025, dZ)];
         }
-    }
-
-    private static int getColorIndex(int length, double limit, double value) {
-        int index = (int) Math.min(length - 1, (Math.abs(value) / limit) * (length - 1));
-
-        return index;
     }
 
 }

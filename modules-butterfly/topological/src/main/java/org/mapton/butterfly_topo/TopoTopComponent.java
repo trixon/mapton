@@ -39,8 +39,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-topo.TopoTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DO-T"),
-    @ActionReference(path = "Menu/MapTools/Butterfly", position = 0)
+    @ActionReference(path = "Menu/MapTools/Butterfly/Topo", position = 0)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ControlPointAction",

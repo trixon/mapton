@@ -15,6 +15,8 @@
  */
 package org.mapton.api.ui.forms;
 
+import com.sun.jna.platform.KeyboardUtils;
+import java.awt.event.KeyEvent;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
@@ -82,6 +84,13 @@ public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
             if (needsUpdate()) {
                 mManager.setSelectedItem(n);
                 updateLabel();
+                if (KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
+                    try {
+                        Mapton.getEngine().panTo(mManager.getLatLonForItem(n));
+                    } catch (NullPointerException e) {
+                        //
+                    }
+                }
             }
         });
 

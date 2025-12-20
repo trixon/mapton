@@ -36,14 +36,16 @@ limitations under the License.
         <module>acoustic</module>
         <module>hydrological</module>
         <module>topological</module>
-        <module>topological_convergence</module>
         <module>alarm</module>
         <module>projektnav</module>
         <module>tmo</module>
         <module>monmon</module>
         <module>geo</module>
-        <module>geo_extensometer</module>
         <module>geo_inclinometer</module>
+        <module>rock</module>
+        <module>rock_blast</module>
+        <module>rock_convergence</module>
+        <module>rock_extensometer</module>
         <module>structural</module>
         <module>structural_crack</module>
         <module>structural_load</module>

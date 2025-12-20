@@ -15,28 +15,29 @@
  */
 package org.mapton.butterfly_format.types.remote;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
+@JsonIgnoreProperties(value = {"visible"})
 public class BRemoteInsarPoint extends BXyzPoint {
 
     private Double acceleration;
     private Integer changeDetected;
     private Double cumulativeDisplacement;
-    private Double effArea;
+    private Integer effArea;
     private transient Ext mExt;
     private Double seasonAmp;
     private Double stDef;
     private Double stDevAcceleration;
-    private Double stDevHor;
+    private Double stDevHeight;
     private Double stDevSeasonAmp;
     private Double stDevVelocity;
     private Double stDevVelocity3m;
     private Double stDevVelocity6m;
-    private Double stDevVer;
     private Double velocity;
     private Double velocity3m;
     private Double velocity6m;
@@ -62,7 +63,7 @@ public class BRemoteInsarPoint extends BXyzPoint {
         return cumulativeDisplacement;
     }
 
-    public Double getEffArea() {
+    public Integer getEffArea() {
         return effArea;
     }
 
@@ -78,8 +79,8 @@ public class BRemoteInsarPoint extends BXyzPoint {
         return stDevAcceleration;
     }
 
-    public Double getStDevHor() {
-        return stDevHor;
+    public Double getStDevHeight() {
+        return stDevHeight;
     }
 
     public Double getStDevSeasonAmp() {
@@ -96,10 +97,6 @@ public class BRemoteInsarPoint extends BXyzPoint {
 
     public Double getStDevVelocity6m() {
         return stDevVelocity6m;
-    }
-
-    public Double getStDevVer() {
-        return stDevVer;
     }
 
     public Double getVelocity() {
@@ -126,7 +123,7 @@ public class BRemoteInsarPoint extends BXyzPoint {
         this.cumulativeDisplacement = cumulativeDisplacement;
     }
 
-    public void setEffArea(Double effArea) {
+    public void setEffArea(Integer effArea) {
         this.effArea = effArea;
     }
 
@@ -142,8 +139,8 @@ public class BRemoteInsarPoint extends BXyzPoint {
         this.stDevAcceleration = stDevAcceleration;
     }
 
-    public void setStDevHor(Double stDevHor) {
-        this.stDevHor = stDevHor;
+    public void setStDevHeight(Double stDevHeight) {
+        this.stDevHeight = stDevHeight;
     }
 
     public void setStDevSeasonAmp(Double stDevSeasonAmp) {
@@ -160,10 +157,6 @@ public class BRemoteInsarPoint extends BXyzPoint {
 
     public void setStDevVelocity6m(Double stDevVelocity6m) {
         this.stDevVelocity6m = stDevVelocity6m;
-    }
-
-    public void setStDevVer(Double stDevVer) {
-        this.stDevVer = stDevVer;
     }
 
     public void setVelocity(Double velocity) {

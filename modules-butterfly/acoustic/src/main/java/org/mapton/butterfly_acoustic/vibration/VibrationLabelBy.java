@@ -36,6 +36,9 @@ public enum VibrationLabelBy implements LabelBy.Operations {
     DATE_LATEST(LabelBy.CAT_DATE, SDict.LATEST.toString(), p -> {
         return LabelBy.dateLatest(p);
     }),
+    DATE_LATEST_WITH_TIME(LabelBy.CAT_DATE, SDict.LATEST.toString() + " (med tid)", p -> {
+        return LabelBy.dateLatestWithTime(p);
+    }),
     DATE_FIRST(LabelBy.CAT_DATE, Dict.FIRST.toString(), p -> {
         return LabelBy.dateFirst(p);
     }),

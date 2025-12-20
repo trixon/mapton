@@ -39,7 +39,6 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-tmo.grundvatten.GrundvattenTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DO-G"),
     @ActionReference(path = "Menu/MapTools/Butterfly/TMO", position = 1)
 })
 @TopComponent.OpenActionRegistration(

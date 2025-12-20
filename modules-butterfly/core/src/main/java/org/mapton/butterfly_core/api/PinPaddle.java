@@ -52,9 +52,9 @@ public enum PinPaddle {
         mAddress = address;
         mHeading = heading;
         mHeadingToOffset.put(0d, Offset.BOTTOM_CENTER);
-        mHeadingToOffset.put(90d, Offset.LEFT_CENTER);
-        mHeadingToOffset.put(180d, Offset.TOP_CENTER);
-        mHeadingToOffset.put(270d, Offset.RIGHT_CENTER);
+        mHeadingToOffset.put(90d, Offset.fromFraction(0.5, 0));
+        mHeadingToOffset.put(180d, Offset.fromFraction(0.5, 0));
+        mHeadingToOffset.put(270d, Offset.fromFraction(0.5, 0));
     }
 
     public void apply(PointPlacemarkAttributes attrs) {
@@ -68,6 +68,7 @@ public enum PinPaddle {
         a.setHeading(mHeading);
         a.setScale(attrs.getScale() * 1.1);
         a.setImageOffset(mHeadingToOffset.getOrDefault(mHeading, Offset.CENTER));
+
         return a;
     }
 

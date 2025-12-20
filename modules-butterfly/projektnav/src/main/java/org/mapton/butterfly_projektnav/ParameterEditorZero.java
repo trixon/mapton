@@ -29,6 +29,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.BDimension;
@@ -43,18 +44,20 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class ParameterEditorZero extends ParameterEditorBase {
 
+    public final String DEFAULT_INSTRUMENT = "BERÄKNAD";
+    public final String DEFAULT_OPERATOR = "Mapton";
     private final RadioButton mCountDaysRadioButton = new RadioButton("...dagar");
     private final RadioButton mCountMeasurementsRadioButton = new RadioButton("...mätningar");
     private final ToggleGroup mCountToggleGroup = new ToggleGroup();
     private final DatePicker mDatePicker = new DatePicker(LocalDate.parse("2030-12-15"));
     private final DateTimeFormatter mDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private final TextField mInstrumentTextField = new TextField("BERÄKNAD");
+    private final TextField mInstrumentTextField = new TextField(DEFAULT_INSTRUMENT);
     private final Spinner<Integer> mMaxSpinner = new Spinner<>(2, 999, 10, 1);
     private final Spinner<Integer> mMinSpinner = new Spinner<>(2, 999, 3, 1);
     private final RadioButton mModeAvgRadioButton = new RadioButton("Medelvärde");
     private final RadioButton mModeMedianRadioButton = new RadioButton("Medianvärde");
     private final ToggleGroup mModeToggleGroup = new ToggleGroup();
-    private final TextField mOperatorTextField = new TextField("PK");
+    private final TextField mOperatorTextField = new TextField(DEFAULT_OPERATOR);
 
     public ParameterEditorZero() {
         createUI();
@@ -115,7 +118,9 @@ public class ParameterEditorZero extends ParameterEditorBase {
                         break;
                     }
                 }
-                observations.add(o);
+                if (!Strings.CI.equals(o.getInstrument(), DEFAULT_INSTRUMENT)) {
+                    observations.add(o);
+                }
             }
         }
 
@@ -208,6 +213,8 @@ public class ParameterEditorZero extends ParameterEditorBase {
         mCountDaysRadioButton.setToggleGroup(mCountToggleGroup);
         mCountMeasurementsRadioButton.setToggleGroup(mCountToggleGroup);
         mCountToggleGroup.selectToggle(mCountDaysRadioButton);
+        mInstrumentTextField.setDisable(true);
+        mOperatorTextField.setDisable(true);
 
         int row = 0;
         addRow(row++, mModeAvgRadioButton, mModeMedianRadioButton);

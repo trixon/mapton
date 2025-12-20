@@ -18,8 +18,12 @@ package org.mapton.butterfly_remote.insar;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import java.awt.Color;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
+import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
+import static org.mapton.butterfly_remote.insar.ColorBy.DISPLACEMENT;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -27,6 +31,7 @@ import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
  */
 public class InsarAttributeManager extends BaseAttributeManager {
 
+    private ColorBy mColorBy;
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mInsarAttribute;
     private BasicShapeAttributes mSurfaceAttributes;
@@ -36,6 +41,87 @@ public class InsarAttributeManager extends BaseAttributeManager {
     }
 
     private InsarAttributeManager() {
+    }
+
+    public javafx.scene.paint.Color getColorFx(BRemoteInsarPoint p) {
+        return SwingHelper.colorToColor(getColor(p));
+    }
+
+    public String getValueByColorByWithHeader(BRemoteInsarPoint p) {
+        var format = "%s: %+.1f %s";
+        switch (mColorBy) {
+            case ALARM, DISPLACEMENT -> {
+                return format.formatted("Δ", p.ext().deltaZero().getDeltaZ() * 1000, "mm");
+            }
+            case VELOCITY -> {
+                return format.formatted("Hastighet", p.getVelocity(), "mm/år");
+            }
+            case VELOCITY_3 -> {
+                return format.formatted("Hastighet 3m", p.getVelocity3m(), "mm/år");
+            }
+            case VELOCITY_6 -> {
+                return format.formatted("Hastighet 6m", p.getVelocity6m(), "mm/år");
+            }
+            case ACCELERATION -> {
+                return format.formatted("Acceleration", p.getAcceleration(), "mm/år^2");
+            }
+            default ->
+                throw new AssertionError();
+        }
+
+    }
+
+    public String getValueByColorBy(BRemoteInsarPoint p) {
+        var format = "%+.1f";
+        switch (mColorBy) {
+            case ALARM, DISPLACEMENT -> {
+                return format.formatted(p.ext().deltaZero().getDeltaZ() * 1000);
+            }
+            case VELOCITY -> {
+                return format.formatted(p.getVelocity());
+            }
+            case VELOCITY_3 -> {
+                return format.formatted(p.getVelocity3m());
+            }
+            case VELOCITY_6 -> {
+                return format.formatted(p.getVelocity6m());
+            }
+            case ACCELERATION -> {
+                return format.formatted(p.getAcceleration());
+            }
+            default ->
+                throw new AssertionError();
+        }
+
+    }
+
+    public Color getColor(BRemoteInsarPoint p) {
+        switch (mColorBy) {
+            case ALARM -> {
+                return InsarHelper.getAlarmColorAwt(p);
+            }
+            case DISPLACEMENT -> {
+                return ButterflyHelper.getRangeColor(p.ext().deltaZero().getDeltaZ(), 0.01);
+            }
+            case VELOCITY -> {
+                return ButterflyHelper.getRangeColor(p.getVelocity(), 10);
+            }
+            case VELOCITY_3 -> {
+                return ButterflyHelper.getRangeColor(p.getVelocity3m(), 10);
+            }
+            case VELOCITY_6 -> {
+                return ButterflyHelper.getRangeColor(p.getVelocity6m(), 10);
+            }
+            case ACCELERATION -> {
+                return ButterflyHelper.getRangeColor(p.getAcceleration(), 10);
+            }
+            default ->
+                throw new AssertionError();
+        }
+    }
+
+    public ColorBy getColorBy() {
+        return mColorBy;
     }
 
     public BasicShapeAttributes getComponentEllipsoidAttributes() {
@@ -63,12 +149,12 @@ public class InsarAttributeManager extends BaseAttributeManager {
 
     public PointPlacemarkAttributes getPinAttributes(BRemoteInsarPoint p) {
         var attrs = getPinAttributes(InsarHelper.getAlarmLevel(p));
-//        attrs.setImageAddress("https://maps.google.com/mapfiles/kml/paddle/wht-circle.png");
-//        PinPaddle.SQUARE.apply(attrs);
-//        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
-//            attrs = new PointPlacemarkAttributes(attrs);
-//            attrs.setImageColor(getColor(p));
-//        }
+
+        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
+            attrs = new PointPlacemarkAttributes(attrs);
+            attrs.setImageColor(getColor(p));
+        }
+
         return attrs;
     }
 
@@ -82,6 +168,20 @@ public class InsarAttributeManager extends BaseAttributeManager {
         }
 
         return mSurfaceAttributes;
+    }
+
+    public BasicShapeAttributes getSymbolAttributes(BRemoteInsarPoint p) {
+        var attrs = getAlarmInteriorAttributes(InsarHelper.getAlarmLevel(p));
+        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
+            attrs = new BasicShapeAttributes(attrs);
+            attrs.setInteriorMaterial(new Material(getColor(p)));
+        }
+
+        return attrs;
+    }
+
+    public void setColorBy(ColorBy colorBy) {
+        mColorBy = colorBy;
     }
 
     private static class Holder {

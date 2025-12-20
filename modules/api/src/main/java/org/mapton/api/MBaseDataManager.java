@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -55,6 +56,7 @@ public abstract class MBaseDataManager<T> {
     private final LinkedHashMap<Object, T> mAllItemsMap = new LinkedHashMap<>();
     private final ObjectProperty<ObservableList<T>> mAllItemsProperty = new SimpleObjectProperty<>();
     private final HashSet<T> mAllItemsSet = new HashSet<>();
+    private Object[] mClearables;
     private final DelayedResetRunner mDelayedResetRunner;
     private final LinkedHashMap<Object, T> mFilteredItemsMap = new LinkedHashMap<>();
     private final ObjectProperty<ObservableList<T>> mFilteredItemsProperty = new SimpleObjectProperty<>();
@@ -72,7 +74,6 @@ public abstract class MBaseDataManager<T> {
     private final Class<T> mTypeParameterClass;
     private final DelayedResetRunner mUnlockDelayedResetRunner;
     private transient final HashMap<Object, Object> mValues = new HashMap<>();
-
     private final Action mZoomExtentsAction;
 
     public MBaseDataManager(Class<T> typeParameterClass) {
@@ -111,6 +112,31 @@ public abstract class MBaseDataManager<T> {
 
     public ObjectProperty<ObservableList<T>> allItemsProperty() {
         return mAllItemsProperty;
+    }
+
+    public void clear() {
+        getAllItemsMap().clear();
+        getAllItemsSet().clear();
+        getAllItems().clear();
+
+        getFilteredItemsMap().clear();
+        getFilteredItemsSet().clear();
+        getFilteredItems().clear();
+
+        getTimeFilteredItemsMap().clear();
+        getTimeFilteredItemsSet().clear();
+        getTimeFilteredItems().clear();
+
+        for (var clearable : mClearables) {
+            switch (clearable) {
+                case Map map ->
+                    map.clear();
+                case List list ->
+                    list.clear();
+                default -> {
+                }
+            }
+        }
     }
 
     public ObjectProperty<ObservableList<T>> filteredItemsProperty() {
@@ -236,7 +262,7 @@ public abstract class MBaseDataManager<T> {
     public void initAllItems(ArrayList<T> items) {
         setItemsAll(items);
         setItemsFiltered(items);
-        setItemsTimeFiltered(items);
+//        setItemsTimeFiltered(items);
     }
 
     public boolean isLayerBundleEnabled() {
@@ -293,6 +319,10 @@ public abstract class MBaseDataManager<T> {
 
     public void selectionUnlock() {
         mUnlockDelayedResetRunner.reset();
+    }
+
+    public void setClearables(Object... clearables) {
+        mClearables = clearables;
     }
 
     public void setInitialTemporalState(boolean initialTemporalState) {

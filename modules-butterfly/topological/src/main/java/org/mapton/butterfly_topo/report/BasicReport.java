@@ -65,7 +65,8 @@ public class BasicReport extends BaseTopoReport {
                                         th(SDict.ALARM_PLANE.toString()),
                                         th(SDict.ALARM_LEVEL.toString()),
                                         th(SDict.FREQUENCY.toString()),
-                                        th(SDict.DIMENSION.toString())
+                                        th(SDict.DIMENSION.toString()),
+                                        th(Dict.STATUS.toString())
                                 ),
                                 tbody(
                                         each(mManager.getTimeFilteredItems(), p
@@ -78,7 +79,8 @@ public class BasicReport extends BaseTopoReport {
                                                 td(p.getAlarm2Id()),
                                                 td(AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p)),
                                                 td(Objects.toString(p.getFrequency(), "")),
-                                                td(Objects.toString(p.getDimension().getName(), ""))
+                                                td(Objects.toString(p.getDimension().getName(), "")),
+                                                td(Objects.toString(p.getStatus(), ""))
                                         )
                                         )
                                 )

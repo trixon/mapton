@@ -20,6 +20,7 @@ import gov.nasa.worldwind.util.BufferWrapper;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.DoubleStream;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
@@ -37,14 +38,14 @@ public class GridData {
     private MLatLonBox mLatLonBox;
     private double mMax = Double.MIN_VALUE;
     private double mMin = Double.MAX_VALUE;
-    private ArrayList<GridValue> mValues;
+    private List<GridValue> mValues;
     private int mWidth;
 
     public GridData() {
     }
 
     @SuppressWarnings("unchecked")
-    public GridData(int width, int height, ArrayList<GridValue> values, CellAggregate cellAggregate) {
+    public GridData(int width, int height, List<GridValue> values, CellAggregate cellAggregate) {
         //TODO Replace width & height with some calculated resulotion variant...?
         mCellAggregate = cellAggregate;
         var latLons = new ArrayList<MLatLon>();
@@ -196,7 +197,7 @@ public class GridData {
         return mMin;
     }
 
-    public ArrayList<GridValue> getValues() {
+    public List<GridValue> getValues() {
         return mValues;
     }
 
@@ -220,7 +221,7 @@ public class GridData {
         mMin = min;
     }
 
-    public void setValues(ArrayList<GridValue> values) {
+    public void setValues(List<GridValue> values) {
         mValues = values;
 
         for (var value : values) {

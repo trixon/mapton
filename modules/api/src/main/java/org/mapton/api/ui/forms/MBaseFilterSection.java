@@ -85,7 +85,7 @@ public abstract class MBaseFilterSection {
      * @return a key with simple class name and filter as prefix
      */
     public String getKeyFilter(String key) {
-        return "%s.filter.%s".formatted(getClass().getSimpleName(), key);
+        return "filter.%s.%s".formatted(getClass().getSimpleName(), key);
     }
 
     public double getMaxWidth() {

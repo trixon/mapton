@@ -173,6 +173,14 @@ public abstract class BBasePoint extends BBase {
             }
         }
 
+        public LocalDateTime getObservationFilteredLastDateWithTime() {
+            try {
+                return getObservationFilteredLast().getDate();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
         public T getObservationRawFirst() {
             try {
                 return getObservationsAllRaw().getFirst();

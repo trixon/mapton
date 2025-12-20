@@ -28,6 +28,7 @@ import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -42,6 +43,7 @@ public class InsarView {
     private final SingleListForm<InsarManager, BRemoteInsarPoint> mListForm;
     private final InsarManager mManager = InsarManager.getInstance();
     private Action mRefreshAction;
+    private Action mClearAction;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
 
     public InsarView() {
@@ -50,6 +52,12 @@ public class InsarView {
             mManager.load2(mButterflyManager.getButterfly());
         });
         mRefreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
+        mClearAction = new Action(Dict.CLEAR.toString(), actionEvent -> {
+            mManager.clear();
+            SystemHelper.runGcDelayed(500);
+            mRefreshAction.setDisabled(false);
+        });
+        mClearAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt()));
         mButterflyManager.butterflyProperty().addListener((p, o, n) -> {
             mRefreshAction.setDisabled(false);
         });
@@ -57,6 +65,7 @@ public class InsarView {
         mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
         var actions = Arrays.asList(
                 mRefreshAction,
+                mClearAction,
                 //                new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,

@@ -16,6 +16,7 @@
 package org.mapton.butterfly_core.api;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -65,6 +66,7 @@ public class LabelBy {
     public static final String PLANE_NAME = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.NAME.toLower());
     public static final String PLANE_PERCENT = "%s, %%".formatted(Dict.Geometry.PLANE);
     public static final String PLANE_VALUE = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.VALUE.toLower());
+    public static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH.mm (dd/MM)");
     private static final String DEFAULT_DATE_IF_NULL = "-";
 
     public static String alarmDifferential(BXyzPoint p, BComponent component) {
@@ -173,6 +175,15 @@ public class LabelBy {
 
     public static String dateLatest(BXyzPoint p) {
         return Objects.toString(p.extOrNull().getObservationFilteredLastDate(), DEFAULT_DATE_IF_NULL);
+    }
+
+    public static String dateLatestWithTime(BXyzPoint p) {
+        var ldt = p.extOrNull().getObservationFilteredLastDateWithTime();
+        if (ldt != null) {
+            return ldt.format(DATE_TIME_FORMATTER);
+        } else {
+            return DEFAULT_DATE_IF_NULL;
+        }
     }
 
     public static String dateNext(BXyzPoint p) {

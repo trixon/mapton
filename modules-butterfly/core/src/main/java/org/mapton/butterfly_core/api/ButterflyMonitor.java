@@ -16,6 +16,7 @@
 package org.mapton.butterfly_core.api;
 
 import java.io.File;
+import java.time.LocalTime;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -44,26 +45,41 @@ public class ButterflyMonitor {
 
     public ButterflyMonitor() {
         mFileAlterationListener = new FileAlterationListenerAdaptor() {
+            private File mFile;
             private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(10 * 1000, () -> {
-//                stop();
                 if (mRunning) {
+                    System.out.format("%s ButterflyMonitor: Change detected in %s\n",
+                            LocalTime.now(),
+                            mFile.toString()
+                    );
                     ButterflyOpener.getInstance().restore();
                 }
             });
 
             @Override
             public void onFileChange(File file) {
-                load();
+                load(file);
             }
 
             @Override
             public void onFileCreate(File file) {
-                load();
+                load(file);
             }
 
-            private void load() {
-                System.out.println("ButterflyMonitor: Change detected");
-                mDelayedResetRunner.reset();
+            private void load(File file) {
+                if (validForReload(file)) {
+                    mFile = file;
+                    mDelayedResetRunner.reset();
+                }
+            }
+
+            private boolean validForReload(File file) {
+                if (mButterflyLoader.getBundleMode() == BundleMode.DIR) {
+                    return true;
+                } else {
+                    return file.equals(ButterflyManager.getInstance().getSource());
+                }
+
             }
         };
     }
@@ -98,12 +114,6 @@ public class ButterflyMonitor {
             // nvm was not running
         }
         mMonitor.removeObserver(mObserver);
-//
-//        StreamSupport.stream(mMonitor.getObservers().spliterator(), false)
-//                .collect(Collectors.toList())
-//                .forEach(observer -> {
-//                    mMonitor.removeObserver(observer);
-//                });
     }
 
 }

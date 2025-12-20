@@ -136,14 +136,14 @@ public class BSubFilterMeasAlarmLevel<T extends BXyzPoint> extends BSubFilterMea
 
     @Override
     public void initSession(SessionManager sessionManager) {
-        sessionManager.register("filter.checkedNextAlarm", mAlarmLevelsSccb.checkedStringProperty());
-        sessionManager.register("filter.measAlarmLevelAge", mMeasAlarmLevelAgeCheckbox.selectedProperty());
-        sessionManager.register("filter.measAlarmLevelAgeValue", mMeasAlarmLevelAgeSis.sessionValueProperty());
-        sessionManager.register("filter.measAlarmLevelChange", mAlarmLevelChangeCheckbox.selectedProperty());
-        sessionManager.register("filter.measAlarmLevelChangeLimit", mAlarmLevelChangeLimitSis.sessionValueProperty());
-        sessionManager.register("filter.measAlarmLevelChangeValue", mAlarmLevelChangeValueSis.sessionValueProperty());
-        sessionManager.register("filter.measAlarmLevelChangeMode", mAlarmLevelChangeModeScb.selectedIndexProperty());
-        sessionManager.register("filter.measAlarmLevelChangeUnit", mAlarmLevelChangeUnitScb.selectedIndexProperty());
+        sessionManager.register(getKeyFilter("checkedNextAlarm"), mAlarmLevelsSccb.checkedStringProperty());
+        sessionManager.register(getKeyFilter("age"), mMeasAlarmLevelAgeCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("ageValue"), mMeasAlarmLevelAgeSis.sessionValueProperty());
+        sessionManager.register(getKeyFilter("change"), mAlarmLevelChangeCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("changeLimit"), mAlarmLevelChangeLimitSis.sessionValueProperty());
+        sessionManager.register(getKeyFilter("changeValue"), mAlarmLevelChangeValueSis.sessionValueProperty());
+        sessionManager.register(getKeyFilter("changeMode"), mAlarmLevelChangeModeScb.selectedIndexProperty());
+        sessionManager.register(getKeyFilter("changeUnit"), mAlarmLevelChangeUnitScb.selectedIndexProperty());
     }
 
     @Override

@@ -20,10 +20,15 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Box;
+import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.RigidShape;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import org.apache.commons.math3.util.FastMath;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_remote.insar.InsarAttributeManager;
@@ -42,6 +47,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         sCheckModel = checkModel;
     }
 
+    @Override
     public void plot(BRemoteInsarPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
 
@@ -74,12 +80,15 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
         var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, false);
         var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentH / 100.0);
-        var box = new Box(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
+        double symbolSize = PERCENTAGE_SIZE / 3;
+        var box = new Box(pos, symbolSize, symbolSize, symbolSize);
         box.setAttributes(attrs);
         addRenderable(box, true, GraphicItem.ALARM_CONSUMPTION, sMapObjects);
 
         var alarm = p.ext().getAlarm(BComponent.HEIGHT);
-        var alarmShape = new Box(position, PERCENTAGE_SIZE_ALARM, PERCENTAGE_SIZE_ALARM_HEIGHT, PERCENTAGE_SIZE_ALARM);
+        double symbolSizeAlarm = PERCENTAGE_SIZE_ALARM / 3;
+        double symbolSizeAlarmHeight = PERCENTAGE_SIZE_ALARM_HEIGHT / 3;
+        var alarmShape = new Box(position, symbolSizeAlarm, symbolSizeAlarmHeight, symbolSizeAlarm);
         plotPercentageAlarmIndicator(position, alarm, alarmShape, false);
 
         plotPercentageRod(position, p.ext().getAlarmPercent());
@@ -98,7 +107,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             var o = reversedList.get(i);
 
             var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
-            var height = timeSpan / 24000.0;
+            var height = FastMath.max(0.01, timeSpan / 24000.0);
             altitude = altitude + height * 0.5 + prevHeight * 0.5;
             prevDate = o.getDate();
             prevHeight = height;
@@ -110,24 +119,29 @@ public class GraphicRenderer extends GraphicRendererBase {
             var pos = WWHelper.positionFromPosition(position, altitude);
             var maxRadius = 10.0;
 
-            var mScale1dH = 0.02;
             var dZ = o.ext().getDeltaZ();
+            var mScale1dH = 250;
             var radius = Math.min(maxRadius, Math.abs(dZ) * mScale1dH + 0.05);
             var maximus = radius == maxRadius;
+            RigidShape shape;
+            if (dZ > 0) {
+                shape = new Box(pos, radius, height, radius);
+            } else {
+                shape = new Cylinder(pos, height, radius);
+            }
 
-            var cylinder = new Box(pos, radius, height, radius);
             var alarmLevel = p.ext().getAlarmLevelHeight(o);
-            var rise = Math.signum(dZ) > 0;
-            var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, maximus);
-
-            if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
+            var attrs = new BasicShapeAttributes(mAttributeManager.getComponentTrace1dAttributes(alarmLevel, false, maximus));
+            var color = ButterflyHelper.getRangeColor(dZ, 0.01);
+            attrs.setInteriorMaterial(new Material(color));
+            if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 56) {
                 attrs = new BasicShapeAttributes(attrs);
                 attrs.setInteriorOpacity(0.25);
                 attrs.setOutlineOpacity(0.20);
             }
 
-            cylinder.setAttributes(attrs);
-            addRenderable(cylinder, true, GraphicItem.TRACE, sMapObjects);
+            shape.setAttributes(attrs);
+            addRenderable(shape, true, GraphicItem.TRACE, sMapObjects);
         }
     }
 }

@@ -53,7 +53,7 @@ public class GradeFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionMeas = new FilterSectionMeas(config);
-        mFilterSectionMisc = new BFilterSectionMisc();
+        mFilterSectionMisc = new BFilterSectionMisc(filter);
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionDate);
@@ -142,8 +142,6 @@ public class GradeFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.initSession(sessionManager);
         mFilterSectionMeas.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
-
-        sessionManager.register("freeText", mFilter.freeTextProperty());
 
         return sessionManager;
     }

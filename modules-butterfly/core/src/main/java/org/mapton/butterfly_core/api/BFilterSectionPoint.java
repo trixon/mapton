@@ -241,7 +241,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
     @Override
     public void initSession(SessionManager sessionManager) {
-        sessionManager.register("filter.section.point", selectedProperty());
+        sessionManager.register(getKeyFilter("section"), selectedProperty());
         mPointFilterUI.initSession(sessionManager);
     }
 
@@ -657,28 +657,28 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         }
 
         public void initSession(SessionManager sessionManager) {
-            sessionManager.register("filter.checkedAlarmName", mAlarmNameSccb.checkedStringProperty());
-            sessionManager.register("filter.checkedAlarmStat", mAlarmStatSccb.checkedStringProperty());
-            sessionManager.register("filter.checkedCategory", mCategorySccb.checkedStringProperty());
-            sessionManager.register("filter.checkedTag", mTagSccb.checkedStringProperty());
-            sessionManager.register("filter.checkedFrequency", mFrequencySccb.checkedStringProperty());
-            sessionManager.register("filter.checkedDefaultFrequency", mDefaultFrequencySccb.checkedStringProperty());
-            sessionManager.register("filter.checkedDefaultFrequencyStat", mDefaultFrequencyStatSccb.checkedStringProperty());
-            sessionManager.register("filter.checkedIntenseFrequency", mIntenseFrequencySccb.checkedStringProperty());
-            sessionManager.register("filter.checkedIntenseFrequencyStat", mIntenseFrequencyStatSccb.checkedStringProperty());
-            sessionManager.register("filter.checkedGroup", mGroupSccb.checkedStringProperty());
-            sessionManager.register("filter.checkedRollingFormula", mRollingSccb.checkedStringProperty());
-            sessionManager.register("filter.checkedSparseFormula", mSparseSccb.checkedStringProperty());
-            sessionManager.register("filter.checkedOperators", mOperatorSccb.checkedStringProperty());
-            sessionManager.register("filter.checkedOrigin", mOriginSccb.checkedStringProperty());
-            sessionManager.register("filter.checkedStatus", mStatusSccb.checkedStringProperty());
-            sessionManager.register("filter.checkedClassification", mClassificationSccb.checkedStringProperty());
-            sessionManager.register("filter.checkedUnit", mUnitSccb.checkedStringProperty());
-            sessionManager.register("filter.checkedUnitDiff", mUnitDiffSccb.checkedStringProperty());
-            sessionManager.register("filter.measCheckedNextMeas", mMeasNextSccb.checkedStringProperty());
-            sessionManager.register("filter.measCheckedMeasMode", mMeasurementModeSccb.checkedStringProperty());
-            sessionManager.register("filter.measCheckedMeasModeSub", mMeasurementModeSubSccb.checkedStringProperty());
-            mAltitudeRangeSlider.initSession("altitude", sessionManager);
+            sessionManager.register(getKeyFilter("checkedAlarmName"), mAlarmNameSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedAlarmStat"), mAlarmStatSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedCategory"), mCategorySccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedTag"), mTagSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedFrequency"), mFrequencySccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedDefaultFrequency"), mDefaultFrequencySccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedDefaultFrequencyStat"), mDefaultFrequencyStatSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedIntenseFrequency"), mIntenseFrequencySccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedIntenseFrequencyStat"), mIntenseFrequencyStatSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedGroup"), mGroupSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedRollingFormula"), mRollingSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedSparseFormula"), mSparseSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedOperators"), mOperatorSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedOrigin"), mOriginSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedStatus"), mStatusSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedClassification"), mClassificationSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedUnit"), mUnitSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedUnitDiff"), mUnitDiffSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("measCheckedNextMeas"), mMeasNextSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("measCheckedMeasMode"), mMeasurementModeSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("measCheckedMeasModeSub"), mMeasurementModeSubSccb.checkedStringProperty());
+            mAltitudeRangeSlider.initSession(getKeyFilter("altitude"), sessionManager);
         }
 
         public void onShownFirstTime() {

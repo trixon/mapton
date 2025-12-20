@@ -59,18 +59,13 @@ public class BTopoGrade extends BXyzPoint {
 
     public BTopoGrade(BAxis axis, BTopoControlPoint p1, BTopoControlPoint p2) {
         mAxis = axis;
-        if (p1.getZeroZ() < p2.getZeroZ()) {
-            mP1 = p1;
-            mP2 = p2;
-        } else {
-            mP1 = p2;
-            mP2 = p1;
-        }
+        mP1 = p1;
+        mP2 = p2;
 
-        setName("%s → %s".formatted(p1.getName(), p2.getName()));
+        setName("%s → %s".formatted(mP1.getName(), mP2.getName()));
 
-        var map1 = createObservationMap(p1);
-        var map2 = createObservationMap(p2);
+        var map1 = createObservationMap(mP1);
+        var map2 = createObservationMap(mP2);
 
         for (var entry : map1.entrySet()) {
             LocalDate date = entry.getKey();
@@ -81,8 +76,8 @@ public class BTopoGrade extends BXyzPoint {
             }
         }
 
-        recalc1(p1);
-        recalc2(p2);
+        recalc1(mP1);
+        recalc2(mP2);
     }
 
     @Override

@@ -16,8 +16,6 @@
 package org.mapton.butterfly_topo.report.measurement;
 
 import static j2html.TagCreator.body;
-import static j2html.TagCreator.h1;
-import static j2html.TagCreator.hr;
 import static j2html.TagCreator.html;
 import static j2html.TagCreator.pre;
 import j2html.tags.ContainerTag;
@@ -112,30 +110,33 @@ public class ObjectSummaryGradeHReport extends BaseTopoMeasurementReport {
             );
         };
 
-        addRow(rows, "Grupp/objekt");
+//        addRow(rows, "Grupp/objekt");
         addRow(rows, "Rapportdatum", LocalDate.now().toString());
         if (!dates.isEmpty()) {
             addRow(rows, "Senaste mätning", dates.getLast().toString());
             addRow(rows, "Första mätning", dates.getFirst().toString());
         }
 
-        addBlankRow(rows);
-        addRow(rows, "", "Dubbar", "Prismor", "Totalt");
-        addRow(rows, "Antal punkter",
-                map.get("antalDubbar"),
-                map.get("antalPrismor"),
-                map.getOrDefault("antalDubbar", 0) + map.getOrDefault("antalPrismor", 0)
-        );
-        addBlankRow(rows);
+//        addBlankRow(rows);
+//        addRow(rows, "", "Dubbar", "Prismor", "Totalt");
+//        addRow(rows, "Antal punkter",
+//                map.get("antalDubbar"),
+//                map.get("antalPrismor"),
+//                map.getOrDefault("antalDubbar", 0) + map.getOrDefault("antalPrismor", 0)
+//        );
+//        addBlankRow(rows);
         addBlankRow(rows);
         var topListSize = 25;
         addRow(rows, "Alla punktpar", mManager.getAllItems().size());
         addRow(rows, "Filtrerade punktpar", mManager.getTimeFilteredItems().size());
         addRow(rows, "Max antal punktpar", topListSize);
         addBlankRow(rows);
+        addBlankRow(rows);
+        addBlankRow(rows);
 
         addRow(rows, "Punktpar", "mm/m", "Diff", "Planavstånd", "Period", "Mätningar");
         getTopList(mManager.getTimeFilteredItems(), topListSize).forEach(topListConsumer);
+        addBlankRow(rows);
         addBlankRow(rows);
 
         for (var columns : rows) {
@@ -144,8 +145,6 @@ public class ObjectSummaryGradeHReport extends BaseTopoMeasurementReport {
 
         var html = html(
                 body(
-                        h1(mName),
-                        hr(),
                         pre(sb.toString())
                 )
         );

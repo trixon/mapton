@@ -17,6 +17,7 @@ package org.mapton.butterfly_format;
 
 import internal.org.mapton.butterfly_format.monmon.MonmonConfig;
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,14 +38,10 @@ import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.BSystemSearchProvider;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
-import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationChannel;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationLimit;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationObservation;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation.ObservationItem;
@@ -54,6 +51,13 @@ import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation
 import org.mapton.butterfly_format.types.monmon.BMonmon;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPointObservation;
+import org.mapton.butterfly_format.types.remote.RemoteInsarPointDefaultsConfig;
+import org.mapton.butterfly_format.types.rock.BRockBlast;
+import org.mapton.butterfly_format.types.rock.BRockConvergence;
+import org.mapton.butterfly_format.types.rock.BRockConvergenceObservation;
+import org.mapton.butterfly_format.types.rock.BRockExtensometer;
+import org.mapton.butterfly_format.types.rock.BRockExtensometerPoint;
+import org.mapton.butterfly_format.types.rock.BRockExtensometerPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
@@ -72,8 +76,6 @@ import org.mapton.butterfly_format.types.tmo.BVaderstation;
 import org.mapton.butterfly_format.types.tmo.BVattenkemi;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_format.types.topo.BTopoConvergenceObservation;
 
 /**
  *
@@ -85,15 +87,9 @@ public class Butterfly {
     private final ArrayList<BHistory> mAlarmsHistory = new ArrayList<>();
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
     private final ArrayList<BAreaBase> mAreaFilters = new ArrayList<>();
-    private final ArrayList<BAcousticBlast> mBlasts = new ArrayList<>();
+    private final ArrayList<BRockBlast> mRockBlasts = new ArrayList<>();
     private final ArrayList<BCoordinate> mCoordinates = new ArrayList<>();
     private final Dev mDev = new Dev();
-    private final Remote mRemote = new Remote();
-    private final ArrayList<BGeoExtensometer> mGeoExtensometers = new ArrayList<>();
-    private final ArrayList<BRemoteInsarPoint> mRemoteInsarPoints = new ArrayList<>();
-    private final ArrayList<BRemoteInsarPointObservation> mRemoteInsarPointsObservations = new ArrayList<>();
-    private final ArrayList<BGeoExtensometerPoint> mGeoExtensometersPoints = new ArrayList<>();
-    private final ArrayList<BGeoExtensometerPointObservation> mGeoExtensometersPointsObservations = new ArrayList<>();
     private final ArrayList<BGeoInclinometerPoint> mGeoInclinometerPoints = new ArrayList<>();
     private final ArrayList<BGeoInclinometerPointObservation> mGeoInclinometerPointsObservations = new ArrayList<>();
     private final ArrayList<BGeoInclinometerPointObservationPre> mGeoInclinometerPointsObservationsPre = new ArrayList<>();
@@ -104,6 +100,16 @@ public class Butterfly {
     private final ButterflyManipulator mManipulator = new ButterflyManipulator();
     private final ArrayList<BMonmon> mMonmons = new ArrayList<>();
     private final Noise mNoise = new Noise();
+    private final Remote mRemote = new Remote();
+    private final ArrayList<BRemoteInsarPoint> mRemoteInsarPoints = new ArrayList<>();
+    private final ArrayList<BRemoteInsarPointObservation> mRemoteInsarPointsObservations = new ArrayList<>();
+    private final Rock mRock = new Rock();
+    private final ArrayList<BRockConvergence> mRockConvergence = new ArrayList<>();
+    private final ArrayList<BRockConvergenceObservation> mRockConvergenceObservations = new ArrayList<>();
+    private final ArrayList<BRockExtensometer> mRockExtensometers = new ArrayList<>();
+    private final ArrayList<BRockExtensometerPoint> mRockExtensometersPoints = new ArrayList<>();
+    private final ArrayList<BRockExtensometerPointObservation> mRockExtensometersPointsObservations = new ArrayList<>();
+    private File mSourceDir;
     private final Structural mStructural = new Structural();
     private final ArrayList<BStructuralCrackPoint> mStructuralCrackPoints = new ArrayList<>();
     private final ArrayList<BStructuralCrackPointObservation> mStructuralCrackPointsObservations = new ArrayList<>();
@@ -119,8 +125,6 @@ public class Butterfly {
     private final Topo mTopo = new Topo();
     private final ArrayList<BTopoControlPoint> mTopoControlPoints = new ArrayList<>();
     private final ArrayList<BTopoControlPointObservation> mTopoControlPointsObservations = new ArrayList<>();
-    private final ArrayList<BTopoConvergenceGroup> mTopoConvergenceGroups = new ArrayList<>();
-    private final ArrayList<BTopoConvergenceObservation> mTopoConvergenceObservations = new ArrayList<>();
     private final ArrayList<BAcousticVibrationChannel> mVibrationChannels = new ArrayList<>();
     private final ArrayList<BAcousticVibrationLimit> mVibrationLimits = new ArrayList<>();
     private final ArrayList<BAcousticVibrationObservation> mVibrationObservations = new ArrayList<>();
@@ -166,16 +170,31 @@ public class Butterfly {
         return mMonmons;
     }
 
-    public Remote remote() {
-        return mRemote;
-    }
-
     public Hydro hydro() {
         return mHydro;
     }
 
+    public void loadManual() {
+        //Remote
+        new ImportFromCsv<BRemoteInsarPoint>(BRemoteInsarPoint.class) {
+        }.load(mSourceDir, "remoteInsarPoints.csv", mRemoteInsarPoints);
+
+        new ImportFromCsv<BRemoteInsarPointObservation>(BRemoteInsarPointObservation.class) {
+        }.load(mSourceDir, "remoteInsarPointsObservations.csv", mRemoteInsarPointsObservations);
+
+        postLoadManual();
+    }
+
     public Noise noise() {
         return mNoise;
+    }
+
+    public Remote remote() {
+        return mRemote;
+    }
+
+    public Rock rock() {
+        return mRock;
     }
 
     public Structural structural() {
@@ -195,11 +214,9 @@ public class Butterfly {
     }
 
     void load(File sourceDir) {
+        mSourceDir = sourceDir;
         new ImportFromCsv<BCoordinate>(BCoordinate.class) {
         }.load(sourceDir, "coordinates.csv", mCoordinates);
-
-        new ImportFromCsv<BAcousticBlast>(BAcousticBlast.class) {
-        }.load(sourceDir, "noiseBlasts.csv", mBlasts);
 
         new ImportFromCsv<BAcousticVibrationPoint>(BAcousticVibrationPoint.class) {
         }.load(sourceDir, "noiseVibrationPoints.csv", mVibrationPoints);
@@ -256,11 +273,24 @@ public class Butterfly {
         new ImportFromCsv<BStructuralTiltPointObservation>(BStructuralTiltPointObservation.class) {
         }.load(sourceDir, "structuralTiltPointsObservations.csv", mStructuralTiltPointsObservations);
 
-        new ImportFromCsv<BTopoConvergenceGroup>(BTopoConvergenceGroup.class) {
-        }.load(sourceDir, "topoConvergenceGroups.csv", mTopoConvergenceGroups);
+        //Rock
+        new ImportFromCsv<BRockBlast>(BRockBlast.class) {
+        }.load(sourceDir, "rockBlasts.csv", mRockBlasts);
 
-        new ImportFromCsv<BTopoConvergenceObservation>(BTopoConvergenceObservation.class) {
-        }.load(sourceDir, "topoConvergenceObservations.csv", mTopoConvergenceObservations);
+        new ImportFromCsv<BRockConvergence>(BRockConvergence.class) {
+        }.load(sourceDir, "rockConvergence.csv", mRockConvergence);
+
+        new ImportFromCsv<BRockConvergenceObservation>(BRockConvergenceObservation.class) {
+        }.load(sourceDir, "rockConvergenceObservations.csv", mRockConvergenceObservations);
+
+        new ImportFromCsv<BRockExtensometer>(BRockExtensometer.class) {
+        }.load(sourceDir, "rockExtensometers.csv", mRockExtensometers);
+
+        new ImportFromCsv<BRockExtensometerPoint>(BRockExtensometerPoint.class) {
+        }.load(sourceDir, "rockExtensometersPoints.csv", mRockExtensometersPoints);
+
+        new ImportFromCsv<BRockExtensometerPointObservation>(BRockExtensometerPointObservation.class) {
+        }.load(sourceDir, "rockExtensometersPointsObservations.csv", mRockExtensometersPointsObservations);
 
         //Hydro
         new ImportFromCsv<BHydroGroundwaterPoint>(BHydroGroundwaterPoint.class) {
@@ -294,27 +324,11 @@ public class Butterfly {
         }.load(sourceDir, "tmoRorelseObservations.csv", mTmo.getRorelseObservations());
 
         //Geotechnical
-        new ImportFromCsv<BGeoExtensometer>(BGeoExtensometer.class) {
-        }.load(sourceDir, "geoExtensometers.csv", mGeoExtensometers);
-
-        new ImportFromCsv<BGeoExtensometerPoint>(BGeoExtensometerPoint.class) {
-        }.load(sourceDir, "geoExtensometersPoints.csv", mGeoExtensometersPoints);
-
-        new ImportFromCsv<BGeoExtensometerPointObservation>(BGeoExtensometerPointObservation.class) {
-        }.load(sourceDir, "geoExtensometersPointsObservations.csv", mGeoExtensometersPointsObservations);
-
         new ImportFromCsv<BGeoInclinometerPoint>(BGeoInclinometerPoint.class) {
         }.load(sourceDir, "geoInclinometerPoints.csv", mGeoInclinometerPoints);
 
         new ImportFromCsv<BGeoInclinometerPointObservationPre>(BGeoInclinometerPointObservationPre.class) {
         }.load(sourceDir, "geoInclinometerPointsObservations.csv", mGeoInclinometerPointsObservationsPre);
-
-        //Remote
-        new ImportFromCsv<BRemoteInsarPoint>(BRemoteInsarPoint.class) {
-        }.load(sourceDir, "remoteInsarPoints.csv", mRemoteInsarPoints);
-
-        new ImportFromCsv<BRemoteInsarPointObservation>(BRemoteInsarPointObservation.class) {
-        }.load(sourceDir, "remoteInsarPointsObservations.csv", mRemoteInsarPointsObservations);
 
         //System
         new ImportFromCsv<BSystemSearchProvider>(BSystemSearchProvider.class) {
@@ -326,16 +340,15 @@ public class Butterfly {
         List.of(
                 mAlarms,
                 mAlarmsHistory,
+                mGeoInclinometerPoints,
                 mHydroGroundwaterPoints,
+                mRockConvergence,
+                mRockExtensometers,
                 mStructuralCrackPoints,
                 mStructuralLoadPoints,
                 mStructuralStrainPoints,
                 mStructuralTiltPoints,
-                mTopoConvergenceGroups,
-                mTopoControlPoints,
-                mGeoExtensometers,
-                mGeoInclinometerPoints,
-                mRemoteInsarPoints
+                mTopoControlPoints
         ).forEach(items -> items.forEach(item -> item.setButterfly(this)));
 
         for (var a : mAlarms) {
@@ -361,19 +374,27 @@ public class Butterfly {
             p.setButterfly(this);
         }
 
-        for (var p : mGeoExtensometers) {
+        for (var p : mRockExtensometers) {
             p.setMeasurementMode(BMeasurementMode.AUTOMATIC);
         }
 
         structural().postLoad();
         topo().postLoad();
         geotechnical().postLoad();
-        remote().postLoad();
+
         try {
             populateMonmon();
         } catch (Exception e) {
 //            System.err.println(e.getMessage());
         }
+    }
+
+    void postLoadManual() {
+        List.of(
+                mRemoteInsarPoints
+        ).forEach(items -> items.forEach(item -> item.setButterfly(this)));
+
+        remote().postLoad();
     }
 
     private void calcFreqHighBuffer(BXyzPoint p) {
@@ -425,18 +446,6 @@ public class Butterfly {
 
     public class Geotechnical {
 
-        public ArrayList<BGeoExtensometer> getExtensometers() {
-            return mGeoExtensometers;
-        }
-
-        public ArrayList<BGeoExtensometerPoint> getExtensometersPoints() {
-            return mGeoExtensometersPoints;
-        }
-
-        public ArrayList<BGeoExtensometerPointObservation> getExtensometersPointsObservations() {
-            return mGeoExtensometersPointsObservations;
-        }
-
         public ArrayList<BGeoInclinometerPoint> getInclinometerPoints() {
             return mGeoInclinometerPoints;
         }
@@ -482,44 +491,6 @@ public class Butterfly {
         }
     }
 
-    public class Remote {
-
-        private final HashMap<String, BRemoteInsarPoint> mNameToInsarPoint = new HashMap<>();
-
-        public ArrayList<BRemoteInsarPoint> getInsarPoints() {
-            return mRemoteInsarPoints;
-        }
-
-        public ArrayList<BRemoteInsarPointObservation> getInsarPointsObservations() {
-            return mRemoteInsarPointsObservations;
-        }
-
-        public BRemoteInsarPoint getInsarPointByName(String name) {
-            return mNameToInsarPoint.get(name);
-        }
-
-        private void postLoad() {
-            mNameToInsarPoint.clear();
-            var groupMap = new HashMap<String, String>();
-            groupMap.put("asc", "Ascending");
-            groupMap.put("desc", "Descending");
-
-            for (var p : mRemoteInsarPoints) {
-                mNameToInsarPoint.put(p.getName(), p);
-                p.setDimension(BDimension._1d);
-                p.setMeasurementMode(BMeasurementMode.AUTOMATIC);
-                p.setFrequency(14);
-                p.setFrequencyDefault(14);
-                p.setFrequencyHigh(14);
-                p.setNumOfDecXY(1);
-                p.setNumOfDecZ(4);
-                p.setUnit("m");
-                p.setUnitDiff("mm");
-                p.setGroup(groupMap.computeIfAbsent(p.getGroup(), s -> s));
-            }
-        }
-    }
-
     public class Hydro {
 
         public ArrayList<BHydroGroundwaterPoint> getGroundwaterPoints() {
@@ -533,10 +504,6 @@ public class Butterfly {
     }
 
     public class Noise {
-
-        public ArrayList<BAcousticBlast> getBlasts() {
-            return mBlasts;
-        }
 
         public ArrayList<BAcousticVibrationChannel> getVibrationChannels() {
             return mVibrationChannels;
@@ -553,6 +520,102 @@ public class Butterfly {
         public ArrayList<BAcousticVibrationPoint> getVibrationPoints() {
             return mVibrationPoints;
         }
+    }
+
+    public class Remote {
+
+        private final HashMap<String, BRemoteInsarPoint> mNameToInsarPoint = new HashMap<>();
+
+        public ArrayList<BRemoteInsarPoint> getInsarPoints() {
+            return mRemoteInsarPoints;
+        }
+
+        public ArrayList<BRemoteInsarPointObservation> getInsarPointsObservations() {
+            return mRemoteInsarPointsObservations;
+        }
+
+        public BRemoteInsarPoint getInsarPointByName(String name) {
+            return mNameToInsarPoint.get(name);
+        }
+
+        public HashMap<String, BRemoteInsarPoint> getNameToInsarPoint() {
+            return mNameToInsarPoint;
+        }
+
+        private void postLoad() {
+            mNameToInsarPoint.clear();
+            var categoryMap = new HashMap<String, String>();
+            categoryMap.put("asc", "Ascending");
+            categoryMap.put("desc", "Descending");
+            var now = LocalDateTime.now();
+            var defaults = RemoteInsarPointDefaultsConfig.getInstance().getConfig();
+            for (var p : mRemoteInsarPoints) {
+                mNameToInsarPoint.put(p.getName(), p);
+                p.setDimension(BDimension._1d);
+                p.setMeasurementMode(BMeasurementMode.AUTOMATIC);
+                p.setFrequency(14);
+                p.setFrequencyDefault(14);
+                p.setFrequencyHigh(14);
+                p.setNumOfDecXY(1);
+                p.setNumOfDecZ(4);
+                p.setUnit("m");
+                p.setUnitDiff("mm");
+                p.setDateCreated(now);
+                p.setDateChanged(now);
+                p.setVisible(true);
+                if (defaults != null) {
+                    p.setStatus(defaults.getString("STATUS"));
+                    p.setOrigin(defaults.getString("ORIGIN"));
+                    p.setOperator(defaults.getString("OPERATOR"));
+                    p.setAlarm1Id(defaults.getString("ALARM_H"));
+                    var grp = p.getGroup();
+                    var grpB = defaults.getString("GRP_B", grp);
+                    var grpG = defaults.getString("GRP_G", grp);
+                    grp = StringUtils.replaceEach(grp,
+                            new String[]{"B", "G"},
+                            new String[]{grpB, grpG});
+                    p.setGroup(grp);
+
+                    var cat = p.getCategory();
+                    var catAsc = defaults.getString("CAT_ASC", cat);
+                    var catDesc = defaults.getString("CAT_DESC", cat);
+                    cat = StringUtils.replaceEach(cat,
+                            new String[]{"asc", "desc"},
+                            new String[]{catAsc, catDesc});
+                    p.setCategory(cat);
+                } else {
+                    p.setCategory(categoryMap.computeIfAbsent(p.getCategory(), s -> s));
+                }
+            }
+        }
+    }
+
+    public class Rock {
+
+        public ArrayList<BRockBlast> getBlasts() {
+            return mRockBlasts;
+        }
+
+        public ArrayList<BRockConvergence> getConvergence() {
+            return mRockConvergence;
+        }
+
+        public ArrayList<BRockConvergenceObservation> getConvergenceObservations() {
+            return mRockConvergenceObservations;
+        }
+
+        public ArrayList<BRockExtensometer> getExtensometers() {
+            return mRockExtensometers;
+        }
+
+        public ArrayList<BRockExtensometerPoint> getExtensometersPoints() {
+            return mRockExtensometersPoints;
+        }
+
+        public ArrayList<BRockExtensometerPointObservation> getExtensometersPointsObservations() {
+            return mRockExtensometersPointsObservations;
+        }
+
     }
 
     public class Structural {
@@ -697,18 +760,10 @@ public class Butterfly {
             return mTopoControlPointsObservations;
         }
 
-        public ArrayList<BTopoConvergenceGroup> getConvergenceGroups() {
-            return mTopoConvergenceGroups;
-        }
-
-        public ArrayList<BTopoConvergenceObservation> getConvergenceObservations() {
-            return mTopoConvergenceObservations;
-        }
-
         private void postLoad() {
             mNameToControlPoint.clear();
-            getControlPoints().forEach(controlPoint -> {
-                mNameToControlPoint.put(controlPoint.getName(), controlPoint);
+            getControlPoints().forEach(p -> {
+                mNameToControlPoint.put(p.getName(), p);
             });
         }
     }

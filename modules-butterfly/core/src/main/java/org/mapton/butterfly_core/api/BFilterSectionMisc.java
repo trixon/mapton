@@ -32,6 +32,8 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
+import org.mapton.api.MBaseDataManager;
+import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.openide.util.NbBundle;
@@ -50,14 +52,15 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
     private final ResourceBundle mBundle = NbBundle.getBundle(BFilterSectionMisc.class);
     private final CheckBox mClusterCheckbox = new CheckBox("Autokluster");
     private RangeSliderPane mDeltaHRangeSlider;
-//    private RangeSliderPane mDeltaRRangeSlider;
     private SliderPane mDeltaRSlider;
     private final DistanceMeasure mDistanceMeasure;
+    private final FormFilter<? extends MBaseDataManager> mFilter;
     private final CheckBox mInvertCheckbox = new CheckBox();
     private final GridPane mRoot = new GridPane(columnGap, rowGap);
 
-    public BFilterSectionMisc() {
+    public BFilterSectionMisc(FormFilter<? extends MBaseDataManager> filter) {
         super(Dict.MISCELLANEOUS.toString());
+        mFilter = filter;
         mDistanceMeasure = (DistanceMeasure) (double[] a, double[] b) -> {
             var plane = Math.hypot(b[1] - a[1], b[0] - a[0]);
             var height = Math.abs(b[2] - a[2]);
@@ -172,12 +175,13 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
     @Override
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
-        mDeltaHRangeSlider.initSession(getKeyFilter("DistanceH"), sessionManager);
+        sessionManager.register(getKeyFilter("freeText"), mFilter.freeTextProperty());
+        mDeltaHRangeSlider.initSession(getKeyFilter("distanceH"), sessionManager);
 //        mDeltaRRangeSlider.initSession(getKeyFilter("DeltaR"), sessionManager);
-        mDeltaRSlider.initSession(getKeyFilter("DistanceR"), sessionManager);
+        mDeltaRSlider.initSession(getKeyFilter("distanceR"), sessionManager);
 
-        sessionManager.register("filter.autocluster", mClusterCheckbox.selectedProperty());
-        sessionManager.register("filter.invert", invertSelectionProperty());
+        sessionManager.register(getKeyFilter("autocluster"), mClusterCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("invert"), invertSelectionProperty());
     }
 
     public BooleanProperty invertSelectionProperty() {
@@ -215,15 +219,18 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         var minPoints = 1;
         var dbscan = new DBSCANClusterer<BXyzPoint>(epsilon, minPoints, mDistanceMeasure);
         //Calculate and subtract min on order to use dbscan.
-        var minX = items.stream().mapToDouble(p -> p.getZeroX()).min().getAsDouble();
-        var minY = items.stream().mapToDouble(p -> p.getZeroY()).min().getAsDouble();
-        var minZ = items.stream().mapToDouble(p -> p.getZeroZ()).min().getAsDouble();
+        var minX = items.stream().filter(p -> p.getZeroX() != null).mapToDouble(p -> p.getZeroX()).min().getAsDouble();
+        var minY = items.stream().filter(p -> p.getZeroY() != null).mapToDouble(p -> p.getZeroY()).min().getAsDouble();
+        var minZ = items.stream().filter(p -> p.getZeroZ() != null).mapToDouble(p -> p.getZeroZ()).min().getAsDouble();
 
-        items.forEach(p -> {
-            p.setZeroXScaled(p.getZeroX() - minX);
-            p.setZeroYScaled(p.getZeroY() - minY);
-            p.setZeroZScaled(p.getZeroZ() - minZ);
-        });
+        items = items.stream()
+                .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                .filter(p -> {
+                    p.setZeroXScaled(p.getZeroX() - minX);
+                    p.setZeroYScaled(p.getZeroY() - minY);
+                    p.setZeroZScaled(p.getZeroZ() - minZ);
+                    return true;
+                }).toList();
 
         var clusters = dbscan.cluster((Collection<BXyzPoint>) items);
 

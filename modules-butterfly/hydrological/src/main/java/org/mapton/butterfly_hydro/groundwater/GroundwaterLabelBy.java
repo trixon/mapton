@@ -50,6 +50,9 @@ public enum GroundwaterLabelBy implements LabelBy.Operations {
 
         return date == null ? "-" : date.toString();
     }),
+    DATE_LATEST_WITH_TIME(LabelBy.CAT_DATE, SDict.LATEST.toString() + " (med tid)", p -> {
+        return LabelBy.dateLatestWithTime(p);
+    }),
     //    DATE_NEXT(LabelBy.CAT_DATE, Dict.NEXT.toString(), p -> {
     //        var date = p.ext().getObservationRawNextDate();
     //

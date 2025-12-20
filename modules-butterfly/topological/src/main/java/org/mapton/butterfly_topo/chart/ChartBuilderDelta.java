@@ -106,7 +106,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
                 }
                 if (!KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
                     if (lastDelta != null) {
-                        timeSeries.add(ChartHelper.convertToMinute(o.getDate()).previous(), lastDelta);
+                        timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()).previous(), lastDelta);
                     }
                 }
                 lastDelta = delta;

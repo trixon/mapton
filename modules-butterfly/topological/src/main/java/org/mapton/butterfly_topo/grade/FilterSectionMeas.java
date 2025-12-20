@@ -169,17 +169,17 @@ public class FilterSectionMeas extends MBaseFilterSection {
     @Override
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
-        sessionManager.register("filter.section.meas", selectedProperty());
-        sessionManager.register("filter.grade.sharedAlarm", mSharedAlarmsScbx.selectedProperty());
-        mDeltaDRangeSlider.initSession("DeltaD" + mConfig.getKeyPrefix(), sessionManager);
-        mDeltaHRangeSlider.initSession("DeltaH" + mConfig.getKeyPrefix(), sessionManager);
-        mDeltaRRangeSlider.initSession("DeltaR" + mConfig.getKeyPrefix(), sessionManager);
-        mDabbaHRangeSlider.initSession("DabbaH" + mConfig.getKeyPrefix(), sessionManager);
-        mDabbaRRangeSlider.initSession("DabbaR" + mConfig.getKeyPrefix(), sessionManager);
-        mGradeVerticalSlider.initSession("GradeV" + mConfig.getKeyPrefix(), sessionManager);
-        mGradeHorizontalSlider.initSession("GradeH" + mConfig.getKeyPrefix(), sessionManager);
-        mGradeDistanceSlider.initSession("GradeD" + mConfig.getKeyPrefix(), sessionManager);
-        mGradeDistanceRangeSlider.initSession("DabbaD" + mConfig.getKeyPrefix(), sessionManager);
+        sessionManager.register(getKeyFilter("section"), selectedProperty());
+        sessionManager.register(getKeyFilter("sharedAlarm"), mSharedAlarmsScbx.selectedProperty());
+        mDeltaDRangeSlider.initSession(getKeyFilter("DeltaD" + mConfig.getKeyPrefix()), sessionManager);
+        mDeltaHRangeSlider.initSession(getKeyFilter("DeltaH" + mConfig.getKeyPrefix()), sessionManager);
+        mDeltaRRangeSlider.initSession(getKeyFilter("DeltaR" + mConfig.getKeyPrefix()), sessionManager);
+        mDabbaHRangeSlider.initSession(getKeyFilter("DabbaH" + mConfig.getKeyPrefix()), sessionManager);
+        mDabbaRRangeSlider.initSession(getKeyFilter("DabbaR" + mConfig.getKeyPrefix()), sessionManager);
+        mGradeVerticalSlider.initSession(getKeyFilter("GradeV" + mConfig.getKeyPrefix()), sessionManager);
+        mGradeHorizontalSlider.initSession(getKeyFilter("GradeH" + mConfig.getKeyPrefix()), sessionManager);
+        mGradeDistanceSlider.initSession(getKeyFilter("GradeD" + mConfig.getKeyPrefix()), sessionManager);
+        mGradeDistanceRangeSlider.initSession(getKeyFilter("DabbaD" + mConfig.getKeyPrefix()), sessionManager);
 
         mFilterMeasAlarmLevel.initSession(sessionManager);
     }

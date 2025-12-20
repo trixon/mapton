@@ -68,6 +68,14 @@ public class BOptionsView extends MOptionsView {
         return mLabelMenuButton;
     }
 
+    public SessionCheckBox getPlotDebtScbx() {
+        return mPlotDebtScbx;
+    }
+
+    public SessionCheckBox getPlotSelectedScbx() {
+        return mPlotSelectedScbx;
+    }
+
     public void initListenersSuper() {
         mLabelByProperty.addListener((p, o, n) -> {
             mLabelMenuButton.setText(n.getFullName());

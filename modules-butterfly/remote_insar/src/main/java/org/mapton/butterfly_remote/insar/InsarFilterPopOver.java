@@ -19,12 +19,13 @@ import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 import javafx.scene.layout.BorderPane;
-import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BFilterSectionTrend;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
@@ -36,28 +37,31 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(InsarFilterPopOver.class);
     private final InsarFilter mFilter;
-    private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
     private final BFilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
+    private final BFilterSectionTrend<BRemoteInsarPoint> mFilterSectionTrend;
     private final InsarManager mManager = InsarManager.getInstance();
+    private final FilterSectionMeas mFilterSectionMeas;
 
     public InsarFilterPopOver(InsarFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
-        mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
-        mFilterSectionMisc = new BFilterSectionMisc();
+        mFilterSectionMisc = new BFilterSectionMisc(filter);
+        mFilterSectionTrend = new BFilterSectionTrend<>();
+        mFilterSectionMeas = new FilterSectionMeas();
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
-        mFilter.setFilterSection(mFilterSectionDate);
         mFilter.setFilterSection(mFilterSectionDisruptor);
+        mFilter.setFilterSection(mFilterSectionTrend);
+        mFilter.setFilterSection(mFilterSectionMeas);
 
         setFilter(filter);
         createUI();
         initListeners();
         initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
-
+        mManager.setFilterPopoverPopulateRunnable(() -> populate());
         populate();
     }
 
@@ -67,9 +71,10 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.freeTextProperty().set("");
 
         mFilterSectionPoint.clear();
-        mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
         mFilterSectionMisc.clear();
+        mFilterSectionTrend.clear();
+        mFilterSectionMeas.clear();
     }
 
     @Override
@@ -91,8 +96,9 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilterSectionPoint.load(items);
         mFilterSectionDisruptor.load();
-        mFilterSectionDate.load(mManager.getTemporalRange());
         mFilterSectionMisc.load();
+        mFilterSectionTrend.load();
+        mFilterSectionMeas.load(items, mManager.getTemporalRange());
     }
 
     @Override
@@ -124,8 +130,9 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
 
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),
-                mFilterSectionDate.getTab(),
-                mFilterSectionDisruptor.getTab()
+                mFilterSectionMeas.getTab(),
+                mFilterSectionDisruptor.getTab(),
+                mFilterSectionTrend.getTab()
         );
 
         setContentNode(root);
@@ -145,11 +152,10 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
     private SessionManager initSession(Preferences preferences) {
         var sessionManager = new SessionManager(preferences);
         mFilterSectionPoint.initSession(sessionManager);
-        mFilterSectionDate.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
-
-        sessionManager.register("filter.measPoint.freeText", mFilter.freeTextProperty());
+        mFilterSectionTrend.initSession(sessionManager);
+        mFilterSectionMeas.initSession(sessionManager);
 
         return sessionManager;
     }

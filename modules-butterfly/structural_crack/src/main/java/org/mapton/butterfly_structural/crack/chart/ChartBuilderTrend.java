@@ -48,7 +48,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         mDimension = dimension;
         mFunction = function;
         mTimeSeries = new TimeSeries("Spricka");
-        initChart("mm", "0.000");
+        initChart("mm", "0.00");
     }
 
     @Override

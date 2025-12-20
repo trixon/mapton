@@ -26,7 +26,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = MSimpleObjectStorageBoolean.AutoOpen.class)
 public class AutoLoadInsarSOSB extends BfAutoLoad {
 
-    public static final boolean DEFAULT_VALUE = true;
+    public static final boolean DEFAULT_VALUE = false;
 
     public AutoLoadInsarSOSB() {
         setName("Remote/InSAR");

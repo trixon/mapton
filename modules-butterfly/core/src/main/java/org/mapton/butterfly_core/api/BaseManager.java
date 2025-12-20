@@ -51,6 +51,8 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
     private static BaseManager< BBase> sCurrManager;
     private static BBase sPrevItem;
     private static BaseManager< BBase> sPrevManager;
+    protected boolean mFirstLoad = true;
+    protected int mTrendLoadCounter = 0;
 
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();

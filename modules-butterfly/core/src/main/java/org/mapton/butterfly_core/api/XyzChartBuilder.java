@@ -123,7 +123,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         var otherStroke = new BasicStroke(1.2f);
         var pointLatLon = new MLatLon(p.getLat(), p.getLon());
 
-        ButterflyManager.getInstance().getButterfly().noise().getBlasts().stream()
+        ButterflyManager.getInstance().getButterfly().rock().getBlasts().stream()
                 .filter(b -> {
                     return DateHelper.isBetween(
                             firstDate,

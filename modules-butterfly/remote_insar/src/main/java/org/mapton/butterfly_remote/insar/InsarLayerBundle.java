@@ -17,22 +17,30 @@ package org.mapton.butterfly_remote.insar;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
+import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.airspaces.Polygon;
 import java.util.ArrayList;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_remote.api.RemoteHelper;
+import org.mapton.butterfly_remote.insar.graphics.GraphicItem;
 import org.mapton.butterfly_remote.insar.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
+import org.mapton.worldwind.api.analytic.AnalyticGrid;
+import org.mapton.worldwind.api.analytic.CellAggregate;
+import org.mapton.worldwind.api.analytic.GridData;
+import org.mapton.worldwind.api.analytic.GridValue;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -42,7 +50,7 @@ import se.trixon.almond.nbp.Almond;
 public class InsarLayerBundle extends BfLayerBundle {
 
     private final double SYMBOL_HEIGHT = .1;
-    private final double SYMBOL_RADIUS = 0.5;
+    private final double SYMBOL_RADIUS = 1.5;
 
     private final InsarAttributeManager mAttributeManager = InsarAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
@@ -55,6 +63,7 @@ public class InsarLayerBundle extends BfLayerBundle {
         mOptionsView = new InsarOptionsView(this);
         mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
+        mAttributeManager.setColorBy(mOptionsView.getColorBy());
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
@@ -71,7 +80,7 @@ public class InsarLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_InsarAction(), RemoteHelper.CAT_REMOTE, "InsarTopComponent");
+        initCommons(Mapton.addWarning(Bundle.CTL_InsarAction(), 0), RemoteHelper.CAT_REMOTE, "InsarTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
@@ -80,6 +89,13 @@ public class InsarLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
+        mOptionsView.colorByProperty().addListener((p, o, n) -> {
+            mAttributeManager.setColorBy(n);
+            SwingHelper.runLaterDelayed(250, () -> {
+                repaint();
+            });
+        });
+
         mOptionsView.registerLayerBundle(this);
         mManager.registerLayerBundle(this, mOptionsView);
     }
@@ -144,6 +160,24 @@ public class InsarLayerBundle extends BfLayerBundle {
                 }
             }
 
+            if (mOptionsView.getGraphicCheckModel().isChecked(GraphicItem.HEAT_MAP)) {
+                var values = mManager.getTimeFilteredItems().stream()
+                        .map(p -> new GridValue(p.getLat(), p.getLon(), p.ext().deltaZero().getDeltaZ() * 1000))
+                        //                        .map(p -> new GridValue(p.getLat(), p.getLon(), p.getVelocity()))
+                        .toList();
+
+                int width = 600;
+                int height = 600;
+
+                var gridData = new GridData(width, height, values, CellAggregate.MIN);
+                var analyticGrid = new AnalyticGrid(mLayer, 50, -10, +10);
+                analyticGrid.setNullOpacity(0.0);
+                analyticGrid.setZeroOpacity(0.3);
+                analyticGrid.setZeroValueSearchRange(5);
+                analyticGrid.setGridData(gridData);
+                var surface = analyticGrid.getSurface();
+                mSurfaceLayer.addRenderable(surface);
+            }
             setDragEnabled(false);
         });
     }
@@ -184,19 +218,42 @@ public class InsarLayerBundle extends BfLayerBundle {
 
     private ArrayList<AVListImpl> plotSymbol(BRemoteInsarPoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
-        var cylinder = new Cylinder(position, SYMBOL_HEIGHT, SYMBOL_RADIUS);
-        var attrs = mAttributeManager.getSurfaceAttributes();
-//        var attrs = mAttributeManager.getAlarmInteriorAttributes(InsarHelper.getAlarmLevel(p));
+        var attrs = mAttributeManager.getSymbolAttributes(p);
+        var value = switch (mOptionsView.getColorBy()) {
+            case ACCELERATION ->
+                p.getAcceleration();
+            case ALARM, DISPLACEMENT ->
+                p.ext().deltaZero().getDeltaZ();
+            case VELOCITY ->
+                p.getVelocity();
+            case VELOCITY_3 ->
+                p.getVelocity3m();
+            case VELOCITY_6 ->
+                p.getVelocity6m();
+            default ->
+                Double.MAX_VALUE;
+        };
 
-        cylinder.setAttributes(attrs);
-        mapObjects.add(cylinder);
-        mSymbolLayer.addRenderable(cylinder);
+        var polygon = new Polygon();
+        ArrayList<LatLon> nodes;
+        if (Math.abs(value) <= 0.004) {
+            nodes = WWHelper.createNodes(position, SYMBOL_RADIUS, 6);
+        } else if (value > 0) {
+            nodes = WWHelper.createNodes(position, SYMBOL_RADIUS, 3);
+        } else {
+            nodes = WWHelper.createNodes(position, SYMBOL_RADIUS, 3, 180);
+        }
+        polygon.setLocations(nodes);
+        polygon.setAltitudes(0, SYMBOL_HEIGHT);
+        polygon.setAttributes(attrs);
+        mapObjects.add(polygon);
+        mSymbolLayer.addRenderable(polygon);
 
         if (labelPlacemark != null) {
-            cylinder.setValue(WWHelper.KEY_RUNNABLE_HOOVER_ON, (Runnable) () -> {
+            polygon.setValue(WWHelper.KEY_RUNNABLE_HOOVER_ON, (Runnable) () -> {
                 labelPlacemark.setHighlighted(true);
             });
-            cylinder.setValue(WWHelper.KEY_RUNNABLE_HOOVER_OFF, (Runnable) () -> {
+            polygon.setValue(WWHelper.KEY_RUNNABLE_HOOVER_OFF, (Runnable) () -> {
                 labelPlacemark.setHighlighted(false);
             });
         }

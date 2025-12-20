@@ -61,7 +61,6 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
     public static final String KEY_TOPO_POINTS_LOADED = "TopoPointsLoaded";
     private final ChartAggregate mChartAggregate = new ChartAggregate();
-    private int mLoadTrends = 0;
     private double mMinimumZscaled = 0.0;
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
     private final TopoPropertiesBuilder mPropertiesBuilder = new TopoPropertiesBuilder();
@@ -246,7 +245,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             }
         }
 
-        if (mLoadTrends++ < 3) {
+        if (mTrendLoadCounter++ < 3) {
             for (var p : timeFilteredItems) {
                 try {
                     populateTrends(p);

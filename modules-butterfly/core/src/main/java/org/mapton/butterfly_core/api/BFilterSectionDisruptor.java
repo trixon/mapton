@@ -108,11 +108,11 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
     @Override
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
-        sessionManager.register("filter.section.disruptor", selectedProperty());
-        sessionManager.register("filter.checkedDisruptors", mDisruptorSccb.checkedStringProperty());
-        sessionManager.register("filter.disruptorDistance", mDisruptorSds.sessionValueProperty());
-        sessionManager.register("filter.disruptor.gtlt", mDisruptorGtLtScb.selectedIndexProperty());
-        sessionManager.register("filter.disruptor.highFrequencyMode", mDisruptorHighFrequencyModeScb.selectedIndexProperty());
+        sessionManager.register(getKeyFilter("section"), selectedProperty());
+        sessionManager.register(getKeyFilter("disruptors"), mDisruptorSccb.checkedStringProperty());
+        sessionManager.register(getKeyFilter("distance"), mDisruptorSds.sessionValueProperty());
+        sessionManager.register(getKeyFilter("gtlt"), mDisruptorGtLtScb.selectedIndexProperty());
+        sessionManager.register(getKeyFilter("highFrequencyMode"), mDisruptorHighFrequencyModeScb.selectedIndexProperty());
     }
 
     public void load() {
