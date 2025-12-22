@@ -170,7 +170,7 @@ public class PoisView extends BorderPane {
             if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
                 var poi = mListView.getSelectionModel().getSelectedItem();
                 if (poi != null) {
-                    Mapton.getEngine().panTo(poi.getLatLon(), poi.getZoom());
+                    Mapton.getEngine().panTo(MPoi.createLatLon(poi), poi.getZoom());
                 }
             }
         });

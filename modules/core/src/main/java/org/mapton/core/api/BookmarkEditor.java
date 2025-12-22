@@ -98,7 +98,7 @@ public class BookmarkEditor {
                 var newCategory = categoryPanel.getCategory();
                 if (!Strings.CS.equals(category, newCategory)) {
                     var timestamp = LocalDateTime.now();
-                    mManager.getItems(category).forEachOrdered(bookmark -> {
+                    mManager.getFilteredItems(category).forEachOrdered(bookmark -> {
                         bookmark.setCategory(Strings.CS.replaceOnce(bookmark.getCategory(), category, newCategory));
                         bookmark.setTimeModified(timestamp);
                     });
@@ -123,7 +123,7 @@ public class BookmarkEditor {
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 var color = colorPanel.getColor();
                 var timestamp = LocalDateTime.now();
-                mManager.getItems(category).forEachOrdered(bookmark -> {
+                mManager.getFilteredItems(category).forEachOrdered(bookmark -> {
                     bookmark.setColor(color);
                     bookmark.setTimeModified(timestamp);
                 });
@@ -148,7 +148,7 @@ public class BookmarkEditor {
                 var zoom = zoomPanel.getZoom();
                 var timestamp = LocalDateTime.now();
 
-                mManager.getItems(category).forEachOrdered(bookmark -> {
+                mManager.getFilteredItems(category).forEachOrdered(bookmark -> {
                     bookmark.setZoom(zoom);
                     bookmark.setTimeModified(timestamp);
                 });
@@ -182,9 +182,9 @@ public class BookmarkEditor {
             if (Dict.REMOVE.toString() == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
                     if (bookmark.isCategory()) {
-                        mManager.delete(bookmark.getCategory());
+                        mManager.remove(bookmark.getCategory());
                     } else {
-                        mManager.delete(bookmark);
+                        mManager.remove(bookmark);
                     }
                 });
             }
@@ -204,7 +204,26 @@ public class BookmarkEditor {
 
             if (Dict.REMOVE_ALL.toString() == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
-                    mManager.deleteAll();
+                    mManager.removeAll();
+                });
+            }
+        });
+    }
+
+    public void removeVisible() {
+        SwingUtilities.invokeLater(() -> {
+            var buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE_VISIBLE.toString()};
+            var d = new NotifyDescriptor(
+                    Dict.Dialog.MESSAGE_BOOKMARK_REMOVE_VISIBLE.toString(),
+                    Dict.Dialog.TITLE_BOOKMARK_REMOVE_VISIBLE.toString() + "?",
+                    NotifyDescriptor.OK_CANCEL_OPTION,
+                    NotifyDescriptor.WARNING_MESSAGE,
+                    buttons,
+                    Dict.REMOVE_VISIBLE.toString());
+
+            if (Dict.REMOVE_VISIBLE.toString() == DialogDisplayer.getDefault().notify(d)) {
+                Platform.runLater(() -> {
+                    mManager.removeVisible();
                 });
             }
         });

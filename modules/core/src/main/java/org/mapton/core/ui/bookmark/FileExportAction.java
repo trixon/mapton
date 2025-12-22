@@ -15,25 +15,20 @@
  */
 package org.mapton.core.ui.bookmark;
 
-import com.google.gson.GsonBuilder;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
 import javafx.scene.Node;
 import javax.swing.JFileChooser;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MBookmarkManagerSql;
 import org.mapton.api.MKmlCreator;
 import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -127,37 +122,7 @@ public class FileExportAction extends FileAction {
     private class CsvExporter {
 
         public CsvExporter() throws IOException {
-            var stringWriter = new StringWriter();
-            var printer = CSVFormat.DEFAULT
-                    .withCommentMarker('#')
-                    .withDelimiter(';')
-                    .withHeader(
-                            MBookmarkManagerSql.COL_CATEGORY,
-                            MBookmarkManagerSql.COL_NAME,
-                            MBookmarkManagerSql.COL_DESCRIPTION,
-                            MBookmarkManagerSql.COL_URL,
-                            MBookmarkManagerSql.COL_COLOR,
-                            MBookmarkManagerSql.COL_LATITUDE,
-                            MBookmarkManagerSql.COL_LONGITUDE,
-                            MBookmarkManagerSql.COL_ZOOM,
-                            MBookmarkManagerSql.COL_DISPLAY_MARKER)
-                    .print(stringWriter);
-
-            for (var bookmark : mManager.getItems()) {
-                printer.printRecord(
-                        bookmark.getCategory(),
-                        bookmark.getName(),
-                        bookmark.getDescription(),
-                        bookmark.getUrl(),
-                        bookmark.getColor(),
-                        bookmark.getLatitude(),
-                        bookmark.getLongitude(),
-                        bookmark.getZoom(),
-                        bookmark.isDisplayMarker() ? "1" : "0"
-                );
-            }
-
-            FileUtils.writeStringToFile(mFile, stringWriter.toString(), "utf-8");
+            mManager.save(mManager.getFilteredItems(), mFile);
         }
     }
 
@@ -170,16 +135,17 @@ public class FileExportAction extends FileAction {
             map.put("Created", FastDateFormat.getInstance("yyyy-MM-dd HH.mm.ss").format(new Date()));
             var geo = new Geo(new GeoHeader(map));
 
-            for (var bookmark : mManager.getItems()) {
-                var point = new GeoPoint();
-                point.setPointId(bookmark.getName());
-                point.setRemark(bookmark.getCategory());
-                point.setX(bookmark.getLatitude());
-                point.setY(bookmark.getLongitude());
-                point.setZ(.0);
-
-                geo.addPoint(point);
-            }
+            mManager.getFilteredItems().stream()
+                    .map(bookmark -> {
+                        var point = new GeoPoint();
+                        point.setPointId(bookmark.getName());
+                        point.setRemark(bookmark.getCategory());
+                        point.setX(bookmark.getLatitude());
+                        point.setY(bookmark.getLongitude());
+                        point.setZ(.0);
+                        return point;
+                    })
+                    .forEachOrdered(p -> geo.addPoint(p));
 
             geo.write(mFile);
         }
@@ -188,13 +154,7 @@ public class FileExportAction extends FileAction {
     private class JsonExporter {
 
         public JsonExporter() throws IOException {
-            var gson = new GsonBuilder()
-                    .setVersion(1.0)
-                    .setPrettyPrinting()
-                    .setDateFormat("yyyy-MM-dd HH:mm:ss")
-                    .create();
-
-            FileUtils.write(mFile, gson.toJson(mManager.getItems()), "utf-8");
+            mJsonObjectMapper.writeValue(mFile, mManager.getFilteredItems());
         }
     }
 
@@ -204,20 +164,20 @@ public class FileExportAction extends FileAction {
 
         public KmlExporter() throws IOException {
             mDocument.setName("Mapton %s".formatted(Dict.BOOKMARKS.toString()));
-            mManager.getItems().forEach((item) -> {
+            mManager.getFilteredItems().forEach(bookmark -> {
                 var placemark = KmlFactory.createPlacemark()
-                        .withName(item.getName())
-                        .withDescription(item.getDescription())
+                        .withName(bookmark.getName())
+                        .withDescription(bookmark.getDescription())
                         .withOpen(Boolean.TRUE);
 
                 placemark.createAndSetPoint()
-                        .addToCoordinates(item.getLongitude(), item.getLatitude());
+                        .addToCoordinates(bookmark.getLongitude(), bookmark.getLatitude());
 
-                String key = StringUtils.defaultIfBlank(item.getCategory(), "---");
+                var key = StringUtils.defaultIfBlank(bookmark.getCategory(), "---");
                 mCategories.computeIfAbsent(key, k -> new Folder().withName(key)).addToFeature(placemark);
             });
 
-            mCategories.values().forEach((folder) -> {
+            mCategories.values().forEach(folder -> {
                 mDocument.addToFeature(folder);
             });
 

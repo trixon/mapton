@@ -26,7 +26,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +33,9 @@ import java.util.ResourceBundle;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.collections.ObservableList;
 import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -43,6 +45,7 @@ import org.openide.modules.Places;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.StringHelper;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -52,6 +55,7 @@ public class MBookmarkManager extends MBaseDataManager<MBookmark> {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(MBookmarkManager.class);
     private final File mFile;
+    private final LongProperty mLastSavedProperty = new SimpleLongProperty();
     private final CsvMapper mMapper;
     private final CsvSchema mSchema;
     private String mStoredFilter = "";
@@ -72,10 +76,8 @@ public class MBookmarkManager extends MBaseDataManager<MBookmark> {
                 .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
                 .disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .addModule(simpleModule)
-                .addModule(new JavaTimeModule())
+                .addModules(new JavaTimeModule(), simpleModule)
                 .build();
-        mMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
         mMapper.setVisibility(mMapper.getSerializationConfig()
                 .getDefaultVisibilityChecker()
@@ -85,41 +87,60 @@ public class MBookmarkManager extends MBaseDataManager<MBookmark> {
 
         mSchema = mMapper.schemaFor(MBookmark.class)
                 .withHeader()
+                .withColumnReordering(true)
                 .withQuoteChar('"');
 
-        csvLoad();
+        load();
     }
 
     public void add(MBookmark bookmark) {
-        getItems().add(bookmark);
-        csvSave();
+        getAllItems().add(bookmark);
+        save();
     }
 
-    public void delete(MBookmark bookmark) {
-        getItems().remove(bookmark);
-        csvSave();
+    public void add(List<MBookmark> bookmarks) {
+        getAllItems().addAll(bookmarks);
+        save();
     }
 
-    public void delete(String category) {
-        getItems().removeAll(
-                getItems().stream()
-                        .filter(b -> Strings.CS.startsWith(b.getCategory(), category))
-                        .toList()
-        );
-        csvSave();
+    public void add(File file) {
+        if (file.isFile()) {
+            try {
+                MappingIterator<MBookmark> mappingIterator = mMapper
+                        .readerFor(MBookmark.class)
+                        .with(mSchema)
+                        .readValues(file);
+
+                getAllItems().addAll(mappingIterator.readAll());
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
     }
 
-    public void deleteAll() {
-        getItems().clear();
-        csvSave();
+    public boolean exists(MBookmark bookmark, String name, String category) {
+        return getAllItems().stream()
+                .filter(b -> b != bookmark)
+                .anyMatch(p -> Strings.CI.equals(p.getName(), name) && Strings.CI.equals(p.getCategory(), category));
     }
 
-    public boolean exists(Object exceptForValue, String name, String category) {
-        return false;
+    public void filter() {
+        filter(mStoredFilter);
+    }
+
+    public void filter(String filter) {
+        mStoredFilter = filter;
+        var filteredItems = getAllItems().stream()
+                .filter(b -> {
+                    return StringHelper.matchesSimpleGlob(filter, true, true, b.getName(), b.getCategory(), b.getDescription());
+                })
+                .toList();
+
+        getFilteredItems().setAll(filteredItems);
     }
 
     public TreeSet<String> getCategories() {
-        return getItems().stream()
+        return getAllItems().stream()
                 .map(b -> b.getCategory())
                 .collect(Collectors.toCollection(TreeSet::new));
     }
@@ -127,55 +148,84 @@ public class MBookmarkManager extends MBaseDataManager<MBookmark> {
     public MLatLonBox getExtents(String category) {
         ArrayList<MLatLon> latLons = new ArrayList<>();
 
-        mItemsProperty.get().stream()
+        getAllItems().stream()
                 .filter((bookmark) -> (Strings.CS.startsWith(bookmark.getCategory(), category)))
                 .forEachOrdered(bookmark -> {
-                    latLons.add(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()));
+                    latLons.add(MBookmark.createLatLon(bookmark));
                 });
 
         return new MLatLonBox(latLons);
     }
 
-//    public final ObservableList<MBookmark> getItems() {
-//        return mItemsProperty.get();
-//    }
-    public Stream<MBookmark> getItems(String category) {
-        return getItems().stream().filter(b -> Strings.CS.startsWith(b.getCategory(), category));
+    public Stream<MBookmark> getFilteredItems(String category) {
+        return getFilteredItems().stream().filter(b -> Strings.CS.startsWith(b.getCategory(), category));
     }
 
     public void goTo(MBookmark bookmark) {
-        Mapton.getEngine().panTo(bookmark.getLatLon(), bookmark.getZoom());
+        Mapton.getEngine().panTo(MBookmark.createLatLon(bookmark), bookmark.getZoom());
     }
 
-//    public final ObjectProperty<ObservableList<MBookmark>> itemsProperty() {
-//        return mItemsProperty;
-//    }
+    public LongProperty lastSavedProperty() {
+        return mLastSavedProperty;
+    }
+
+    public void remove(MBookmark bookmark) {
+        getAllItems().remove(bookmark);
+        save();
+    }
+
+    public void remove(String category) {
+        getAllItems().removeAll(
+                getFilteredItems().stream()
+                        .filter(b -> Strings.CS.startsWith(b.getCategory(), category))
+                        .toList()
+        );
+        save();
+    }
+
+    public void removeAll() {
+        getAllItems().clear();
+        save();
+    }
+
+    public void removeVisible() {
+        getAllItems().removeAll(getFilteredItems());
+        save();
+    }
+
+    public void save(ObservableList<MBookmark> items, File file) {
+        //debugPrint();
+        try {
+            mMapper.writer(mSchema).writeValue(file, items);
+            filter();
+            FxHelper.runLater(() -> mLastSavedProperty.set(System.currentTimeMillis()));
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
     public void save() {
-        csvSave();
-    }
-
-    public List<MBookmark> search(String filter) {
-        return getItems().stream().filter(b -> {
-            return StringHelper.matchesSimpleGlob(filter, true, true, b.getName(), b.getCategory(), b.getDescription());
-//            return Strings.CI.contains(b.getName(), filter)
-//                    || Strings.CI.contains(b.getCategory(), filter)
-//                    || Strings.CI.contains(b.getDescription(), filter);
-        })
-                .toList();
-
+        save(getAllItems(), mFile);
     }
 
     @Override
     protected void applyTemporalFilter() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     protected void load(ArrayList<MBookmark> items) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private void csvLoad() {
+    private void debugPrint() {
+        System.out.println("debugPrint");
+        for (var bookmark : getAllItems()) {
+            System.out.println(ToStringBuilder.reflectionToString(bookmark, ToStringStyle.MULTI_LINE_STYLE));
+        }
+    }
+
+    private void load() {
         if (mFile.isFile()) {
             try {
                 MappingIterator<MBookmark> mappingIterator = mMapper
@@ -187,26 +237,6 @@ public class MBookmarkManager extends MBaseDataManager<MBookmark> {
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
             }
-        }
-    }
-
-    private void csvSave() {
-        debugPrint();
-        try {
-            mMapper.writer(mSchema).writeValue(mFile, getAllItems());
-//            var objectWriter = mapper.writer(mSchema);
-//            try (var sequenceWriter = objectWriter.writeValues(mFile)) {
-//                sequenceWriter.writeAll(getItems());
-//            }
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-    }
-
-    private void debugPrint() {
-        System.out.println("debugPrint");
-        for (var bookmark : getAllItems()) {
-            System.out.println(ToStringBuilder.reflectionToString(bookmark, ToStringStyle.MULTI_LINE_STYLE));
         }
     }
 

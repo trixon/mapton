@@ -19,14 +19,13 @@ import java.util.ArrayList;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MPoi;
 import org.mapton.api.MPoiProvider;
-import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MPoiProvider.class)
+//@ServiceProvider(service = MPoiProvider.class)
 public class BookmarkPoiProvider implements MPoiProvider {
 
     public BookmarkPoiProvider() {
@@ -41,7 +40,7 @@ public class BookmarkPoiProvider implements MPoiProvider {
     public ArrayList<MPoi> getPois() {
         ArrayList<MPoi> pois = new ArrayList<>();
 
-        for (var bookmark : MBookmarkManager.getInstance().getItems()) {
+        for (var bookmark : MBookmarkManager.getInstance().getAllItems()) {
             var poi = new MPoi();
             poi.setDescription(bookmark.getDescription());
             poi.setCategory(bookmark.getCategory());

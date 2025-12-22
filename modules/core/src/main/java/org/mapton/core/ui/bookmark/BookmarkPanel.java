@@ -233,7 +233,7 @@ public class BookmarkPanel extends FxDialogPanel {
                 String name = mNameTextField.getText().trim();
                 String category = mCategoryComboBox.getEditor().getText().trim();
                 mNotifyDescriptor.setValid(!validationSupport.isInvalid()
-                        && !mManager.exists(mBookmark.getId(), name, category)
+                        && !mManager.exists(mBookmark, name, category)
                 );
             });
 

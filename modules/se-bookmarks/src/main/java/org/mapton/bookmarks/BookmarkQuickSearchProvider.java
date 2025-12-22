@@ -15,6 +15,7 @@
  */
 package org.mapton.bookmarks;
 
+import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.Mapton;
 import org.netbeans.spi.quicksearch.SearchProvider;
@@ -27,11 +28,14 @@ import org.netbeans.spi.quicksearch.SearchResponse;
  */
 public class BookmarkQuickSearchProvider implements SearchProvider {
 
+    private final MBookmarkManager mManager = MBookmarkManager.getInstance();
+
     @Override
     public void evaluate(SearchRequest request, SearchResponse response) {
-        for (var bookmark : MBookmarkManager.getInstance().search(request.getText())) {
+        mManager.filter(request.getText());
+        for (var bookmark : mManager.getFilteredItems()) {
             if (!response.addResult(() -> {
-                Mapton.getEngine().panTo(bookmark.getLatLon(), bookmark.getZoom());
+                Mapton.getEngine().panTo(MBookmark.createLatLon(bookmark), bookmark.getZoom());
             }, bookmark.getName())) {
                 break;
             }

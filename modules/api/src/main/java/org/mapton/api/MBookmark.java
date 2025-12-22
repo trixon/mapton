@@ -16,6 +16,7 @@
 package org.mapton.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -25,7 +26,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.jackson.CustomSerializerDecimals.CustomSerializer6Decimals;
 
 @JsonPropertyOrder({
-    "id",
     "name",
     "category",
     "description",
@@ -37,6 +37,7 @@ import org.mapton.api.jackson.CustomSerializerDecimals.CustomSerializer6Decimals
     "timeCreated",
     "timeModified"
 })
+@JsonIgnoreProperties({"values"})
 /**
  *
  * @author Patrik Karlström
@@ -55,15 +56,8 @@ public class MBookmark extends MObject {
     private String mDescription = "";
     @JsonProperty("displayMarker")
     private Boolean mDisplayMarker;
-    @JsonProperty("id")
-    private Long mId;
-    @JsonIgnore
-    @Deprecated(forRemoval = true)
-    private transient MLatLon mLatLon;
-    @JsonIgnore
-    private transient MLatLonBox mLatLonBox;
-    @JsonSerialize(using = CustomSerializer6Decimals.class)
     @JsonProperty("latitude")
+    @JsonSerialize(using = CustomSerializer6Decimals.class)
     private Double mLatitude;
     @JsonProperty("longitude")
     @JsonSerialize(using = CustomSerializer6Decimals.class)
@@ -80,6 +74,10 @@ public class MBookmark extends MObject {
     @JsonProperty("zoom")
     private Double mZoom;
 
+    public static MLatLon createLatLon(MBookmark bookmark) {
+        return new MLatLon(bookmark.getLatitude(), bookmark.getLongitude());
+    }
+
     public MBookmark() {
         setDisplayMarker(true);
     }
@@ -94,22 +92,6 @@ public class MBookmark extends MObject {
 
     public String getDescription() {
         return mDescription;
-    }
-
-    public Long getId() {
-        return mId;
-    }
-
-    public MLatLon getLatLon() {
-        if (mLatLon == null) {
-            mLatLon = new MLatLon(getLatitude(), getLongitude());
-        }
-
-        return mLatLon;
-    }
-
-    public MLatLonBox getLatLonBox() {
-        return mLatLonBox;
     }
 
     public Double getLatitude() {
@@ -163,18 +145,6 @@ public class MBookmark extends MObject {
 
     public void setDisplayMarker(Boolean displayMarker) {
         mDisplayMarker = displayMarker;
-    }
-
-    public void setId(Long id) {
-        mId = id;
-    }
-
-    public void setLatLon(MLatLon latLon) {
-        mLatLon = latLon;
-    }
-
-    public void setLatLonBox(MLatLonBox latLonBox) {
-        mLatLonBox = latLonBox;
     }
 
     public void setLatitude(Double latitude) {

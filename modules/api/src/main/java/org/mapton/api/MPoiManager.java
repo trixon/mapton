@@ -142,7 +142,7 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
             sendObjectProperties(newValue);
         });
 
-        MBookmarkManager.getInstance().getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
+        MBookmarkManager.getInstance().getAllItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
             refresh();
         });
 

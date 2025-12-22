@@ -15,15 +15,13 @@
  */
 package org.mapton.core.ui.bookmark;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
@@ -71,19 +69,8 @@ public class BookmarksView extends BorderPane {
         mBookmarkEditor = new BookmarkEditor();
         createUI();
 
-        mManager.search(mFilterTextField.getText());
         populate();
-        addListeners();
-    }
-
-    private void addListeners() {
-        mFilterTextField.textProperty().addListener((p, o, n) -> {
-            mManager.search(n);
-        });
-
-        mManager.getAllItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
-            populate();
-        });
+        initListeners();
     }
 
     private void bookmarkEdit() {
@@ -113,7 +100,7 @@ public class BookmarksView extends BorderPane {
         mTreeView.setShowRoot(false);
         mTreeView.setCellFactory(param -> new BookmarkTreeCell());
 
-        Collection<? extends Action> actions = Arrays.asList(
+        var actions = List.of(
                 new FileImportAction(mPopOver).getAction(this),
                 new FileExportAction(mPopOver).getAction(this)
         );
@@ -130,17 +117,17 @@ public class BookmarksView extends BorderPane {
     }
 
     private TreeItem<MBookmark> getParent(TreeItem<MBookmark> parent, String category) {
-        String[] categorySegments = StringUtils.split(category, "/");
-        StringBuilder sb = new StringBuilder();
+        var categorySegments = StringUtils.split(category, "/");
+        var sb = new StringBuilder();
 
         for (var segment : categorySegments) {
             sb.append(segment);
-            String path = sb.toString();
+            var path = sb.toString();
 
             if (mBookmarkParents.containsKey(path)) {
                 parent = mBookmarkParents.get(path);
             } else {
-                MBookmark bookmark = new MBookmark();
+                var bookmark = new MBookmark();
                 bookmark.setCategory(path);
                 bookmark.setName(segment);
 
@@ -159,12 +146,28 @@ public class BookmarksView extends BorderPane {
         return item != null ? item.getValue() : null;
     }
 
+    private void initListeners() {
+        mFilterTextField.textProperty().addListener((p, o, n) -> {
+            mManager.filter(n);
+            populate();
+        });
+
+        mManager.lastSavedProperty().addListener((p, o, n) -> {
+            populate();
+        });
+
+        mManager.getAllItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
+            populate();
+        });
+    }
+
     private void populate() {
         var rootMark = new MBookmark();
         rootMark.setName("");
         var root = new TreeItem<>(rootMark);
         var bookmarkParents = new TreeMap<String, TreeItem<MBookmark>>();
 
+        mManager.filter();
         for (var bookmark : mManager.getFilteredItems()) {
             var bookmarkTreeItem = new TreeItem<>(bookmark);
             var category = bookmark.getCategory();
@@ -179,8 +182,8 @@ public class BookmarksView extends BorderPane {
     }
 
     private void postPopulate(TreeItem<MBookmark> treeItem, String level) {
-        final var value = treeItem.getValue();
-        final String path = "%s/%s".formatted(value.getCategory(), value.getName());
+        var value = treeItem.getValue();
+        var path = "%s/%s".formatted(value.getCategory(), value.getName());
         treeItem.setExpanded(mPreferences.getBoolean(path, false));
 
         treeItem.expandedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
@@ -228,40 +231,45 @@ public class BookmarksView extends BorderPane {
 
         private void createUI() {
             var color = Mapton.options().getIconColorForBackground();
-            var editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
+            var editAction = new Action(Dict.EDIT.toString(), actionEvent -> {
                 bookmarkEdit();
             });
             editAction.setGraphic(MaterialIcon._Content.CREATE.getImageView(getIconSizeContextMenu(), color));
 
-            var editColorAction = new Action(Dict.COLOR.toString(), (ActionEvent event) -> {
+            var editColorAction = new Action(Dict.COLOR.toString(), actionEvent -> {
                 mBookmarkEditor.editColor(getSelectedBookmark().getCategory());
             });
             editColorAction.setGraphic(MaterialIcon._Image.COLORIZE.getImageView(getIconSizeContextMenu(), color));
 
-            var editZoomAction = new Action(Dict.ZOOM.toString(), (ActionEvent event) -> {
+            var editZoomAction = new Action(Dict.ZOOM.toString(), actionEvent -> {
                 mBookmarkEditor.editZoom(getSelectedBookmark().getCategory());
             });
             editZoomAction.setGraphic(MaterialIcon._Editor.FORMAT_SIZE.getImageView(getIconSizeContextMenu(), color));
 
-            var zoomExtentAction = new Action(Dict.ZOOM_EXTENTS.toString(), (ActionEvent event) -> {
+            var zoomExtentAction = new Action(Dict.ZOOM_EXTENTS.toString(), actionEvent -> {
                 Mapton.getEngine().fitToBounds(mManager.getExtents(getSelectedBookmark().getCategory()));
             });
 
-            var removeAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
+            var removeAction = new Action(Dict.REMOVE.toString(), actionEvent -> {
                 mBookmarkEditor.remove(getSelectedBookmark());
             });
 
-            var removeAllAction = new Action(Dict.REMOVE_ALL.toString(), (ActionEvent event) -> {
+            var removeVisibleAction = new Action(Dict.REMOVE_VISIBLE.toString(), actionEvent -> {
+                mBookmarkEditor.removeVisible();
+            });
+
+            var removeAllAction = new Action(Dict.REMOVE_ALL.toString(), actionEvent -> {
                 mBookmarkEditor.removeAll();
             });
 
-            Collection<? extends Action> actions = Arrays.asList(
+            var actions = List.of(
                     editAction,
                     editColorAction,
                     editZoomAction,
                     zoomExtentAction,
                     ActionUtils.ACTION_SEPARATOR,
                     removeAction,
+                    removeVisibleAction,
                     removeAllAction
             );
 
@@ -317,7 +325,7 @@ public class BookmarksView extends BorderPane {
                 switch (provider.getType()) {
                     case COPY:
                         mContextCopyMenu.getItems().add(item);
-                        item.setOnAction((ActionEvent event) -> {
+                        item.setOnAction(actionEvent -> {
                             String s = provider.getUrl();
                             Mapton.getLog().v("Open location", s);
                             SystemHelper.copyToClipboard(s);
@@ -326,7 +334,7 @@ public class BookmarksView extends BorderPane {
 
                     case OPEN:
                         mContextOpenMenu.getItems().add(item);
-                        item.setOnAction((ActionEvent event) -> {
+                        item.setOnAction(actionEvent -> {
                             String s = provider.getUrl();
                             Mapton.getLog().v("Copy location", s);
                             SystemHelper.desktopBrowse(s);

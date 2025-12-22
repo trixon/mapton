@@ -42,8 +42,8 @@ import se.trixon.almond.util.fx.FxHelper;
 public class BookmarkLayerBundle extends LayerBundle {
 
     private final BookmarkEditor mBookmarkEditor = new BookmarkEditor();
-    private final MBookmarkManager mBookmarkManager = MBookmarkManager.getInstance();
     private final RenderableLayer mLayer = new RenderableLayer();
+    private final MBookmarkManager mManager = MBookmarkManager.getInstance();
 
     public BookmarkLayerBundle() {
         init();
@@ -67,7 +67,11 @@ public class BookmarkLayerBundle extends LayerBundle {
     }
 
     private void initListeners() {
-        mBookmarkManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
+        mManager.getFilteredItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
+            repaint();
+        });
+
+        mManager.lastSavedProperty().addListener((p, o, n) -> {
             repaint();
         });
     }
@@ -75,37 +79,38 @@ public class BookmarkLayerBundle extends LayerBundle {
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
+            synchronized (mManager.getFilteredItems()) {
+                for (var bookmark : mManager.getFilteredItems()) {
+                    if (bookmark.isDisplayMarker()) {
+                        var placemark = new PointPlacemark(Position.fromDegrees(bookmark.getLatitude(), bookmark.getLongitude()));
+                        placemark.setLabelText(bookmark.getName());
+                        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                        placemark.setEnableLabelPicking(true);
 
-            for (var bookmark : mBookmarkManager.getItems()) {
-                if (bookmark.isDisplayMarker()) {
-                    PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(bookmark.getLatitude(), bookmark.getLongitude()));
-                    placemark.setLabelText(bookmark.getName());
-                    placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-                    placemark.setEnableLabelPicking(true);
+                        var attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
+                        attrs.setImageAddress("images/pushpins/plain-white.png");
+                        attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(bookmark.getColor())));
+                        attrs.setScale(Mapton.getScalePinImage());
+                        attrs.setLabelScale(Mapton.getScalePinLabel());
+                        placemark.setAttributes(attrs);
+                        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
 
-                    var attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
-                    attrs.setImageAddress("images/pushpins/plain-white.png");
-                    attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(bookmark.getColor())));
-                    attrs.setScale(Mapton.getScalePinImage());
-                    attrs.setLabelScale(Mapton.getScalePinLabel());
-                    placemark.setAttributes(attrs);
-                    placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+                        placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
+                            Map<String, Object> propertyMap = new LinkedHashMap<>();
+                            propertyMap.put(Dict.NAME.toString(), bookmark.getName());
+                            propertyMap.put(Dict.DESCRIPTION.toString(), bookmark.getDescription());
+                            propertyMap.put(Dict.CATEGORY.toString(), bookmark.getCategory());
+                            propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(bookmark.getColor()));
 
-                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
-                        Map<String, Object> propertyMap = new LinkedHashMap<>();
-                        propertyMap.put(Dict.NAME.toString(), bookmark.getName());
-                        propertyMap.put(Dict.DESCRIPTION.toString(), bookmark.getDescription());
-                        propertyMap.put(Dict.CATEGORY.toString(), bookmark.getCategory());
-                        propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(bookmark.getColor()));
+                            Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
+                        });
 
-                        Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
-                    });
+                        placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
+                            mBookmarkEditor.editBookmark(bookmark);
+                        });
 
-                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
-                        mBookmarkEditor.editBookmark(bookmark);
-                    });
-
-                    mLayer.addRenderable(placemark);
+                        mLayer.addRenderable(placemark);
+                    }
                 }
             }
 
