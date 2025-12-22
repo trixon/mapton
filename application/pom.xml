@@ -65,6 +65,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>me-worldwind</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>me-jxmapviewer2</artifactId>
+        </dependency>
 
         <!--Mapton/POI providers-->
         <dependency>

@@ -53,7 +53,7 @@ public class MapKit extends JXMapKit {
     public MapKit() {
         init();
 
-        mTileFactoryInfo = new OSMTileFactoryInfo();
+        mTileFactoryInfo = new OSMTileFactoryInfo("OpenStreetMap", "https://tile.openstreetmap.org");
         mTileFactory = new DefaultTileFactory(mTileFactoryInfo);
         mTileFactory.setThreadPoolSize(2);
         mTileFactory.setUserAgent(getClass().getName());

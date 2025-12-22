@@ -15,7 +15,7 @@
  */
 package org.mapton.jxmapviewer2;
 
-import java.util.HashSet;
+import java.util.stream.Collectors;
 import javafx.collections.ListChangeListener;
 import org.jxmapviewer.viewer.DefaultWaypoint;
 import org.jxmapviewer.viewer.GeoPosition;
@@ -35,7 +35,7 @@ public class BookmarkPlotter {
 
     public BookmarkPlotter(JxMapViewerMapEngine engine) {
         mEngine = engine;
-        mBookmarkManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
+        mBookmarkManager.getFilteredItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
             updatePlacemarks();
         });
 
@@ -43,17 +43,15 @@ public class BookmarkPlotter {
     }
 
     private void updatePlacemarks() {
-        HashSet<Waypoint> waypoints = new HashSet<Waypoint>();
+        var waypoints = mBookmarkManager.getFilteredItems().stream()
+                .filter(b -> b.isDisplayMarker())
+                .map(b -> {
+                    var geoPosition = new GeoPosition(b.getLatitude(), b.getLongitude());
+                    return new DefaultWaypoint(geoPosition);
+                })
+                .collect(Collectors.toSet());
 
-        for (MBookmark bookmark : mBookmarkManager.getItems()) {
-            if (bookmark.isDisplayMarker()) {
-                GeoPosition geoPosition = new GeoPosition(bookmark.getLatitude(), bookmark.getLongitude());
-                DefaultWaypoint defaultWaypoint = new DefaultWaypoint(geoPosition);
-                waypoints.add(defaultWaypoint);
-            }
-        }
-
-        WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<>();
+        var waypointPainter = new WaypointPainter<Waypoint>();
         waypointPainter.setWaypoints(waypoints);
         mEngine.getMap().setOverlayPainter(waypointPainter);
     }

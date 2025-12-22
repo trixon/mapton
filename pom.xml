@@ -54,6 +54,7 @@
         <module>modules/reports</module>
 
         <!--Map engines-->
+        <module>modules/me-jxmapviewer2</module>
         <module>modules/me-worldwind</module>
 
         <!--POI providers-->
@@ -117,6 +118,11 @@
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>me-worldwind</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>me-jxmapviewer2</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
