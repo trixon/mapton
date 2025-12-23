@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api;
+package org.mapton.maintenance.bookmarks2601;
 
 import com.healthmarketscience.sqlbuilder.BinaryCondition;
 import com.healthmarketscience.sqlbuilder.ComboCondition;
@@ -32,7 +32,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.ResourceBundle;
 import java.util.TreeSet;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -42,9 +41,11 @@ import javafx.collections.ObservableList;
 import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.mapton.api.db.DbBaseManager;
+import org.mapton.api.MLatLon;
+import org.mapton.api.MLatLonBox;
+import org.mapton.api.Mapton;
+import org.mapton.db.DbBaseManager;
 import org.openide.util.Exceptions;
-import org.openide.util.NbBundle;
 
 /**
  *
@@ -65,7 +66,6 @@ public class MBookmarkManagerSql extends DbBaseManager {
     public static final String COL_NAME = "name";
     public static final String COL_URL = "url";
     public static final String COL_ZOOM = "zoom";
-    private final ResourceBundle mBundle = NbBundle.getBundle(MBookmarkManagerSql.class);
 
     private final DbColumn mCategory;
     private final DbColumn mColor;

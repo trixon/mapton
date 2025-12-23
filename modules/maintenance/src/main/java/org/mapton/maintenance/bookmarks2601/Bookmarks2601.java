@@ -17,7 +17,6 @@ package org.mapton.maintenance.bookmarks2601;
 
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
-import org.mapton.api.MBookmarkManagerSql;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.openide.modules.OnStart;

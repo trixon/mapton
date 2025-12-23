@@ -7,7 +7,8 @@
         <version>25.10x</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>maintenance</artifactId>
+    <artifactId>db</artifactId>
+    <description>H2 database provider.</description>
     <packaging>nbm</packaging>
     <build>
         <plugins>
@@ -17,7 +18,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.mapton.base.*</publicPackage>
+                        <publicPackage>org.mapton.db.*</publicPackage>
+                        <publicPackage>com.healthmarketscience.sqlbuilder.*</publicPackage>
+                        <publicPackage>org.h2.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
@@ -29,6 +32,10 @@
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
@@ -44,57 +51,25 @@
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-util-lookup</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.modules</groupId>
-            <artifactId>org-netbeans-modules-notifications</artifactId>
-            <version>${netbeans.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-awt</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-spi-quicksearch</artifactId>
-            <version>${netbeans.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-windows</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-modules</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-dialogs</artifactId>
         </dependency>
 
         <!-- Mapton -->
         <dependency>
-            <groupId>org.mapton</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>mapton-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.mapton</groupId>
-            <artifactId>mapton-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mapton</groupId>
-            <artifactId>db</artifactId>
-        </dependency>
 
-        <!-- Trixon -->
+        <!-- Other -->
         <dependency>
-            <groupId>se.trixon.almond</groupId>
-            <artifactId>almond-nbp-core</artifactId>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.1.214</version>
+        </dependency>
+        <dependency>
+            <groupId>com.healthmarketscience.sqlbuilder</groupId>
+            <artifactId>sqlbuilder</artifactId>
+            <version>3.0.2</version>
         </dependency>
     </dependencies>
-    <properties>
-        <netbeans.hint.license>apache20</netbeans.hint.license>
-    </properties>
-    <name>maintenance</name>
 </project>

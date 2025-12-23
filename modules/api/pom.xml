@@ -22,7 +22,6 @@
                         <publicPackage>com.dlsc.*</publicPackage>
                         <publicPackage>com.fasterxml.*</publicPackage>
                         <publicPackage>com.google.*</publicPackage>
-                        <publicPackage>com.healthmarketscience.sqlbuilder.*</publicPackage>
                         <publicPackage>com.sun.*</publicPackage>
                         <publicPackage>com.sun.xml.*</publicPackage>
                         <publicPackage>de.micromata.*</publicPackage>
@@ -34,7 +33,6 @@
                         <publicPackage>org.apache.pdfbox.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
                         <publicPackage>impl.org.controlsfx.*</publicPackage>
-                        <publicPackage>org.h2.*</publicPackage>
                         <publicPackage>org.locationtech.jts.*</publicPackage>
                         <publicPackage>org.jsoup.*</publicPackage>
                         <publicPackage>org.openide.*</publicPackage>
@@ -225,14 +223,6 @@
         <dependency>
             <groupId>net.sourceforge.jtds</groupId>
             <artifactId>jtds</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.healthmarketscience.sqlbuilder</groupId>
-            <artifactId>sqlbuilder</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>

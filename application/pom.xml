@@ -57,6 +57,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>maintenance</artifactId>
         </dependency>
 
@@ -224,7 +228,7 @@
                     <etcConfFile>src/main/resources/mapton.conf</etcConfFile>
                     <finalName>mapton-${mapton.version}</finalName>
                     <additionalArguments>-J-Xmx4g</additionalArguments>
-                    <!--<additionalArguments>&#045;&#045;locale en</additionalArguments>-->
+                    <additionalArguments>&#045;&#045;locale en</additionalArguments>
                     <!--<additionalArguments>&#045;&#045;nosplash</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;fontsize 32</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;fontsize 11</additionalArguments>-->

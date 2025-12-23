@@ -48,6 +48,7 @@
         <!-- Common -->
         <module>modules/api</module>
         <module>modules/core</module>
+        <module>modules/db</module>
         <module>modules/editors</module>
         <module>modules/maintenance</module>
         <module>modules/poi-ww</module>
@@ -108,6 +109,11 @@
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>mapton-core</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>db</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
@@ -336,16 +342,6 @@
                 <groupId>net.sourceforge.jtds</groupId>
                 <artifactId>jtds</artifactId>
                 <version>1.3.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.healthmarketscience.sqlbuilder</groupId>
-                <artifactId>sqlbuilder</artifactId>
-                <version>3.0.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>2.1.214</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>

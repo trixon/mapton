@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api;
+package org.mapton.maintenance.bookmarks2601;
 
 import com.google.gson.annotations.SerializedName;
 import java.sql.Timestamp;
 import java.util.Objects;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.api.MLatLon;
+import org.mapton.api.MLatLonBox;
+import org.mapton.api.MObject;
 
 /**
  *
