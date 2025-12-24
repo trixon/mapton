@@ -136,15 +136,13 @@ public class TopoOptionsView extends BOptionsView implements MRunnable {
         var graphicLabel = new Label(Dict.GRAPHICS.toString());
 
         int row = 0;
-        var gp = new GridPane(FxHelper.getUIScaled(8), FxHelper.getUIScaled(2));
+        var gp = createGridPane();
         gp.addRow(row++, pointLabel, colorLabel);
         gp.addRow(row++, mPointScb, mColorScb);
         gp.addRow(row++, labelLabel);
         gp.add(mLabelMenuButton, 0, row++, GridPane.REMAINING, 1);
         gp.addRow(row++, graphicLabel);
         gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
-//                mIndicatorSccb,
-        gp.setPadding(FxHelper.getUIScaledInsets(8));
         FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
 
         setCenter(gp);

@@ -42,17 +42,12 @@ public class LayerOptionsManager {
         initListeners();
     }
 
-    public void refresh() {
-//        if (mOptionsView.mComboBox.getValue() != null) {
-        Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES, mOptionsView);
-//        }
-    }
-
     private void initListeners() {
         Mapton.getGlobalState().addListener(gsce -> {
             Platform.runLater(() -> {
+                mOptionsView.displayLayerOptions(gsce.getValue());
                 mOptionsView.mComboBox.getSelectionModel().select(gsce.getValue());
-                refresh();
+                Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES, mOptionsView);
             });
         }, MKey.LAYER_PROPERTIES_WORLD_WIND);
     }
@@ -90,6 +85,10 @@ public class LayerOptionsManager {
             });
         }
 
+        private void displayLayerOptions(LayerBundle layerBundle) {
+            setCenter(layerBundle.getOptionsView());
+        }
+
         private void initListeners() {
             mComboBox.setOnShowing(event -> {
                 populate();
@@ -97,7 +96,7 @@ public class LayerOptionsManager {
 
             mComboBox.setOnAction(actionEvent -> {
                 var layerBundle = mComboBox.getValue();
-                setCenter(layerBundle.getOptionsView());
+                displayLayerOptions(layerBundle);
                 Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES_WORLD_WIND, layerBundle);
             });
         }
