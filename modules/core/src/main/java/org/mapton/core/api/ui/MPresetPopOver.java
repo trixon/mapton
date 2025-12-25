@@ -131,7 +131,6 @@ public class MPresetPopOver extends MPopOver {
 
         mEditableList.setPrefSize(FxHelper.getUIScaled(250), FxHelper.getUIScaled(500));
         setContentNode(mEditableList);
-        setArrowLocation(ArrowLocation.TOP_CENTER);
         setAutoHide(true);
         setCloseButtonEnabled(false);
         setDetachable(true);

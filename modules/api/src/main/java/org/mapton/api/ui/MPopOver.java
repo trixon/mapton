@@ -15,6 +15,8 @@
  */
 package org.mapton.api.ui;
 
+import java.awt.MouseInfo;
+import java.awt.Toolkit;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Control;
 import javafx.scene.layout.Priority;
@@ -46,7 +48,6 @@ public class MPopOver extends PopOver {
     }
 
     public MPopOver() {
-        setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
         setHeaderAlwaysVisible(true);
         setCloseButtonEnabled(false);
         setDetachable(true);
@@ -56,6 +57,18 @@ public class MPopOver extends PopOver {
             if (isShowing()) {
                 hide();
             } else {
+                var mousePoint = MouseInfo.getPointerInfo().getLocation();
+                var screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                var x = mousePoint.getX();
+                var quota = x / screenSize.getWidth();
+                if (quota < 0.2) {
+                    setArrowLocation(ArrowLocation.TOP_LEFT);
+                } else if (quota > 0.8) {
+                    setArrowLocation(ArrowLocation.TOP_RIGHT);
+                } else {
+                    setArrowLocation(ArrowLocation.TOP_CENTER);
+                }
+
                 var node = (ButtonBase) actionEvent.getSource();
                 show(node);
                 PopOverWatcher.getInstance().registerPopOver(this, node);
