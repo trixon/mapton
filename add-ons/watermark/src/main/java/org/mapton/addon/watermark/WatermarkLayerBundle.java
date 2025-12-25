@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.osd;
+package org.mapton.addon.watermark;
 
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.layers.AnnotationLayer;
@@ -26,6 +26,7 @@ import javafx.scene.Node;
 import javax.swing.Timer;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.worldwind.api.LayerBundle;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -34,18 +35,18 @@ import se.trixon.almond.util.swing.SwingHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class OsdLayerBundle extends LayerBundle {
+public class WatermarkLayerBundle extends LayerBundle {
 
     private final ScreenRelativeAnnotation mAnnotation = new ScreenRelativeAnnotation("", .5, 0.0);
     private final AnnotationAttributes mAttributes = new AnnotationAttributes();
     private DateTimeFormatter mDateTimeFormatter = DateTimeFormatter.ofPattern(ModuleOptions.DEFAULT_PATTERN);
     private final AnnotationLayer mLayer = new AnnotationLayer();
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
-    private OsdOptionsView mOptionsView;
+    private WatermarkOptionsView mOptionsView;
     private String mPatternError = null;
     private Timer mTimer;
 
-    public OsdLayerBundle() {
+    public WatermarkLayerBundle() {
         init();
         initAttributes();
         initListeners();
@@ -54,7 +55,7 @@ public class OsdLayerBundle extends LayerBundle {
     @Override
     public Node getOptionsView() {
         if (mOptionsView == null) {
-            mOptionsView = new OsdOptionsView();
+            mOptionsView = new WatermarkOptionsView();
         }
 
         return mOptionsView.getBorderPane();
@@ -67,8 +68,9 @@ public class OsdLayerBundle extends LayerBundle {
     }
 
     private void init() {
-        setName("OSD");
-        mLayer.setName("OSD");
+        var name = NbBundle.getMessage(WatermarkLayerBundle.class, "watermark");
+        setName(name);
+        mLayer.setName(name);
         setCategoryAddOns(mLayer);
         setParentLayer(mLayer);
 

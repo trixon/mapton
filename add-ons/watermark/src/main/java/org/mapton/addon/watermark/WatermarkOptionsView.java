@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.osd;
+package org.mapton.addon.watermark;
 
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.ColorPicker;
@@ -21,7 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import static org.mapton.addon.osd.ModuleOptions.*;
+import static org.mapton.addon.watermark.ModuleOptions.*;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -30,7 +30,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class OsdOptionsView extends MOptionsView {
+public class WatermarkOptionsView extends MOptionsView {
 
     public static final double MAX_BORDER_SIZE = 10;
     public static final double MAX_FONT_SIZE = FxHelper.getUIScaled(48);
@@ -44,7 +44,7 @@ public class OsdOptionsView extends MOptionsView {
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private final TextField mPatternTextField = new TextField();
 
-    public OsdOptionsView() {
+    public WatermarkOptionsView() {
         createUI();
         initSession();
     }

@@ -86,9 +86,9 @@
         <module>add-ons/base64/base64</module>
         <module>add-ons/geonames/geonames-ww</module>
         <module>add-ons/notes/notes</module>
-        <module>add-ons/osd</module>
         <module>add-ons/photos/photos</module>
         <module>add-ons/seasonal</module>
+        <module>add-ons/watermark</module>
         <module>add-ons/xkcd/xkcd</module>
 
         <!--POI data sources-->

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.osd;
+package org.mapton.addon.watermark;
 
 import com.dlsc.gemsfx.util.SessionManager;
 import java.awt.Color;

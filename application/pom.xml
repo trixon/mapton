@@ -188,7 +188,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>addon-osd</artifactId>
+            <artifactId>addon-watermark</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
