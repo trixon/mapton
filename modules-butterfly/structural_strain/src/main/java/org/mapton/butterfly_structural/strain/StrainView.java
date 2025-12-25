@@ -24,7 +24,7 @@ import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -35,19 +35,19 @@ public class StrainView {
 
     private final StrainFilter mFilter = new StrainFilter();
     private final StrainFilterPopOver mFilterPopOver = new StrainFilterPopOver(mFilter);
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "strain");
+    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "strain");
     private final SingleListForm<StrainManager, BStructuralStrainGaugePoint> mListForm;
     private final StrainManager mManager = StrainManager.getInstance();
 
     public StrainView() {
-        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                mFilterPresetPopOver.getAction(),
+                MPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

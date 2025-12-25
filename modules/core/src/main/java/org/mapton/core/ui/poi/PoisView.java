@@ -17,6 +17,7 @@ package org.mapton.core.ui.poi;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.prefs.Preferences;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
@@ -238,6 +239,14 @@ public class PoisView extends BorderPane {
         public void clear() {
             mCategoryCheckTreeView.getCheckModel().clearChecks();
             setUsePolygonFilter(false);
+        }
+
+        @Override
+        public void presetRestore(Preferences preferences) {
+        }
+
+        @Override
+        public void presetStore(Preferences preferences) {
         }
 
         @Override

@@ -24,7 +24,7 @@ import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -35,19 +35,19 @@ public class LoadView {
 
     private final LoadFilter mFilter = new LoadFilter();
     private final LoadFilterPopOver mFilterPopOver = new LoadFilterPopOver(mFilter);
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "load");
+    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "load");
     private final SingleListForm<LoadManager, BStructuralLoadCellPoint> mListForm;
     private final LoadManager mManager = LoadManager.getInstance();
 
     public LoadView() {
-        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                mFilterPresetPopOver.getAction(),
+                MPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

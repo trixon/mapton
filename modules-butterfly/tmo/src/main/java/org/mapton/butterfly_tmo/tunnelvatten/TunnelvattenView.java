@@ -35,7 +35,7 @@ public class TunnelvattenView {
     private final TunnelvattenManager mManager = TunnelvattenManager.getInstance();
 
     public TunnelvattenView() {
-//        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+//        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),

@@ -29,11 +29,10 @@ import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
-import org.mapton.api.MDict;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.api.ui.MFilterPopOver;
 import org.mapton.api.ui.MPopOver;
+import org.mapton.api.ui.MPresetActions;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.modules.Places;
@@ -52,20 +51,26 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-public class MFilterPresetPopOver extends MPopOver {
+public class MPresetPopOver extends MPopOver {
 
-    public static final String FILTER_PRESET_NODE = "filterPresets";
+    public static final String PARENT_NODE_FILTER = "filterPresets";
+    public static final String PARENT_NODE_OPTIONS = "optionPresets";
 
     protected EditableList<DefaultEditableListItem> mEditableList;
-    private final MFilterPopOver mFilterPopOver;
     private String mFilterText;
     private final ObjectProperty<ObservableList<DefaultEditableListItem>> mItemsFilteredProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<ObservableList<DefaultEditableListItem>> mItemsRawProperty = new SimpleObjectProperty<>();
     private final Preferences mPreferences;
+    private final MPresetActions mPresetActions;
 
-    public MFilterPresetPopOver(MFilterPopOver filterPopOver, String path) {
-        mPreferences = NbPreferences.forModule(filterPopOver.getClass()).node(FILTER_PRESET_NODE).node(path);
-        mFilterPopOver = filterPopOver;
+    @Deprecated(forRemoval = true)
+    public MPresetPopOver(MPresetActions filterPopOver, String path) {
+        this(filterPopOver, PARENT_NODE_FILTER, path);
+    }
+
+    public MPresetPopOver(MPresetActions presetActions, String parent, String path) {
+        mPreferences = NbPreferences.forModule(presetActions.getClass()).node(parent).node(path);
+        mPresetActions = presetActions;
         mItemsFilteredProperty.set(FXCollections.observableArrayList());
         mItemsRawProperty.set(FXCollections.observableArrayList());
         createUI();
@@ -88,7 +93,7 @@ public class MFilterPresetPopOver extends MPopOver {
         try {
             var node = "(STANDARD)";
             if (mPreferences.nodeExists(node)) {
-                mFilterPopOver.filterPresetRestore(mPreferences.node(node));
+                mPresetActions.presetRestore(mPreferences.node(node));
                 return true;
             }
         } catch (BackingStoreException ex) {
@@ -99,15 +104,15 @@ public class MFilterPresetPopOver extends MPopOver {
     }
 
     private void createUI() {
-        var title = MDict.QUICK_FILTERS.toString();
+        var title = Dict.PRESETS.toString();
         setTitle(title);
         getAction().setText(title);
         getAction().setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBarInt()));
 
         mEditableList = new NbEditableList.Builder<DefaultEditableListItem>()
                 .setIconSize(Mapton.getIconSizeToolBarInt())
-                .setItemSingular(MDict.QUICK_FILTER.toString())
-                .setItemPlural(MDict.QUICK_FILTERS.toString())
+                .setItemSingular(Dict.PRESET.toString())
+                .setItemPlural(Dict.PRESETS.toString())
                 .setItemsProperty(itemsFilteredProperty())
                 .setOnAdd((String t, DefaultEditableListItem item) -> {
                     save(item);
@@ -126,7 +131,7 @@ public class MFilterPresetPopOver extends MPopOver {
 
         mEditableList.setPrefSize(FxHelper.getUIScaled(250), FxHelper.getUIScaled(500));
         setContentNode(mEditableList);
-//        setArrowLocation(ArrowLocation.TOP_RIGHT);
+        setArrowLocation(ArrowLocation.TOP_CENTER);
         setAutoHide(true);
         setCloseButtonEnabled(false);
         setDetachable(true);
@@ -175,7 +180,7 @@ public class MFilterPresetPopOver extends MPopOver {
 
         mEditableList.getListView().getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
             if (n != null) {
-                mFilterPopOver.filterPresetRestore(mPreferences.node(n.getName()));
+                mPresetActions.presetRestore(mPreferences.node(n.getName()));
             }
         });
     }
@@ -197,7 +202,7 @@ public class MFilterPresetPopOver extends MPopOver {
     }
 
     private DefaultEditableListItem save(DefaultEditableListItem item) {
-        var panel = new MFilterPresetSavePanel();
+        var panel = new MPresetSavePanel();
         panel.load(mPreferences);
         var d = new DialogDescriptor(panel, Dict.SAVE_AS.toString());
         if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
@@ -212,7 +217,7 @@ public class MFilterPresetPopOver extends MPopOver {
             } catch (BackingStoreException ex) {
                 Exceptions.printStackTrace(ex);
             }
-            mFilterPopOver.filterPresetStore(mPreferences.node(item.getName()));
+            mPresetActions.presetStore(mPreferences.node(item.getName()));
         }
 
         return item;

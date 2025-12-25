@@ -40,7 +40,7 @@ public class RorelseView {
     private final RorelseManager mManager = RorelseManager.getInstance();
 
     public RorelseView() {
-//        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+//        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var mergeAction = new Action("Sammanfoga med kontrollpunkter", actionEvent -> {
             new Merger().merge();
         });

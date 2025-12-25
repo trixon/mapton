@@ -24,7 +24,7 @@ import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -37,17 +37,17 @@ public class GroundwaterView {
     private final GroundwaterFilterPopOver mFilterPopOver = new GroundwaterFilterPopOver(mFilter);
     private final SingleListForm<GroundwaterManager, BHydroGroundwaterPoint> mListForm;
     private final GroundwaterManager mManager = GroundwaterManager.getInstance();
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "hydro.groundwater");
+    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "hydro.groundwater");
 
     public GroundwaterView() {
-        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                mFilterPresetPopOver.getAction(),
+                MPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

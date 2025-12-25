@@ -38,7 +38,7 @@ import org.mapton.api.ui.forms.DateRangePane;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import static org.mapton.butterfly_core.api.BFilterSectionDate.DateElement.*;
 import org.mapton.butterfly_format.types.BXyzPoint;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -207,7 +207,7 @@ public class BFilterSectionDate extends MBaseFilterSection {
         var dateFirstToEnd = true;
         var dateLastFromStart = true;
         var dateLastToEnd = true;
-        var isPreset = Strings.CI.contains(preferences.absolutePath(), MFilterPresetPopOver.FILTER_PRESET_NODE);
+        var isPreset = Strings.CI.contains(preferences.absolutePath(), MPresetPopOver.PARENT_NODE_FILTER);
 
         if (isPreset) {
             mDateFirstToEnd = preferences.getBoolean(getKeyFilter(KEY_FIRST_TO_END), true);

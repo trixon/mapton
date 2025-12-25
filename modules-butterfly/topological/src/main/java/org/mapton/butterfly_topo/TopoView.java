@@ -26,7 +26,7 @@ import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.core.api.ui.ExportAction;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -38,12 +38,13 @@ public class TopoView {
 
     private final TopoFilter mFilter = new TopoFilter();
     private final TopoFilterPopOver mFilterPopOver = new TopoFilterPopOver(mFilter);
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "topo");
+    private final MPresetPopOver mPresetPopOver;
     private final SingleListForm<TopoManager, BTopoControlPoint> mListForm;
     private final TopoManager mManager = TopoManager.getInstance();
 
     public TopoView() {
-        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "topo");
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_ControlPointAction());
 
         var actions = Arrays.asList(
@@ -53,7 +54,7 @@ public class TopoView {
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                mFilterPresetPopOver.getAction(),
+                mPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

@@ -73,14 +73,14 @@ public class LoadFilterPopOver extends BaseTabbedFilterPopOver {
     }
 
     @Override
-    public void filterPresetRestore(Preferences preferences) {
+    public void presetRestore(Preferences preferences) {
         clear();
-        filterPresetStore(preferences);
+        presetStore(preferences);
         //mDateRangePane.reset();
     }
 
     @Override
-    public void filterPresetStore(Preferences preferences) {
+    public void presetStore(Preferences preferences) {
         var sessionManager = initSession(preferences);
         sessionManager.unregisterAll();
     }

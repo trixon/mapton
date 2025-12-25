@@ -24,7 +24,7 @@ import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -35,19 +35,19 @@ public class TiltView {
 
     private final TiltFilter mFilter = new TiltFilter();
     private final TiltFilterPopOver mFilterPopOver = new TiltFilterPopOver(mFilter);
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "tilt");
+    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "tilt");
     private final SingleListForm<TiltManager, BStructuralTiltPoint> mListForm;
     private final TiltManager mManager = TiltManager.getInstance();
 
     public TiltView() {
-        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                mFilterPresetPopOver.getAction(),
+                MPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

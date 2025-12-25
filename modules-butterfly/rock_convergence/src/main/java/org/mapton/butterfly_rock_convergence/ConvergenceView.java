@@ -24,7 +24,7 @@ import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.rock.BRockConvergence;
 import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -35,19 +35,19 @@ public class ConvergenceView {
 
     private final ConvergenceFilter mFilter = new ConvergenceFilter();
     private final ConvergenceFilterPopOver mFilterPopOver = new ConvergenceFilterPopOver(mFilter);
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "topo.convergence");
+    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "topo.convergence");
     private final SingleListForm<ConvergenceManager, BRockConvergence> mListForm;
     private final ConvergenceManager mManager = ConvergenceManager.getInstance();
 
     public ConvergenceView() {
-        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                mFilterPresetPopOver.getAction(),
+                MPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

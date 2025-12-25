@@ -21,6 +21,7 @@ import java.util.ResourceBundle;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -30,6 +31,7 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -40,8 +42,11 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public abstract class MOptionsView {
 
     private final BorderPane mBorderPane = new BorderPane();
+    private Action mRestoreDefaultsAction;
+    private Runnable mRestoreDefaultsRunnable;
     private final ScrollPane mScrollPane = new ScrollPane();
     private SessionManager mSessionManager;
+    private ToolBar mToolBar;
 
     public MOptionsView() {
         createUI();
@@ -52,6 +57,16 @@ public abstract class MOptionsView {
         gp.setPadding(FxHelper.getUIScaledInsets(8));
 
         return gp;
+    }
+
+    public void createToolbar(List<Action> actions) {
+        mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+
+        FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBarInt());
+        FxHelper.undecorateButtons(mToolBar.getItems().stream());
+        FxHelper.slimToolBar(mToolBar);
+
+        setTop(mToolBar);
     }
 
     public BorderPane getBorderPane() {
@@ -80,6 +95,12 @@ public abstract class MOptionsView {
      */
     public String getKeyOptions(String key) {
         return "options.%s.%s".formatted(getClass().getSimpleName(), key);
+    }
+
+    public Action getRestoreDefaultsAction(Runnable restoreDefaultsRunnable) {
+        mRestoreDefaultsRunnable = restoreDefaultsRunnable;
+
+        return mRestoreDefaultsAction;
     }
 
     public SessionManager getSessionManager() {
@@ -115,24 +136,10 @@ public abstract class MOptionsView {
         mScrollPane.setFitToWidth(true);
         mScrollPane.setFitToHeight(true);
         mScrollPane.setBackground(FxHelper.createBackground(Color.TRANSPARENT));
-
-        var dummyAction = new Action("Dummy", actionEvent -> {
-            System.out.println(actionEvent);
+        mRestoreDefaultsAction = new Action(Dict.RESTORE_DEFAULTS.toString(), actionEvent -> {
+            mRestoreDefaultsRunnable.run();
         });
-        dummyAction.setGraphic(MaterialIcon._Action.HELP.getImageView(Mapton.getIconSizeToolBarInt()));
-        dummyAction.setDisabled(true);
-
-        var actions = List.of(
-                ActionUtils.ACTION_SPAN,
-                dummyAction
-        );
-
-        var toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
-
-        FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
-        FxHelper.undecorateButtons(toolBar.getItems().stream());
-        FxHelper.slimToolBar(toolBar);
-
-        setTop(toolBar);
+        mRestoreDefaultsAction.setGraphic(MaterialIcon._Action.RESTORE_PAGE.getImageView(Mapton.getIconSizeToolBarInt()));
     }
+
 }

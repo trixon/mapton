@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_activities;
 
+import java.util.prefs.Preferences;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
 import static org.mapton.api.ui.MPopOver.GAP;
@@ -63,6 +64,16 @@ public class ActFilterPopOver extends BaseFilterPopOver {
     @Override
     public void onPolygonFilterChange() {
         mFilter.update();
+    }
+
+    @Override
+    public void presetRestore(Preferences preferences) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void presetStore(Preferences preferences) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override

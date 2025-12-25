@@ -23,7 +23,7 @@ import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.rock.BRockExtensometer;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -34,19 +34,19 @@ public class ExtensoView {
 
     private final ExtensoFilter mFilter = new ExtensoFilter();
     private final ExtensoFilterPopOver mFilterPopOver = new ExtensoFilterPopOver(mFilter);
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "geo.extenso");
+    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "geo.extenso");
     private final SingleListForm<ExtensoManager, BRockExtensometer> mListForm;
     private final ExtensoManager mManager = ExtensoManager.getInstance();
 
     public ExtensoView() {
-        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                mFilterPresetPopOver.getAction(),
+                MPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

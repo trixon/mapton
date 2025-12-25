@@ -23,7 +23,7 @@ import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.core.api.ui.ExportAction;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -36,17 +36,17 @@ public class BlastView {
     private final BlastFilterPopOver mFilterPopOver = new BlastFilterPopOver(mFilter);
     private final SingleListForm<BlastManager, BRockBlast> mListForm;
     private final BlastManager mManager = BlastManager.getInstance();
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "blast");
+    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "blast");
 
     public BlastView() {
-        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new ExportAction("Salvor"),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                mFilterPresetPopOver.getAction(),
+                MPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

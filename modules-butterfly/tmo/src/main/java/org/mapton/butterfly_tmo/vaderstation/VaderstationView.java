@@ -35,7 +35,7 @@ public class VaderstationView {
     private final VaderstationManager mManager = VaderstationManager.getInstance();
 
     public VaderstationView() {
-//        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+//        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),

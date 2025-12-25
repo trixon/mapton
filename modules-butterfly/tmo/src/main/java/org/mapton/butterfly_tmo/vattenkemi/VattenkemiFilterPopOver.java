@@ -16,6 +16,7 @@
 package org.mapton.butterfly_tmo.vattenkemi;
 
 import java.util.TreeSet;
+import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
@@ -76,6 +77,16 @@ public class VattenkemiFilterPopOver extends BaseFilterPopOver {
     public void onShownFirstTime() {
         var dropDownCount = 25;
         FxHelper.getComboBox(mGroupCheckComboBox).setVisibleRowCount(dropDownCount);
+    }
+
+    @Override
+    public void presetRestore(Preferences preferences) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void presetStore(Preferences preferences) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override

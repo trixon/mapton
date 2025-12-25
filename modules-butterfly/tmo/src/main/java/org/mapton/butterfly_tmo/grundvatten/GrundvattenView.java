@@ -23,7 +23,7 @@ import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import org.mapton.butterfly_tmo.api.GrundvattenManager;
 import org.mapton.core.api.ui.ExportAction;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -34,18 +34,18 @@ public class GrundvattenView {
 
     private final GrundvattenFilter mFilter = new GrundvattenFilter();
     private final GrundvattenFilterPopOver mFilterPopOver = new GrundvattenFilterPopOver(mFilter);
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "grundvatten");
+    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "grundvatten");
     private final SingleListForm<GrundvattenManager, BGrundvatten> mListForm;
     private final GrundvattenManager mManager = GrundvattenManager.getInstance();
 
     public GrundvattenView() {
-        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 new ExportAction("TMO-Grundvatten"),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                mFilterPresetPopOver.getAction(),
+                MPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

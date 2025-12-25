@@ -26,7 +26,7 @@ import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -39,7 +39,7 @@ public class InsarView {
 
     private final InsarFilter mFilter = new InsarFilter();
     private final InsarFilterPopOver mFilterPopOver = new InsarFilterPopOver(mFilter);
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "insar");
+    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "insar");
     private final SingleListForm<InsarManager, BRemoteInsarPoint> mListForm;
     private final InsarManager mManager = InsarManager.getInstance();
     private Action mRefreshAction;
@@ -62,7 +62,7 @@ public class InsarView {
             mRefreshAction.setDisabled(false);
         });
 
-        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 mRefreshAction,
                 mClearAction,
@@ -71,7 +71,7 @@ public class InsarView {
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                mFilterPresetPopOver.getAction(),
+                MPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

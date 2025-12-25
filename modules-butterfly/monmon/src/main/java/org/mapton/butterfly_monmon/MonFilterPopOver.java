@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_monmon;
 
+import java.util.prefs.Preferences;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
@@ -73,6 +74,16 @@ public class MonFilterPopOver extends BaseFilterPopOver {
     @Override
     public void onPolygonFilterChange() {
         mFilter.update();
+    }
+
+    @Override
+    public void presetRestore(Preferences preferences) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void presetStore(Preferences preferences) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override

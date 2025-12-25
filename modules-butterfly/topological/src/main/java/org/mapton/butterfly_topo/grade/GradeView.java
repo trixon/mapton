@@ -22,7 +22,7 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -36,7 +36,7 @@ public class GradeView {
     protected ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
     protected GradeFilter mFilter;
     protected GradeFilterPopOver mFilterPopOver;
-    protected MFilterPresetPopOver mFilterPresetPopOver;
+    protected MPresetPopOver MPresetPopOver;
     protected SingleListForm mListForm;
     protected GradeManagerBase mManager;
     protected Action mRefreshAction;

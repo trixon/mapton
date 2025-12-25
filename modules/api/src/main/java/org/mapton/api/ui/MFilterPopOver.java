@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
-import java.util.prefs.Preferences;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -54,7 +53,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-public abstract class MFilterPopOver extends MPopOver {
+public abstract class MFilterPopOver extends MPopOver implements MPresetActions {
 
     private final Button mAllButton = new Button(Dict.DEFAULT.toString());
     private final Map<String, Action> mAvailableActions = new HashMap<>();
@@ -148,14 +147,6 @@ public abstract class MFilterPopOver extends MPopOver {
 
     public void copyNames(List<String> names) {
         SystemHelper.copyToClipboard(String.join("\n", names) + "\n");
-    }
-
-    public void filterPresetRestore(Preferences preferences) {
-
-    }
-
-    public void filterPresetStore(Preferences preferences) {
-
     }
 
     public ResourceBundle getBundle() {

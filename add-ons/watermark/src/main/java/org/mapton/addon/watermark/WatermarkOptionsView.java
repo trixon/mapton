@@ -15,13 +15,17 @@
  */
 package org.mapton.addon.watermark;
 
+import java.util.List;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.addon.watermark.ModuleOptions.*;
+import org.mapton.core.api.ui.MPresetPopOver;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -38,6 +42,7 @@ public class WatermarkOptionsView extends MOptionsView {
     private final ColorPicker mBackgroundColorPicker = new ColorPicker();
     private final ColorPicker mBorderColorPicker = new ColorPicker();
     private final Slider mBorderSizeSlider = new Slider(0, MAX_BORDER_SIZE, DEFAULT_BORDER_SIZE);
+    private final MPresetPopOver mFilterPresetPopOver;
     private final ColorPicker mFontColorPicker = new ColorPicker();
     private final Slider mFontSizeSlider = new Slider(MIN_FONT_SIZE, MAX_FONT_SIZE, DEFAULT_FONT_SIZE);
     private final Slider mOpacitySlider = new Slider(0, 1, DEFAULT_OPACITY);
@@ -45,11 +50,26 @@ public class WatermarkOptionsView extends MOptionsView {
     private final TextField mPatternTextField = new TextField();
 
     public WatermarkOptionsView() {
+        mFilterPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_OPTIONS, "watermark");
         createUI();
         initSession();
     }
 
     private void createUI() {
+        var restoreDefaultsRunnable = (Runnable) () -> {
+            if (mFilterPresetPopOver.restoreDefaultIfExists()) {
+                //
+            } else {
+                mOptions.reset();
+            }
+        };
+        var actions = List.of(
+                getRestoreDefaultsAction(restoreDefaultsRunnable),
+                ActionUtils.ACTION_SPAN,
+                mFilterPresetPopOver.getAction()
+        );
+        createToolbar(actions);
+
         var patternLabel = new Label(Dict.PATTERN.toString());
         var opacityLabel = new Label(Dict.OPACITY.toString());
         var fontSizeLabel = new Label(Dict.SIZE.toString());
@@ -108,9 +128,20 @@ public class WatermarkOptionsView extends MOptionsView {
         mBorderSizeSlider.valueProperty().bindBidirectional(mOptions.borderSizeProperty());
     }
 
-    private void loadAndBind(ColorPicker colorPicker, StringProperty colorProperty) {
-        colorPicker.setValue(Color.web(colorProperty.get()));
-        colorProperty.bind(colorPicker.valueProperty().asString());
+    private void loadAndBind(ColorPicker colorPicker, StringProperty colorStringProperty) {
+        colorPicker.setValue(Color.web(colorStringProperty.get()));
+        var valueAsStringProperty = new SimpleStringProperty(FxHelper.colorToHexRGBA(colorPicker.getValue()));
+        valueAsStringProperty.bindBidirectional(colorStringProperty);
+        colorPicker.setOnAction(event -> {
+            colorStringProperty.set(FxHelper.colorToHexRGBA(colorPicker.getValue()));
+        });
+        colorStringProperty.addListener((p, o, n) -> {
+            try {
+                colorPicker.setValue(Color.web(n));
+            } catch (IllegalArgumentException e) {
+                System.err.println(e);
+            }
+        });
     }
 
 }

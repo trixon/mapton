@@ -24,7 +24,7 @@ import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.mapton.core.api.ui.ExportAction;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -35,12 +35,12 @@ public class VibrationView {
 
     private final VibrationFilter mFilter = new VibrationFilter();
     private final VibrationFilterPopOver mFilterPopOver = new VibrationFilterPopOver(mFilter);
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "aco.vibration");
+    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "aco.vibration");
     private final SingleListForm<VibrationManager, BAcousticVibrationPoint> mListForm;
     private final VibrationManager mManager = VibrationManager.getInstance();
 
     public VibrationView() {
-        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new ExportAction("Vibrationer"),
@@ -48,7 +48,7 @@ public class VibrationView {
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                mFilterPresetPopOver.getAction(),
+                MPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

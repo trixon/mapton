@@ -25,7 +25,7 @@ import org.mapton.butterfly_topo.grade.GradeFilter;
 import org.mapton.butterfly_topo.grade.GradeFilterConfig;
 import org.mapton.butterfly_topo.grade.GradeFilterPopOver;
 import org.mapton.butterfly_topo.grade.GradeView;
-import org.mapton.core.api.ui.MFilterPresetPopOver;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -46,14 +46,14 @@ public class GradeVView extends GradeView {
         config.setAxis(BAxis.VERTICAL);
 
         mFilterPopOver = new GradeFilterPopOver(getClass(), mFilter, config);
-        mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "gradeV");
-        mFilterPopOver.setFilterPresetPopOver(mFilterPresetPopOver);
+        MPresetPopOver = new MPresetPopOver(mFilterPopOver, "gradeV");
+        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
 
         var actions = Arrays.asList(
                 mRefreshAction,
                 ActionUtils.ACTION_SPAN,
                 mFilter.getInfoPopOver().getAction(),
-                mFilterPresetPopOver.getAction(),
+                MPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
         mListForm = new SingleListForm<>(mManager, mBundle.getString("grade_v"));
