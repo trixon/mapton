@@ -31,7 +31,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class ModuleOptions extends OptionsBase implements MPresetActions {
+public class WatermarkOptions extends OptionsBase implements MPresetActions {
 
     public static final double DEFAULT_BORDER_SIZE = FxHelper.getUIScaled(0);
     public static final String DEFAULT_COLOR_BACKGROUND = "000000FF";
@@ -48,12 +48,12 @@ public class ModuleOptions extends OptionsBase implements MPresetActions {
     private final DoubleProperty mOpacityProperty = new SimpleDoubleProperty(DEFAULT_OPACITY);
     private final StringProperty mPatternProperty = new SimpleStringProperty(DEFAULT_PATTERN);
 
-    public static ModuleOptions getInstance() {
+    public static WatermarkOptions getInstance() {
         return Holder.INSTANCE;
     }
 
-    private ModuleOptions() {
-        setPreferences(NbPreferences.forModule(ModuleOptions.class));
+    private WatermarkOptions() {
+        setPreferences(NbPreferences.forModule(WatermarkOptions.class));
     }
 
     public StringProperty backgroundColorProperty() {
@@ -125,7 +125,6 @@ public class ModuleOptions extends OptionsBase implements MPresetActions {
 
     @Override
     public void presetRestore(Preferences preferences) {
-        //clear();
         presetStore(preferences);
     }
 
@@ -154,6 +153,6 @@ public class ModuleOptions extends OptionsBase implements MPresetActions {
 
     private static class Holder {
 
-        private static final ModuleOptions INSTANCE = new ModuleOptions();
+        private static final WatermarkOptions INSTANCE = new WatermarkOptions();
     }
 }

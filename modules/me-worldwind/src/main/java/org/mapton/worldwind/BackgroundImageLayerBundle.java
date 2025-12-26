@@ -21,7 +21,6 @@ import javafx.scene.Node;
 import org.mapton.api.MBackgroundImage;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
-import static org.mapton.worldwind.ModuleOptions.*;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
@@ -35,7 +34,7 @@ public class BackgroundImageLayerBundle extends LayerBundle {
 
     private MBackgroundImage mBackgroundImage;
     private final RenderableLayer mLayer = new RenderableLayer();
-    private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private final BackgroundImageOptions mOptions = BackgroundImageOptions.getInstance();
     private BackgroundImageOptionsView mOptionsView;
     private final ScreenImage mScreenImage = new ScreenImage();
 
@@ -51,7 +50,7 @@ public class BackgroundImageLayerBundle extends LayerBundle {
             mOptionsView = new BackgroundImageOptionsView();
         }
 
-        return mOptionsView;
+        return mOptionsView.getBorderPane();
     }
 
     @Override
@@ -75,7 +74,7 @@ public class BackgroundImageLayerBundle extends LayerBundle {
         }, MKey.BACKGROUND_IMAGE);
 
         mOptions.getPreferences().addPreferenceChangeListener(pce -> {
-            repaint();
+            resetPaintDelayedResetRunner();
         });
     }
 
@@ -87,7 +86,7 @@ public class BackgroundImageLayerBundle extends LayerBundle {
                 synchronized (this) {
                     mScreenImage.setImageSource(mBackgroundImage.getImageSource());
                     try {
-                        mScreenImage.setOpacity(mOptions.getDouble(KEY_BACKGROUND_IMAGE_OPACITY, DEFAULT_BACKGROUND_IMAGE_OPACITY));
+                        mScreenImage.setOpacity(mOptions.getOpacity());
                     } catch (Exception e) {
                     }
                 }

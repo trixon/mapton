@@ -19,6 +19,7 @@ import com.dlsc.gemsfx.Spacer;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javafx.beans.property.ObjectProperty;
@@ -26,6 +27,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.input.KeyCode;
 import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -89,7 +91,7 @@ public class MPresetPopOver extends MPopOver {
         initListeners();
 
         var sessionManager = new SessionManager(mPreferences.parent());
-        sessionManager.register("storedFilter", mEditableList.filterTextProperty());
+        sessionManager.register("storedFilter_%s".formatted(path), mEditableList.filterTextProperty());
     }
 
     public boolean restoreDefaultIfExists() {
@@ -109,6 +111,7 @@ public class MPresetPopOver extends MPopOver {
     private void createUI() {
         var title = Dict.PRESETS.toString();
         setTitle(title);
+        setHideOnEscape(true);
         getAction().setText(title);
         getAction().setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBarInt()));
 
@@ -183,6 +186,18 @@ public class MPresetPopOver extends MPopOver {
         mEditableList.getListView().getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
             if (n != null) {
                 mPresetActions.presetRestore(mPreferences.node(n.getName()));
+            }
+        });
+
+        mEditableList.getListView().setOnKeyPressed(keyEvent -> {
+            if (Set.of(KeyCode.ENTER, KeyCode.SPACE).contains(keyEvent.getCode())) {
+                hide();
+            }
+        });
+
+        mEditableList.getListView().setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getClickCount() == 2) {
+                hide();
             }
         });
 

@@ -15,12 +15,13 @@
  */
 package org.mapton.worldwind;
 
-import javafx.beans.value.ObservableValue;
+import java.util.List;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import static org.mapton.worldwind.ModuleOptions.*;
+import org.controlsfx.control.action.ActionUtils;
+import org.mapton.core.api.ui.MPresetPopOver;
+import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -28,35 +29,40 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class BackgroundImageOptionsView extends BorderPane {
+public class BackgroundImageOptionsView extends MOptionsView {
 
-    private final Slider mOpacitySlider = new Slider(0, 1, 1);
-    private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private final Slider mOpacitySlider = new Slider(0, 1, BackgroundImageOptions.DEFAULT_OPACITY);
+    private final BackgroundImageOptions mOptions = BackgroundImageOptions.getInstance();
+    private final MPresetPopOver mPresetPopOver;
 
     public BackgroundImageOptionsView() {
+        mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_OPTIONS, "backgroundImage");
         createUI();
-        initStates();
-        initListeners();
-        load();
+        initSession();
     }
 
     private void createUI() {
+        var restoreDefaultsRunnable = (Runnable) () -> {
+            if (mPresetPopOver.restoreDefaultIfExists()) {
+                //
+            } else {
+                mOptions.reset();
+            }
+        };
+        var actions = List.of(
+                getRestoreDefaultsAction(restoreDefaultsRunnable),
+                ActionUtils.ACTION_SPAN,
+                mPresetPopOver.getAction()
+        );
+        createToolbar(actions);
+
         var opacityBox = new VBox(new Label(Dict.OPACITY.toString()), mOpacitySlider);
         opacityBox.setPadding(FxHelper.getUIScaledInsets(8));
 
         setCenter(opacityBox);
     }
 
-    private void initListeners() {
-        mOpacitySlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            mOptions.put(KEY_BACKGROUND_IMAGE_OPACITY, mOpacitySlider.getValue());
-        });
-    }
-
-    private void initStates() {
-    }
-
-    private void load() {
-        mOpacitySlider.setValue(mOptions.getDouble(KEY_BACKGROUND_IMAGE_OPACITY, DEFAULT_BACKGROUND_IMAGE_OPACITY));
+    private void initSession() {
+        mOpacitySlider.valueProperty().bindBidirectional(mOptions.opacityProperty());
     }
 }

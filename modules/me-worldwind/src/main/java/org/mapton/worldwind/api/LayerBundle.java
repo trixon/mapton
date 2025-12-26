@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.prefs.Preferences;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -42,11 +41,10 @@ import org.mapton.api.MKey;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
-import org.mapton.worldwind.LayerObjectView;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
-import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.swing.DelayedResetRunner;
 
 /**
  *
@@ -62,13 +60,13 @@ public abstract class LayerBundle {
     private final ObservableList<Layer> mLayers = FXCollections.observableArrayList();
     private final StringProperty mName = new SimpleStringProperty();
     private final HashMap<Object, ArrayList<Renderable>> mObjectToRenderables = new HashMap<>();
+    private DelayedResetRunner mPaintDelayedResetRunner = new DelayedResetRunner(100, () -> repaint());
     private Runnable mPainter;
     private Layer mParentLayer;
     private boolean mPopulated = false;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
     private MTemporalRange mTemporalRange;
     private ConcurrentHashMap<String, MTemporalRange> mTemporalRanges;
-    private Preferences mVisibilityPreferences = NbPreferences.forModule(LayerObjectView.class).node("layer_visibility");
 
     public LayerBundle() {
     }
@@ -257,6 +255,10 @@ public abstract class LayerBundle {
         repaint(-1);
     }
 
+    public void resetPaintDelayedResetRunner() {
+        mPaintDelayedResetRunner.reset();
+    }
+
     public void setAllChildLayers(Layer... childLayers) {
         mChildLayers = new HashSet<>(Arrays.asList(childLayers));
         addAllChildLayers(childLayers);
@@ -322,6 +324,10 @@ public abstract class LayerBundle {
 
     public final void setName(String value) {
         mName.set(value);
+    }
+
+    public void setPaintDelayedResetRunner(DelayedResetRunner paintDelayedResetRunner) {
+        mPaintDelayedResetRunner = paintDelayedResetRunner;
     }
 
     public void setPainter(Runnable painter) {

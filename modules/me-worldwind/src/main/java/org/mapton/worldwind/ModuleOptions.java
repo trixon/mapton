@@ -24,7 +24,6 @@ import se.trixon.almond.util.OptionsBase;
  */
 public class ModuleOptions extends OptionsBase {
 
-    public static final String KEY_BACKGROUND_IMAGE_OPACITY = "background_image.opacity";
     public static final String KEY_DISPLAY_ATMOSPHERE = "display_atmosphere";
     public static final String KEY_DISPLAY_COMPASS = "display_compass";
     public static final String KEY_DISPLAY_CONTROLS = "display_controls2";
@@ -61,7 +60,6 @@ public class ModuleOptions extends OptionsBase {
     public static final String KEY_VIEW_PITCH = "view_pitch";
     public static final String KEY_VIEW_ROLL = "view_roll";
 
-    static final double DEFAULT_BACKGROUND_IMAGE_OPACITY = 1.0;
     static final boolean DEFAULT_DISPLAY_ATMOSPHERE = true;
     static final boolean DEFAULT_DISPLAY_COMPASS = true;
     static final boolean DEFAULT_DISPLAY_CONTROLS = false;

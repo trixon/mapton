@@ -26,7 +26,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import org.controlsfx.control.action.ActionUtils;
-import static org.mapton.addon.watermark.ModuleOptions.*;
+import static org.mapton.addon.watermark.WatermarkOptions.*;
 import org.mapton.core.api.ui.MPresetPopOver;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
@@ -48,7 +48,7 @@ public class WatermarkOptionsView extends MOptionsView {
     private final ColorPicker mFontColorPicker = new ColorPicker();
     private final Slider mFontSizeSlider = new Slider(MIN_FONT_SIZE, MAX_FONT_SIZE, DEFAULT_FONT_SIZE);
     private final Slider mOpacitySlider = new Slider(0, 1, DEFAULT_OPACITY);
-    private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private final WatermarkOptions mOptions = WatermarkOptions.getInstance();
     private final ComboBox<String> mPatternComboBox = new ComboBox<>();
 
     public WatermarkOptionsView() {
@@ -74,7 +74,7 @@ public class WatermarkOptionsView extends MOptionsView {
 
         mPatternComboBox.setEditable(true);
         mPatternComboBox.setItems(FXCollections.observableArrayList(
-                ModuleOptions.DEFAULT_PATTERN,
+                WatermarkOptions.DEFAULT_PATTERN,
                 "yyyy-MM-dd",
                 "yyyy-MM-dd HH.mm",
                 "HH:mm",

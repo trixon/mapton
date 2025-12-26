@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.swing.DelayedResetRunner;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -39,9 +40,9 @@ public class WatermarkLayerBundle extends LayerBundle {
 
     private final ScreenRelativeAnnotation mAnnotation = new ScreenRelativeAnnotation("", .5, 0.0);
     private final AnnotationAttributes mAttributes = new AnnotationAttributes();
-    private DateTimeFormatter mDateTimeFormatter = DateTimeFormatter.ofPattern(ModuleOptions.DEFAULT_PATTERN);
+    private DateTimeFormatter mDateTimeFormatter = DateTimeFormatter.ofPattern(WatermarkOptions.DEFAULT_PATTERN);
     private final AnnotationLayer mLayer = new AnnotationLayer();
-    private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private final WatermarkOptions mOptions = WatermarkOptions.getInstance();
     private WatermarkOptionsView mOptionsView;
     private String mPatternError = null;
     private Timer mTimer;
@@ -113,7 +114,7 @@ public class WatermarkLayerBundle extends LayerBundle {
 
         try {
             mPatternError = null;
-            var pattern = StringUtils.isBlank(mOptions.getPattern()) ? ModuleOptions.DEFAULT_PATTERN : mOptions.getPattern();
+            var pattern = StringUtils.isBlank(mOptions.getPattern()) ? WatermarkOptions.DEFAULT_PATTERN : mOptions.getPattern();
             mDateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
         } catch (Exception e) {
             mPatternError = e.getMessage();
@@ -129,8 +130,9 @@ public class WatermarkLayerBundle extends LayerBundle {
             }
         });
 
+        setPaintDelayedResetRunner(new DelayedResetRunner(100, () -> initAttributes()));
         mOptions.getPreferences().addPreferenceChangeListener(pce -> {
-            initAttributes();
+            resetPaintDelayedResetRunner();
         });
     }
 
