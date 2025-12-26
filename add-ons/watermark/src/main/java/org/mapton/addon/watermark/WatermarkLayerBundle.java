@@ -80,7 +80,12 @@ public class WatermarkLayerBundle extends LayerBundle {
         mAttributes.setAdjustWidthToText(AVKey.SIZE_FIT_TEXT);
 
         mTimer = new Timer(0, actionListener -> {
-            var text = mPatternError == null ? LocalDateTime.now().format(mDateTimeFormatter) : mPatternError;
+            String text;
+            try {
+                text = mPatternError == null ? LocalDateTime.now().format(mDateTimeFormatter) : mPatternError;
+            } catch (Exception e) {
+                text = e.getMessage();
+            }
             mAnnotation.setText(text);
             repaint();
         });

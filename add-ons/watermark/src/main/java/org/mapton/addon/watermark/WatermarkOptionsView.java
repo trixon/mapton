@@ -18,10 +18,12 @@ package org.mapton.addon.watermark;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.addon.watermark.ModuleOptions.*;
@@ -42,22 +44,22 @@ public class WatermarkOptionsView extends MOptionsView {
     private final ColorPicker mBackgroundColorPicker = new ColorPicker();
     private final ColorPicker mBorderColorPicker = new ColorPicker();
     private final Slider mBorderSizeSlider = new Slider(0, MAX_BORDER_SIZE, DEFAULT_BORDER_SIZE);
-    private final MPresetPopOver mFilterPresetPopOver;
+    private final MPresetPopOver mPresetPopOver;
     private final ColorPicker mFontColorPicker = new ColorPicker();
     private final Slider mFontSizeSlider = new Slider(MIN_FONT_SIZE, MAX_FONT_SIZE, DEFAULT_FONT_SIZE);
     private final Slider mOpacitySlider = new Slider(0, 1, DEFAULT_OPACITY);
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
-    private final TextField mPatternTextField = new TextField();
+    private final ComboBox<String> mPatternComboBox = new ComboBox<>();
 
     public WatermarkOptionsView() {
-        mFilterPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_OPTIONS, "watermark");
+        mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_OPTIONS, "watermark");
         createUI();
         initSession();
     }
 
     private void createUI() {
         var restoreDefaultsRunnable = (Runnable) () -> {
-            if (mFilterPresetPopOver.restoreDefaultIfExists()) {
+            if (mPresetPopOver.restoreDefaultIfExists()) {
                 //
             } else {
                 mOptions.reset();
@@ -66,10 +68,20 @@ public class WatermarkOptionsView extends MOptionsView {
         var actions = List.of(
                 getRestoreDefaultsAction(restoreDefaultsRunnable),
                 ActionUtils.ACTION_SPAN,
-                mFilterPresetPopOver.getAction()
+                mPresetPopOver.getAction()
         );
         createToolbar(actions);
 
+        mPatternComboBox.setEditable(true);
+        mPatternComboBox.setItems(FXCollections.observableArrayList(
+                ModuleOptions.DEFAULT_PATTERN,
+                "yyyy-MM-dd",
+                "yyyy-MM-dd HH.mm",
+                "HH:mm",
+                "HH:mm:ss",
+                "'prefix' HH:mm:ss 'suffix'",
+                "'Plain text: Hello, World!'"
+        ));
         var patternLabel = new Label(Dict.PATTERN.toString());
         var opacityLabel = new Label(Dict.OPACITY.toString());
         var fontSizeLabel = new Label(Dict.SIZE.toString());
@@ -80,23 +92,17 @@ public class WatermarkOptionsView extends MOptionsView {
         var gp = createGridPane();
 
         int row = 0;
-        gp.addRow(row++, patternLabel);
-        gp.addRow(row++, mPatternTextField);
-        gp.addRow(row++, opacityLabel);
-        gp.addRow(row++, mOpacitySlider);
-        gp.addRow(row++, fontSizeLabel);
-        gp.addRow(row++, mFontSizeSlider);
-        gp.addRow(row++, fontColorLabel);
-        gp.addRow(row++, mFontColorPicker);
-        gp.addRow(row++, backgroundColorLabel);
-        gp.addRow(row++, mBackgroundColorPicker);
-        gp.addRow(row++, borderColorLabel);
-        gp.addRow(row++, mBorderColorPicker);
-        gp.addRow(row++, borderSizeLabel);
-        gp.addRow(row++, mBorderSizeSlider);
+        gp.add(patternLabel, 0, row++, GridPane.REMAINING, 1);
+        gp.add(mPatternComboBox, 0, row++, GridPane.REMAINING, 1);
+        gp.addRow(row++, fontSizeLabel, opacityLabel);
+        gp.addRow(row++, mFontSizeSlider, mOpacitySlider);
+        gp.addRow(row++, fontColorLabel, backgroundColorLabel);
+        gp.addRow(row++, mFontColorPicker, mBackgroundColorPicker);
+        gp.addRow(row++, borderColorLabel, borderSizeLabel);
+        gp.addRow(row++, mBorderColorPicker, mBorderSizeSlider);
 
         FxHelper.autoSizeRegionHorizontal(
-                mPatternTextField,
+                mPatternComboBox,
                 mOpacitySlider,
                 mFontSizeSlider,
                 mBackgroundColorPicker,
@@ -114,6 +120,8 @@ public class WatermarkOptionsView extends MOptionsView {
                 borderSizeLabel
         );
 
+        FxHelper.autoSizeColumn(gp, 2);
+
         setCenter(gp);
     }
 
@@ -122,7 +130,7 @@ public class WatermarkOptionsView extends MOptionsView {
         loadAndBind(mFontColorPicker, mOptions.fontColorProperty());
         loadAndBind(mBackgroundColorPicker, mOptions.backgroundColorProperty());
 
-        mPatternTextField.textProperty().bindBidirectional(mOptions.patternProperty());
+        mPatternComboBox.getEditor().textProperty().bindBidirectional(mOptions.patternProperty());
         mOpacitySlider.valueProperty().bindBidirectional(mOptions.opacityProperty());
         mFontSizeSlider.valueProperty().bindBidirectional(mOptions.fontSizeProperty());
         mBorderSizeSlider.valueProperty().bindBidirectional(mOptions.borderSizeProperty());
@@ -135,6 +143,7 @@ public class WatermarkOptionsView extends MOptionsView {
         colorPicker.setOnAction(event -> {
             colorStringProperty.set(FxHelper.colorToHexRGBA(colorPicker.getValue()));
         });
+
         colorStringProperty.addListener((p, o, n) -> {
             try {
                 colorPicker.setValue(Color.web(n));
