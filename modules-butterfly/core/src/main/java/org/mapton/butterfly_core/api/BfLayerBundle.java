@@ -61,10 +61,10 @@ public abstract class BfLayerBundle extends LayerBundle {
         setCategory(mLayer, category);
         attachTopComponentToLayer(topComponentId, mLayer);
 
+        mLayer.setEnabled(false);
         setParentLayer(mLayer);
 
         mLayer.setPickEnabled(true);
-        mLayer.setEnabled(false);
         mSurfaceLayer.setPickEnabled(false);
         mPassiveLayer.setPickEnabled(false);
 

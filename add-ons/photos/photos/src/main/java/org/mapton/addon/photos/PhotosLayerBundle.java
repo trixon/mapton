@@ -117,10 +117,7 @@ public class PhotosLayerBundle extends LayerBundle {
         setCategoryAddOns(mLayer);
         attachTopComponentToLayer("PhotosTopComponent", mLayer);
 
-        mLayer.setEnabled(true);
-
         mRenderableLayer.setPickEnabled(false);
-        mRenderableLayer.setEnabled(true);
 
         setName(Dict.PHOTOS.toString());
 

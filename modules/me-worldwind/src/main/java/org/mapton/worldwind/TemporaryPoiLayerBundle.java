@@ -63,7 +63,6 @@ public class TemporaryPoiLayerBundle extends LayerBundle {
         mLayer.setName(Dict.TEMPORARY_CONTENT.toString());
         setCategorySystem(mLayer);
         setName(Dict.TEMPORARY_CONTENT.toString());
-        mLayer.setEnabled(true);
         mLayer.setPickEnabled(false);
         setParentLayer(mLayer);
     }

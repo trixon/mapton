@@ -74,7 +74,6 @@ public class WatermarkLayerBundle extends LayerBundle {
         setCategoryAddOns(mLayer);
         setParentLayer(mLayer);
 
-        mLayer.setEnabled(true);
         mLayer.setPickEnabled(false);
         mAttributes.setSize(SwingHelper.getUIScaledDim(3000, 0));
         mAttributes.setAdjustWidthToText(AVKey.SIZE_FIT_TEXT);

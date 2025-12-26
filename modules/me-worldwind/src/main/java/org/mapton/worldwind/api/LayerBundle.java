@@ -333,6 +333,7 @@ public abstract class LayerBundle {
         mParentLayer.addPropertyChangeListener("Enabled", pce -> {
             Mapton.getGlobalState().put(getClass().getCanonicalName() + "_Enabled", mParentLayer.isEnabled());
         });
+        mParentLayer.setEnabled(WWHelper.isStoredAsVisible(parentLayer, false));
     }
 
     public void setPopulated(boolean populated) {

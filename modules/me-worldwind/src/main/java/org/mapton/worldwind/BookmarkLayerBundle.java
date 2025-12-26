@@ -61,7 +61,6 @@ public class BookmarkLayerBundle extends LayerBundle {
         mLayer.setName(Dict.BOOKMARKS.toString());
         setCategorySystem(mLayer);
         setName(Dict.BOOKMARKS.toString());
-        mLayer.setEnabled(true);
         mLayer.setPickEnabled(true);
         setParentLayer(mLayer);
     }

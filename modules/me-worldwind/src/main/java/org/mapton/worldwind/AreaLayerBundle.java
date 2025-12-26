@@ -59,7 +59,6 @@ public class AreaLayerBundle extends LayerBundle {
         mLayer.setName(name);
         setCategorySystem(mLayer);
         setName(name);
-        mLayer.setEnabled(true);
         mLayer.setPickEnabled(true);
         setParentLayer(mLayer);
     }

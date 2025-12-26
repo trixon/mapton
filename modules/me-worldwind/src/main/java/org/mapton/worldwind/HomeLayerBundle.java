@@ -23,7 +23,6 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.value.ObservableValue;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
@@ -58,14 +57,14 @@ public class HomeLayerBundle extends LayerBundle {
     private void init() {
         mLayer.setName("Home symbol");
         setVisibleInLayerManager(mLayer, false);
-        mLayer.setEnabled(mDisplayHomeIconProperty.get());
         mLayer.setPickEnabled(false);
         setParentLayer(mLayer);
+        mLayer.setEnabled(mDisplayHomeIconProperty.get());
     }
 
     private void initListeners() {
-        mDisplayHomeIconProperty.addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
-            mLayer.setEnabled(t1);
+        mDisplayHomeIconProperty.addListener((p, o, n) -> {
+            mLayer.setEnabled(n);
         });
 
         mOptions.getPreferences().addPreferenceChangeListener(pce -> {
