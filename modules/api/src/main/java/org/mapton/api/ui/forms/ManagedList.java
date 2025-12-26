@@ -19,8 +19,6 @@ import com.sun.jna.platform.KeyboardUtils;
 import java.awt.event.KeyEvent;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
@@ -29,7 +27,7 @@ import org.mapton.api.MBaseDataManager;
 import org.mapton.api.Mapton;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.swing.DelayedResetRunner;
+import se.trixon.almond.util.fx.control.ListItemCountLabel;
 
 /**
  *
@@ -40,13 +38,11 @@ import se.trixon.almond.util.swing.DelayedResetRunner;
 public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
 
     private static Object sLastOfAnyObject;
-    private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(10, () -> {
-    });
-    private final Label mItemCountLabel = new Label();
     private long mLastSelection;
     private final ListView<ItemType> mListView = new ListView<>();
     private final MBaseDataManager mManager;
     private final BorderPane mRoot = new BorderPane();
+    private final ListItemCountLabel mListItemCountLabel = new ListItemCountLabel();
 
     public ManagedList(MBaseDataManager manager) {
         mManager = manager;
@@ -65,25 +61,23 @@ public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
 
     private void createUI() {
         mRoot.setCenter(mListView);
-        mRoot.setBottom(mItemCountLabel);
+        mRoot.setBottom(mListItemCountLabel);
 
         mListView.itemsProperty().bind(mManager.timeFilteredItemsProperty());
-        mItemCountLabel.setAlignment(Pos.BASELINE_RIGHT);
-        mItemCountLabel.prefWidthProperty().bind(mRoot.widthProperty());
+        mListItemCountLabel.prefWidthProperty().bind(mRoot.widthProperty());
+        mListItemCountLabel.init(mListView, mManager.getTimeFilteredItems(), mManager.getAllItems());
     }
 
     private void initListeners() {
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change c) -> {
             Platform.runLater(() -> {
                 mManager.restoreSelection();
-                updateLabel();
             });
         });
 
         mListView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
             if (needsUpdate()) {
                 mManager.setSelectedItem(n);
-                updateLabel();
                 if (KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
                     try {
                         Mapton.getEngine().panTo(mManager.getLatLonForItem(n));
@@ -131,19 +125,4 @@ public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
             mLastSelection = System.currentTimeMillis();
         }
     }
-
-    private void updateLabel() {
-        var index = mListView.getSelectionModel().getSelectedIndex();
-        var pos = "";
-        if (index != -1) {
-            pos = "@%d/".formatted(index + 1);
-        }
-
-        mItemCountLabel.setText("%s%d/%d".formatted(
-                pos,
-                mManager.getTimeFilteredItems().size(),
-                mManager.getAllItems().size()
-        ));
-    }
-
 }

@@ -16,6 +16,7 @@
 package org.mapton.core.api.ui;
 
 import com.dlsc.gemsfx.Spacer;
+import com.dlsc.gemsfx.util.SessionManager;
 import java.io.File;
 import java.util.Arrays;
 import java.util.prefs.BackingStoreException;
@@ -57,7 +58,6 @@ public class MPresetPopOver extends MPopOver {
     public static final String PARENT_NODE_OPTIONS = "optionPresets";
 
     protected EditableList<DefaultEditableListItem> mEditableList;
-    private String mFilterText;
     private final ObjectProperty<ObservableList<DefaultEditableListItem>> mItemsFilteredProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<ObservableList<DefaultEditableListItem>> mItemsRawProperty = new SimpleObjectProperty<>();
     private final Preferences mPreferences;
@@ -87,6 +87,9 @@ public class MPresetPopOver extends MPopOver {
         }
 
         initListeners();
+
+        var sessionManager = new SessionManager(mPreferences.parent());
+        sessionManager.register("storedFilter", mEditableList.filterTextProperty());
     }
 
     public boolean restoreDefaultIfExists() {
@@ -124,9 +127,9 @@ public class MPresetPopOver extends MPopOver {
                     getItemsRaw().remove(t);
                 })
                 .setOnFilter(s -> {
-                    mFilterText = s;
                     refreshFilteredItems();
                 })
+                .setWithFooter(true, getItemsRaw())
                 .build();
 
         mEditableList.setPrefSize(FxHelper.getUIScaled(250), FxHelper.getUIScaled(500));
@@ -182,6 +185,10 @@ public class MPresetPopOver extends MPopOver {
                 mPresetActions.presetRestore(mPreferences.node(n.getName()));
             }
         });
+
+        mEditableList.filterTextProperty().addListener((p, o, n) -> {
+            refreshFilteredItems();
+        });
     }
 
     private ObjectProperty<ObservableList<DefaultEditableListItem>> itemsFilteredProperty() {
@@ -193,11 +200,11 @@ public class MPresetPopOver extends MPopOver {
     }
 
     private void refreshFilteredItems() {
-        getItemsFiltered().setAll(
-                getItemsRaw().stream().filter(item -> {
-                    return StringHelper.matchesSimpleGlob(item.getName(), mFilterText, true, true);
-                }).toList()
-        );
+        var filteredItems = getItemsRaw().stream()
+                .filter(item -> StringHelper.matchesSimpleGlob(item.getName(), mEditableList.filterTextProperty().get(), true, true))
+                .toList();
+
+        getItemsFiltered().setAll(filteredItems);
     }
 
     private DefaultEditableListItem save(DefaultEditableListItem item) {
