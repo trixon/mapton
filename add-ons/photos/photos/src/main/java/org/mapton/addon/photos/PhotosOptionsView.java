@@ -17,27 +17,20 @@ package org.mapton.addon.photos;
 
 import java.util.List;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.ButtonBase;
+import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
-import javafx.scene.control.ComboBoxBase;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.GridPane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.addon.photos.api.Mapo;
-import org.mapton.addon.photos.api.MapoSettings.SplitBy;
-import org.mapton.api.Mapton;
 import org.mapton.core.api.ui.MPresetPopOver;
 import org.mapton.worldwind.api.MOptionsView;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.Dict.Time;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -52,25 +45,16 @@ public class PhotosOptionsView extends MOptionsView {
     private final ColorPicker mGapColorPicker = new ColorPicker();
     private final Mapo mMapo = Mapo.getInstance();
     private final PhotosOptions mOptions = PhotosOptions.getInstance();
-    private VBox mRoot;
-    private final RadioButton mSplitByDayRadioButton = new RadioButton(Dict.Time.DAY.toString());
-    private final RadioButton mSplitByHourRadioButton = new RadioButton(Dict.Time.HOUR.toString());
-    private final RadioButton mSplitByMonthRadioButton = new RadioButton(Dict.Time.MONTH.toString());
-    private final RadioButton mSplitByNoneRadioButton = new RadioButton(Dict.DO_NOT_SPLIT.toString());
-    private final RadioButton mSplitByWeekRadioButton = new RadioButton(Dict.Time.WEEK.toString());
-    private final RadioButton mSplitByYearRadioButton = new RadioButton(Dict.Time.YEAR.toString());
-    private final ToggleGroup mToggleGroup = new ToggleGroup();
+    private final MPresetPopOver mPresetPopOver;
+    private final ComboBox<String> mSplitByComboBox = new ComboBox();
     private final ColorPicker mTrackColorPicker = new ColorPicker();
     private final Spinner<Double> mWidthSpinner = new Spinner<>(1.0, 10.0, 1.0, 0.1);
-    private final MPresetPopOver mPresetPopOver;
 
     public PhotosOptionsView() {
         mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_OPTIONS, "photos");
         createUI();
 
         initSession();
-        load();
-        initListeners();
     }
 
     private void createUI() {
@@ -88,172 +72,142 @@ public class PhotosOptionsView extends MOptionsView {
         );
         createToolbar(actions);
 
-        mRoot = new VBox();
-        var trackBox = new VBox();
+        mSplitByComboBox.getItems().setAll(
+                Dict.DO_NOT_SPLIT.toString(),
+                Time.DAY.toString(),
+                Time.HOUR.toString(),
+                Time.MONTH.toString(),
+                Time.WEEK.toString(),
+                Time.YEAR.toString()
+        );
+        mSplitByComboBox.getSelectionModel().selectFirst();
+
+        var gp = createGridPane();
         var widthLabel = new Label(Dict.Geometry.WIDTH.toString());
         var splitByLabel = new Label(Dict.SPLIT_BY.toString());
         var gapColorLabel = new Label(mBundle.getString("colorGap"));
         var trackColorLabel = new Label(mBundle.getString("colorTrack"));
 
+        int row = 0;
+        gp.addRow(row++, mDrawTrackCheckBox, mDrawGapCheckBox);
+
+        var gp2 = createGridPane();
+        gp2.setPadding(Insets.EMPTY);
+        gp.add(gp2, 0, row++, GridPane.REMAINING, 1);
+
+        row = 0;
+        gp2.addRow(row++, trackColorLabel, gapColorLabel);
+        gp2.addRow(row++, mTrackColorPicker, mGapColorPicker);
+        gp2.addRow(row++, widthLabel, splitByLabel);
+        gp2.addRow(row++, mWidthSpinner, mSplitByComboBox);
+
         mWidthSpinner.setEditable(true);
         FxHelper.autoCommitSpinners(mWidthSpinner);
 
-        mSplitByHourRadioButton.setToggleGroup(mToggleGroup);
-        mSplitByDayRadioButton.setToggleGroup(mToggleGroup);
-        mSplitByWeekRadioButton.setToggleGroup(mToggleGroup);
-        mSplitByMonthRadioButton.setToggleGroup(mToggleGroup);
-        mSplitByYearRadioButton.setToggleGroup(mToggleGroup);
-        mSplitByNoneRadioButton.setToggleGroup(mToggleGroup);
-
-        trackBox.getChildren().addAll(
-                widthLabel,
-                mWidthSpinner,
+        FxHelper.bindCheckBoxEnablement(mDrawTrackCheckBox, trackColorLabel, mTrackColorPicker);
+        FxHelper.bindCheckBoxEnablement(mDrawGapCheckBox, gapColorLabel, mGapColorPicker);
+        gp2.disableProperty().bind(mDrawTrackCheckBox.selectedProperty().or(mDrawGapCheckBox.selectedProperty()).not());
+        setLabelPadding(
+                //                mDrawTrackCheckBox,
+                //                mDrawGapCheckBox,
                 trackColorLabel,
+                gapColorLabel,
+                widthLabel,
+                splitByLabel
+        );
+
+        FxHelper.autoSizeRegionHorizontal(
                 mTrackColorPicker,
-                gapColorLabel,
                 mGapColorPicker,
-                splitByLabel,
-                mSplitByHourRadioButton,
-                mSplitByDayRadioButton,
-                mSplitByWeekRadioButton,
-                mSplitByMonthRadioButton,
-                mSplitByYearRadioButton,
-                mSplitByNoneRadioButton
+                mSplitByComboBox
         );
 
-        trackBox.disableProperty().bind(mDrawTrackCheckBox.selectedProperty().or(mDrawGapCheckBox.selectedProperty()).not());
+        FxHelper.autoSizeColumn(gp, 2);
+        FxHelper.autoSizeColumn(gp2, 2);
 
-        mRoot.getChildren().addAll(
-                mDrawTrackCheckBox,
-                mDrawGapCheckBox,
-                trackBox
-        );
-
-        FxHelper.setPadding(
-                FxHelper.getUIScaledInsets(4, 0, 0, 0),
-                mDrawTrackCheckBox,
-                mDrawGapCheckBox,
-                widthLabel,
-                trackColorLabel,
-                gapColorLabel,
-                splitByLabel,
-                mSplitByHourRadioButton,
-                mSplitByDayRadioButton,
-                mSplitByWeekRadioButton,
-                mSplitByMonthRadioButton,
-                mSplitByYearRadioButton,
-                mSplitByNoneRadioButton
-        );
-
-        mRoot.setPadding(FxHelper.getUIScaledInsets(8));
-
-        setCenter(mRoot);
-    }
-
-    private void initListeners() {
-        EventHandler<ActionEvent> event = evt -> {
-            save();
-        };
-
-        initListeners(mRoot, event);
-        mWidthSpinner.valueProperty().addListener((ov, t, t1) -> {
-            event.handle(null);
-        });
-    }
-
-    @SuppressWarnings("unchecked")
-    private void initListeners(Pane pane, EventHandler<ActionEvent> event) {
-        for (var node : pane.getChildren()) {
-            if (node instanceof Pane pane2) {
-                initListeners(pane2, event);
-            } else if (node instanceof ButtonBase buttonBase) {
-                buttonBase.setOnAction(event);
-            } else if (node instanceof ComboBoxBase comboBoxBase) {
-                comboBoxBase.setOnAction(event);
-            }
-        }
+        setCenter(gp);
     }
 
     private void initSession() {
     }
 
-    private void load() {
-        var settings = mMapo.getSettings();
-
-        mDrawTrackCheckBox.setSelected(settings.isPlotTracks());
-        mDrawGapCheckBox.setSelected(settings.isPlotGaps());
-        mWidthSpinner.getValueFactory().setValue(settings.getWidth());
-
-        var colorTrack = Color.RED;
-        try {
-            colorTrack = FxHelper.colorFromHexRGBA(settings.getColorTrack());
-        } catch (Exception e) {
-        }
-        mTrackColorPicker.setValue(colorTrack);
-
-        var colorGap = Color.BLACK;
-        try {
-            colorGap = FxHelper.colorFromHexRGBA(settings.getColorGap());
-        } catch (Exception e) {
-        }
-        mGapColorPicker.setValue(colorGap);
-
-        RadioButton splitByRadioButton;
-
-        switch (settings.getSplitBy()) {
-            case HOUR ->
-                splitByRadioButton = mSplitByHourRadioButton;
-
-            case DAY ->
-                splitByRadioButton = mSplitByDayRadioButton;
-
-            case WEEK ->
-                splitByRadioButton = mSplitByWeekRadioButton;
-
-            case MONTH ->
-                splitByRadioButton = mSplitByMonthRadioButton;
-
-            case YEAR ->
-                splitByRadioButton = mSplitByYearRadioButton;
-
-            case NONE ->
-                splitByRadioButton = mSplitByNoneRadioButton;
-
-            default ->
-                throw new AssertionError();
-        }
-
-        splitByRadioButton.setSelected(true);
-    }
-
-    private void save() {
-        var settings = mMapo.getSettings();
-        settings.setPlotTracks(mDrawTrackCheckBox.isSelected());
-        settings.setPlotGaps(mDrawGapCheckBox.isSelected());
-        settings.setWidth(mWidthSpinner.getValue());
-        settings.setColorGap(FxHelper.colorToHexRGB(mGapColorPicker.getValue()));
-        settings.setColorTrack(FxHelper.colorToHexRGB(mTrackColorPicker.getValue()));
-
-        SplitBy splitBy = null;
-        var toggle = mToggleGroup.getSelectedToggle();
-
-        if (toggle == mSplitByHourRadioButton) {
-            splitBy = SplitBy.HOUR;
-        } else if (toggle == mSplitByDayRadioButton) {
-            splitBy = SplitBy.DAY;
-        } else if (toggle == mSplitByWeekRadioButton) {
-            splitBy = SplitBy.WEEK;
-        } else if (toggle == mSplitByMonthRadioButton) {
-            splitBy = SplitBy.MONTH;
-        } else if (toggle == mSplitByYearRadioButton) {
-            splitBy = SplitBy.YEAR;
-        } else if (toggle == mSplitByNoneRadioButton) {
-            splitBy = SplitBy.NONE;
-        }
-
-        settings.setSplitBy(splitBy);
-
-        mOptions.put(PhotosOptions.KEY_SETTINGS, Mapo.getGson().toJson(settings));
-        Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, settings);
-    }
+//    private void load() {
+//        var settings = mMapo.getSettings();
+//
+//        mDrawTrackCheckBox.setSelected(settings.isPlotTracks());
+//        mDrawGapCheckBox.setSelected(settings.isPlotGaps());
+//        mWidthSpinner.getValueFactory().setValue(settings.getWidth());
+//
+//        var colorTrack = Color.RED;
+//        try {
+//            colorTrack = FxHelper.colorFromHexRGBA(settings.getColorTrack());
+//        } catch (Exception e) {
+//        }
+//        mTrackColorPicker.setValue(colorTrack);
+//
+//        var colorGap = Color.BLACK;
+//        try {
+//            colorGap = FxHelper.colorFromHexRGBA(settings.getColorGap());
+//        } catch (Exception e) {
+//        }
+//        mGapColorPicker.setValue(colorGap);
+//
+//        RadioButton splitByRadioButton;
+//
+//        switch (settings.getSplitBy()) {
+//            case HOUR ->
+//                splitByRadioButton = mSplitByHourRadioButton;
+//
+//            case DAY ->
+//                splitByRadioButton = mSplitByDayRadioButton;
+//
+//            case WEEK ->
+//                splitByRadioButton = mSplitByWeekRadioButton;
+//
+//            case MONTH ->
+//                splitByRadioButton = mSplitByMonthRadioButton;
+//
+//            case YEAR ->
+//                splitByRadioButton = mSplitByYearRadioButton;
+//
+//            case NONE ->
+//                splitByRadioButton = mSplitByNoneRadioButton;
+//
+//            default ->
+//                throw new AssertionError();
+//        }
+//
+//        splitByRadioButton.setSelected(true);
+//    }
+//
+//    private void save() {
+//        var settings = mMapo.getSettings();
+//        settings.setPlotTracks(mDrawTrackCheckBox.isSelected());
+//        settings.setPlotGaps(mDrawGapCheckBox.isSelected());
+//        settings.setWidth(mWidthSpinner.getValue());
+//        settings.setColorGap(FxHelper.colorToHexRGB(mGapColorPicker.getValue()));
+//        settings.setColorTrack(FxHelper.colorToHexRGB(mTrackColorPicker.getValue()));
+//
+//        SplitBy splitBy = null;
+//        var toggle = mToggleGroup.getSelectedToggle();
+//
+//        if (toggle == mSplitByHourRadioButton) {
+//            splitBy = SplitBy.HOUR;
+//        } else if (toggle == mSplitByDayRadioButton) {
+//            splitBy = SplitBy.DAY;
+//        } else if (toggle == mSplitByWeekRadioButton) {
+//            splitBy = SplitBy.WEEK;
+//        } else if (toggle == mSplitByMonthRadioButton) {
+//            splitBy = SplitBy.MONTH;
+//        } else if (toggle == mSplitByYearRadioButton) {
+//            splitBy = SplitBy.YEAR;
+//        } else if (toggle == mSplitByNoneRadioButton) {
+//            splitBy = SplitBy.NONE;
+//        }
+//
+//        settings.setSplitBy(splitBy);
+//
+//        mOptions.put(PhotosOptions.KEY_SETTINGS, Mapo.getGson().toJson(settings));
+//        Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, settings);
+//    }
 }
