@@ -116,17 +116,17 @@ public class SourceView extends VBox {
         mLinksCheckBox = new CheckBox(Dict.FOLLOW_LINKS.toString());
         mRecursiveCheckBox = new CheckBox(Dict.SUBDIRECTORIES.toString());
         mSourceChooser = new FileChooserPaneSwingFx(Dict.SELECT.toString(), Dict.IMAGE_DIRECTORY.toString(), Almond.getFrame(), JFileChooser.DIRECTORIES_ONLY);
-        mThumnailForceCreation = new CheckBox(mBundle.getString("TabSource.forceThumbnail"));
+        mThumnailForceCreation = new CheckBox(mBundle.getString("forceThumbnail"));
 
         var nameLabel = new Label(Dict.NAME.toString());
         var descLabel = new Label(Dict.DESCRIPTION.toString());
         var filePatternLabel = new Label(Dict.FILE_PATTERN.toString());
-        var excludeLabel = new Label(mBundle.getString("TabSource.excludeLabel"));
+        var excludeLabel = new Label(mBundle.getString("excludeLabel"));
         var thumbnailLabel = new Label(Dict.IMAGE_SIZE.toString());
-        var borderSizeLabel = new Label(mBundle.getString("TabSource.borderSizeLabel"));
+        var borderSizeLabel = new Label(mBundle.getString("borderSizeLabel"));
         var colorLabel = new Label(Dict.COLOR.toString());
 
-        mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("TabSource.excludeTextField.toolTip")));
+        mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("excludeTextField.toolTip")));
 
         mColorPicker = new ColorPicker();
         mThumbnailBorderSizeSpinner = new Spinner<>(0, 20, 2, 1);

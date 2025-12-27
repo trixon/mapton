@@ -38,7 +38,6 @@ import org.mapton.addon.photos.api.Mapo;
 import org.mapton.addon.photos.api.MapoSettings;
 import org.mapton.addon.photos.api.MapoSettings.SplitBy;
 import org.mapton.addon.photos.api.MapoSourceManager;
-import org.mapton.addon.photos.ui.OptionsView;
 import org.mapton.api.MKey;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.MTemporalRange;
@@ -62,7 +61,7 @@ public class PhotosLayerBundle extends LayerBundle {
     private final IconLayer mLayer = new IconLayer();
     private final ArrayList<LineNode> mLineNodes = new ArrayList<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
-    private OptionsView mOptionsView;
+    private PhotosOptionsView mOptionsView;
     private final RenderableLayer mRenderableLayer = new RenderableLayer();
     private MapoSettings mSettings;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
@@ -77,10 +76,10 @@ public class PhotosLayerBundle extends LayerBundle {
     @Override
     public Node getOptionsView() {
         if (mOptionsView == null) {
-            mOptionsView = new OptionsView();
+            mOptionsView = new PhotosOptionsView();
         }
 
-        return mOptionsView;
+        return mOptionsView.getUI();
     }
 
     @Override

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.photos.ui;
+package org.mapton.addon.photos;
 
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -26,14 +27,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import org.mapton.addon.photos.Options;
+import org.controlsfx.control.action.ActionUtils;
 import org.mapton.addon.photos.api.Mapo;
 import org.mapton.addon.photos.api.MapoSettings.SplitBy;
 import org.mapton.api.Mapton;
+import org.mapton.core.api.ui.MPresetPopOver;
+import org.mapton.worldwind.api.MOptionsView;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -42,14 +44,14 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class OptionsView extends BorderPane {
+public class PhotosOptionsView extends MOptionsView {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(OptionsView.class);
-    private final CheckBox mDrawGapCheckBox = new CheckBox(mBundle.getString("TabPath.drawGapCheckBox"));
-    private final CheckBox mDrawTrackCheckBox = new CheckBox(mBundle.getString("TabPath.drawTrackCheckBox"));
+    private final ResourceBundle mBundle = NbBundle.getBundle(PhotosOptionsView.class);
+    private final CheckBox mDrawGapCheckBox = new CheckBox(mBundle.getString("drawGapCheckBox"));
+    private final CheckBox mDrawTrackCheckBox = new CheckBox(mBundle.getString("drawTrackCheckBox"));
     private final ColorPicker mGapColorPicker = new ColorPicker();
     private final Mapo mMapo = Mapo.getInstance();
-    private final Options mOptions = Options.getInstance();
+    private final PhotosOptions mOptions = PhotosOptions.getInstance();
     private VBox mRoot;
     private final RadioButton mSplitByDayRadioButton = new RadioButton(Dict.Time.DAY.toString());
     private final RadioButton mSplitByHourRadioButton = new RadioButton(Dict.Time.HOUR.toString());
@@ -60,21 +62,38 @@ public class OptionsView extends BorderPane {
     private final ToggleGroup mToggleGroup = new ToggleGroup();
     private final ColorPicker mTrackColorPicker = new ColorPicker();
     private final Spinner<Double> mWidthSpinner = new Spinner<>(1.0, 10.0, 1.0, 0.1);
+    private final MPresetPopOver mPresetPopOver;
 
-    public OptionsView() {
+    public PhotosOptionsView() {
+        mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_OPTIONS, "photos");
         createUI();
 
+        initSession();
         load();
         initListeners();
     }
 
     private void createUI() {
+        var restoreDefaultsRunnable = (Runnable) () -> {
+            if (mPresetPopOver.restoreDefaultIfExists()) {
+                //
+            } else {
+                mOptions.reset();
+            }
+        };
+        var actions = List.of(
+                getRestoreDefaultsAction(restoreDefaultsRunnable),
+                ActionUtils.ACTION_SPAN,
+                mPresetPopOver.getAction()
+        );
+        createToolbar(actions);
+
         mRoot = new VBox();
         var trackBox = new VBox();
         var widthLabel = new Label(Dict.Geometry.WIDTH.toString());
         var splitByLabel = new Label(Dict.SPLIT_BY.toString());
-        var gapColorLabel = new Label(mBundle.getString("TabPath.colorGap"));
-        var trackColorLabel = new Label(mBundle.getString("TabPath.colorTrack"));
+        var gapColorLabel = new Label(mBundle.getString("colorGap"));
+        var trackColorLabel = new Label(mBundle.getString("colorTrack"));
 
         mWidthSpinner.setEditable(true);
         FxHelper.autoCommitSpinners(mWidthSpinner);
@@ -155,6 +174,9 @@ public class OptionsView extends BorderPane {
         }
     }
 
+    private void initSession() {
+    }
+
     private void load() {
         var settings = mMapo.getSettings();
 
@@ -231,7 +253,7 @@ public class OptionsView extends BorderPane {
 
         settings.setSplitBy(splitBy);
 
-        mOptions.put(Options.KEY_SETTINGS, Mapo.getGson().toJson(settings));
+        mOptions.put(PhotosOptions.KEY_SETTINGS, Mapo.getGson().toJson(settings));
         Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, settings);
     }
 }
