@@ -16,11 +16,9 @@
 package org.mapton.addon.photos.ui;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
@@ -43,7 +41,6 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -56,7 +53,6 @@ public class SourcesPane extends BorderPane {
     private List<Action> mActions;
     private final CheckListView<MapoSource> mListView = new CheckListView<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
-    private final Mapo mMapo = Mapo.getInstance();
     private Action mRefreshAction;
     private Button mRefreshButton;
     private Thread mRefreshThread;
@@ -69,15 +65,17 @@ public class SourcesPane extends BorderPane {
         initListeners();
         Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, mManager);
 
-        new Thread(() -> {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException ex) {
-                Exceptions.printStackTrace(ex);
-                Thread.currentThread().interrupt();
-            }
-            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
-        }, getClass().getCanonicalName()).start();
+//        new Thread(() -> {
+//            try {
+//                Thread.sleep(5000);
+//            } catch (InterruptedException ex) {
+//                Exceptions.printStackTrace(ex);
+//                Thread.currentThread().interrupt();
+//            }
+
+
+    ////            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
+//        }, getClass().getCanonicalName()).start();
     }
 
     private void createUI() {
@@ -185,23 +183,12 @@ public class SourcesPane extends BorderPane {
 
                 mTemporalManager.refresh();
                 Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, mManager);
-                Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
             });
         });
 
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+        Mapton.getGlobalState().addListener(gsce -> {
             refreshTemporal();
         }, Mapo.KEY_SOURCE_UPDATED);
-
-        mTemporalManager.lowDateProperty().addListener((ObservableValue<? extends LocalDate> ov, LocalDate t, LocalDate t1) -> {
-            mMapo.getSettings().setLowDate(t1);
-            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
-        });
-
-        mTemporalManager.highDateProperty().addListener((ObservableValue<? extends LocalDate> ov, LocalDate t, LocalDate t1) -> {
-            mMapo.getSettings().setHighDate(t1);
-            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
-        });
     }
 
     private void refreshCheckedStates() {

@@ -35,8 +35,6 @@ import javafx.scene.Node;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.mapton.addon.photos.api.Mapo;
-import org.mapton.addon.photos.api.MapoSettings;
-import org.mapton.addon.photos.api.MapoSettings.SplitBy;
 import org.mapton.addon.photos.api.MapoSourceManager;
 import org.mapton.api.MKey;
 import org.mapton.api.MTemporalManager;
@@ -63,9 +61,9 @@ public class PhotosLayerBundle extends LayerBundle {
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
     private PhotosOptionsView mOptionsView;
     private final RenderableLayer mRenderableLayer = new RenderableLayer();
-    private MapoSettings mSettings;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
     private ConcurrentHashMap<String, MTemporalRange> mTemporalRanges;
+    private final PhotosOptions mOptions = PhotosOptions.getInstance();
 
     public PhotosLayerBundle() {
         init();
@@ -92,48 +90,28 @@ public class PhotosLayerBundle extends LayerBundle {
         return "%s#%s".formatted(category, value);
     }
 
-    private String getPattern(SplitBy splitBy) {
-        return switch (splitBy) {
-            case NONE ->
-                "'NO_SPLIT'";
-            case HOUR ->
-                "yyyyMMddHH";
-            case DAY ->
-                "yyyyMMdd";
-            case WEEK ->
-                "yyyyww";
-            case MONTH ->
-                "yyyyMM";
-            case YEAR ->
-                "yyyy";
-            default ->
-                null;
-        };
-    }
-
     private void init() {
+        setName(Dict.PHOTOS.toString());
         mLayer.setName(Dict.PHOTOS.toString());
         setCategoryAddOns(mLayer);
         attachTopComponentToLayer("PhotosTopComponent", mLayer);
 
         mRenderableLayer.setPickEnabled(false);
 
-        setName(Dict.PHOTOS.toString());
-
         setParentLayer(mLayer);
         setAllChildLayers(mRenderableLayer);
     }
 
     private void initListeners() {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+            resetPaintDelayedResetRunner();
+        });
+
         var globalState = Mapton.getGlobalState();
-        globalState.addListener(gsce -> {
-            repaint();
-        }, Mapo.KEY_MAPO);
 
         globalState.addListener(gsce -> {
-            mSettings = gsce.getValue();
-            repaint();
-        }, Mapo.KEY_SETTINGS_UPDATED);
+            resetPaintDelayedResetRunner();
+        }, Mapo.KEY_SOURCE_UPDATED);
 
         mLayer.addPropertyChangeListener("Enabled", pce -> {
             if (mLayer.isEnabled()) {
@@ -143,11 +121,15 @@ public class PhotosLayerBundle extends LayerBundle {
                 mTemporalRanges = mTemporalManager.getAndRemoveSubSet(Mapo.KEY_TEMPORAL_PREFIX);
             }
         });
+
+        mTemporalManager.dateChangedProperty().addListener((p, o, n) -> {
+            resetPaintDelayedResetRunner();
+        });
     }
 
     private void initRepaint() {
         setPainter(() -> {
-            if (!mLayer.isEnabled() || mSettings == null) {
+            if (!mLayer.isEnabled()) {
                 return;
             }
 
@@ -225,21 +207,21 @@ public class PhotosLayerBundle extends LayerBundle {
         var trackAttributes = new BasicShapeAttributes();
         trackAttributes.setDrawOutline(true);
         trackAttributes.setOutlineOpacity(0.8);
-        trackAttributes.setOutlineWidth(mSettings.getWidth());
-        trackAttributes.setOutlineMaterial(new Material(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(mSettings.getColorTrack()))));
+        trackAttributes.setOutlineWidth(mOptions.getWidth());
+        trackAttributes.setOutlineMaterial(new Material(FxHelper.colorToColor(mOptions.getTrackColor())));
 
         var gapAttributes = (BasicShapeAttributes) trackAttributes.copy();
-        gapAttributes.setOutlineMaterial(new Material(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(mSettings.getColorGap()))));
+        gapAttributes.setOutlineMaterial(new Material(FxHelper.colorToColor(mOptions.getGapColor())));
 
         Collections.sort(mLineNodes, Comparator.comparing(LineNode::getDate));
-        var dateFormat = FastDateFormat.getInstance(getPattern(mSettings.getSplitBy()));
+        var dateFormat = FastDateFormat.getInstance(mOptions.getSplitBy().getPattern());
         var periodLineNodeMap = new TreeMap<String, ArrayList<LineNode>>();
 
         mLineNodes.forEach(node -> {
             periodLineNodeMap.computeIfAbsent(dateFormat.format(node.getDate()), k -> new ArrayList<>()).add(node);
         });
 
-        if (mSettings.isPlotTracks()) {
+        if (mOptions.isPlotTrack()) {
             //Add track
             for (var nodes : periodLineNodeMap.values()) {
                 if (nodes.size() > 1) {
@@ -254,7 +236,7 @@ public class PhotosLayerBundle extends LayerBundle {
             }
         }
 
-        if (mSettings.isPlotGaps()) {
+        if (mOptions.isPlotGap()) {
             //Add gap
             ArrayList<LineNode> previousNodes = null;
             for (var nodes : periodLineNodeMap.values()) {

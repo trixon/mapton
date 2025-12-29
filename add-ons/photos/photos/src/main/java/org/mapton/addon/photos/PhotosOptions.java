@@ -17,9 +17,19 @@ package org.mapton.addon.photos;
 
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.prefs.Preferences;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.StringProperty;
+import javafx.scene.paint.Color;
+import org.mapton.addon.photos.api.SplitBy;
 import org.mapton.api.ui.MPresetActions;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.OptionsBase;
+import se.trixon.almond.util.fx.BindingHelper;
 
 /**
  *
@@ -27,7 +37,19 @@ import se.trixon.almond.util.OptionsBase;
  */
 public class PhotosOptions extends OptionsBase implements MPresetActions {
 
-    public static final String KEY_SETTINGS = "settings";
+    public static final Color DEFAULT_GAP_COLOR = Color.BLACK;
+    public static final boolean DEFAULT_PLOT_GAP = true;
+    public static final boolean DEFAULT_PLOT_TRACK = true;
+    public static final SplitBy DEFAULT_SPLIT_BY = SplitBy.MONTH;
+    public static final Color DEFAULT_TRACK_COLOR = Color.RED;
+    public static final double DEFAULT_WIDTH = 2.0;
+    private final ObjectProperty<Color> mGapColorProperty = new SimpleObjectProperty<>(DEFAULT_GAP_COLOR);
+    private final BooleanProperty mPlotGapProperty = new SimpleBooleanProperty(DEFAULT_PLOT_GAP);
+    private final BooleanProperty mPlotTrackProperty = new SimpleBooleanProperty(DEFAULT_PLOT_TRACK);
+    private final ObjectProperty<SplitBy> mSplitByProperty = new SimpleObjectProperty<>(DEFAULT_SPLIT_BY);
+    private StringProperty mSplitByProxyProperty = BindingHelper.createStringEnumProxyProperty(mSplitByProperty, SplitBy.class);
+    private final ObjectProperty<Color> mTrackColorProperty = new SimpleObjectProperty<>(DEFAULT_TRACK_COLOR);
+    private final DoubleProperty mWidthProperty = new SimpleDoubleProperty(DEFAULT_WIDTH);
 
     public static PhotosOptions getInstance() {
         return Holder.INSTANCE;
@@ -37,14 +59,52 @@ public class PhotosOptions extends OptionsBase implements MPresetActions {
         setPreferences(NbPreferences.forModule(PhotosOptions.class));
     }
 
-    @Override
-    public void initSession(SessionManager sessionManager) {
-//        sessionManager.register("opacity", mOpacityProperty);
+    public ObjectProperty<Color> gapColorProperty() {
+        return mGapColorProperty;
     }
 
-//    public DoubleProperty opacityProperty() {
-//        return mOpacityProperty;
-//    }
+    public Color getGapColor() {
+        return mGapColorProperty.get();
+    }
+
+    public SplitBy getSplitBy() {
+        return mSplitByProperty.get();
+    }
+
+    public Color getTrackColor() {
+        return mTrackColorProperty.get();
+    }
+
+    public double getWidth() {
+        return mWidthProperty.get();
+    }
+
+    @Override
+    public void initSession(SessionManager sessionManager) {
+        sessionManager.register("plotTrack", mPlotTrackProperty);
+        sessionManager.register("plotGap", mPlotGapProperty);
+        sessionManager.register("width", mWidthProperty);
+        sessionManager.register("gapColor", mGapColorProperty);
+        sessionManager.register("trackColor", mTrackColorProperty);
+        sessionManager.register("splitBy", mSplitByProxyProperty);
+    }
+
+    public boolean isPlotGap() {
+        return mPlotGapProperty.get();
+    }
+
+    public boolean isPlotTrack() {
+        return mPlotTrackProperty.get();
+    }
+
+    public BooleanProperty plotGapProperty() {
+        return mPlotGapProperty;
+    }
+
+    public BooleanProperty plotTrackProperty() {
+        return mPlotTrackProperty;
+    }
+
     @Override
     public void presetRestore(Preferences preferences) {
         presetStore(preferences);
@@ -57,7 +117,24 @@ public class PhotosOptions extends OptionsBase implements MPresetActions {
     }
 
     public void reset() {
-//        mOpacityProperty.set(DEFAULT_OPACITY);
+        mPlotGapProperty.set(DEFAULT_PLOT_GAP);
+        mPlotTrackProperty.set(DEFAULT_PLOT_TRACK);
+        mWidthProperty.set(DEFAULT_WIDTH);
+        mSplitByProperty.set(DEFAULT_SPLIT_BY);
+        mGapColorProperty.set(DEFAULT_GAP_COLOR);
+        mTrackColorProperty.set(DEFAULT_TRACK_COLOR);
+    }
+
+    public ObjectProperty<SplitBy> splitByProperty() {
+        return mSplitByProperty;
+    }
+
+    public ObjectProperty<Color> trackColorProperty() {
+        return mTrackColorProperty;
+    }
+
+    public DoubleProperty widthProperty() {
+        return mWidthProperty;
     }
 
     private static class Holder {

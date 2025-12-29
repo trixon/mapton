@@ -17,7 +17,6 @@ package org.mapton.addon.photos.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.mapton.addon.photos.PhotosOptions;
 
 /**
  *
@@ -25,8 +24,6 @@ import org.mapton.addon.photos.PhotosOptions;
  */
 public class Mapo {
 
-    public static final String KEY_MAPO = "mapo";
-    public static final String KEY_SETTINGS_UPDATED = "photos.settings_updated";
     public static final String KEY_SOURCE_UPDATED = "photos.source_updated";
     public static final String KEY_TEMPORAL_PREFIX = "org.mapton.addon.mapollage.";
 
@@ -35,8 +32,6 @@ public class Mapo {
             .serializeNulls()
             .setPrettyPrinting()
             .create();
-    private final PhotosOptions mOptions = PhotosOptions.getInstance();
-    private MapoSettings mSettings = new MapoSettings();
 
     public static Gson getGson() {
         return sGson;
@@ -47,11 +42,6 @@ public class Mapo {
     }
 
     private Mapo() {
-        mSettings = getGson().fromJson(mOptions.get(PhotosOptions.KEY_SETTINGS, getGson().toJson(new MapoSettings())), MapoSettings.class);
-    }
-
-    public MapoSettings getSettings() {
-        return mSettings;
     }
 
     private static class Holder {
