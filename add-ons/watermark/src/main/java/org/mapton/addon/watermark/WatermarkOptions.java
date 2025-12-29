@@ -16,12 +16,14 @@
 package org.mapton.addon.watermark;
 
 import com.dlsc.gemsfx.util.SessionManager;
-import java.awt.Color;
 import java.util.prefs.Preferences;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.paint.Color;
 import org.mapton.api.ui.MPresetActions;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.OptionsBase;
@@ -34,16 +36,16 @@ import se.trixon.almond.util.fx.FxHelper;
 public class WatermarkOptions extends OptionsBase implements MPresetActions {
 
     public static final double DEFAULT_BORDER_SIZE = FxHelper.getUIScaled(0);
-    public static final String DEFAULT_COLOR_BACKGROUND = "000000FF";
-    public static final String DEFAULT_COLOR_BORDER = "FFFFFFFF";
-    public static final String DEFAULT_COLOR_FONT = "808080FF";
+    public static final Color DEFAULT_COLOR_BACKGROUND = Color.BLACK;
+    public static final Color DEFAULT_COLOR_BORDER = Color.WHITE;
+    public static final Color DEFAULT_COLOR_FONT = Color.GRAY;
     public static final double DEFAULT_FONT_SIZE = FxHelper.getUIScaled(14);
     public static final double DEFAULT_OPACITY = 0.5;
     public static final String DEFAULT_PATTERN = "yyyy-MM-dd HH.mm.ss";
-    private final StringProperty mBackgroundColorProperty = new SimpleStringProperty(DEFAULT_COLOR_BACKGROUND);
-    private final StringProperty mBorderColorProperty = new SimpleStringProperty(DEFAULT_COLOR_BORDER);
+    private final ObjectProperty<Color> mBackgroundColorProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BACKGROUND);
+    private final ObjectProperty<Color> mBorderColorProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BORDER);
     private final DoubleProperty mBorderSizeProperty = new SimpleDoubleProperty(DEFAULT_BORDER_SIZE);
-    private final StringProperty mFontColorProperty = new SimpleStringProperty(DEFAULT_COLOR_FONT);
+    private final ObjectProperty<Color> mFontColorProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_FONT);
     private final DoubleProperty mFontSizeProperty = new SimpleDoubleProperty(DEFAULT_FONT_SIZE);
     private final DoubleProperty mOpacityProperty = new SimpleDoubleProperty(DEFAULT_OPACITY);
     private final StringProperty mPatternProperty = new SimpleStringProperty(DEFAULT_PATTERN);
@@ -56,11 +58,11 @@ public class WatermarkOptions extends OptionsBase implements MPresetActions {
         setPreferences(NbPreferences.forModule(WatermarkOptions.class));
     }
 
-    public StringProperty backgroundColorProperty() {
+    public ObjectProperty<Color> backgroundColorProperty() {
         return mBackgroundColorProperty;
     }
 
-    public StringProperty borderColorProperty() {
+    public ObjectProperty<Color> borderColorProperty() {
         return mBorderColorProperty;
     }
 
@@ -68,7 +70,7 @@ public class WatermarkOptions extends OptionsBase implements MPresetActions {
         return mBorderSizeProperty;
     }
 
-    public StringProperty fontColorProperty() {
+    public ObjectProperty<Color> fontColorProperty() {
         return mFontColorProperty;
     }
 
@@ -76,20 +78,20 @@ public class WatermarkOptions extends OptionsBase implements MPresetActions {
         return mFontSizeProperty;
     }
 
-    public Color getBackgroundColor() {
-        return FxHelper.colorToColor(FxHelper.colorFromHexRGBA(mBackgroundColorProperty.get()));
+    public java.awt.Color getBackgroundColor() {
+        return FxHelper.colorToColor(mBackgroundColorProperty.get());
     }
 
-    public Color getBorderColor() {
-        return FxHelper.colorToColor(FxHelper.colorFromHexRGBA(mBorderColorProperty.get()));
+    public java.awt.Color getBorderColor() {
+        return FxHelper.colorToColor(mBorderColorProperty.get());
     }
 
     public double getBorderSize() {
         return mBorderSizeProperty.get();
     }
 
-    public Color getFontColor() {
-        return FxHelper.colorToColor(FxHelper.colorFromHexRGBA(mFontColorProperty.get()));
+    public java.awt.Color getFontColor() {
+        return FxHelper.colorToColor(mFontColorProperty.get());
     }
 
     public int getFontSize() {
@@ -142,13 +144,6 @@ public class WatermarkOptions extends OptionsBase implements MPresetActions {
         mBackgroundColorProperty.set(DEFAULT_COLOR_BACKGROUND);
         mBorderColorProperty.set(DEFAULT_COLOR_BORDER);
         mBorderSizeProperty.set(DEFAULT_BORDER_SIZE);
-    }
-
-    private SessionManager initSession(Preferences preferences) {
-        var sessionManager = new SessionManager(preferences);
-        initSession(sessionManager);
-
-        return sessionManager;
     }
 
     private static class Holder {

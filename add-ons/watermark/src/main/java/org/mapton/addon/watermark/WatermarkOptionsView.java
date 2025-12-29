@@ -16,15 +16,12 @@
 package org.mapton.addon.watermark;
 
 import java.util.List;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.addon.watermark.WatermarkOptions.*;
 import org.mapton.core.api.ui.MPresetPopOver;
@@ -111,7 +108,7 @@ public class WatermarkOptionsView extends MOptionsView {
                 mBorderSizeSlider
         );
 
-        FxHelper.setPadding(FxHelper.getUIScaledInsets(6, 0, 0, 0),
+        setLabelPadding(
                 opacityLabel,
                 fontSizeLabel,
                 fontColorLabel,
@@ -126,31 +123,12 @@ public class WatermarkOptionsView extends MOptionsView {
     }
 
     private void initSession() {
-        loadAndBind(mBorderColorPicker, mOptions.borderColorProperty());
-        loadAndBind(mFontColorPicker, mOptions.fontColorProperty());
-        loadAndBind(mBackgroundColorPicker, mOptions.backgroundColorProperty());
-
+        mBorderColorPicker.valueProperty().bindBidirectional(mOptions.borderColorProperty());
+        mBackgroundColorPicker.valueProperty().bindBidirectional(mOptions.backgroundColorProperty());
+        mFontColorPicker.valueProperty().bindBidirectional(mOptions.fontColorProperty());
         mPatternComboBox.getEditor().textProperty().bindBidirectional(mOptions.patternProperty());
         mOpacitySlider.valueProperty().bindBidirectional(mOptions.opacityProperty());
         mFontSizeSlider.valueProperty().bindBidirectional(mOptions.fontSizeProperty());
         mBorderSizeSlider.valueProperty().bindBidirectional(mOptions.borderSizeProperty());
     }
-
-    private void loadAndBind(ColorPicker colorPicker, StringProperty colorStringProperty) {
-        colorPicker.setValue(Color.web(colorStringProperty.get()));
-        var valueAsStringProperty = new SimpleStringProperty(FxHelper.colorToHexRGBA(colorPicker.getValue()));
-        valueAsStringProperty.bindBidirectional(colorStringProperty);
-        colorPicker.setOnAction(event -> {
-            colorStringProperty.set(FxHelper.colorToHexRGBA(colorPicker.getValue()));
-        });
-
-        colorStringProperty.addListener((p, o, n) -> {
-            try {
-                colorPicker.setValue(Color.web(n));
-            } catch (IllegalArgumentException e) {
-                System.err.println(e);
-            }
-        });
-    }
-
 }
