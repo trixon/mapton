@@ -138,8 +138,15 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
             applyFilter();
         });
 
-        selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            sendObjectProperties(newValue);
+        selectedItemProperty().addListener((p, o, n) -> {
+            sendObjectProperties(n);
+
+            if (n != null) {
+                var latLon = MBookmark.createLatLon(n);
+                var text = "%s\n\n%s\n%s".formatted(n.getName(), n.getCategory(), n.getDescription());
+                var annotation = new MAnnotation(latLon, text, "poi");
+                Mapton.getGlobalState().put("annotation", annotation);
+            }
         });
 
         MBookmarkManager.getInstance().getAllItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {

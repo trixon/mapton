@@ -27,17 +27,17 @@ import se.trixon.almond.util.OptionsBase;
  *
  * @author Patrik Karlström
  */
-public class BackgroundImageOptions extends OptionsBase implements MPresetActions {
+public class AnnotationsOptions extends OptionsBase implements MPresetActions {
 
     public static final double DEFAULT_OPACITY = 0.9;
     private final DoubleProperty mOpacityProperty = new SimpleDoubleProperty(DEFAULT_OPACITY);
 
-    public static BackgroundImageOptions getInstance() {
+    public static AnnotationsOptions getInstance() {
         return Holder.INSTANCE;
     }
 
-    private BackgroundImageOptions() {
-        setPreferences(NbPreferences.forModule(BackgroundImageOptions.class).node("backgroundImage"));
+    private AnnotationsOptions() {
+        setPreferences(NbPreferences.forModule(AnnotationsOptions.class).node("annotations"));
     }
 
     public double getOpacity() {
@@ -70,6 +70,6 @@ public class BackgroundImageOptions extends OptionsBase implements MPresetAction
 
     private static class Holder {
 
-        private static final BackgroundImageOptions INSTANCE = new BackgroundImageOptions();
+        private static final AnnotationsOptions INSTANCE = new AnnotationsOptions();
     }
 }
