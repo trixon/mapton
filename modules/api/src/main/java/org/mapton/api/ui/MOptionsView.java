@@ -24,6 +24,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -122,6 +123,12 @@ public abstract class MOptionsView {
     public void setCenter(Node node) {
         mScrollPane.setContent(node);
         mBorderPane.setCenter(mScrollPane);
+    }
+
+    public void setLabelPadding(Region... regions) {
+        FxHelper.setPadding(FxHelper.getUIScaledInsets(6, 0, 0, 0),
+                regions
+        );
     }
 
     public void setTop(Node node) {

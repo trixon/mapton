@@ -24,7 +24,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import org.apache.commons.lang3.Strings;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 import se.trixon.almond.util.fx.control.DateSelectionMode;
@@ -35,6 +38,7 @@ import se.trixon.almond.util.fx.control.DateSelectionMode;
  */
 public class MTemporalManager {
 
+    private final LongProperty mDateChangedProperty = new SimpleLongProperty();
     private final SimpleObjectProperty<DateSelectionMode> mDateSelectionModeProperty = new SimpleObjectProperty<>();
     private final DelayedResetRunner mDelayedResetRunner;
     private final SimpleObjectProperty<LocalDate> mHighDateProperty = new SimpleObjectProperty<>();
@@ -65,6 +69,15 @@ public class MTemporalManager {
                 setMaxDate(LocalDate.of(2099, 12, 31));
             }
         });
+
+        ChangeListener<LocalDate> changeListener = (p, o, n) -> {
+            mDateChangedProperty.set(System.currentTimeMillis());
+        };
+
+        mMinDateProperty.addListener(changeListener);
+        mMaxDateProperty.addListener(changeListener);
+        mHighDateProperty.addListener(changeListener);
+        mLowDateProperty.addListener(changeListener);
     }
 
     public void clear() {
@@ -74,6 +87,10 @@ public class MTemporalManager {
 
     public boolean contains(String key) {
         return mRanges.containsKey(key);
+    }
+
+    public LongProperty dateChangedProperty() {
+        return mDateChangedProperty;
     }
 
     public SimpleObjectProperty<DateSelectionMode> dateSelectionModeProperty() {
