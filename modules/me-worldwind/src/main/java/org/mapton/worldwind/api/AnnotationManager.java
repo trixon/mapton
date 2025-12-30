@@ -16,7 +16,11 @@
 package org.mapton.worldwind.api;
 
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.render.AnnotationAttributes;
 import gov.nasa.worldwind.render.GlobeAnnotation;
+import java.awt.Color;
+import java.awt.Insets;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.mapton.api.MAnnotation;
@@ -27,6 +31,7 @@ import org.mapton.api.Mapton;
 import org.mapton.worldwind.AnnotationLimitMode;
 import org.mapton.worldwind.AnnotationsOptions;
 import se.trixon.almond.util.CollectionHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -35,6 +40,8 @@ import se.trixon.almond.util.CollectionHelper;
 public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
 
     public static final String KEY_CAT = "annotation.category";
+    private final HashMap<Class, AnnotationAttributes> mCategoryClassToAttribute = new HashMap<>();
+    private AnnotationAttributes mDefaultAttributes = new AnnotationAttributes();
     private final AnnotationsOptions mOptions = AnnotationsOptions.getInstance();
 
     public static AnnotationManager getInstance() {
@@ -43,6 +50,18 @@ public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
 
     private AnnotationManager() {
         super(GlobeAnnotation.class);
+
+        mDefaultAttributes.setCornerRadius(10);
+        mDefaultAttributes.setInsets(new Insets(8, 8, 8, 8));
+        mDefaultAttributes.setBackgroundColor(new Color(0f, 0f, 0f, .5f));
+        mDefaultAttributes.setTextColor(Color.WHITE);
+        mDefaultAttributes.setDrawOffset(new Point(25, 25));
+        mDefaultAttributes.setDistanceMinScale(.5);
+        mDefaultAttributes.setDistanceMaxScale(2);
+        mDefaultAttributes.setDistanceMinOpacity(.5);
+        mDefaultAttributes.setLeaderGapWidth(14);
+        mDefaultAttributes.setDrawOffset(new Point(20, 40));
+        mDefaultAttributes.setInsets(SwingHelper.getUIScaledInsets(6, 28, 6, 6));
 
         Mapton.getGlobalState().addListener(gsce -> {
             var annotation = gsce.<MAnnotation>getValue();
@@ -62,24 +81,50 @@ public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
         add(annotation.getLatLon(), annotation.getText(), annotation.getCategory());
     }
 
+    /**
+     * Here is the real add method
+     *
+     * @param annotation
+     */
     public void add(GlobeAnnotation annotation) {
         var validForAdd = !getAllItems().stream()
                 .anyMatch(a -> a.getPosition().equals(annotation.getPosition()));
 
         if (validForAdd) {
+            annotation.setAlwaysOnTop(true);
+            annotation.setAttributes(mCategoryClassToAttribute.getOrDefault(annotation.getValue(KEY_CAT), mDefaultAttributes));
             getAllItems().add(annotation);
             trimIfNeeded();
         }
     }
 
-    public void add(MLatLon latLon, String text, String category) {
+    public void add(MLatLon latLon, String text, Class category) {
         add(WWHelper.positionFromLatLon(latLon), text, category);
     }
 
-    public void add(Position position, String text, String category) {
+    public void add(Position position, String text, Class category) {
         var annotation = new GlobeAnnotation(text, position);
         annotation.setValue(KEY_CAT, category);
         add(annotation);
+    }
+
+    public AnnotationAttributes createAttributes() {
+        var attrs = new AnnotationAttributes();
+        attrs.setDefaults(mDefaultAttributes);
+
+        return attrs;
+    }
+
+    public AnnotationAttributes getDefaultAttributes() {
+        return mDefaultAttributes;
+    }
+
+    public void putAttributes(Class category, AnnotationAttributes attributes) {
+        mCategoryClassToAttribute.put(category, attributes);
+    }
+
+    public void setDefaultAttributes(AnnotationAttributes defaultAttributes) {
+        mDefaultAttributes = defaultAttributes;
     }
 
     @Override
@@ -101,7 +146,7 @@ public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
         } else {
             var map = new HashMap<String, Integer>();
             var itemsToRemove = items.reversed().stream()
-                    .filter(item -> CollectionHelper.incInteger(map, (String) item.getValue(KEY_CAT)) > limit)
+                    .filter(item -> CollectionHelper.incInteger(map, item.getValue(KEY_CAT).toString()) > limit)
                     .toList();
 
             items.removeAll(itemsToRemove);

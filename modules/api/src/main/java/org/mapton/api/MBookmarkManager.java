@@ -241,7 +241,7 @@ public class MBookmarkManager extends MBaseDataManager<MBookmark> {
                 Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
                 var latLon = MBookmark.createLatLon(n);
                 var text = "%s\n\n%s\n%s".formatted(n.getName(), n.getCategory(), n.getDescription());
-                var annotation = new MAnnotation(latLon, text, "bookmark");
+                var annotation = new MAnnotation(latLon, text, MBookmark.class);
                 Mapton.getGlobalState().put(MKey.ANNOTATIONS, annotation);
             } else {
                 Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, null);

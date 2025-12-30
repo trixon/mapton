@@ -20,11 +20,13 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import java.awt.Color;
 import javafx.collections.ListChangeListener;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.Mapton;
 import org.mapton.core.api.BookmarkEditor;
+import org.mapton.worldwind.api.AnnotationManager;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -38,6 +40,7 @@ import se.trixon.almond.util.fx.FxHelper;
 @ServiceProvider(service = LayerBundle.class)
 public class BookmarkLayerBundle extends LayerBundle {
 
+    private final AnnotationManager mAnnotationManager = AnnotationManager.getInstance();
     private final BookmarkEditor mBookmarkEditor = new BookmarkEditor();
     private final RenderableLayer mLayer = new RenderableLayer();
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
@@ -60,6 +63,11 @@ public class BookmarkLayerBundle extends LayerBundle {
         setName(Dict.BOOKMARKS.toString());
         mLayer.setPickEnabled(true);
         setParentLayer(mLayer);
+
+        var attrs = mAnnotationManager.createAttributes();
+        attrs.setBackgroundColor(Color.YELLOW);
+        attrs.setTextColor(Color.BLACK);
+        mAnnotationManager.putAttributes(MBookmark.class, attrs);
     }
 
     private void initListeners() {

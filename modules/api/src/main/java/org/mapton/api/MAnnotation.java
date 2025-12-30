@@ -21,17 +21,17 @@ package org.mapton.api;
  */
 public class MAnnotation {
 
-    private final String mCategory;
+    private final Class mCategory;
     private final MLatLon mLatLon;
     private final String mText;
 
-    public MAnnotation(MLatLon latLon, String text, String category) {
+    public MAnnotation(MLatLon latLon, String text, Class category) {
         mLatLon = latLon;
         mText = text;
         mCategory = category;
     }
 
-    public String getCategory() {
+    public Class getCategory() {
         return mCategory;
     }
 
