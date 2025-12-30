@@ -36,6 +36,7 @@ public class AnnotationsOptionsView extends MOptionsView {
     private final ComboBox<AnnotationLimitMode> mModeComboBox = new ComboBox<>();
     private final AnnotationsOptions mOptions = AnnotationsOptions.getInstance();
     private final MPresetPopOver mPresetPopOver;
+    private final ComboBox<AnnotationTimeout> mTimeOutComboBox = new ComboBox<>();
 
     public AnnotationsOptionsView() {
         mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_OPTIONS, "annotations");
@@ -59,19 +60,24 @@ public class AnnotationsOptionsView extends MOptionsView {
         createToolbar(actions);
 
         mModeComboBox.getItems().setAll(AnnotationLimitMode.values());
+        mTimeOutComboBox.getItems().setAll(AnnotationTimeout.values());
 
         var gp = createGridPane();
         var limitLabel = new Label("Max");
         var modeLabel = new Label(Dict.MODE.toString());
+        var timeoutLabel = new Label("Timeout");
         int row = 0;
         gp.addRow(row++, limitLabel, modeLabel);
         gp.addRow(row++, mLimitSpinner, mModeComboBox);
+        gp.addRow(row++, new Label(), timeoutLabel);
+        gp.addRow(row++, new Label(), mTimeOutComboBox);
 
         mLimitSpinner.setEditable(true);
         FxHelper.autoCommitSpinners(mLimitSpinner);
         FxHelper.autoSizeRegionHorizontal(
                 mLimitSpinner,
-                mModeComboBox
+                mModeComboBox,
+                mTimeOutComboBox
         );
 
         FxHelper.autoSizeColumn(gp, 2);
@@ -82,5 +88,6 @@ public class AnnotationsOptionsView extends MOptionsView {
     private void initSession() {
         BindingHelper.bindBidirectional(mLimitSpinner.getValueFactory().valueProperty(), mOptions.limitProperty());
         mModeComboBox.valueProperty().bindBidirectional(mOptions.limitModeProperty());
+        mTimeOutComboBox.valueProperty().bindBidirectional(mOptions.timeoutProperty());
     }
 }

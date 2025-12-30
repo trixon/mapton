@@ -240,8 +240,7 @@ public class MBookmarkManager extends MBaseDataManager<MBookmark> {
                 propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(n.getColor()));
                 Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
                 var latLon = MBookmark.createLatLon(n);
-                var text = "%s\n\n%s\n%s".formatted(n.getName(), n.getCategory(), n.getDescription());
-                var annotation = new MAnnotation(latLon, text, MBookmark.class);
+                var annotation = new MAnnotation(latLon, n.toAnnotation(), MBookmark.class);
                 Mapton.getGlobalState().put(MKey.ANNOTATIONS, annotation);
             } else {
                 Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, null);

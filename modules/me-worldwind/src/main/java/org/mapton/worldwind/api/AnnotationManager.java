@@ -31,6 +31,7 @@ import org.mapton.api.Mapton;
 import org.mapton.worldwind.AnnotationLimitMode;
 import org.mapton.worldwind.AnnotationsOptions;
 import se.trixon.almond.util.CollectionHelper;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -95,6 +96,17 @@ public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
             annotation.setAttributes(mCategoryClassToAttribute.getOrDefault(annotation.getValue(KEY_CAT), mDefaultAttributes));
             getAllItems().add(annotation);
             trimIfNeeded();
+
+            var delay = mOptions.getTimeout().getDelay();
+            if (delay > 0) {
+                FxHelper.runLaterDelayed(delay, () -> {
+                    try {
+                        getAllItems().remove(annotation);
+                    } catch (Exception e) {
+                        //nvm it might be gone already
+                    }
+                });
+            }
         }
     }
 

@@ -174,4 +174,14 @@ public class MBookmark extends MObject {
     public void setZoom(Double zoom) {
         mZoom = zoom;
     }
+
+    public String toAnnotation() {
+        var text = "<p><b>%s</b></p>\n\n<p>%s</p>\n<p>%s</p>".formatted(
+                Objects.toString(getName(), ""),
+                Objects.toString(getCategory(), ""),
+                Objects.toString(getDescription(), "")
+        );
+
+        return text;
+    }
 }

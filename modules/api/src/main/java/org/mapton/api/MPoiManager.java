@@ -143,8 +143,7 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
 
             if (n != null) {
                 var latLon = MBookmark.createLatLon(n);
-                var text = "%s\n\n%s\n%s".formatted(n.getName(), n.getCategory(), n.getDescription());
-                var annotation = new MAnnotation(latLon, text, MPoi.class);
+                var annotation = new MAnnotation(latLon, n.toAnnotation(), MPoi.class);
                 Mapton.getGlobalState().put(MKey.ANNOTATIONS, annotation);
             }
         });

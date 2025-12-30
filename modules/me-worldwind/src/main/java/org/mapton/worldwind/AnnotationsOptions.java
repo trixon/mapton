@@ -35,9 +35,12 @@ public class AnnotationsOptions extends OptionsBase implements MPresetActions {
 
     public static final int DEFAULT_LIMIT = 3;
     public static final AnnotationLimitMode DEFAULT_LIMIT_MODE = AnnotationLimitMode.TOTAL;
+    public static final AnnotationTimeout DEFAULT_TIMEOUT = AnnotationTimeout.NO_TIMEOUT;
     private final ObjectProperty<AnnotationLimitMode> mLimitModeProperty = new SimpleObjectProperty<>(DEFAULT_LIMIT_MODE);
     private final StringProperty mLimitModeProxyProperty = BindingHelper.createStringEnumProxyProperty(mLimitModeProperty, AnnotationLimitMode.class);
     private final IntegerProperty mLimitProperty = new SimpleIntegerProperty(DEFAULT_LIMIT);
+    private final ObjectProperty<AnnotationTimeout> mTimeoutProperty = new SimpleObjectProperty<>(DEFAULT_TIMEOUT);
+    private final StringProperty mTimeoutProxyProperty = BindingHelper.createStringEnumProxyProperty(mTimeoutProperty, AnnotationTimeout.class);
 
     public static AnnotationsOptions getInstance() {
         return Holder.INSTANCE;
@@ -55,10 +58,15 @@ public class AnnotationsOptions extends OptionsBase implements MPresetActions {
         return mLimitModeProperty.get();
     }
 
+    public AnnotationTimeout getTimeout() {
+        return mTimeoutProperty.get();
+    }
+
     @Override
     public void initSession(SessionManager sessionManager) {
         sessionManager.register("limit", mLimitProperty);
         sessionManager.register("limitMode", mLimitModeProxyProperty);
+        sessionManager.register("timeout", mTimeoutProxyProperty);
     }
 
     public ObjectProperty<AnnotationLimitMode> limitModeProperty() {
@@ -83,6 +91,11 @@ public class AnnotationsOptions extends OptionsBase implements MPresetActions {
     public void reset() {
         mLimitProperty.set(DEFAULT_LIMIT);
         mLimitModeProperty.set(DEFAULT_LIMIT_MODE);
+        mTimeoutProperty.set(DEFAULT_TIMEOUT);
+    }
+
+    public ObjectProperty<AnnotationTimeout> timeoutProperty() {
+        return mTimeoutProperty;
     }
 
     private static class Holder {
