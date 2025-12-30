@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
@@ -44,6 +45,7 @@ import org.mapton.api.jackson.LocalDateTimeSerializer;
 import org.openide.modules.Places;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -67,6 +69,7 @@ public class MBookmarkManager extends MBaseDataManager<MBookmark> {
     private MBookmarkManager() {
         super(MBookmark.class);
         mFile = new File(Places.getUserDirectory(), "bookmarks.csv");
+        initListeners();
         var simpleModule = new SimpleModule();
         simpleModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
         simpleModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
@@ -223,6 +226,29 @@ public class MBookmarkManager extends MBaseDataManager<MBookmark> {
         for (var bookmark : getAllItems()) {
             System.out.println(ToStringBuilder.reflectionToString(bookmark, ToStringStyle.MULTI_LINE_STYLE));
         }
+    }
+
+    private void initListeners() {
+        selectedItemProperty().addListener((p, o, n) -> {
+            LinkedHashMap<String, Object> propertyMap = null;
+
+            if (n != null) {
+                propertyMap = new LinkedHashMap<>();
+                propertyMap.put(Dict.NAME.toString(), n.getName());
+                propertyMap.put(Dict.DESCRIPTION.toString(), n.getDescription());
+                propertyMap.put(Dict.CATEGORY.toString(), n.getCategory());
+                propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(n.getColor()));
+                Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
+                var latLon = MBookmark.createLatLon(n);
+                var text = "%s\n\n%s\n%s".formatted(n.getName(), n.getCategory(), n.getDescription());
+                var annotation = new MAnnotation(latLon, text, "bookmark");
+                Mapton.getGlobalState().put(MKey.ANNOTATIONS, annotation);
+            } else {
+                Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, null);
+
+            }
+
+        });
     }
 
     private void load() {

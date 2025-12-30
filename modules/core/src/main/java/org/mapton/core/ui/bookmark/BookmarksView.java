@@ -159,6 +159,10 @@ public class BookmarksView extends BorderPane {
         mManager.getAllItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
             populate();
         });
+
+        mTreeView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
+            mManager.setSelectedItem(n != null ? n.getValue() : null);
+        });
     }
 
     private void populate() {

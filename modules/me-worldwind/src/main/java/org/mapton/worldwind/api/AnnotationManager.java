@@ -18,16 +18,24 @@ package org.mapton.worldwind.api;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.GlobeAnnotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import org.mapton.api.MAnnotation;
 import org.mapton.api.MBaseDataManager;
+import org.mapton.api.MKey;
 import org.mapton.api.MLatLon;
 import org.mapton.api.Mapton;
+import org.mapton.worldwind.AnnotationLimitMode;
+import org.mapton.worldwind.AnnotationsOptions;
+import se.trixon.almond.util.CollectionHelper;
 
 /**
  *
  * @author Patrik Karlström <patrik@trixon.se>
  */
 public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
+
+    public static final String KEY_CAT = "annotation.category";
+    private final AnnotationsOptions mOptions = AnnotationsOptions.getInstance();
 
     public static AnnotationManager getInstance() {
         return Holder.INSTANCE;
@@ -37,8 +45,17 @@ public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
         super(GlobeAnnotation.class);
 
         Mapton.getGlobalState().addListener(gsce -> {
-            add(gsce.<MAnnotation>getValue());
-        }, "annotation");
+            var annotation = gsce.<MAnnotation>getValue();
+            if (annotation == null) {
+                getAllItems().clear();
+            } else {
+                add(annotation);
+            }
+        }, MKey.ANNOTATIONS);
+
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+            trimIfNeeded();
+        });
     }
 
     public void add(MAnnotation annotation) {
@@ -46,7 +63,13 @@ public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
     }
 
     public void add(GlobeAnnotation annotation) {
-        getAllItems().add(annotation);
+        var validForAdd = !getAllItems().stream()
+                .anyMatch(a -> a.getPosition().equals(annotation.getPosition()));
+
+        if (validForAdd) {
+            getAllItems().add(annotation);
+            trimIfNeeded();
+        }
     }
 
     public void add(MLatLon latLon, String text, String category) {
@@ -55,7 +78,7 @@ public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
 
     public void add(Position position, String text, String category) {
         var annotation = new GlobeAnnotation(text, position);
-        annotation.setValue("category", category);
+        annotation.setValue(KEY_CAT, category);
         add(annotation);
     }
 
@@ -65,6 +88,24 @@ public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
 
     @Override
     protected void load(ArrayList<GlobeAnnotation> items) {
+    }
+
+    private void trimIfNeeded() {
+        var items = getAllItems();
+        var limit = mOptions.getLimit();
+
+        if (mOptions.getLimitMode() == AnnotationLimitMode.TOTAL) {
+            if (items.size() > limit) {
+                items.remove(0, items.size() - limit);
+            }
+        } else {
+            var map = new HashMap<String, Integer>();
+            var itemsToRemove = items.reversed().stream()
+                    .filter(item -> CollectionHelper.incInteger(map, (String) item.getValue(KEY_CAT)) > limit)
+                    .toList();
+
+            items.removeAll(itemsToRemove);
+        }
     }
 
     private static class Holder {

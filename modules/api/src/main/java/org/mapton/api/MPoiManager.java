@@ -145,7 +145,7 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
                 var latLon = MBookmark.createLatLon(n);
                 var text = "%s\n\n%s\n%s".formatted(n.getName(), n.getCategory(), n.getDescription());
                 var annotation = new MAnnotation(latLon, text, "poi");
-                Mapton.getGlobalState().put("annotation", annotation);
+                Mapton.getGlobalState().put(MKey.ANNOTATIONS, annotation);
             }
         });
 

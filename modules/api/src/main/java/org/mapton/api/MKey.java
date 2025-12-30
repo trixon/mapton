@@ -21,6 +21,7 @@ package org.mapton.api;
  */
 public class MKey {
 
+    public static final String ANNOTATIONS = "annotations";
     public static final String APP_NEWS_DYNAMIC = "app.news.dynamic";
     public static final String APP_TOOL_STARTED = "app_tool.started";
     public static final String BACKGROUND_IMAGE = "background_image";

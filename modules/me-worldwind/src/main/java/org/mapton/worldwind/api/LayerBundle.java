@@ -19,6 +19,7 @@ import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.drag.Draggable;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.layers.AbstractLayer;
+import gov.nasa.worldwind.layers.AnnotationLayer;
 import gov.nasa.worldwind.layers.IconLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
@@ -206,16 +207,17 @@ public abstract class LayerBundle {
         mChildLayers.stream()
                 .filter(layer -> (layer instanceof RenderableLayer))
                 .map(layer -> (RenderableLayer) layer)
-                .forEachOrdered(renderableLayer -> {
-                    renderableLayer.removeAllRenderables();
-                });
+                .forEachOrdered(layer -> layer.removeAllRenderables());
+
+        mChildLayers.stream()
+                .filter(layer -> (layer instanceof AnnotationLayer))
+                .map(layer -> (AnnotationLayer) layer)
+                .forEachOrdered(layer -> layer.removeAllAnnotations());
 
         mLayers.stream()
                 .filter(layer -> (layer instanceof RenderableLayer))
                 .map(layer -> (RenderableLayer) layer)
-                .forEachOrdered(renderableLayer -> {
-                    renderableLayer.removeAllRenderables();
-                });
+                .forEachOrdered(layer -> layer.removeAllRenderables());
     }
 
     public void removeAllRenderables(RenderableLayer... layers) {

@@ -47,7 +47,7 @@ public class PhotosOptions extends OptionsBase implements MPresetActions {
     private final BooleanProperty mPlotGapProperty = new SimpleBooleanProperty(DEFAULT_PLOT_GAP);
     private final BooleanProperty mPlotTrackProperty = new SimpleBooleanProperty(DEFAULT_PLOT_TRACK);
     private final ObjectProperty<SplitBy> mSplitByProperty = new SimpleObjectProperty<>(DEFAULT_SPLIT_BY);
-    private StringProperty mSplitByProxyProperty = BindingHelper.createStringEnumProxyProperty(mSplitByProperty, SplitBy.class);
+    private final StringProperty mSplitByProxyProperty = BindingHelper.createStringEnumProxyProperty(mSplitByProperty, SplitBy.class);
     private final ObjectProperty<Color> mTrackColorProperty = new SimpleObjectProperty<>(DEFAULT_TRACK_COLOR);
     private final DoubleProperty mWidthProperty = new SimpleDoubleProperty(DEFAULT_WIDTH);
 

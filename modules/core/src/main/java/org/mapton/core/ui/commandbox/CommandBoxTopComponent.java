@@ -43,7 +43,7 @@ import se.trixon.almond.util.Dict;
 )
 @ActionID(category = "Mapton", id = "org.mapton.core.ui.commandbox.CommandBoxTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DS-A"),
+    @ActionReference(path = "Shortcuts", name = "DS-T"),
     @ActionReference(path = "Menu/Tools", position = 9)
 })
 @NbBundle.Messages({

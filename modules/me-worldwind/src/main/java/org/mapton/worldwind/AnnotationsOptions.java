@@ -17,11 +17,15 @@ package org.mapton.worldwind;
 
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.prefs.Preferences;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.StringProperty;
 import org.mapton.api.ui.MPresetActions;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.OptionsBase;
+import se.trixon.almond.util.fx.BindingHelper;
 
 /**
  *
@@ -29,8 +33,11 @@ import se.trixon.almond.util.OptionsBase;
  */
 public class AnnotationsOptions extends OptionsBase implements MPresetActions {
 
-    public static final double DEFAULT_OPACITY = 0.9;
-    private final DoubleProperty mOpacityProperty = new SimpleDoubleProperty(DEFAULT_OPACITY);
+    public static final int DEFAULT_LIMIT = 3;
+    public static final AnnotationLimitMode DEFAULT_LIMIT_MODE = AnnotationLimitMode.TOTAL;
+    private final ObjectProperty<AnnotationLimitMode> mLimitModeProperty = new SimpleObjectProperty<>(DEFAULT_LIMIT_MODE);
+    private final StringProperty mLimitModeProxyProperty = BindingHelper.createStringEnumProxyProperty(mLimitModeProperty, AnnotationLimitMode.class);
+    private final IntegerProperty mLimitProperty = new SimpleIntegerProperty(DEFAULT_LIMIT);
 
     public static AnnotationsOptions getInstance() {
         return Holder.INSTANCE;
@@ -40,17 +47,26 @@ public class AnnotationsOptions extends OptionsBase implements MPresetActions {
         setPreferences(NbPreferences.forModule(AnnotationsOptions.class).node("annotations"));
     }
 
-    public double getOpacity() {
-        return mOpacityProperty.get();
+    public int getLimit() {
+        return mLimitProperty.get();
+    }
+
+    public AnnotationLimitMode getLimitMode() {
+        return mLimitModeProperty.get();
     }
 
     @Override
     public void initSession(SessionManager sessionManager) {
-        sessionManager.register("opacity", mOpacityProperty);
+        sessionManager.register("limit", mLimitProperty);
+        sessionManager.register("limitMode", mLimitModeProxyProperty);
     }
 
-    public DoubleProperty opacityProperty() {
-        return mOpacityProperty;
+    public ObjectProperty<AnnotationLimitMode> limitModeProperty() {
+        return mLimitModeProperty;
+    }
+
+    public IntegerProperty limitProperty() {
+        return mLimitProperty;
     }
 
     @Override
@@ -65,7 +81,8 @@ public class AnnotationsOptions extends OptionsBase implements MPresetActions {
     }
 
     public void reset() {
-        mOpacityProperty.set(DEFAULT_OPACITY);
+        mLimitProperty.set(DEFAULT_LIMIT);
+        mLimitModeProperty.set(DEFAULT_LIMIT_MODE);
     }
 
     private static class Holder {

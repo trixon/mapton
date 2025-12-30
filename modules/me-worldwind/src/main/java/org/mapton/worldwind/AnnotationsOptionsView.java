@@ -16,13 +16,14 @@
 package org.mapton.worldwind;
 
 import java.util.List;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.Spinner;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.core.api.ui.MPresetPopOver;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.BindingHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -31,7 +32,8 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class AnnotationsOptionsView extends MOptionsView {
 
-    private final Slider mOpacitySlider = new Slider(0, 1, AnnotationsOptions.DEFAULT_OPACITY);
+    private final Spinner<Integer> mLimitSpinner = new Spinner<>(1, 10, AnnotationsOptions.DEFAULT_LIMIT);
+    private final ComboBox<AnnotationLimitMode> mModeComboBox = new ComboBox<>();
     private final AnnotationsOptions mOptions = AnnotationsOptions.getInstance();
     private final MPresetPopOver mPresetPopOver;
 
@@ -56,13 +58,29 @@ public class AnnotationsOptionsView extends MOptionsView {
         );
         createToolbar(actions);
 
-        var opacityBox = new VBox(new Label(Dict.OPACITY.toString()), mOpacitySlider);
-        opacityBox.setPadding(FxHelper.getUIScaledInsets(8));
+        mModeComboBox.getItems().setAll(AnnotationLimitMode.values());
 
-        setCenter(opacityBox);
+        var gp = createGridPane();
+        var limitLabel = new Label("Max");
+        var modeLabel = new Label(Dict.MODE.toString());
+        int row = 0;
+        gp.addRow(row++, limitLabel, modeLabel);
+        gp.addRow(row++, mLimitSpinner, mModeComboBox);
+
+        mLimitSpinner.setEditable(true);
+        FxHelper.autoCommitSpinners(mLimitSpinner);
+        FxHelper.autoSizeRegionHorizontal(
+                mLimitSpinner,
+                mModeComboBox
+        );
+
+        FxHelper.autoSizeColumn(gp, 2);
+
+        setCenter(gp);
     }
 
     private void initSession() {
-        mOpacitySlider.valueProperty().bindBidirectional(mOptions.opacityProperty());
+        BindingHelper.bindBidirectional(mLimitSpinner.getValueFactory().valueProperty(), mOptions.limitProperty());
+        mModeComboBox.valueProperty().bindBidirectional(mOptions.limitModeProperty());
     }
 }

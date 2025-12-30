@@ -71,7 +71,6 @@ public class PhotosOptionsView extends MOptionsView {
         createToolbar(actions);
 
         mSplitByComboBox.getItems().setAll(SplitBy.values());
-//        mSplitByComboBox.getSelectionModel().selectFirst();
 
         var gp = createGridPane();
         var widthLabel = new Label(Dict.Geometry.WIDTH.toString());

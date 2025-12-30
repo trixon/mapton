@@ -20,12 +20,9 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import javafx.collections.ListChangeListener;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
-import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.core.api.BookmarkEditor;
 import org.mapton.worldwind.api.LayerBundle;
@@ -95,13 +92,7 @@ public class BookmarkLayerBundle extends LayerBundle {
                         placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
 
                         placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
-                            Map<String, Object> propertyMap = new LinkedHashMap<>();
-                            propertyMap.put(Dict.NAME.toString(), bookmark.getName());
-                            propertyMap.put(Dict.DESCRIPTION.toString(), bookmark.getDescription());
-                            propertyMap.put(Dict.CATEGORY.toString(), bookmark.getCategory());
-                            propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(bookmark.getColor()));
-
-                            Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
+                            mManager.setSelectedItem(bookmark);
                         });
 
                         placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
