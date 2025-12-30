@@ -41,6 +41,7 @@
                         <publicPackage>de.jensd.fx.glyphs.*</publicPackage>
                         <publicPackage>org.geotools.*</publicPackage>
                         <publicPackage>com.helger.*</publicPackage>
+                        <publicPackage>org.apache.http.*</publicPackage>
                         <!--Required by TilesFX -->
                         <!--<publicPackage>com.sun.*</publicPackage>-->
                         <!--Required by TilesFX -->
@@ -372,6 +373,14 @@
             <artifactId>jackson-dataformat-csv</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+
+        <!--Other-->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
