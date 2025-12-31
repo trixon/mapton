@@ -289,7 +289,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 });
             }
         }
-        addCustomLayer(mIndicatorLayer.getLayers().get(0));
     }
 
     private void initListeners() {

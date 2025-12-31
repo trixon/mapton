@@ -26,6 +26,7 @@ import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 
@@ -33,6 +34,7 @@ import se.trixon.almond.util.GlobalStateChangeEvent;
  *
  * @author Patrik Karlström
  */
+@ServiceProvider(service = LayerBundle.class)
 public class IndicatorLayerBundle extends LayerBundle {
 
     private final MCircleFilterManager mCircleFilterManager = MCircleFilterManager.getInstance();

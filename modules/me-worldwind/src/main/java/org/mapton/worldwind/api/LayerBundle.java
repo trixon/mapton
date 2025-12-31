@@ -281,8 +281,8 @@ public abstract class LayerBundle {
 
     public void setDragEnabled(boolean enabled, AbstractLayer... abstractLayers) {
         for (var abstractLayer : abstractLayers) {
-            if (abstractLayer instanceof RenderableLayer renderableLayer) {
-                for (var renderable : renderableLayer.getRenderables()) {
+            if (abstractLayer instanceof RenderableLayer layer) {
+                for (var renderable : layer.getRenderables()) {
                     if (renderable instanceof Draggable draggable) {
                         if (draggable instanceof AbstractAirspace abstractAirspace) {
                             setDragEnabled(abstractAirspace, enabled);
@@ -291,9 +291,15 @@ public abstract class LayerBundle {
                         }
                     }
                 }
-            } else if (abstractLayer instanceof IconLayer iconLayer) {
-                for (var icon : iconLayer.getIcons()) {
+            } else if (abstractLayer instanceof IconLayer layer) {
+                for (var icon : layer.getIcons()) {
                     if (icon instanceof Draggable draggable) {
+                        draggable.setDragEnabled(enabled);
+                    }
+                }
+            } else if (abstractLayer instanceof AnnotationLayer layer) {
+                for (var annotation : layer.getAnnotations()) {
+                    if (annotation instanceof Draggable draggable) {
                         draggable.setDragEnabled(enabled);
                     }
                 }
@@ -305,23 +311,19 @@ public abstract class LayerBundle {
     }
 
     public void setDragEnabled(boolean enabled) {
-        if (mParentLayer instanceof AbstractLayer renderableLayer) {
-            setDragEnabled(enabled, renderableLayer);
+        if (mParentLayer instanceof AbstractLayer layer) {
+            setDragEnabled(enabled, layer);
         }
 
         mChildLayers.stream()
-                .filter(layer -> (layer instanceof RenderableLayer))
-                .map(layer -> (RenderableLayer) layer)
-                .forEachOrdered(renderableLayer -> {
-                    setDragEnabled(enabled, renderableLayer);
-                });
+                .filter(layer -> (layer instanceof AbstractLayer))
+                .map(layer -> (AbstractLayer) layer)
+                .forEach(layer -> setDragEnabled(enabled, layer));
 
         mLayers.stream()
-                .filter(layer -> (layer instanceof RenderableLayer))
-                .map(layer -> (RenderableLayer) layer)
-                .forEachOrdered(renderableLayer -> {
-                    setDragEnabled(enabled, renderableLayer);
-                });
+                .filter(layer -> (layer instanceof AbstractLayer))
+                .map(layer -> (AbstractLayer) layer)
+                .forEach(layer -> setDragEnabled(enabled, layer));
     }
 
     public final void setName(String value) {
