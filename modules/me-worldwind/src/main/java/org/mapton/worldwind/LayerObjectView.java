@@ -292,33 +292,32 @@ public class LayerObjectView extends BorderPane implements MActivatable {
         return (CheckBoxTreeItem<Layer>) mTreeView.getSelectionModel().getSelectedItem();
     }
 
-    private TreeItem<Layer> getSelectedTreeItem() {
-        return mTreeView.getSelectionModel().getSelectedItem();
-    }
-
     private void initListeners() {
         var runOnceChecker = new HashSet<MRunnable>();
 
         mTreeView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
-            try {
-                var layerBundle = (LayerBundle) getSelectedTreeItem().getValue().getValue("layerBundle");
-                var optionsView = layerBundle.getOptionsView();
-                if (optionsView == null) {
-                    Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES, null);
-                } else {
-                    Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES_WORLD_WIND, layerBundle);
+            Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES, null);
+            mLayerPropertiesAction.setDisabled(true);
+            if (n != null) {
+                var layerBundle = (LayerBundle) n.getValue().getValue("layerBundle");
+                if (layerBundle != null) {
+                    var optionsView = layerBundle.getOptionsView();
+                    mLayerPropertiesAction.setDisabled(optionsView == null);
+                    if (optionsView == null) {
+                        Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES, null);
+                    } else {
+                        Mapton.getGlobalState().put(MKey.LAYER_PROPERTIES_WORLD_WIND, layerBundle);
+                    }
+                    if (layerBundle instanceof MRunnable r) {
+                        FxHelper.runLaterDelayed(75, () -> {
+                            if (!runOnceChecker.contains(r)) {
+                                runOnceChecker.add(r);
+                                r.runOnce();
+                            }
+                            r.run();
+                        });
+                    }
                 }
-                if (layerBundle instanceof MRunnable r) {
-                    FxHelper.runLaterDelayed(75, () -> {
-                        if (!runOnceChecker.contains(r)) {
-                            runOnceChecker.add(r);
-                            r.runOnce();
-                        }
-                        r.run();
-                    });
-                }
-            } catch (Exception e) {
-                mLayerPropertiesAction.setDisabled(true);
             }
         });
 
