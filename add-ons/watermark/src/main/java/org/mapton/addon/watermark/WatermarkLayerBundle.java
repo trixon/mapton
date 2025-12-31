@@ -28,7 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.swing.DelayedResetRunner;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -50,6 +49,7 @@ public class WatermarkLayerBundle extends LayerBundle {
     public WatermarkLayerBundle() {
         init();
         initAttributes();
+        initRepaint();
         initListeners();
     }
 
@@ -72,25 +72,17 @@ public class WatermarkLayerBundle extends LayerBundle {
         var name = NbBundle.getMessage(WatermarkLayerBundle.class, "watermark");
         setName(name);
         mLayer.setName(name);
-        setCategoryAddOns(mLayer);
+        setCategorySystem(mLayer);
         setParentLayer(mLayer);
 
         mLayer.setPickEnabled(false);
         mAttributes.setSize(SwingHelper.getUIScaledDim(3000, 0));
         mAttributes.setAdjustWidthToText(AVKey.SIZE_FIT_TEXT);
 
-        mTimer = new Timer(0, actionListener -> {
-            String text;
-            try {
-                text = mPatternError == null ? LocalDateTime.now().format(mDateTimeFormatter) : mPatternError;
-            } catch (Exception e) {
-                text = e.getMessage();
-            }
-            mAnnotation.setText(text);
-            repaint();
+        mTimer = new Timer(250, actionListener -> {
+            resetPaintDelayedResetRunner();
         });
 
-        mTimer.setDelay(250);
         mLayer.addAnnotation(mAnnotation);
 
         if (mLayer.isEnabled()) {
@@ -130,9 +122,21 @@ public class WatermarkLayerBundle extends LayerBundle {
             }
         });
 
-        setPaintDelayedResetRunner(new DelayedResetRunner(100, () -> initAttributes()));
         mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+            initAttributes();
             resetPaintDelayedResetRunner();
+        });
+    }
+
+    private void initRepaint() {
+        setPainter(() -> {
+            String text;
+            try {
+                text = mPatternError == null ? LocalDateTime.now().format(mDateTimeFormatter) : mPatternError;
+            } catch (Exception e) {
+                text = e.getMessage();
+            }
+            mAnnotation.setText(text);
         });
     }
 

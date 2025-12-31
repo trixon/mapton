@@ -91,12 +91,10 @@ public class WatermarkOptionsView extends MOptionsView {
         int row = 0;
         gp.add(patternLabel, 0, row++, GridPane.REMAINING, 1);
         gp.add(mPatternComboBox, 0, row++, GridPane.REMAINING, 1);
-        gp.addRow(row++, fontSizeLabel, opacityLabel);
-        gp.addRow(row++, mFontSizeSlider, mOpacitySlider);
-        gp.addRow(row++, fontColorLabel, backgroundColorLabel);
-        gp.addRow(row++, mFontColorPicker, mBackgroundColorPicker);
-        gp.addRow(row++, borderColorLabel, borderSizeLabel);
-        gp.addRow(row++, mBorderColorPicker, mBorderSizeSlider);
+        gp.addRow(row++, fontColorLabel, backgroundColorLabel, borderColorLabel);
+        gp.addRow(row++, mFontColorPicker, mBackgroundColorPicker, mBorderColorPicker);
+        gp.addRow(row++, fontSizeLabel, opacityLabel, borderSizeLabel);
+        gp.addRow(row++, mFontSizeSlider, mOpacitySlider, mBorderSizeSlider);
 
         FxHelper.autoSizeRegionHorizontal(
                 mPatternComboBox,
@@ -117,7 +115,7 @@ public class WatermarkOptionsView extends MOptionsView {
                 borderSizeLabel
         );
 
-        FxHelper.autoSizeColumn(gp, 2);
+        FxHelper.autoSizeColumn(gp, 3);
 
         setCenter(gp);
     }
