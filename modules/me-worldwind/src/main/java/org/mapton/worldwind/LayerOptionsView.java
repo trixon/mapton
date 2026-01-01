@@ -15,7 +15,6 @@
  */
 package org.mapton.worldwind;
 
-import java.util.ArrayList;
 import javafx.geometry.Orientation;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
@@ -26,11 +25,11 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.mapton.api.MDict;
 import static org.mapton.worldwind.ModuleOptions.*;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.BindingHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -39,82 +38,63 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class LayerOptionsView extends VBox {
 
-    private CheckBox mAtmosphereCheckBox;
-    private CheckBox mCompassCheckBox;
-    private CheckBox mControlsCheckBox;
-    private CheckBox mElevationCheckBox;
+    private final CheckBox mAtmosphereCheckBox = new CheckBox(MDict.ATMOSPHERE.toString());
+    private final CheckBox mCompassCheckBox = new CheckBox(MDict.COMPASS.toString());
+    private final CheckBox mControlsCheckBox = new CheckBox(MDict.VIEW_CONTROLS.toString());
+    private final CheckBox mElevationCheckBox = new CheckBox(MDict.ELEVATION.toString());
     private final VBox mLeftPane = new VBox();
     private VBox mMapOpacityBox;
     private final Slider mMapOpacitySlider = new Slider(0, 1, 1);
-    private CheckBox mMaskCheckBox;
-    private ColorPicker mMaskColorPicker;
+    private final CheckBox mMaskCheckBox = new CheckBox(Dict.MASK.toString());
+    private final ColorPicker mMaskColorPicker = new ColorPicker();
     private VBox mMaskOpacityBox;
     private final Slider mMaskOpacitySlider = new Slider(0, 1, 1);
-    private RadioButton mModeFlatRadioButton;
-    private RadioButton mModeGlobeRadioButton;
+    private final RadioButton mModeFlatRadioButton = new RadioButton(MDict.FLAT.toString());
+    private final RadioButton mModeGlobeRadioButton = new RadioButton(MDict.GLOBE.toString());
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
-    private CheckBox mPlaceNameCheckBox;
-    private ComboBox<String> mProjComboBox;
-    private final ArrayList<String> mProjections = new ArrayList<>();
-    private final VBox mRightPane = new VBox();
-    private CheckBox mScaleBarCheckBox;
-    private CheckBox mStarsCheckBox;
-    private CheckBox mWorldMapCheckBox;
+    private final CheckBox mPlaceNameCheckBox = new CheckBox(Dict.PLACE_NAMES.toString());
+    private final ComboBox<String> mProjComboBox = new ComboBox<>();
+    private final VBox mRightPane = new VBox(FxHelper.getUIScaled(8));
+    private final CheckBox mScaleBarCheckBox = new CheckBox(MDict.SCALE_BAR.toString());
+    private final CheckBox mStarsCheckBox = new CheckBox(MDict.STARS.toString());
+    private final CheckBox mWorldMapCheckBox = new CheckBox(MDict.WORLD_MAP.toString());
 
     public LayerOptionsView() {
-        mProjections.add(MDict.PROJ_LAT_LON.toString());
-        mProjections.add(MDict.PROJ_MERCATOR.toString());
-        mProjections.add(MDict.PROJ_POLAR_NORTH.toString());
-        mProjections.add(MDict.PROJ_POLAR_SOUTH.toString());
-        mProjections.add(MDict.PROJ_SINUSOIDAL.toString());
-        mProjections.add(MDict.PROJ_SINUSOIDAL_MODIFIED.toString());
-        mProjections.add(MDict.PROJ_TRANSVERSE_MERCATOR.toString());
-        mProjections.add(MDict.PROJ_UPS_NORTH.toString());
-        mProjections.add(MDict.PROJ_UPS_SOUTH.toString());
-
+        super(FxHelper.getUIScaled(8));
         createUI();
         initListeners();
         load();
     }
 
     private void createUI() {
-        setSpacing(FxHelper.getUIScaled(16));
-        setPadding(FxHelper.getUIScaledInsets(16));
-        var subBox = new HBox();
-        subBox.setSpacing(FxHelper.getUIScaled(16));
-        subBox.setPadding(FxHelper.getUIScaledInsets(8, 16, 16, 16));
+        setPadding(FxHelper.getUIScaledInsets(8));
 
-        mMaskCheckBox = new CheckBox(Dict.MASK.toString());
-        mMaskColorPicker = new ColorPicker();
-        mMaskColorPicker.prefWidthProperty().bind(widthProperty());
-        mMaskColorPicker.disableProperty().bind(mMaskCheckBox.selectedProperty().not());
         var color = FxHelper.colorFromHexRGBA(mOptions.get(KEY_MASK_COLOR, DEFAULT_MASK_COLOR));
         mMaskColorPicker.setValue(color);
 
         mMapOpacityBox = new VBox(new Label(Dict.OPACITY.toString()), mMapOpacitySlider);
-        mMaskOpacityBox = new VBox(FxHelper.getUIScaled(8), mMaskCheckBox, mMaskOpacitySlider, mMaskColorPicker);
-        mMaskOpacitySlider.disableProperty().bind(mMaskCheckBox.selectedProperty().not());
-
-        double width = FxHelper.getUIScaled(200);
-        mLeftPane.setPrefWidth(width);
+        mMaskOpacityBox = new VBox(FxHelper.getUIScaled(0), mMaskCheckBox, mMaskOpacitySlider, mMaskColorPicker);
+        mMaskOpacitySlider.setPadding(FxHelper.getUIScaledInsets(0, 0, 6, 0));
 
         var topInsets = FxHelper.getUIScaledInsets(12, 0, 0, 0);
         var modeLabel = new Label(Dict.MODE.toString());
         var projLabel = new Label(MDict.PROJECTION.toString());
         var modeToggleGroup = new ToggleGroup();
-        mModeGlobeRadioButton = new RadioButton(MDict.GLOBE.toString());
         mModeGlobeRadioButton.setToggleGroup(modeToggleGroup);
-        mModeFlatRadioButton = new RadioButton(MDict.FLAT.toString());
         mModeFlatRadioButton.setToggleGroup(modeToggleGroup);
 
-        mProjComboBox = new ComboBox<>();
+        mProjComboBox.getItems().setAll(
+                MDict.PROJ_LAT_LON.toString(),
+                MDict.PROJ_MERCATOR.toString(),
+                MDict.PROJ_POLAR_NORTH.toString(),
+                MDict.PROJ_POLAR_SOUTH.toString(),
+                MDict.PROJ_SINUSOIDAL.toString(),
+                MDict.PROJ_SINUSOIDAL_MODIFIED.toString(),
+                MDict.PROJ_TRANSVERSE_MERCATOR.toString(),
+                MDict.PROJ_UPS_NORTH.toString(),
+                MDict.PROJ_UPS_SOUTH.toString()
+        );
 
-        mProjComboBox.getItems().addAll(mProjections);
-        mElevationCheckBox = new CheckBox(MDict.ELEVATION.toString());
-
-        mModeFlatRadioButton.setMaxWidth(Double.MAX_VALUE);
-        mModeGlobeRadioButton.setMaxWidth(Double.MAX_VALUE);
-        mProjComboBox.setMaxWidth(Double.MAX_VALUE);
         mProjComboBox.disableProperty().bind(mModeGlobeRadioButton.selectedProperty());
 
         FxHelper.setPadding(
@@ -133,16 +113,7 @@ public class LayerOptionsView extends VBox {
                 mProjComboBox
         );
 
-        mWorldMapCheckBox = new CheckBox(MDict.WORLD_MAP.toString());
-        mScaleBarCheckBox = new CheckBox(MDict.SCALE_BAR.toString());
-        mControlsCheckBox = new CheckBox(MDict.VIEW_CONTROLS.toString());
-        mControlsCheckBox.setDisable(true);
-        mCompassCheckBox = new CheckBox(MDict.COMPASS.toString());
-        mStarsCheckBox = new CheckBox(MDict.STARS.toString());
-        mAtmosphereCheckBox = new CheckBox(MDict.ATMOSPHERE.toString());
-        mPlaceNameCheckBox = new CheckBox(Dict.PLACE_NAMES.toString());
         mPlaceNameCheckBox.setDisable(true);
-        mRightPane.setSpacing(FxHelper.getUIScaled(12));
         mRightPane.getChildren().setAll(
                 mWorldMapCheckBox,
                 mCompassCheckBox,
@@ -154,27 +125,16 @@ public class LayerOptionsView extends VBox {
                 mElevationCheckBox
         );
 
-        mLeftPane.getChildren().stream()
-                .filter(node -> node instanceof Region)
-                .map(node -> (Region) node)
-                .forEachOrdered(region -> {
-                    region.prefWidthProperty().bind(mLeftPane.widthProperty());
-                });
+        BindingHelper.bindWidthForChildrens(mLeftPane, mRightPane);
+        BindingHelper.bindWidthForRegions(this, mLeftPane, mRightPane, mMaskColorPicker);
+        BindingHelper.bindCheckBoxEnablement(mMaskCheckBox, mMaskColorPicker, mMaskOpacitySlider);
 
-        mRightPane.getChildren().stream()
-                .filter(node -> node instanceof Region)
-                .map(node -> (Region) node)
-                .forEachOrdered(region -> {
-                    region.prefWidthProperty().bind(mRightPane.widthProperty());
-                });
-
-        mLeftPane.prefWidthProperty().bind(widthProperty());
-        mRightPane.prefWidthProperty().bind(widthProperty());
-        subBox.getChildren().addAll(
+        var subBox = new HBox(FxHelper.getUIScaled(16),
                 mLeftPane,
                 new Separator(Orientation.VERTICAL),
                 mRightPane
         );
+        subBox.setPadding(FxHelper.getUIScaledInsets(8, 8, 8, 8));
 
         getChildren().setAll(
                 mMapOpacityBox,
