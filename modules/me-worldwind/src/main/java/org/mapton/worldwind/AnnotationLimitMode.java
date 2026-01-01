@@ -15,13 +15,15 @@
  */
 package org.mapton.worldwind;
 
+import org.openide.util.NbBundle;
+
 /**
  *
  * @author Patrik Karlström <patrik@trixon.se>
  */
 public enum AnnotationLimitMode {
-    TOTAL("In total"),
-    CATEGORY("Per category");
+    TOTAL(NbBundle.getMessage(AnnotationLimitMode.class, "annotationModeTotal")),
+    CATEGORY(NbBundle.getMessage(AnnotationLimitMode.class, "annotationModeCategory"));
     private final String mTitle;
 
     private AnnotationLimitMode(String title) {

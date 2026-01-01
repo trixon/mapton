@@ -15,13 +15,14 @@
  */
 package org.mapton.worldwind;
 
+import org.openide.util.NbBundle;
+
 /**
  *
  * @author Patrik Karlström <patrik@trixon.se>
  */
 public enum AnnotationTimeout {
-    NO_TIMEOUT("No timeout", 0),
-    SEC_01("1 s", 1),
+    NO_TIMEOUT(NbBundle.getMessage(AnnotationTimeout.class, "annotationNoTimeout"), 0),
     SEC_03("3 s", 3),
     SEC_05("5 s", 5),
     SEC_10("10 s", 10),

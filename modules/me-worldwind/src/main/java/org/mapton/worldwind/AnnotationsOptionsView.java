@@ -16,12 +16,14 @@
 package org.mapton.worldwind;
 
 import java.util.List;
+import java.util.ResourceBundle;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.core.api.ui.MPresetPopOver;
 import org.mapton.worldwind.api.MOptionsView;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.BindingHelper;
 import se.trixon.almond.util.fx.FxHelper;
@@ -37,6 +39,7 @@ public class AnnotationsOptionsView extends MOptionsView {
     private final AnnotationsOptions mOptions = AnnotationsOptions.getInstance();
     private final MPresetPopOver mPresetPopOver;
     private final ComboBox<AnnotationTimeout> mTimeOutComboBox = new ComboBox<>();
+    private final ResourceBundle mBundle = NbBundle.getBundle(AnnotationsOptionsView.class);
 
     public AnnotationsOptionsView() {
         mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_OPTIONS, "annotations");
@@ -63,9 +66,9 @@ public class AnnotationsOptionsView extends MOptionsView {
         mTimeOutComboBox.getItems().setAll(AnnotationTimeout.values());
 
         var gp = createGridPane();
-        var limitLabel = new Label("Max");
+        var limitLabel = new Label(mBundle.getString("annotationMax"));
         var modeLabel = new Label(Dict.MODE.toString());
-        var timeoutLabel = new Label("Timeout");
+        var timeoutLabel = new Label(mBundle.getString("annotationTimeout"));
         int row = 0;
         gp.addRow(row++, limitLabel, modeLabel);
         gp.addRow(row++, mLimitSpinner, mModeComboBox);
@@ -81,7 +84,7 @@ public class AnnotationsOptionsView extends MOptionsView {
         );
 
         FxHelper.autoSizeColumn(gp, 2);
-
+        setLabelPadding(timeoutLabel);
         setCenter(gp);
     }
 
