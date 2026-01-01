@@ -20,7 +20,7 @@ limitations under the License.
     <parent>
         <groupId>org.mapton</groupId>
         <artifactId>butterfly-parent</artifactId>
-        <version>25.10x</version>
+        <version>26.01</version>
     </parent>
     <artifactId>butterfly-rock-convergence</artifactId>
     <packaging>nbm</packaging>
