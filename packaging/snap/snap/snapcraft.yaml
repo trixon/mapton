@@ -14,7 +14,7 @@ description: |
 
 
     **Features**
-    * 3d objects, 4d when looking at time coded data
+    * 3d objects, 4d with time coded data
     * Time slider
     * Geographical bookmarks and Point of Interests
     * Layer management
@@ -24,10 +24,12 @@ description: |
 
 
     **Bundled plugins**
-    * Files - Plot kml files
+    * Files - Plot kml files and other formats
     * Photos - Plot geotagged images
     * Population visualizer - Look at the world population
     * XKCD - View the amazing XKCD strip
+    
+    https://bsky.app/profile/mapton.org
 
 grade: stable
 platforms:
@@ -35,6 +37,17 @@ platforms:
 confinement: strict
 icon: snap/gui/mapton.png
 license: Apache-2.0
+
+source-code:
+  - https://github.com/trixon/mapton
+contact:
+  - contact@mapton.org
+website:
+  - https://mapton.org
+issues:
+  - https://github.com/trixon/mapton/issues
+donation:
+  - https://buymeacoffee.com/trixon
 
 apps:
   mapton:
