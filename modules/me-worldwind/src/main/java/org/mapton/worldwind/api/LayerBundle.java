@@ -272,7 +272,7 @@ public abstract class LayerBundle {
     }
 
     public void setCategoryAddOns(Layer layer) {
-        setCategory(layer, "* %s".formatted(Dict.ADD_ONS.toString()));
+        setCategory(layer, "%s".formatted(Dict.ADD_ONS.toString()));
     }
 
     public void setCategorySystem(Layer layer) {

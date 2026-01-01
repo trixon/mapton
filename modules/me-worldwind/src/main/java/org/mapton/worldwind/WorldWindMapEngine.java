@@ -16,7 +16,7 @@
 package org.mapton.worldwind;
 
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLEventAdapter;
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -101,7 +101,7 @@ public class WorldWindMapEngine extends MEngine {
                 mMainPanel.add(mMap, BorderLayout.CENTER);
                 postCreateRunnable.run();
                 mBasicDragger = new BasicDragger(mMap);
-                mMap.addSelectListener(mBasicDragger);
+//                mMap.addSelectListener(mBasicDragger);
 //                });
             }, getClass().getCanonicalName()).start();
         } else {
@@ -454,7 +454,7 @@ public class WorldWindMapEngine extends MEngine {
             }
         });
 
-        mMap.addGLEventListener(new GLEventListener() {
+        mMap.addGLEventListener(new GLEventAdapter() {
             private boolean runOnce = true;
 
             @Override
@@ -477,18 +477,6 @@ public class WorldWindMapEngine extends MEngine {
                         }
                     });
                 }
-            }
-
-            @Override
-            public void dispose(GLAutoDrawable drawable) {
-            }
-
-            @Override
-            public void init(GLAutoDrawable drawable) {
-            }
-
-            @Override
-            public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
             }
         });
 

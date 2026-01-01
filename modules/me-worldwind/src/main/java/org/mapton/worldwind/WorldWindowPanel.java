@@ -20,7 +20,7 @@ import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.avlist.AVList;
-import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
+import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.globes.EarthFlat;
@@ -91,7 +91,7 @@ import se.trixon.almond.util.swing.FileHelper;
  *
  * @author Patrik Karlström
  */
-public class WorldWindowPanel extends WorldWindowGLJPanel {
+public class WorldWindowPanel extends WorldWindowGLCanvas {
 
     private CrosshairLayer mCrosshairLayer;
     private final ObservableList<Layer> mCustomLayers = FXCollections.observableArrayList();
