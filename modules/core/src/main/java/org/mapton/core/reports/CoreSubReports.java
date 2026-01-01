@@ -30,7 +30,7 @@ public class CoreSubReports extends MSubReports {
 
     @Override
     public String getParent() {
-        return "- %s -".formatted(Mapton.LOG_TAG);
+        return "* %s".formatted(Mapton.LOG_TAG);
     }
 
     @Override
