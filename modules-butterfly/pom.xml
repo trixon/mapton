@@ -21,7 +21,7 @@ limitations under the License.
     <parent>
         <groupId>org.mapton</groupId>
         <artifactId>mapton-parent</artifactId>
-        <version>26.01</version>
+        <version>26.01x</version>
     </parent>
 
     <artifactId>butterfly-parent</artifactId>
