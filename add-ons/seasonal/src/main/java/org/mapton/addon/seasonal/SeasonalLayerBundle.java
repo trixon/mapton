@@ -47,11 +47,10 @@ public class SeasonalLayerBundle extends LayerBundle {
     public SeasonalLayerBundle() {
         mLayer.setPickEnabled(false);
         setVisibleInLayerManager(mLayer, false);
+        setParentLayer(mLayer);
+        setAllChildLayers(mCandleLayer, mJulgranLayer);
 
-        setVisibleInLayerManager(mCandleLayer, false);
         mCandleRenderer = new CandleRenderer(mCandleLayer);
-
-        setVisibleInLayerManager(mJulgranLayer, false);
         mJulgranRenderer = new JulgranRenderer(mJulgranLayer);
 
         initListeners();
@@ -61,12 +60,14 @@ public class SeasonalLayerBundle extends LayerBundle {
     public void populate() {
         getLayers().addAll(mLayer, mCandleLayer, mJulgranLayer);
         setPopulated(true);
-        mLayer.setEnabled(true);
         mLayer.setMinActiveAltitude(10000);
     }
 
     private void checkForRefresh() {
-        String[] fettisdagar = {"20220301", "20230221", "20240213", "20250304", "20260217", "20270209", "20280229", "20290213"};
+        var seasonalEnabled = MSimpleObjectStorageManager.getInstance().getBoolean(SeasonalSOSB.class, true);
+        mLayer.setEnabled(seasonalEnabled);
+
+        String[] fettisdagar = {"20260217", "20270209", "20280229", "20290213"};
         String[] halloween = {"1030", "1031"};
         final String today = FastDateFormat.getInstance("yyyyMMdd").format(new Date(System.currentTimeMillis()));
         if (ArrayUtils.contains(fettisdagar, today)) {
