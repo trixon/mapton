@@ -27,4 +27,8 @@ public interface MPresetActions {
 
     public void presetStore(Preferences preferences);
 
+    default public void reset() {
+
+    }
+
 }
