@@ -58,6 +58,7 @@ import org.mapton.butterfly_format.types.rock.BRockConvergenceObservation;
 import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 import org.mapton.butterfly_format.types.rock.BRockExtensometerPoint;
 import org.mapton.butterfly_format.types.rock.BRockExtensometerPointObservation;
+import org.mapton.butterfly_format.types.rock.BRockEarthquake;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
@@ -87,7 +88,6 @@ public class Butterfly {
     private final ArrayList<BHistory> mAlarmsHistory = new ArrayList<>();
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
     private final ArrayList<BAreaBase> mAreaFilters = new ArrayList<>();
-    private final ArrayList<BRockBlast> mRockBlasts = new ArrayList<>();
     private final ArrayList<BCoordinate> mCoordinates = new ArrayList<>();
     private final Dev mDev = new Dev();
     private final ArrayList<BGeoInclinometerPoint> mGeoInclinometerPoints = new ArrayList<>();
@@ -104,6 +104,8 @@ public class Butterfly {
     private final ArrayList<BRemoteInsarPoint> mRemoteInsarPoints = new ArrayList<>();
     private final ArrayList<BRemoteInsarPointObservation> mRemoteInsarPointsObservations = new ArrayList<>();
     private final Rock mRock = new Rock();
+    private final ArrayList<BRockBlast> mRockBlasts = new ArrayList<>();
+    private final ArrayList<BRockEarthquake> mRockEarthquakes = new ArrayList<>();
     private final ArrayList<BRockConvergence> mRockConvergence = new ArrayList<>();
     private final ArrayList<BRockConvergenceObservation> mRockConvergenceObservations = new ArrayList<>();
     private final ArrayList<BRockExtensometer> mRockExtensometers = new ArrayList<>();
@@ -276,6 +278,9 @@ public class Butterfly {
         //Rock
         new ImportFromCsv<BRockBlast>(BRockBlast.class) {
         }.load(sourceDir, "rockBlasts.csv", mRockBlasts);
+
+        new ImportFromCsv<BRockEarthquake>(BRockEarthquake.class) {
+        }.load(sourceDir, "rockEarthquakes.csv", mRockEarthquakes);
 
         new ImportFromCsv<BRockConvergence>(BRockConvergence.class) {
         }.load(sourceDir, "rockConvergence.csv", mRockConvergence);
@@ -602,6 +607,10 @@ public class Butterfly {
 
         public ArrayList<BRockConvergenceObservation> getConvergenceObservations() {
             return mRockConvergenceObservations;
+        }
+
+        public ArrayList<BRockEarthquake> getEarthquakes() {
+            return mRockEarthquakes;
         }
 
         public ArrayList<BRockExtensometer> getExtensometers() {

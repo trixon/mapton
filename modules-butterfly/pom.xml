@@ -45,6 +45,7 @@ limitations under the License.
         <module>rock</module>
         <module>rock_blast</module>
         <module>rock_convergence</module>
+        <module>rock_earthquake</module>
         <module>rock_extensometer</module>
         <module>structural</module>
         <module>structural_crack</module>
