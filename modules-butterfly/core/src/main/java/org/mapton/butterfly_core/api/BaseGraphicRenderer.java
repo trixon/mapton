@@ -87,6 +87,7 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
     public void plot(U p, Position position, ArrayList<AVListImpl> mapObjects) {
     }
 
+    @Deprecated(forRemoval = true)
     public void plot(U p, U selectedItem, Position position, ArrayList<AVListImpl> mapObjects, BOptionsView optionsView) {
         if (optionsView.isPlotSelected()) {
             if (p.equals(selectedItem)) {
@@ -103,6 +104,26 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
         }
 
         if (optionsView.isPlotDebt()) {
+            plotDebt((BXyzPoint) p, position);
+        }
+    }
+
+    public void plot(U p, U selectedItem, Position position, ArrayList<AVListImpl> mapObjects, BOptionsBase options) {
+        if (options.isPlotSelected()) {
+            if (p.equals(selectedItem)) {
+                plot(p, position, mapObjects);
+            } else if (selectedItem != null && options.isPlotSelectedPlus()) {
+                var llP = BCoordinatrix.toLatLon((BXyzPoint) p);
+                var llS = BCoordinatrix.toLatLon((BXyzPoint) selectedItem);
+                if (llP.distance(llS) <= options.getPlotDistance()) {
+                    plot(p, position, mapObjects);
+                }
+            }
+        } else {
+            plot(p, position, mapObjects);
+        }
+
+        if (options.isPlotDebt()) {
             plotDebt((BXyzPoint) p, position);
         }
     }

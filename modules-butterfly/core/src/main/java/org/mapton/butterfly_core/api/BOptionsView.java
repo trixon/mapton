@@ -16,11 +16,15 @@
 package org.mapton.butterfly_core.api;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.VBox;
+import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.ui.MPresetActions;
+import org.mapton.core.api.ui.MPresetPopOver;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.fx.FxHelper;
@@ -31,15 +35,26 @@ import se.trixon.almond.util.fx.session.SessionCheckBox;
  *
  * @author Patrik Karlström
  */
-public class BOptionsView extends MOptionsView {
+public abstract class BOptionsView extends MOptionsView {
 
     protected final MenuButton mLabelMenuButton = new MenuButton();
+    protected MPresetPopOver mPresetPopOver;
     private final VBox mBottomBox = new VBox(FxHelper.getUIScaled(4));
     private SliderPane mDistanceSliderPane;
+    @Deprecated(forRemoval = true)
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty();
+    @Deprecated(forRemoval = true)
     private final SimpleObjectProperty<LabelBy.Operations> mLabelByProperty = new SimpleObjectProperty<>();
     private final SessionCheckBox mPlotDebtScbx = new SessionCheckBox("Plotta skuld");
     private final SessionCheckBox mPlotSelectedScbx = new SessionCheckBox("Plotta bara valt objekt");
+    private MPresetActions mPresetActions;
+
+    public BOptionsView(LayerBundle layerBundle, String title, MPresetActions presetActions, String key) {
+        super(layerBundle, title);
+        mPresetPopOver = new MPresetPopOver(presetActions, MPresetPopOver.PARENT_NODE_OPTIONS, key);
+        mPresetActions = presetActions;
+        createUI();
+    }
 
     public BOptionsView() {
         super();
@@ -60,6 +75,7 @@ public class BOptionsView extends MOptionsView {
         return mDistanceSliderPane;
     }
 
+    @Deprecated(forRemoval = true)
     public <T> T getLabelBy() {
         return (T) mLabelByProperty.get();
     }
@@ -96,6 +112,7 @@ public class BOptionsView extends MOptionsView {
         return mLabelByIdProperty;
     }
 
+    @Deprecated(forRemoval = true)
     public SimpleObjectProperty<LabelBy.Operations> labelByProperty() {
         return mLabelByProperty;
     }
@@ -130,6 +147,7 @@ public class BOptionsView extends MOptionsView {
 
     }
 
+    @Deprecated(forRemoval = true)
     public void restoreLabelFromId(Class enumClass, LabelBy.Operations defaultValue) {
         try {
             Enum a = Enum.valueOf(enumClass, mLabelByIdProperty.get());
@@ -137,6 +155,16 @@ public class BOptionsView extends MOptionsView {
             mLabelByProperty.set(b);
         } catch (IllegalArgumentException e) {
             mLabelByProperty.set(defaultValue);
+        }
+    }
+
+    public void restoreLabelFromId(Class enumClass, String enumName, LabelBy.Operations defaultValue) {
+        try {
+            Enum a = Enum.valueOf(enumClass, enumName);
+            LabelBy.Operations b = (LabelBy.Operations) a;
+            mLabelMenuButton.setText(b.getFullName());
+        } catch (IllegalArgumentException e) {
+            mLabelMenuButton.setText(defaultValue.getFullName());
         }
     }
 
@@ -149,6 +177,19 @@ public class BOptionsView extends MOptionsView {
         mPlotDebtScbx.setDisable(!enableDebt);
     }
 
+    protected void initSession(BOptionsBase options) {
+        mBottomBox.setDisable(false);
+        if (options.plotDebtProperty() != null) {
+            mPlotDebtScbx.selectedProperty().bindBidirectional(options.plotDebtProperty());
+            mPlotDebtScbx.setDisable(false);
+        }
+        if (options.plotSelectedProperty() != null) {
+            mPlotSelectedScbx.selectedProperty().bindBidirectional(options.plotSelectedProperty());
+        }
+        mDistanceSliderPane.selectedProperty().bindBidirectional(options.plotSelectedPlusProperty());
+        mDistanceSliderPane.valueProperty().bindBidirectional(options.plotDistanceProperty());
+    }
+
     protected void initSession(SessionManager sessionManager) {
         mBottomBox.setDisable(false);
         sessionManager.register(getKeyOptions("plotDebt"), mPlotDebtScbx.selectedProperty());
@@ -157,6 +198,22 @@ public class BOptionsView extends MOptionsView {
     }
 
     private void createUI() {
+        if (mPresetPopOver != null) {
+            var restoreDefaultsRunnable = (Runnable) () -> {
+                if (mPresetPopOver.restoreDefaultIfExists()) {
+                    //
+                } else {
+                    mPresetActions.reset();
+                }
+            };
+            var actions = List.of(
+                    getRestoreDefaultsAction(restoreDefaultsRunnable),
+                    ActionUtils.ACTION_SPAN,
+                    mPresetPopOver.getAction()
+            );
+            createToolbar(actions);
+        }
+
         mBottomBox.setPadding(FxHelper.getUIScaledInsets(8));
         mBottomBox.setDisable(true);
 
