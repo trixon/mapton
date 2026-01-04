@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.property.ObjectProperty;
@@ -81,6 +82,10 @@ public class EarthquakeGenerator {
 
     public File getTrackerFile() {
         return mTrackerFile;
+    }
+
+    private void deleteRedundantFiles() {
+        //TODO delete all files older than the most recent MONTH file.
     }
 
     private String replace(String s) {
@@ -173,23 +178,39 @@ public class EarthquakeGenerator {
         FxHelper.runLater(() -> mItemsProperty.get().setAll(earthquakes));
     }
 
+    private enum Feed {
+        MONTH(TimeUnit.DAYS.toMillis(7)),
+        WEEK(TimeUnit.DAYS.toMillis(1)),
+        DAY(TimeUnit.HOURS.toMillis(6)),
+        HOUR(TimeUnit.MINUTES.toMillis(5));
+        private long mAgeLimit;
+
+        private Feed(long ageLimit) {
+            mAgeLimit = ageLimit;
+        }
+
+        public long getAgeLimit() {
+            return mAgeLimit;
+        }
+    }
+
     public void update(MPrint print) throws IOException {
         mPrint = print;
         mPrint.out("USGS: Download BEG");
+        var timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
 
         var dl = false;
-        dl = optionalDownLoad("month", TimeUnit.DAYS.toMillis(7)) || dl;
-        dl = optionalDownLoad("week", TimeUnit.DAYS.toMillis(1)) || dl;
-        dl = optionalDownLoad("day", TimeUnit.HOURS.toMillis(12)) || dl;
-        dl = optionalDownLoad("hour", TimeUnit.MINUTES.toMillis(5)) || dl;
+        dl = optionalDownload(Feed.MONTH, timestamp) || dl;
+        dl = optionalDownload(Feed.WEEK, timestamp) || dl;
+        dl = optionalDownload(Feed.DAY, timestamp) || dl;
+        dl = optionalDownload(Feed.HOUR, timestamp) || dl;
+
+        deleteRedundantFiles();
 
         if (dl) {
             parse();
         }
         FileUtils.touch(mTrackerFile);
-        //
-        //TODO Autoclean when there are monthly files
-        //
         mPrint.out("USGS: Download END " + dl);
     }
 
@@ -201,7 +222,8 @@ public class EarthquakeGenerator {
         return StringUtils.toRootUpperCase(f.getProperty(key, String.class));
     }
 
-    private boolean optionalDownLoad(String type, long ageLimit) throws IOException {
+    private boolean optionalDownload(Feed feed, String timestamp) throws IOException {
+        var type = feed.name().toLowerCase(Locale.ENGLISH);
         mPrint.out("USGS: Needs update? " + type);
 
         var maxTimeStamp = Files.walk(mCacheDir.toPath())
@@ -212,9 +234,8 @@ public class EarthquakeGenerator {
                 .map(file -> file.lastModified())
                 .orElse(null);
 
-        if (maxTimeStamp == null || SystemHelper.age(maxTimeStamp) > ageLimit) {
+        if (maxTimeStamp == null || SystemHelper.age(maxTimeStamp) > feed.getAgeLimit()) {
             mPrint.out("USGS: YES");
-            var timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             var destFile = new File(mCacheDir, "%s_%s.geojson".formatted(type, timestamp));
             var url = URI.create(mBaseUrl.formatted(type)).toURL();
             mPrint.out("USGS: Copy <from,to>\n%s\n%s".formatted(url.toString(), destFile.toString()));
