@@ -15,15 +15,20 @@
  */
 package org.mapton.butterfly_rock_earthquake;
 
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.render.AnnotationAttributes;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -35,6 +40,7 @@ public class QuakeAttributeManager extends BaseAttributeManager {
     private BasicShapeAttributes mComponentGroundPathAttributes;
     private PointPlacemarkAttributes mSinglePinAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
+    private AnnotationAttributes mAnnotationAttributes;
 
     public static QuakeAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -60,10 +66,25 @@ public class QuakeAttributeManager extends BaseAttributeManager {
             mComponentGroundPathAttributes.setDrawOutline(true);
             mComponentGroundPathAttributes.setOutlineMaterial(Material.YELLOW);
             mComponentGroundPathAttributes.setEnableLighting(false);
-            mComponentGroundPathAttributes.setOutlineWidth(1);
+            mComponentGroundPathAttributes.setOutlineWidth(3);
         }
 
         return mComponentGroundPathAttributes;
+    }
+
+    public AnnotationAttributes getAnnotationAttributes() {
+        if (mAnnotationAttributes == null) {
+            var size = SwingHelper.getUIScaled(32);
+            mAnnotationAttributes = new AnnotationAttributes();
+            mAnnotationAttributes.setLeader(AVKey.SHAPE_NONE);
+            mAnnotationAttributes.setDrawOffset(new Point(0, (int) (-size * .5)));
+            mAnnotationAttributes.setSize(new Dimension(size, size));
+            mAnnotationAttributes.setBorderWidth(0);
+            mAnnotationAttributes.setCornerRadius(0);
+            mAnnotationAttributes.setBackgroundColor(Color.BLACK);
+        }
+
+        return mAnnotationAttributes;
     }
 
     @Override
