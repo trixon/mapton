@@ -15,11 +15,13 @@
  */
 package org.mapton.butterfly_geo.api;
 
+import se.trixon.almond.util.SDict;
+
 /**
  *
  * @author Patrik Karlström
  */
 public class GeotechnicalHelper {
 
-    public static String CAT_GEO = "Geoteknik";
+    public static String CAT_GEO = SDict.GEOTECHNICAL.toString();
 }

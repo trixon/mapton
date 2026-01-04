@@ -15,11 +15,13 @@
  */
 package org.mapton.butterfly_remote.api;
 
+import se.trixon.almond.util.SDict;
+
 /**
  *
  * @author Patrik Karlström
  */
 public class RemoteHelper {
 
-    public static String CAT_REMOTE = "Fjärranalys";
+    public static String CAT_REMOTE = SDict.REMOTE_SENSING.toString();
 }
