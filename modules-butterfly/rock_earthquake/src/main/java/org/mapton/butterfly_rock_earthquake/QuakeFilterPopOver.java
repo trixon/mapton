@@ -54,6 +54,11 @@ public class QuakeFilterPopOver extends BaseTabbedFilterPopOver {
         initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
 
         populate();
+
+        load(mManager.butterflyProperty().get());
+        mManager.butterflyProperty().addListener((p, o, n) -> {
+            load(n);
+        });
     }
 
     @Override
@@ -121,14 +126,17 @@ public class QuakeFilterPopOver extends BaseTabbedFilterPopOver {
         setContentNode(root);
 
         mFilterSectionPoint.disable(
-                PointElement.ALARM,
-                PointElement.CATEGORY,
-                PointElement.FREQUENCY,
                 PointElement.FREQUENCY_DEFAULT,
                 PointElement.FREQUENCY_DEFAULT_STAT,
+                PointElement.FREQUENCY_INTENSE,
+                PointElement.FREQUENCY_INTENSE_STAT,
+                PointElement.ALARM_STAT,
                 PointElement.MEAS_MODE,
-                PointElement.MEAS_NEXT,
-                PointElement.STATUS
+                PointElement.MEAS_MODE_SUB,
+                PointElement.UNIT_DIFF,
+                PointElement.FORMULA_ROLLING,
+                PointElement.FORMULA_SPARSE,
+                PointElement.MEAS_NEXT
         );
 
         mFilterSectionDate.disable(

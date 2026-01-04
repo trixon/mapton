@@ -70,7 +70,7 @@ public class QuakeAttributeManager extends BaseAttributeManager {
     public PointPlacemarkAttributes getPinAttributes(Color color) {
         if (mSinglePinAttributes == null) {
             mSinglePinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mSinglePinAttributes.setImageAddress("https://maps.google.com/mapfiles/kml/shapes/falling_rocks.png");
+            mSinglePinAttributes.setImageAddress("https://maps.google.com/mapfiles/kml/shapes/caution.png");
             mSinglePinAttributes.setImageColor(color);
             mSinglePinAttributes.setScale(Mapton.getScalePinImage());
             mSinglePinAttributes.setLabelScale(Mapton.getScalePinLabel());

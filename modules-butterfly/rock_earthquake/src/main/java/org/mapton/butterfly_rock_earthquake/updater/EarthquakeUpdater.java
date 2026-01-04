@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_rock_earthquake.data;
+package org.mapton.butterfly_rock_earthquake.updater;
 
 import java.io.IOException;
+import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MUpdater;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
@@ -30,21 +31,26 @@ public class EarthquakeUpdater extends MUpdater.ByFile {
     private final EarthquakeGenerator mGenerator = EarthquakeGenerator.getInstance();
 
     public EarthquakeUpdater() {
-        setFile(mGenerator.getLast());
-        setComment("All earthquakes, past 30 days");
+        setFile(mGenerator.getTrackerFile());
+        setComment("All earthquakes");
         setCategory("USGS");
+        setAutoUpdate(true);
 
         setRunnable(() -> {
             try {
                 mGenerator.update(mPrint);
-//                GeonamesManager.getInstance().init();
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
             }
         });
 
-        setAutoUpdateInterval(FREQ_1_DAY);
+        setAutoUpdateInterval(FREQ_10_MINUTES);
         initAutoUpdater();
+    }
+
+    @Override
+    public boolean isAutoUpdateEnabled() {
+        return MSimpleObjectStorageManager.getInstance().getBoolean(AutoUpdateProvider.class, false);
     }
 
     @Override

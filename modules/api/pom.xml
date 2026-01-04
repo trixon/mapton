@@ -29,6 +29,7 @@
                         <publicPackage>j2html.*</publicPackage>
                         <publicPackage>javax.*</publicPackage>
                         <publicPackage>jakarta.*</publicPackage>
+                        <publicPackage>org.n52.jackson.*</publicPackage>
                         <publicPackage>org.apache.commons.*</publicPackage>
                         <publicPackage>org.apache.pdfbox.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
@@ -372,6 +373,11 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-csv</artifactId>
             <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.jackson</groupId>
+            <artifactId>jackson-datatype-jts</artifactId>
+            <version>2.0.0</version>
         </dependency>
 
         <!--Other-->

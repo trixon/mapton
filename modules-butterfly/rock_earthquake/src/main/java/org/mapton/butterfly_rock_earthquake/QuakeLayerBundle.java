@@ -68,12 +68,6 @@ public class QuakeLayerBundle extends BfLayerBundle {
 
     private void init() {
         initCommons(Bundle.CTL_EarthquakeAction(), SDict.ROCK_MECHANICS.toString(), "QuakeTopComponent");
-
-        mLayer.setMaxActiveAltitude(6000);
-        mSurfaceLayer.setMaxActiveAltitude(6000);
-        mPinLayer.setMaxActiveAltitude(10000);
-        mLabelLayer.setMaxActiveAltitude(400);
-        mGroundConnectorLayer.setMaxActiveAltitude(1000);
     }
 
     private void initListeners() {

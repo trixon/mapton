@@ -15,59 +15,45 @@
  */
 package org.mapton.butterfly_rock_earthquake;
 
-import java.util.Objects;
+import java.time.format.DateTimeFormatter;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.layout.VBox;
+import org.mapton.butterfly_core.api.BListCell;
 import org.mapton.butterfly_format.types.rock.BRockEarthquake;
-import se.trixon.almond.util.DateHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class QuakeListCell extends ListCell<BRockEarthquake> {
+class QuakeListCell extends BListCell<BRockEarthquake> {
+
+    private static final DateTimeFormatter sDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm 'UTC'");
 
     private final Label mDateLabel = new Label();
-    private final Label mGroupLabel = new Label();
     private final Label mNameLabel = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
-    private VBox mVBox;
+    private final Label mValueLabel = new Label();
 
     public QuakeListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BRockEarthquake quake, boolean empty) {
-        super.updateItem(quake, empty);
-        if (quake == null || empty) {
-            clearContent();
-        } else {
-            addContent(quake);
-        }
-    }
-
-    private void addContent(BRockEarthquake quake) {
+    protected void addContent(BRockEarthquake quake) {
         setText(null);
-        var date = Objects.toString(DateHelper.toDateTimeString(quake.getDateLatest()), "-");
         mNameLabel.setText(quake.getName());
-        mDateLabel.setText("%s %s".formatted(date, quake.getComment()));
-        mGroupLabel.setText(quake.getGroup());
+        mValueLabel.setText("M %.1f %s (%d/1000)".formatted(
+                quake.getMag(),
+                quake.getMagType(),
+                quake.getSig()));
+        mDateLabel.setText(sDateTimeFormatter.format(quake.getDateLatest().plusSeconds(30)));
         setGraphic(mVBox);
-    }
-
-    private void clearContent() {
-        setText(null);
-        setGraphic(null);
     }
 
     private void createUI() {
         mNameLabel.setStyle(mStyleBold);
-        mVBox = new VBox(
+        mVBox.getChildren().setAll(
                 mNameLabel,
-                mDateLabel,
-                mGroupLabel
+                mValueLabel,
+                mDateLabel
         );
     }
 

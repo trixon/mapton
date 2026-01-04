@@ -33,6 +33,9 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 public class BRockEarthquake extends BXyzPoint {
 
     private transient Ext mExt;
+    private Integer mSig;
+    private Double mag;
+    private String magType;
 
     public BRockEarthquake() {
     }
@@ -43,6 +46,30 @@ public class BRockEarthquake extends BXyzPoint {
         }
 
         return mExt;
+    }
+
+    public Double getMag() {
+        return mag;
+    }
+
+    public String getMagType() {
+        return magType;
+    }
+
+    public Integer getSig() {
+        return mSig;
+    }
+
+    public void setMag(Double mag) {
+        this.mag = mag;
+    }
+
+    public void setMagType(String magType) {
+        this.magType = magType;
+    }
+
+    public void setSig(Integer sig) {
+        this.mSig = sig;
     }
 
     public class Ext extends BXyzPoint.Ext<BRockBlastObservation> {
