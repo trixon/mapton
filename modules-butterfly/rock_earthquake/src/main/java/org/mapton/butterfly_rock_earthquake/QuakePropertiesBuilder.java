@@ -15,20 +15,17 @@
  */
 package org.mapton.butterfly_rock_earthquake;
 
-import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
-import java.util.Objects;
-import org.mapton.api.ui.forms.PropertiesBuilder;
+import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.rock.BRockEarthquake;
-import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.MathHelper;
+import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class QuakePropertiesBuilder extends PropertiesBuilder<BRockEarthquake> {
+public class QuakePropertiesBuilder extends BPropertiesBuilder<BRockEarthquake> {
 
     @Override
     public Object build(BRockEarthquake p) {
@@ -38,15 +35,18 @@ public class QuakePropertiesBuilder extends PropertiesBuilder<BRockEarthquake> {
 
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
-        var date = Objects.toString(DateHelper.toDateTimeString(p.getDateLatest()), "-");
-
         propertyMap.put(getCatKey(cat1, "Ext.id"), p.getExternalId());
-        propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
-        propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
-        propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
-        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), date);
-        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
-        propertyMap.put(getCatKey(cat1, "Z"), MathHelper.convertDoubleToString(p.getZeroZ(), 1));
+        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), QuakeListCell.DATE_TIME_FORMATTER.format(p.getDateLatest()));
+        propertyMap.put(getCatKey(cat1, Dict.PLACE.toString()), p.getName());
+        propertyMap.put(getCatKey(cat1, "Magnitude"), "%.1f %s".formatted(p.getMag(), p.getMagType()));
+        propertyMap.put(getCatKey(cat1, "Alert"), p.getClassification());
+        propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), p.getAlarm1Id());
+        propertyMap.put(getCatKey(cat1, Dict.CATEGORY.toString()), p.getCategory());
+//        propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
+        propertyMap.put(getCatKey(cat1, Dict.STATUS.toString()), p.getStatus());
+        propertyMap.put(getCatKey(cat1, Dict.TAGS.toString()), p.getTag());
+        propertyMap.put(getCatKey(cat1, Dict.ORIGIN.toString()), p.getOrigin());
+        propertyMap.put(getCatKey(cat1, SDict.OPERATOR.toString()), p.getOperator());
 
         return propertyMap;
     }

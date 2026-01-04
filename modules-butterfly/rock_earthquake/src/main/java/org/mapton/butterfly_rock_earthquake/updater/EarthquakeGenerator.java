@@ -126,9 +126,11 @@ public class EarthquakeGenerator {
                                             q.setName(place);
                                         }
                                         q.setClassification(Objects.toString(getCapitalized(f, "alert"), "-"));
-                                        q.setCategory(f.getProperty("type", String.class));
+                                        q.setCategory(getCapitalized(f, "type"));
                                         q.setStatus(getCapitalized(f, "status"));
-                                        q.setTag(f.getProperty("types", String.class));
+                                        var types = f.getProperty("types", String.class);
+                                        types = StringUtils.mid(types, 1, types.length() - 2);
+                                        q.setTag(types);
                                         q.setMag(f.getProperty("mag", Double.class));
                                         q.setMagType(f.getProperty("magType", String.class));
                                         q.setSig(f.getProperty("sig", Integer.class));

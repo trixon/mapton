@@ -26,7 +26,7 @@ import org.mapton.butterfly_format.types.rock.BRockEarthquake;
  */
 class QuakeListCell extends BListCell<BRockEarthquake> {
 
-    private static final DateTimeFormatter sDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm 'UTC'");
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm 'UTC'");
 
     private final Label mDateLabel = new Label();
     private final Label mNameLabel = new Label();
@@ -44,7 +44,7 @@ class QuakeListCell extends BListCell<BRockEarthquake> {
                 quake.getMag(),
                 quake.getMagType(),
                 quake.getSig()));
-        mDateLabel.setText(sDateTimeFormatter.format(quake.getDateLatest().plusSeconds(30)));
+        mDateLabel.setText(DATE_TIME_FORMATTER.format(quake.getDateLatest().plusSeconds(30)));
         setGraphic(mVBox);
     }
 
