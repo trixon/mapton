@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
-import org.mapton.api.MDisruptorProvider;
-import org.mapton.api.MLatLon;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_core.api.ButterflyManager;
@@ -31,7 +29,6 @@ import org.mapton.butterfly_format.types.rock.BRockEarthquake;
 import org.mapton.butterfly_rock_earthquake.chart.QuakeMultiChartAggregate;
 import org.mapton.butterfly_rock_earthquake.updater.EarthquakeGenerator;
 import org.openide.util.Exceptions;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
@@ -39,7 +36,6 @@ import org.openide.util.lookup.ServiceProvider;
  */
 public class QuakeManager extends BaseManager<BRockEarthquake> {
 
-    private final static String DISRUPTOR_NAME = Bundle.CTL_EarthquakeAction();
     private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
     private final EarthquakeGenerator mEarthquakeGenerator = EarthquakeGenerator.getInstance();
     private final QuakeMultiChartAggregate mMultiChartAggregate = new QuakeMultiChartAggregate();
@@ -112,23 +108,12 @@ public class QuakeManager extends BaseManager<BRockEarthquake> {
                 .filter(p -> p.getDateLatest() == null ? true : getTemporalManager().isValid(p.getDateLatest()))
                 .toList();
 
-        var latLonDisruptors = timeFilteredItems.stream().map(p -> new MLatLon(p.getLat(), p.getLon())).toList();
-        mDisruptorManager.putLatLons(DISRUPTOR_NAME, latLonDisruptors);
         setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override
     protected void load(ArrayList<BRockEarthquake> items) {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @ServiceProvider(service = MDisruptorProvider.class)
-    public static class QuakeDisruptorProvider implements MDisruptorProvider {
-
-        @Override
-        public String getName() {
-            return DISRUPTOR_NAME;
-        }
     }
 
     private static class Holder {
