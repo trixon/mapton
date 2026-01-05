@@ -55,10 +55,10 @@ import org.mapton.butterfly_format.types.remote.RemoteInsarPointDefaultsConfig;
 import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.butterfly_format.types.rock.BRockConvergence;
 import org.mapton.butterfly_format.types.rock.BRockConvergenceObservation;
+import org.mapton.butterfly_format.types.rock.BRockEarthquake;
 import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 import org.mapton.butterfly_format.types.rock.BRockExtensometerPoint;
 import org.mapton.butterfly_format.types.rock.BRockExtensometerPointObservation;
-import org.mapton.butterfly_format.types.rock.BRockEarthquake;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
@@ -348,6 +348,7 @@ public class Butterfly {
                 mGeoInclinometerPoints,
                 mHydroGroundwaterPoints,
                 mRockConvergence,
+                mRockEarthquakes,
                 mRockExtensometers,
                 mStructuralCrackPoints,
                 mStructuralLoadPoints,
