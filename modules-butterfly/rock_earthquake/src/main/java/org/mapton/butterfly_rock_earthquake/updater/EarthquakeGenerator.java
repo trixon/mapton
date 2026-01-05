@@ -39,9 +39,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.mapton.api.MPrint;
 import org.mapton.api.Mapton;
+import org.mapton.butterfly_format.external.usgs.earthquake.EqFeature;
+import org.mapton.butterfly_format.external.usgs.earthquake.EqResponse;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.rock.BRockEarthquake;
-import org.mapton.butterfly_rock_earthquake.updater.EarthquakeResponse.EarthquakeFeature;
 import org.n52.jackson.datatype.jts.JtsModule;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
@@ -57,8 +58,8 @@ public class EarthquakeGenerator {
     private final String mBaseUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_%s.geojson";
     private final File mCacheDir;
     private final ObjectProperty<ObservableList<BRockEarthquake>> mItemsProperty = new SimpleObjectProperty<>();
-    private final File mTrackerFile;
     private MPrint mPrint;
+    private final File mTrackerFile;
 
     public static EarthquakeGenerator getInstance() {
         return Holder.INSTANCE;
@@ -84,17 +85,6 @@ public class EarthquakeGenerator {
         return mTrackerFile;
     }
 
-    private void deleteRedundantFiles() {
-        //TODO delete all files older than the most recent MONTH file.
-    }
-
-    private String replace(String s) {
-        return StringUtils.replaceEach(s,
-                new String[]{"CA", "NV", "MX"},
-                new String[]{"California", "Nevada", "Mexico"}
-        );
-    }
-
     public void parse() {
         var earthquakes = new ArrayList<BRockEarthquake>();
         var existingIds = new HashSet<String>();
@@ -108,7 +98,7 @@ public class EarthquakeGenerator {
                     .filter(file -> file.getName().endsWith(".geojson"))
                     .forEach(file -> {
                         try {
-                            var data = mapper.readValue(file, EarthquakeResponse.class);
+                            var data = mapper.readValue(file, EqResponse.class);
                             var earthquakeFileItems = data.getFeatures().stream()
                                     .filter(f -> !existingIds.contains(f.getId()))
                                     .map(f -> {
@@ -180,22 +170,6 @@ public class EarthquakeGenerator {
         FxHelper.runLater(() -> mItemsProperty.get().setAll(earthquakes));
     }
 
-    private enum Feed {
-        MONTH(TimeUnit.DAYS.toMillis(7)),
-        WEEK(TimeUnit.DAYS.toMillis(1)),
-        DAY(TimeUnit.HOURS.toMillis(6)),
-        HOUR(TimeUnit.MINUTES.toMillis(5));
-        private long mAgeLimit;
-
-        private Feed(long ageLimit) {
-            mAgeLimit = ageLimit;
-        }
-
-        public long getAgeLimit() {
-            return mAgeLimit;
-        }
-    }
-
     public void update(MPrint print) throws IOException {
         mPrint = print;
         mPrint.out("USGS: Download BEG");
@@ -216,11 +190,15 @@ public class EarthquakeGenerator {
         mPrint.out("USGS: Download END " + dl);
     }
 
-    private String getCapitalized(EarthquakeFeature f, String key) {
+    private void deleteRedundantFiles() {
+        //TODO delete all files older than the most recent MONTH file.
+    }
+
+    private String getCapitalized(EqFeature f, String key) {
         return StringUtils.capitalize(f.getProperty(key, String.class));
     }
 
-    private String getUpper(EarthquakeFeature f, String key) {
+    private String getUpper(EqFeature f, String key) {
         return StringUtils.toRootUpperCase(f.getProperty(key, String.class));
     }
 
@@ -250,8 +228,31 @@ public class EarthquakeGenerator {
         return false;
     }
 
+    private String replace(String s) {
+        return StringUtils.replaceEach(s,
+                new String[]{"CA", "NV", "MX"},
+                new String[]{"California", "Nevada", "Mexico"}
+        );
+    }
+
     private static class Holder {
 
         private static final EarthquakeGenerator INSTANCE = new EarthquakeGenerator();
+    }
+
+    private enum Feed {
+        MONTH(TimeUnit.DAYS.toMillis(7)),
+        WEEK(TimeUnit.DAYS.toMillis(1)),
+        DAY(TimeUnit.HOURS.toMillis(6)),
+        HOUR(TimeUnit.MINUTES.toMillis(5));
+        private final long mAgeLimit;
+
+        private Feed(long ageLimit) {
+            mAgeLimit = ageLimit;
+        }
+
+        public long getAgeLimit() {
+            return mAgeLimit;
+        }
     }
 }
