@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_rock_earthquake.graphic;
+package org.mapton.butterfly_rock_earthquake.graphics;
 
 import com.jogamp.opengl.GL;
 import gov.nasa.worldwind.WorldWind;

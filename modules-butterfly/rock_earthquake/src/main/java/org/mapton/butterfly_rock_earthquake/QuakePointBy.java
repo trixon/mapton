@@ -21,12 +21,12 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public enum PointBy {
+public enum QuakePointBy {
     PIN(Dict.PIN.toString()),
     NONE(Dict.NONE.toString());
     private final String mName;
 
-    private PointBy(String name) {
+    private QuakePointBy(String name) {
         mName = name;
     }
 
