@@ -20,6 +20,7 @@ import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.action.ActionUtils;
@@ -27,6 +28,7 @@ import org.mapton.api.ui.MPresetActions;
 import org.mapton.core.api.ui.MPresetPopOver;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MOptionsView;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.SliderPane;
 import se.trixon.almond.util.fx.session.SessionCheckBox;
@@ -37,7 +39,11 @@ import se.trixon.almond.util.fx.session.SessionCheckBox;
  */
 public abstract class BOptionsView extends MOptionsView {
 
+    protected final Label mColorLabel = new Label(Dict.COLOR.toString());
+    protected final Label mGraphicLabel = new Label(Dict.GRAPHICS.toString());
+    protected final Label mLabelLabel = new Label(Dict.LABEL.toString());
     protected final MenuButton mLabelMenuButton = new MenuButton();
+    protected final Label mPointLabel = new Label(Dict.Geometry.POINT.toString());
     protected MPresetPopOver mPresetPopOver;
     private final VBox mBottomBox = new VBox(FxHelper.getUIScaled(4));
     private SliderPane mDistanceSliderPane;
@@ -125,6 +131,7 @@ public abstract class BOptionsView extends MOptionsView {
         return mPlotSelectedScbx.selectedProperty();
     }
 
+    @Deprecated
     public void registerLayerBundle(LayerBundle layerBundle) {
         mLabelByProperty.addListener((p, o, n) -> {
             layerBundle.repaint();
@@ -220,6 +227,8 @@ public abstract class BOptionsView extends MOptionsView {
         mDistanceSliderPane = new SliderPane("...plus de inom (m)", 50.0, false);
         mBottomBox.getChildren().addAll(mPlotDebtScbx, mPlotSelectedScbx, mDistanceSliderPane);
         mDistanceSliderPane.disableProperty().bind(mPlotSelectedScbx.selectedProperty().not());
+
+        setLabelPadding(mLabelLabel, mGraphicLabel);
 
         setBottom(mBottomBox);
     }
