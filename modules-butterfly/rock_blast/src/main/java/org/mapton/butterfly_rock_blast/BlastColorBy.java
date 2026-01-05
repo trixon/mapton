@@ -21,12 +21,11 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public enum PointBy {
-    PIN(Dict.PIN.toString()),
-    NONE(Dict.NONE.toString());
+public enum BlastColorBy {
+    DEFAULT(Dict.DEFAULT.toString());
     private final String mName;
 
-    private PointBy(String name) {
+    private BlastColorBy(String name) {
         mName = name;
     }
 

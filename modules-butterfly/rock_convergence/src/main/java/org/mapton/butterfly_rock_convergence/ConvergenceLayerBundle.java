@@ -30,12 +30,13 @@ import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.rock.BRockConvergence;
 import org.mapton.butterfly_format.types.rock.BRockConvergenceObservation;
 import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
-import org.mapton.butterfly_rock_convergence.graphic.GraphicRenderer;
+import org.mapton.butterfly_rock_convergence.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -48,13 +49,15 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
     private final GraphicRenderer mGraphicRenderer;
     private final ConvergenceManager mManager = ConvergenceManager.getInstance();
     private final ConvergenceOptionsView mOptionsView;
+    private final ConvergenceOptions mOptions = ConvergenceOptions.getInstance();
 
     public ConvergenceLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new ConvergenceOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
         initListeners();
+//        mAttributeManager.setColorBy(mOptions.getColorBy());
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
@@ -82,6 +85,15 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+//            mAttributeManager.setColorBy(mOptions.getColorBy());
+            SwingHelper.runLaterDelayed(50, () -> {
+                resetPaintDelayedResetRunner();
+            });
+        });
+
+        mOptionsView.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mOptionsView);
         mOptionsView.registerLayerBundle(this);
         mManager.registerLayerBundle(this, mOptionsView);
     }
@@ -93,7 +105,7 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
             if (!mLayer.isEnabled()) {
                 return;
             }
-            var pointBy = mOptionsView.getPointBy();
+            var pointBy = mOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -111,13 +123,13 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
-                        var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(p, position, labelPlacemark));
 
-                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptionsView);
+                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);
                         };

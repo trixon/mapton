@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Patrik Karlström.
+ * Copyright 2024 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,35 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_rock_convergence.graphic;
+package org.mapton.butterfly_rock_extensometer.graphics;
 
-import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import java.util.ArrayList;
-import java.util.HashMap;
-import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
-import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.rock.BRockConvergence;
-import org.mapton.butterfly_rock_convergence.ConvergenceAttributeManager;
+import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicItem, BRockConvergence> {
+public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicItem, BRockExtensometer> {
 
     protected static IndexedCheckModel<GraphicItem> sCheckModel;
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
-    protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
-    protected final ConvergenceAttributeManager mAttributeManager = ConvergenceAttributeManager.getInstance();
-    protected final ConvergenceManager mManager = ConvergenceManager.getInstance();
 
     static {
         for (var renderItem : GraphicItem.values()) {
@@ -53,14 +44,8 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         super(layer, passiveLayer, sPlotLimiter);
     }
 
-    public boolean isValidFor3dPlot(BAcousticVibrationPoint p) {
-        var o1 = p.ext().getObservationsTimeFiltered().getFirst();
-        var o2 = p.ext().getObservationsTimeFiltered().getLast();
-
-        return ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ(), o1.getMeasuredZ(), o2.getMeasuredZ());
-    }
-
-    protected boolean isPlotLimitReached(BRockConvergence p, Object key, Position position) {
+    protected boolean isPlotLimitReached(BRockExtensometer p, Object key, Position position) {
         return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty(), sMapObjects);
     }
+
 }

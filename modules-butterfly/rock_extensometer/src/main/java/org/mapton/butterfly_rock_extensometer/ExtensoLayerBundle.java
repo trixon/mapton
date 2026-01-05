@@ -26,12 +26,13 @@ import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.rock.BRockExtensometer;
-import org.mapton.butterfly_rock_extensometer.graphic.GraphicRenderer;
+import org.mapton.butterfly_rock_extensometer.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -44,13 +45,15 @@ public class ExtensoLayerBundle extends BfLayerBundle {
     private final GraphicRenderer mGraphicRenderer;
     private final ExtensoManager mManager = ExtensoManager.getInstance();
     private final ExtensoOptionsView mOptionsView;
+    private final ExtensoOptions mOptions = ExtensoOptions.getInstance();
 
     public ExtensoLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new ExtensoOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getComponentCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
         initListeners();
+//        mAttributeManager.setColorBy(mOptions.getColorBy());
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
@@ -76,6 +79,12 @@ public class ExtensoLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+//            mAttributeManager.setColorBy(mOptions.getColorBy());
+            SwingHelper.runLaterDelayed(50, () -> {
+                resetPaintDelayedResetRunner();
+            });
+        });
         mOptionsView.registerLayerBundle(this);
         mManager.registerLayerBundle(this, mOptionsView);
     }
@@ -87,7 +96,7 @@ public class ExtensoLayerBundle extends BfLayerBundle {
                 return;
             }
 
-            var pointBy = mOptionsView.getPointBy();
+            var pointBy = mOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -105,12 +114,12 @@ public class ExtensoLayerBundle extends BfLayerBundle {
 
                     if (ObjectUtils.allNotNull(extenso.getLat(), extenso.getLon())) {
                         var position = Position.fromDegrees(extenso.getLat(), extenso.getLon());
-                        var labelPlacemark = plotLabel(extenso, mOptionsView.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(extenso, mOptions.getLabelBy(), position);
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(extenso, position, labelPlacemark));
 
-                        mGraphicRenderer.plot(extenso, mManager.getSelectedItem(), position, mapObjects, mOptionsView);
+                        mGraphicRenderer.plot(extenso, mManager.getSelectedItem(), position, mapObjects, mOptions);
                     }
 
                     var leftClickRunnable = (Runnable) () -> {

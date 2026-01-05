@@ -13,39 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_rock_blast.graphic;
+package org.mapton.butterfly_rock_convergence;
 
-import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum GraphicItem implements GraphicRenderItemLimitProvider {
-    BALLS("Klot", Integer.MAX_VALUE),
-    BALLS_Z("Klot z", Integer.MAX_VALUE),
-    RADIUS_40("Radie 40m", Integer.MAX_VALUE),
-    RECENT("Senaste cirklar", Integer.MAX_VALUE);
+public enum ConvergencePointBy {
+    PIN(Dict.PIN.toString()),
+    NONE(Dict.NONE.toString());
     private final String mName;
-    private final int mPlotLimit;
 
-    private GraphicItem(String name, int plotLimit) {
+    private ConvergencePointBy(String name) {
         mName = name;
-        mPlotLimit = plotLimit;
-    }
-
-    @Override
-    public String getName() {
-        return mName;
-    }
-
-    @Override
-    public int getPlotLimit() {
-        return mPlotLimit;
     }
 
     @Override
     public String toString() {
-        return getName();
+        return mName;
     }
+
 }

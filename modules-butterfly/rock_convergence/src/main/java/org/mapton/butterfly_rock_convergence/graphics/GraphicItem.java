@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_rock_extensometer.graphic;
+package org.mapton.butterfly_rock_convergence.graphics;
 
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 import se.trixon.almond.util.Dict;
@@ -23,10 +23,12 @@ import se.trixon.almond.util.Dict;
  * @author Patrik Karlström
  */
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
-    LABEL_DELTA_Z("\t%s, ΔZ".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
-    LABEL_DEPTH("\t%s, djup".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
-    LABEL_ALARM_LEVELS("\t%s, larmnivåer".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
-    INDICATORS("Indikatorer", Integer.MAX_VALUE);
+    LINES(Dict.Geometry.LINE.toString(), Integer.MAX_VALUE),
+    NODE("Nod", Integer.MAX_VALUE),
+    LABELS("Punktnamn", Integer.MAX_VALUE),
+    VALUE_1D("Värde 1d", Integer.MAX_VALUE),
+    VALUE_2D("Värde 2d", Integer.MAX_VALUE),
+    VALUE_3D("Värde 3d", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 

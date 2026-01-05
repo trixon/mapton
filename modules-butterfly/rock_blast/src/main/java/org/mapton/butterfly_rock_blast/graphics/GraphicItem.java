@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_rock_convergence.graphic;
+package org.mapton.butterfly_rock_blast.graphics;
 
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
-import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
-    LINES(Dict.Geometry.LINE.toString(), Integer.MAX_VALUE),
-    NODE("Nod", Integer.MAX_VALUE),
-    LABELS("Punktnamn", Integer.MAX_VALUE),
-    VALUE_1D("Värde 1d", Integer.MAX_VALUE),
-    VALUE_2D("Värde 2d", Integer.MAX_VALUE),
-    VALUE_3D("Värde 3d", Integer.MAX_VALUE);
+    BALLS("Klot", Integer.MAX_VALUE),
+    BALLS_Z("Klot z", Integer.MAX_VALUE),
+    RADIUS_40("Radie 40m", Integer.MAX_VALUE),
+    RECENT("Senaste cirklar", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 
@@ -38,19 +35,16 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     }
 
     @Override
-
     public String getName() {
         return mName;
     }
 
     @Override
-
     public int getPlotLimit() {
         return mPlotLimit;
     }
 
     @Override
-
     public String toString() {
         return getName();
     }
