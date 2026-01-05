@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.shared;
+package org.mapton.butterfly_topo;
 
 import se.trixon.almond.util.Dict;
 
@@ -21,14 +21,14 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public enum PointBy {
+public enum TopoPointBy {
     PIN(Dict.PIN.toString()),
     SYMBOL(Dict.SYMBOL.toString()),
     AUTO(Dict.AUTOMATIC.toString()),
     NONE(Dict.NONE.toString());
     private final String mName;
 
-    private PointBy(String name) {
+    private TopoPointBy(String name) {
         mName = name;
     }
 

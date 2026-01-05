@@ -28,10 +28,9 @@ import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.butterfly_topo.shared.ColorBy;
-import static org.mapton.butterfly_topo.shared.ColorBy.FREQUENCY;
-import static org.mapton.butterfly_topo.shared.ColorBy.MEAS_NEED;
-import static org.mapton.butterfly_topo.shared.ColorBy.STYLE;
+import static org.mapton.butterfly_topo.TopoColorBy.FREQUENCY;
+import static org.mapton.butterfly_topo.TopoColorBy.MEAS_NEED;
+import static org.mapton.butterfly_topo.TopoColorBy.STYLE;
 
 /**
  *
@@ -40,7 +39,7 @@ import static org.mapton.butterfly_topo.shared.ColorBy.STYLE;
 public class TopoAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes[] mBearingAttributes;
-    private ColorBy mColorBy;
+    private TopoColorBy mColorBy;
     private BasicShapeAttributes[][] mComponentCircle1dAttributes;
     private BasicShapeAttributes[] mComponentVector12dAttributes;
     private BasicShapeAttributes[] mComponentVector3dAttributes;
@@ -77,7 +76,7 @@ public class TopoAttributeManager extends BaseAttributeManager {
         return mBearingAttributes[first ? 0 : 1];
     }
 
-    public ColorBy getColorBy() {
+    public TopoColorBy getColorBy() {
         return mColorBy;
     }
 
@@ -255,7 +254,7 @@ public class TopoAttributeManager extends BaseAttributeManager {
     public PointPlacemarkAttributes getPinAttributes(BTopoControlPoint p) {
         var attrs = getPinAttributes(TopoHelper.getAlarmLevel(p));
 
-        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
+        if (mColorBy != null && mColorBy != TopoColorBy.ALARM) {
             attrs = new PointPlacemarkAttributes(attrs);
             attrs.setImageColor(getColor(p));
         }
@@ -276,7 +275,7 @@ public class TopoAttributeManager extends BaseAttributeManager {
 
     public BasicShapeAttributes getSymbolAttributes(BTopoControlPoint p) {
         var attrs = getAlarmInteriorAttributes(TopoHelper.getAlarmLevel(p));
-        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
+        if (mColorBy != null && mColorBy != TopoColorBy.ALARM) {
             attrs = new BasicShapeAttributes(attrs);
             attrs.setInteriorMaterial(new Material(getColor(p)));
         }
@@ -296,7 +295,7 @@ public class TopoAttributeManager extends BaseAttributeManager {
         return mTraceAttribute;
     }
 
-    public void setColorBy(ColorBy colorBy) {
+    public void setColorBy(TopoColorBy colorBy) {
         mColorBy = colorBy;
     }
 

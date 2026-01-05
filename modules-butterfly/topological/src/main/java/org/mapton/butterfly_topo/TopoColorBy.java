@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.shared;
+package org.mapton.butterfly_topo;
 
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -22,7 +22,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public enum ColorBy {
+public enum TopoColorBy {
     ALARM(SDict.ALARM.toString()),
     CLASSIFICATION("Klassning"),
     FREQUENCY(SDict.FREQUENCY.toString()),
@@ -32,7 +32,7 @@ public enum ColorBy {
     VERTICAL_DIRECTION("Vertikal riktning");
     private final String mName;
 
-    private ColorBy(String name) {
+    private TopoColorBy(String name) {
         mName = name;
     }
 

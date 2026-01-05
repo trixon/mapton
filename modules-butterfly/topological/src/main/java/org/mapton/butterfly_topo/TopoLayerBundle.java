@@ -21,11 +21,8 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.AbstractShape;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Ellipsoid;
-import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.Pyramid;
-import gov.nasa.worldwind.render.SurfaceCircle;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
@@ -44,7 +41,6 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.util.Direction;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -63,6 +59,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
     private final ArrayList<AVListImpl> mEmptyDummyList = new ArrayList<>();
     private final GraphicRenderer mGraphicRenderer;
     private final TopoOptionsView mOptionsView;
+    private final TopoOptions mOptions = TopoOptions.getInstance();
 
     public static double getZOffset() {
         return Z_BASE_OFFSET - TopoManager.getInstance().getMinimumZscaled();
@@ -72,9 +69,9 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
         init();
         initRepaint();
         mOptionsView = new TopoOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getComponentCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
-        mAttributeManager.setColorBy(mOptionsView.getColorBy());
+        mAttributeManager.setColorBy(mOptions.getColorBy());
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
@@ -106,10 +103,10 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
     }
 
     private void initListeners() {
-        mOptionsView.colorByProperty().addListener((p, o, n) -> {
-            mAttributeManager.setColorBy(n);
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+            mAttributeManager.setColorBy(mOptions.getColorBy());
             SwingHelper.runLaterDelayed(50, () -> {
-                repaint();
+                resetPaintDelayedResetRunner();
             });
         });
 
@@ -126,7 +123,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                 return;
             }
 
-            var pointBy = mOptionsView.getPointBy();
+            var pointBy = mOptions.getPointBy();
             switch (pointBy) {
                 case AUTO -> {
                     mPinLayer.setEnabled(true);
@@ -162,15 +159,14 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
 //                for (var p : mManager.getTimeFilteredItems()) {
                             if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                                 var position = BCoordinatrix.toPositionWW2d(p);
-                                var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                                var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
                                 var mapObjects = new ArrayList<AVListImpl>();
 
                                 mapObjects.add(labelPlacemark);
                                 mapObjects.add(plotPin(p, position, labelPlacemark));
                                 mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
-                                mapObjects.addAll(plotIndicators(p, position));
 
-                                mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptionsView);
+                                mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
                                 var leftClickRunnable = (Runnable) () -> {
                                     mManager.setSelectedItemAfterReset(p);
                                 };
@@ -178,7 +174,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                                 var leftDoubleClickRunnable = (Runnable) () -> {
                                     Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
                                     mGraphicRenderer.addToAllowList(p);
-                                    repaint();
+                                    resetPaintDelayedResetRunner();
                                 };
 
                                 mapObjects.stream().filter(r -> r != null).forEach(r -> {
@@ -194,46 +190,6 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
 
             setDragEnabled(false);
         });
-    }
-
-    private void plotConnector(Position p1, Position p2) {
-        var path = new Path(WWHelper.positionFromPosition(p1, 0.1), WWHelper.positionFromPosition(p2, 0.1));
-        path.setAttributes(mAttributeManager.getIndicatorConnectorAttribute());
-        mLayer.addRenderable(path);
-    }
-
-    private ArrayList<AVListImpl> plotIndicators(BTopoControlPoint p, Position position) {
-        var checkModel = mOptionsView.getIndicatorCheckModel();
-        if (checkModel.getCheckedItems().isEmpty() || p.getFrequency() == 0) {
-            return mEmptyDummyList;
-        }
-
-        var mapObjects = new ArrayList<AVListImpl>();
-        var indicatorDistance = 2.0;
-
-        var untilNextDirection = Direction.WEST;
-        var planeDirection = Direction.SOUTH;
-        var heightDirection = Direction.NORTH;
-
-        if (checkModel.isChecked(untilNextDirection)) {
-            var days = p.ext().getMeasurementUntilNext(ChronoUnit.DAYS);
-            var radius = 1.0;
-            int idx = 0;
-
-            if (days < -3) {
-                idx = 2;
-            } else if (days < -1) {
-                idx = 1;
-            }
-
-            var p2 = WWHelper.movePolar(position, untilNextDirection.getAzimuth(), indicatorDistance);
-            var circle = new SurfaceCircle(mAttributeManager.getIndicatorNeedAttributes()[idx], p2, radius);
-            plotConnector(position, p2);
-            mLayer.addRenderable(circle);
-            mapObjects.add(circle);
-        }
-
-        return mapObjects;
     }
 
     private PointPlacemark plotLabel(BTopoControlPoint p, TopoLabelBy labelBy, Position position) {
