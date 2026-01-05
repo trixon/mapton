@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.vibration;
+package org.mapton.butterfly_acoustic.vibration.graphics;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -35,7 +35,7 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class GraphicRenderer extends GraphicRendererBase {
 
-    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer);
         sCheckModel = checkModel;
     }
@@ -43,7 +43,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     public void plot(BAcousticVibrationPoint point, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
 
-        if (sCheckModel.isChecked(GraphicRendererItem.TRACE)) {
+        if (sCheckModel.isChecked(GraphicItem.TRACE)) {
             plotTrace(point, position);
         }
     }
@@ -54,7 +54,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     private void plotTrace(BAcousticVibrationPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.TRACE, position)) {
+        if (isPlotLimitReached(p, GraphicItem.TRACE, position)) {
             return;
         }
 
@@ -81,14 +81,14 @@ public class GraphicRenderer extends GraphicRendererBase {
             }
 
             cylinder.setAttributes(attrs);
-            addRenderable(cylinder, true, GraphicRendererItem.TRACE, sMapObjects);
+            addRenderable(cylinder, true, GraphicItem.TRACE, sMapObjects);
             endPosition = pos;
         }
 
         var startPosition = WWHelper.positionFromPosition(position, 0.0);
         var groundPath = new Path(startPosition, endPosition);
         groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-        addRenderable(groundPath, true, GraphicRendererItem.TRACE, sMapObjects);
+        addRenderable(groundPath, true, GraphicItem.TRACE, sMapObjects);
     }
 
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.vibration;
+package org.mapton.butterfly_acoustic.vibration.graphics;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.butterfly_acoustic.vibration.VibrationAttributeManager;
+import org.mapton.butterfly_acoustic.vibration.VibrationManager;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
@@ -31,9 +33,9 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
  *
  * @author Patrik Karlström
  */
-public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BAcousticVibrationPoint> {
+public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicItem, BAcousticVibrationPoint> {
 
-    protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
+    protected static IndexedCheckModel<GraphicItem> sCheckModel;
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
@@ -41,7 +43,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
     protected final VibrationManager mManager = VibrationManager.getInstance();
 
     static {
-        for (var renderItem : GraphicRendererItem.values()) {
+        for (var renderItem : GraphicItem.values()) {
             sPlotLimiter.setLimit(renderItem, renderItem.getPlotLimit());
         }
     }
