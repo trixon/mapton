@@ -16,13 +16,16 @@
 package org.mapton.butterfly_rock_earthquake;
 
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum QuakeColorBy {
-    DEFAULT(Dict.DEFAULT.toString());
+    MAGNITUDE(SDict.MAGNITUDE.toString()),
+    AGE(Dict.AGE.toString());
+
     private final String mName;
 
     private QuakeColorBy(String name) {
@@ -30,6 +33,7 @@ public enum QuakeColorBy {
     }
 
     @Override
+
     public String toString() {
         return mName;
     }

@@ -29,7 +29,7 @@ import org.openide.util.NbPreferences;
  */
 public class QuakeOptions extends BOptionsBase implements MPresetActions {
 
-    public static final QuakeColorBy DEFAULT_COLOR_BY = QuakeColorBy.DEFAULT;
+    public static final QuakeColorBy DEFAULT_COLOR_BY = QuakeColorBy.MAGNITUDE;
     public static final QuakeLabelBy DEFAULT_LABEL_BY = QuakeLabelBy.NONE;
     public static final QuakePointBy DEFAULT_POINT_BY = QuakePointBy.PIN;
     private final ObjectProperty<QuakeColorBy> mColorByProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BY);

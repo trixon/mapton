@@ -29,6 +29,8 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class ButterflyHelper {
 
+    public static final Color[] sGreenToRedColors;
+    public static final Material[] sGreenToRedMaterials;
     public static final Color[] sSpeedColors;
     public static final Material[] sSpeedMaterials;
     public static final Color[] sVerticalNegColors;
@@ -58,6 +60,31 @@ public class ButterflyHelper {
     };
 
     static {
+        sGreenToRedColors = new Color[]{
+            //https://colordesigner.io/gradient-generator/?mode=lch#00FF00-FF0000
+            Color.decode("#00ff00"),
+            Color.decode("#53f500"),
+            Color.decode("#76ea00"),
+            Color.decode("#8fdf00"),
+            Color.decode("#a1d300"),
+            Color.decode("#b0c800"),
+            Color.decode("#bdbc00"),
+            Color.decode("#c9b000"),
+            Color.decode("#d4a300"),
+            Color.decode("#dd9500"),
+            Color.decode("#e68700"),
+            Color.decode("#ef7600"),
+            Color.decode("#f66300"),
+            Color.decode("#fa4e00"),
+            Color.decode("#fd3500"),
+            Color.decode("#ff0000")
+        };
+
+        sGreenToRedMaterials = new Material[sGreenToRedColors.length];
+        for (int i = 0; i < sGreenToRedMaterials.length; i++) {
+            sGreenToRedMaterials[i] = new Material(sGreenToRedColors[i]);
+        }
+
         sSpeedColors = new Color[]{
             //https://colordesigner.io/gradient-generator/?mode=lch#ACF0F2-2C1DFF
             Color.decode("#acf0f2"),
@@ -136,6 +163,13 @@ public class ButterflyHelper {
 
     public static Material[] getAlarmMaterials() {
         return mAlarmMaterials;
+    }
+
+    public static Color getColorAwt(Color[] colors, double limit, double value) {
+        var length = colors.length;
+        int index = (int) Math.min(length - 1, (Math.abs(value) / limit) * (length - 1));
+
+        return colors[index];
     }
 
     public static int getColorIndex(int length, double limit, double value) {

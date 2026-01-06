@@ -37,10 +37,12 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.Timer;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
+import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.rock.BRockEarthquake;
 import org.mapton.butterfly_rock_earthquake.QuakeAttributeManager;
 import org.mapton.butterfly_rock_earthquake.QuakeManager;
+import org.mapton.butterfly_rock_earthquake.QuakeOptions;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -63,6 +65,7 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockEarth
         Color.GRAY,
         Color.BLACK};
     private ArrayList<AVListImpl> mMapObjects;
+    private final QuakeOptions mOptions = QuakeOptions.getInstance();
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer, sPlotLimiter);
@@ -74,12 +77,12 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockEarth
     public void plot(BRockEarthquake quake, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
 
-        if (mCheckModel.isChecked(GraphicItem.CIRCLE_BY_AGE)) {
-            plotCircleByAge(quake, position);
+        if (mCheckModel.isChecked(GraphicItem.CIRCLES)) {
+            plotCircle(quake, position);
         }
 
-        if (mCheckModel.isChecked(GraphicItem.CYLINDER_BY_AGE)) {
-            plotCylinderByAge(quake, position);
+        if (mCheckModel.isChecked(GraphicItem.LINES)) {
+            plotLine(quake, position);
         }
     }
 
@@ -88,35 +91,48 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockEarth
         super.reset();
     }
 
-    private Color getColorForAge(BRockEarthquake quake) {
+    private Color getColor(BRockEarthquake quake) {
         var elapsedDays = Duration.between(quake.getDateLatest(), LocalDateTime.now()).toMillis() / TimeUnit.DAYS.toMillis(1);
-        return mColorsOfDay[Math.min((int) elapsedDays, mColorsOfDay.length - 1)];
+
+        switch (mOptions.getColorBy()) {
+            case AGE:
+                return mColorsOfDay[Math.min((int) elapsedDays, mColorsOfDay.length - 1)];
+            case MAGNITUDE:
+//                return ButterflyHelper.getColorAwt(ButterflyHelper.sGreenToRedColors, 10.0, quake.getMag());
+                return ButterflyHelper.getColorAwt(ButterflyHelper.sGreenToRedColors, 5, quake.getMag() - 3);
+            default:
+                throw new AssertionError();
+        }
+
     }
 
-    private void plotCircleByAge(BRockEarthquake quake, Position position) {
+    private void plotCircle(BRockEarthquake quake, Position position) {
         var annotation = new EqAnnotation(position, mAttributeManager.getAnnotationAttributes());
         annotation.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
         if (quake == QuakeManager.getInstance().getTimeFilteredItems().getFirst()) {
             setBlinker(annotation);
         }
 
-        annotation.getAttributes().setTextColor(getColorForAge(quake));
+        annotation.getAttributes().setTextColor(getColor(quake));
         annotation.getAttributes().setScale(Math.abs(quake.getMag()) / 10);
-        addRenderable(annotation, true, GraphicItem.CIRCLE_BY_AGE, mMapObjects);
+        addRenderable(annotation, true, GraphicItem.CIRCLES, mMapObjects);
     }
 
-    private void plotCylinderByAge(BRockEarthquake quake, Position position) {
+    private void plotLine(BRockEarthquake quake, Position position) {
         var startPosition = WWHelper.positionFromPosition(position, 0.0);
-        var endPosition = WWHelper.positionFromPosition(position, quake.getMag() * 200_000);
+        var value = Math.sqrt(Math.pow(10, Math.abs(quake.getMag())));
+        var height = 10_000 + value * 1000;
+        //var height = quake.getMag() * 200_000;
+        var endPosition = WWHelper.positionFromPosition(position, height);
 
         var groundPath = new Path(startPosition, endPosition);
         var attrs = new BasicShapeAttributes(mAttributeManager.getComponentGroundPathAttributes());
-        attrs.setOutlineMaterial(new Material(getColorForAge(quake)));
+        attrs.setOutlineMaterial(new Material(getColor(quake)));
         groundPath.setAttributes(attrs);
-        addRenderable(groundPath, true, GraphicItem.CYLINDER_BY_AGE, mMapObjects);
+        addRenderable(groundPath, true, GraphicItem.LINES, mMapObjects);
 
         if (quake == QuakeManager.getInstance().getTimeFilteredItems().getFirst()) {
-            plotCircleByAge(quake, position);
+            plotCircle(quake, position);
         }
     }
 

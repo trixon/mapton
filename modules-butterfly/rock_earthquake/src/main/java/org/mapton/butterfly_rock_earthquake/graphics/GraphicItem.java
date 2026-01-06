@@ -16,14 +16,15 @@
 package org.mapton.butterfly_rock_earthquake.graphics;
 
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
-    CIRCLE_BY_AGE("Circles", Integer.MAX_VALUE),
-    CYLINDER_BY_AGE("Cylinders", Integer.MAX_VALUE);
+    CIRCLES(Dict.Geometry.CIRCLES.toString(), Integer.MAX_VALUE),
+    LINES(Dict.Geometry.LINES.toString(), Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 

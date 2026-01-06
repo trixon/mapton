@@ -107,7 +107,7 @@ public class QuakeLayerBundle extends BfLayerBundle {
             }
 
             synchronized (mManager.getTimeFilteredItems()) {
-                for (var p : mManager.getTimeFilteredItems()) {
+                for (var p : mManager.getTimeFilteredItems().reversed()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
                         var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);

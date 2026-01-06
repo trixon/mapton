@@ -38,11 +38,12 @@ public class QuakePropertiesBuilder extends BPropertiesBuilder<BRockEarthquake> 
         propertyMap.put(getCatKey(cat1, "Ext.id"), p.getExternalId());
         propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), QuakeListCell.DATE_TIME_FORMATTER.format(p.getDateLatest()));
         propertyMap.put(getCatKey(cat1, Dict.PLACE.toString()), p.getName());
-        propertyMap.put(getCatKey(cat1, "Magnitude"), "%.1f %s".formatted(p.getMag(), p.getMagType()));
-        propertyMap.put(getCatKey(cat1, "Alert"), p.getClassification());
+        propertyMap.put(getCatKey(cat1, SDict.MAGNITUDE.toString()), "%.1f %s".formatted(p.getMag(), p.getMagType()));
+        var depth = "%.1f km".formatted(p.getZeroZ());
+        propertyMap.put(getCatKey(cat1, Dict.Geometry.DEPTH.toString()), depth);
+        propertyMap.put(getCatKey(cat1, Dict.ALERT.toString()), p.getClassification());
         propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), p.getAlarm1Id());
         propertyMap.put(getCatKey(cat1, Dict.CATEGORY.toString()), p.getCategory());
-//        propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
         propertyMap.put(getCatKey(cat1, Dict.STATUS.toString()), p.getStatus());
         propertyMap.put(getCatKey(cat1, Dict.TAGS.toString()), p.getTag());
         propertyMap.put(getCatKey(cat1, Dict.ORIGIN.toString()), p.getOrigin());

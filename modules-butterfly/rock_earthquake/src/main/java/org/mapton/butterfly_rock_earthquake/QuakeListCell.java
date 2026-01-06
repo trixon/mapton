@@ -40,9 +40,10 @@ class QuakeListCell extends BListCell<BRockEarthquake> {
     protected void addContent(BRockEarthquake quake) {
         setText(null);
         mNameLabel.setText(quake.getName());
-        mValueLabel.setText("M %.1f %s (%d/1000)".formatted(
+        mValueLabel.setText("M %.1f %s @%.1f km (%d/1000)".formatted(
                 quake.getMag(),
                 quake.getMagType(),
+                quake.getZeroZ(),
                 quake.getSig()));
         mDateLabel.setText(DATE_TIME_FORMATTER.format(quake.getDateLatest().plusSeconds(30)));
         setGraphic(mVBox);

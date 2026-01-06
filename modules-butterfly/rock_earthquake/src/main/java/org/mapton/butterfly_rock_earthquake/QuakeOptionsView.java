@@ -52,7 +52,7 @@ public class QuakeOptionsView extends BOptionsView {
     private void createUI() {
         mPointScb.getItems().setAll(QuakePointBy.values());
         mColorScb.getItems().setAll(QuakeColorBy.values());
-        mColorScb.setDisable(true);
+        //mColorScb.setDisable(true);
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
