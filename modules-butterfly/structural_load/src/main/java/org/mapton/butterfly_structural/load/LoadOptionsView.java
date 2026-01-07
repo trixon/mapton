@@ -15,9 +15,8 @@
  */
 package org.mapton.butterfly_structural.load;
 
-import java.util.stream.Stream;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BOptionsView;
 import org.mapton.butterfly_core.api.LabelBy;
@@ -33,31 +32,27 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public class LoadOptionsView extends BOptionsView {
 
-    private static final LoadLabelBy DEFAULT_LABEL_BY = LoadLabelBy.NAME;
-    private static final LoadPointBy DEFAULT_POINT_BY = LoadPointBy.PIN;
-
+    private final SessionComboBox<LoadColorBy> mColorScb = new SessionComboBox<>();
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
+    private final LoadOptions mOptions = LoadOptions.getInstance();
     private final SessionComboBox<LoadPointBy> mPointScb = new SessionComboBox<>();
 
     public LoadOptionsView(LoadLayerBundle layerBundle) {
-        super(layerBundle, Bundle.CTL_LoadAction());
-        setDefaultId(DEFAULT_LABEL_BY);
+        super(layerBundle, Bundle.CTL_LoadAction(), LoadOptions.getInstance(), "load");
+        setDefaultId(LoadOptions.DEFAULT_LABEL_BY);
+
         createUI();
-        initListeners();
         initSession();
     }
 
-    public IndexedCheckModel<GraphicItem> getGraphicCheckModel() {
+    public IndexedCheckModel<GraphicItem> getGraphicsCheckModel() {
         return mGraphicSccb.getCheckModel();
-    }
-
-    public LoadPointBy getPointBy() {
-        return mPointScb.valueProperty().get();
     }
 
     private void createUI() {
         mPointScb.getItems().setAll(LoadPointBy.values());
-        mPointScb.setValue(DEFAULT_POINT_BY);
+        mColorScb.getItems().setAll(LoadColorBy.values());
+        mColorScb.setDisable(true);
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
@@ -65,40 +60,37 @@ public class LoadOptionsView extends BOptionsView {
 
         LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), LoadLabelBy.values());
 
-        var pointLabel = new Label(Dict.Geometry.POINT.toString());
-        var labelLabel = new Label(Dict.LABEL.toString());
+        int row = 0;
+        var gp = createGridPane();
+        gp.addRow(row++, mPointLabel, mColorLabel);
+        gp.addRow(row++, mPointScb, mColorScb);
+        gp.addRow(row++, mLabelLabel);
+        gp.add(mLabelMenuButton, 0, row++, GridPane.REMAINING, 1);
+        gp.addRow(row++, mGraphicLabel);
+        gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
 
-        var box = new VBox(
-                pointLabel,
-                mPointScb,
-                labelLabel,
-                mLabelMenuButton,
-                mGraphicSccb
-        );
-        box.setPadding(FxHelper.getUIScaledInsets(8));
+        FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
 
-        setCenter(box);
-
-    }
-
-    private void initListeners() {
-        initListenersSuper();
-
-        mPointScb.valueProperty().addListener(getChangeListener());
-
-        Stream.of(
-                mGraphicSccb)
-                .forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
-
+        setCenter(gp);
     }
 
     private void initSession() {
-        var sessionManager = getSessionManager();
-        sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
-        sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
-        sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
-        initSession(sessionManager);
+        mPointScb.valueProperty().bindBidirectional(mOptions.pointProperty());
+        mColorScb.valueProperty().bindBidirectional(mOptions.colorByProperty());
+        mGraphicSccb.checkedStringProperty().bindBidirectional(mOptions.graphicsProperty());
 
-        restoreLabelFromId(LoadLabelBy.class, DEFAULT_LABEL_BY);
+        initSession(mOptions);
+
+        restoreLabelFromId(LoadLabelBy.class, mOptions.labelByProperty().get().name(), LoadOptions.DEFAULT_LABEL_BY);
+        labelByProperty().addListener((p, o, n) -> {
+            for (var labelBy : LoadLabelBy.values()) {
+                if (Strings.CS.equals(n.getName(), labelBy.getName())) {
+                    mOptions.labelByProperty().set(labelBy);
+                    break;
+                }
+            }
+        });
+
+        initListenersSuper();
     }
 }
