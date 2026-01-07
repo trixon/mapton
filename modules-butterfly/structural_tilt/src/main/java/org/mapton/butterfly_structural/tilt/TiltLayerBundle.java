@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.tilt;
 
+import org.mapton.butterfly_structural.tilt.graphics.GraphicRenderer;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -32,6 +33,7 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -47,13 +49,15 @@ public class TiltLayerBundle extends BfLayerBundle {
     private final GraphicRenderer mGraphicRenderer;
     private final TiltManager mManager = TiltManager.getInstance();
     private final TiltOptionsView mOptionsView;
+    private final TiltOptions mOptions = TiltOptions.getInstance();
 
     public TiltLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new TiltOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
         initListeners();
+//        mAttributeManager.setColorBy(mOptions.getColorBy());
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
@@ -80,6 +84,13 @@ public class TiltLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+//            mAttributeManager.setColorBy(mOptions.getColorBy());
+            SwingHelper.runLaterDelayed(50, () -> {
+                resetPaintDelayedResetRunner();
+            });
+        });
+
         mOptionsView.registerLayerBundle(this);
         mManager.registerLayerBundle(this, mOptionsView);
     }
@@ -93,7 +104,7 @@ public class TiltLayerBundle extends BfLayerBundle {
                 return;
             }
 
-            var pointBy = mOptionsView.getPointBy();
+            var pointBy = mOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -115,14 +126,14 @@ public class TiltLayerBundle extends BfLayerBundle {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
-                        var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(p, position, labelPlacemark));
                         mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
 
-                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptionsView);
+                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
 
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);

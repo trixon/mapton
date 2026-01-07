@@ -28,11 +28,13 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
+import org.mapton.butterfly_monmon.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -45,13 +47,16 @@ public class MonLayerBundle extends BfLayerBundle {
     private final GraphicRenderer mGraphicRenderer;
     private final MonManager mManager = MonManager.getInstance();
     private final MonOptionsView mOptionsView;
+    private final MonOptions mOptions = MonOptions.getInstance();
 
     public MonLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new MonOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getComponentCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicsCheckModel());
         initListeners();
+        //        mAttributeManager.setColorBy(mOptions.getColorBy());
+
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
 
@@ -76,6 +81,13 @@ public class MonLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+//            mAttributeManager.setColorBy(mOptions.getColorBy());
+            SwingHelper.runLaterDelayed(50, () -> {
+                resetPaintDelayedResetRunner();
+            });
+        });
+
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BMonmon> c) -> {
             repaint();
         });
@@ -88,10 +100,6 @@ public class MonLayerBundle extends BfLayerBundle {
                 repaint();
             }
         });
-
-        mOptionsView.labelByProperty().addListener((p, o, n) -> {
-            repaint();
-        });
     }
 
     private void initRepaint() {
@@ -101,7 +109,7 @@ public class MonLayerBundle extends BfLayerBundle {
                 return;
             }
 
-            var pointBy = mOptionsView.getPointBy();
+            var pointBy = mOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -136,7 +144,7 @@ public class MonLayerBundle extends BfLayerBundle {
 
                     if (ObjectUtils.allNotNull(mon.getLat(), mon.getLon())) {
                         var position = Position.fromDegrees(mon.getLat(), mon.getLon());
-                        var labelPlacemark = plotLabel(mon, mOptionsView.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(mon, mOptions.getLabelBy(), position);
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(mon, position, labelPlacemark, stationIndex));

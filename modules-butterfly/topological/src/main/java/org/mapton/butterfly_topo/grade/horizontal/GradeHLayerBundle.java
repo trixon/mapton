@@ -30,13 +30,14 @@ import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoBaseLayerBundle;
 import org.mapton.butterfly_topo.grade.GradeAttributeManager;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
-import org.mapton.butterfly_topo.grade.horizontal.graphic.GraphicRenderer;
+import org.mapton.butterfly_topo.grade.horizontal.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -51,12 +52,13 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
     private final GraphicRenderer mGraphicRenderer;
     private final GradeHManager mManager = GradeHManager.getInstance();
     private final GradeHOptionsView mOptionsView;
+    private final GradeHOptions mOptions = GradeHOptions.getInstance();
 
     public GradeHLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new GradeHOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getComponentCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
         initListeners();
 //        mAttributeManager.setColorBy(mOptionsView.getColorBy());
 
@@ -85,6 +87,13 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
     }
 
     private void initListeners() {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+//            mAttributeManager.setColorBy(mOptions.getColorBy());
+            SwingHelper.runLaterDelayed(50, () -> {
+                resetPaintDelayedResetRunner();
+            });
+        });
+
         mOptionsView.registerLayerBundle(this);
         mManager.registerLayerBundle(this, mOptionsView);
     }
@@ -98,7 +107,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
                 return;
             }
 
-            var pointBy = mOptionsView.getPointBy();
+            var pointBy = mOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -120,7 +129,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
                         //                        .limit(PLOT_LIMIT)
                         .forEachOrdered(p -> {
                             var position = Position.fromDegrees(p.getLat(), p.getLon());
-                            var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                            var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
                             var mapObjects = new ArrayList<AVListImpl>();
 
                             mapObjects.add(labelPlacemark);

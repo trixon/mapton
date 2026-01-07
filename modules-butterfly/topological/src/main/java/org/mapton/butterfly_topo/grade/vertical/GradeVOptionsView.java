@@ -15,11 +15,8 @@
  */
 package org.mapton.butterfly_topo.grade.vertical;
 
-import java.util.stream.Stream;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BOptionsView;
 import org.mapton.butterfly_core.api.LabelBy;
@@ -38,74 +35,65 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public class GradeVOptionsView extends BOptionsView {
 
-    private static final GradeVLabelBy DEFAULT_LABEL_BY = GradeVLabelBy.NAME;
-    private static final GradePointBy DEFAULT_POINT_BY = GradePointBy.PIN;
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
-    private final BooleanProperty mPlotPointProperty = new SimpleBooleanProperty();
     private final SessionComboBox<GradePointBy> mPointScb = new SessionComboBox<>();
+    private final SessionComboBox<GradeVColorBy> mColorScb = new SessionComboBox<>();
+    private final GradeVOptions mOptions = GradeVOptions.getInstance();
 
     public GradeVOptionsView(GradeVLayerBundle layerBundle) {
-        super(layerBundle, NbBundle.getMessage(GradeManagerBase.class, "grade_v"));
-        setDefaultId(DEFAULT_LABEL_BY);
+        super(layerBundle, NbBundle.getMessage(GradeManagerBase.class, "grade_v"), GradeVOptions.getInstance(), "gradeH");
+        setDefaultId(GradeVOptions.DEFAULT_LABEL_BY);
+
         createUI();
-        initListeners();
         initSession();
     }
 
-    public IndexedCheckModel<GraphicItem> getComponentCheckModel() {
+    public IndexedCheckModel<GraphicItem> getGraphicsCheckModel() {
         return mGraphicSccb.getCheckModel();
-    }
-
-    public GradePointBy getPointBy() {
-        return mPointScb.valueProperty().get();
-    }
-
-    public BooleanProperty plotPointProperty() {
-        return mPlotPointProperty;
     }
 
     private void createUI() {
         mPointScb.getItems().setAll(GradePointBy.values());
-        mPointScb.setValue(DEFAULT_POINT_BY);
+        mColorScb.getItems().setAll(GradeVColorBy.values());
+        mColorScb.setDisable(true);
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
         mGraphicSccb.getItems().setAll(GraphicItem.values());
 
         LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), GradeVLabelBy.values());
-        var pointLabel = new Label(Dict.Geometry.POINT.toString());
-        var labelLabel = new Label(Dict.LABEL.toString());
-        var graphicLabel = new Label(Dict.GRAPHICS.toString());
 
         int row = 0;
-        var gp = new GridPane(FxHelper.getUIScaled(8), FxHelper.getUIScaled(2));
-        gp.addRow(row++, pointLabel);
-        gp.addRow(row++, mPointScb);
-        gp.addRow(row++, labelLabel);
-        gp.addRow(row++, mLabelMenuButton);
-        gp.addRow(row++, graphicLabel);
+        var gp = createGridPane();
+        gp.addRow(row++, mPointLabel, mColorLabel);
+        gp.addRow(row++, mPointScb, mColorScb);
+        gp.addRow(row++, mLabelLabel);
+        gp.add(mLabelMenuButton, 0, row++, GridPane.REMAINING, 1);
+        gp.addRow(row++, mGraphicLabel);
         gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
-        gp.setPadding(FxHelper.getUIScaledInsets(8));
-        FxHelper.autoSizeRegionHorizontal(mPointScb, mLabelMenuButton, mGraphicSccb);
+
+        FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
 
         setCenter(gp);
     }
 
-    private void initListeners() {
-        initListenersSuper();
-        mPointScb.valueProperty().addListener(getChangeListener());
-        Stream.of(
-                mGraphicSccb
-        ).forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
-    }
-
     private void initSession() {
-        var sessionManager = getSessionManager();
-        sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
-        sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
-        sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
-        initSession(sessionManager, false);
+        mPointScb.valueProperty().bindBidirectional(mOptions.pointProperty());
+        mColorScb.valueProperty().bindBidirectional(mOptions.colorByProperty());
+        mGraphicSccb.checkedStringProperty().bindBidirectional(mOptions.graphicsProperty());
 
-        restoreLabelFromId(GradeVLabelBy.class, DEFAULT_LABEL_BY);
+        initSession(mOptions);
+
+        restoreLabelFromId(GradeVLabelBy.class, mOptions.labelByProperty().get().name(), GradeVOptions.DEFAULT_LABEL_BY);
+        labelByProperty().addListener((p, o, n) -> {
+            for (var labelBy : GradeVLabelBy.values()) {
+                if (Strings.CS.equals(n.getName(), labelBy.getName())) {
+                    mOptions.labelByProperty().set(labelBy);
+                    break;
+                }
+            }
+        });
+
+        initListenersSuper();
     }
 }

@@ -41,6 +41,9 @@ public class ConvergenceOptions extends BOptionsBase implements MPresetActions {
     }
 
     private ConvergenceOptions() {
+        initColorProxyProperty(mColorByProperty, ConvergenceColorBy.class);
+        initLabelProxyProperty(mLabelByProperty, ConvergenceLabelBy.class);
+        initPointProxyProperty(mPointByProperty, ConvergencePointBy.class);
         setPreferences(NbPreferences.forModule(ConvergenceOptions.class));
     }
 
@@ -62,9 +65,6 @@ public class ConvergenceOptions extends BOptionsBase implements MPresetActions {
 
     @Override
     public void initSession(SessionManager sessionManager) {
-        initColorProxyProperty(mColorByProperty, ConvergenceColorBy.class);
-        initLabelProxyProperty(mLabelByProperty, ConvergenceLabelBy.class);
-        initPointProxyProperty(mPointByProperty, ConvergencePointBy.class);
         super.initSession(sessionManager);
     }
 

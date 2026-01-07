@@ -41,6 +41,9 @@ public class VibrationOptions extends BOptionsBase implements MPresetActions {
     }
 
     private VibrationOptions() {
+        initColorProxyProperty(mColorByProperty, VibrationColorBy.class);
+        initLabelProxyProperty(mLabelByProperty, VibrationLabelBy.class);
+        initPointProxyProperty(mPointByProperty, VibrationPointBy.class);
         setPreferences(NbPreferences.forModule(VibrationOptions.class));
     }
 
@@ -62,9 +65,6 @@ public class VibrationOptions extends BOptionsBase implements MPresetActions {
 
     @Override
     public void initSession(SessionManager sessionManager) {
-        initColorProxyProperty(mColorByProperty, VibrationColorBy.class);
-        initLabelProxyProperty(mLabelByProperty, VibrationLabelBy.class);
-        initPointProxyProperty(mPointByProperty, VibrationPointBy.class);
         super.initSession(sessionManager);
     }
 

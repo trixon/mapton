@@ -41,6 +41,9 @@ public class QuakeOptions extends BOptionsBase implements MPresetActions {
     }
 
     private QuakeOptions() {
+        initColorProxyProperty(mColorByProperty, QuakeColorBy.class);
+        initLabelProxyProperty(mLabelByProperty, QuakeLabelBy.class);
+        initPointProxyProperty(mPointByProperty, QuakePointBy.class);
         setPreferences(NbPreferences.forModule(QuakeOptions.class));
     }
 
@@ -62,9 +65,6 @@ public class QuakeOptions extends BOptionsBase implements MPresetActions {
 
     @Override
     public void initSession(SessionManager sessionManager) {
-        initColorProxyProperty(mColorByProperty, QuakeColorBy.class);
-        initLabelProxyProperty(mLabelByProperty, QuakeLabelBy.class);
-        initPointProxyProperty(mPointByProperty, QuakePointBy.class);
         super.initSession(sessionManager);
     }
 

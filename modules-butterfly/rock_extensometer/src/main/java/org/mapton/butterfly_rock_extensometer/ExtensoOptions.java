@@ -41,6 +41,9 @@ public class ExtensoOptions extends BOptionsBase implements MPresetActions {
     }
 
     private ExtensoOptions() {
+        initColorProxyProperty(mColorByProperty, ExtensoColorBy.class);
+        initLabelProxyProperty(mLabelByProperty, ExtensoLabelBy.class);
+        initPointProxyProperty(mPointByProperty, ExtensoPointBy.class);
         setPreferences(NbPreferences.forModule(ExtensoOptions.class));
     }
 
@@ -62,9 +65,6 @@ public class ExtensoOptions extends BOptionsBase implements MPresetActions {
 
     @Override
     public void initSession(SessionManager sessionManager) {
-        initColorProxyProperty(mColorByProperty, ExtensoColorBy.class);
-        initLabelProxyProperty(mLabelByProperty, ExtensoLabelBy.class);
-        initPointProxyProperty(mPointByProperty, ExtensoPointBy.class);
         super.initSession(sessionManager);
     }
 

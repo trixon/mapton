@@ -15,13 +15,12 @@
  */
 package org.mapton.butterfly_structural.crack;
 
-import org.mapton.butterfly_structural.crack.graphic.GraphicItem;
-import java.util.stream.Stream;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BOptionsView;
 import org.mapton.butterfly_core.api.LabelBy;
+import org.mapton.butterfly_structural.crack.graphics.GraphicItem;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
@@ -33,31 +32,27 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public class CrackOptionsView extends BOptionsView {
 
-    private static final CrackLabelBy DEFAULT_LABEL_BY = CrackLabelBy.NAME;
-    private static final CrackPointBy DEFAULT_POINT_BY = CrackPointBy.PIN;
-
+    private final SessionComboBox<CrackColorBy> mColorScb = new SessionComboBox<>();
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
+    private final CrackOptions mOptions = CrackOptions.getInstance();
     private final SessionComboBox<CrackPointBy> mPointScb = new SessionComboBox<>();
 
     public CrackOptionsView(CrackLayerBundle layerBundle) {
-        super(layerBundle, Bundle.CTL_CrackAction());
-        setDefaultId(DEFAULT_LABEL_BY);
+        super(layerBundle, Bundle.CTL_CrackAction(), CrackOptions.getInstance(), "crack");
+        setDefaultId(CrackOptions.DEFAULT_LABEL_BY);
+
         createUI();
-        initListeners();
         initSession();
     }
 
-    public IndexedCheckModel<GraphicItem> getGraphicCheckModel() {
+    public IndexedCheckModel<GraphicItem> getGraphicsCheckModel() {
         return mGraphicSccb.getCheckModel();
-    }
-
-    public CrackPointBy getPointBy() {
-        return mPointScb.valueProperty().get();
     }
 
     private void createUI() {
         mPointScb.getItems().setAll(CrackPointBy.values());
-        mPointScb.setValue(DEFAULT_POINT_BY);
+        mColorScb.getItems().setAll(CrackColorBy.values());
+        mColorScb.setDisable(true);
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
@@ -65,40 +60,37 @@ public class CrackOptionsView extends BOptionsView {
 
         LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), CrackLabelBy.values());
 
-        var pointLabel = new Label(Dict.Geometry.POINT.toString());
-        var labelLabel = new Label(Dict.LABEL.toString());
+        int row = 0;
+        var gp = createGridPane();
+        gp.addRow(row++, mPointLabel, mColorLabel);
+        gp.addRow(row++, mPointScb, mColorScb);
+        gp.addRow(row++, mLabelLabel);
+        gp.add(mLabelMenuButton, 0, row++, GridPane.REMAINING, 1);
+        gp.addRow(row++, mGraphicLabel);
+        gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
 
-        var box = new VBox(
-                pointLabel,
-                mPointScb,
-                labelLabel,
-                mLabelMenuButton,
-                mGraphicSccb
-        );
-        box.setPadding(FxHelper.getUIScaledInsets(8));
+        FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
 
-        setCenter(box);
-
-    }
-
-    private void initListeners() {
-        initListenersSuper();
-
-        mPointScb.valueProperty().addListener(getChangeListener());
-
-        Stream.of(
-                mGraphicSccb)
-                .forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
-
+        setCenter(gp);
     }
 
     private void initSession() {
-        var sessionManager = getSessionManager();
-        sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
-        sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
-        sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
-        initSession(sessionManager);
+        mPointScb.valueProperty().bindBidirectional(mOptions.pointProperty());
+        mColorScb.valueProperty().bindBidirectional(mOptions.colorByProperty());
+        mGraphicSccb.checkedStringProperty().bindBidirectional(mOptions.graphicsProperty());
 
-        restoreLabelFromId(CrackLabelBy.class, DEFAULT_LABEL_BY);
+        initSession(mOptions);
+
+        restoreLabelFromId(CrackLabelBy.class, mOptions.labelByProperty().get().name(), CrackOptions.DEFAULT_LABEL_BY);
+        labelByProperty().addListener((p, o, n) -> {
+            for (var labelBy : CrackLabelBy.values()) {
+                if (Strings.CS.equals(n.getName(), labelBy.getName())) {
+                    mOptions.labelByProperty().set(labelBy);
+                    break;
+                }
+            }
+        });
+
+        initListenersSuper();
     }
 }

@@ -41,6 +41,9 @@ public class TopoOptions extends BOptionsBase implements MPresetActions {
     }
 
     private TopoOptions() {
+        initLabelProxyProperty(mLabelByProperty, TopoLabelBy.class);
+        initPointProxyProperty(mPointByProperty, TopoPointBy.class);
+        initColorProxyProperty(mColorByProperty, TopoColorBy.class);
         setPreferences(NbPreferences.forModule(TopoOptions.class));
     }
 
@@ -62,9 +65,6 @@ public class TopoOptions extends BOptionsBase implements MPresetActions {
 
     @Override
     public void initSession(SessionManager sessionManager) {
-        initColorProxyProperty(mColorByProperty, TopoColorBy.class);
-        initLabelProxyProperty(mLabelByProperty, TopoLabelBy.class);
-        initPointProxyProperty(mPointByProperty, TopoPointBy.class);
         super.initSession(sessionManager);
     }
 

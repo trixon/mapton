@@ -27,10 +27,12 @@ import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import org.mapton.butterfly_tmo.api.GrundvattenManager;
+import org.mapton.butterfly_tmo.grundvatten.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -43,13 +45,15 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
     private final GraphicRenderer mGraphicRenderer;
     private final GrundvattenManager mManager = GrundvattenManager.getInstance();
     private final GrundvattenOptionsView mOptionsView;
+    private final GrundvattenOptions mOptions = GrundvattenOptions.getInstance();
 
     public GrundvattenLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new GrundvattenOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicsCheckModel());
         initListeners();
+//        mAttributeManager.setColorBy(mOptions.getColorBy());
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
@@ -70,6 +74,13 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+//            mAttributeManager.setColorBy(mOptions.getColorBy());
+            SwingHelper.runLaterDelayed(50, () -> {
+                resetPaintDelayedResetRunner();
+            });
+        });
+
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BGrundvatten> c) -> {
             repaint();
         });
@@ -83,10 +94,9 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
             }
         });
 
-        mOptionsView.labelByProperty().addListener((p, o, n) -> {
-            repaint();
-        });
-
+//        mOptionsView.labelByProperty().addListener((p, o, n) -> {
+//            repaint();
+//        });
 //        mOptionsView..addListener((p, o, n) -> {
 //            repaint();
 //        });
@@ -100,7 +110,7 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
                 return;
             }
 
-            var pointBy = mOptionsView.getPointBy();
+            var pointBy = mOptions.getPointBy();
 
             switch (pointBy) {
                 case NONE -> {
@@ -120,7 +130,7 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
 
-                        var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);

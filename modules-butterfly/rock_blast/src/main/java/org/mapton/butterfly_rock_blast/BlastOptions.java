@@ -41,6 +41,9 @@ public class BlastOptions extends BOptionsBase implements MPresetActions {
     }
 
     private BlastOptions() {
+        initColorProxyProperty(mColorByProperty, BlastColorBy.class);
+        initLabelProxyProperty(mLabelByProperty, BlastLabelBy.class);
+        initPointProxyProperty(mPointByProperty, BlastPointBy.class);
         setPreferences(NbPreferences.forModule(BlastOptions.class));
     }
 
@@ -62,9 +65,6 @@ public class BlastOptions extends BOptionsBase implements MPresetActions {
 
     @Override
     public void initSession(SessionManager sessionManager) {
-        initColorProxyProperty(mColorByProperty, BlastColorBy.class);
-        initLabelProxyProperty(mLabelByProperty, BlastLabelBy.class);
-        initPointProxyProperty(mPointByProperty, BlastPointBy.class);
         super.initSession(sessionManager);
     }
 

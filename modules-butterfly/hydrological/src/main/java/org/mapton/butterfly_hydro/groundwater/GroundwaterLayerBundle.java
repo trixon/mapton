@@ -33,6 +33,7 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -45,13 +46,15 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
     private final GroundwaterOptionsView mOptionsView;
     private final GraphicRenderer mGraphicRenderer;
     private final GroundwaterAttributeManager mAttributeManager = GroundwaterAttributeManager.getInstance();
+    private final GroundwaterOptions mOptions = GroundwaterOptions.getInstance();
 
     public GroundwaterLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new GroundwaterOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
         initListeners();
+//        mAttributeManager.setColorBy(mOptions.getColorBy());
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
@@ -72,6 +75,13 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+//            mAttributeManager.setColorBy(mOptions.getColorBy());
+            SwingHelper.runLaterDelayed(50, () -> {
+                resetPaintDelayedResetRunner();
+            });
+        });
+
         mOptionsView.registerLayerBundle(this);
         mManager.registerLayerBundle(this, mOptionsView);
     }
@@ -84,7 +94,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
                 return;
             }
 
-            var pointBy = mOptionsView.getPointBy();
+            var pointBy = mOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -100,7 +110,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
-                        var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
@@ -108,7 +118,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
                         //mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
                         //mapObjects.addAll(plotIndicators(p, position));
 
-                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptionsView);
+                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
 
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);
