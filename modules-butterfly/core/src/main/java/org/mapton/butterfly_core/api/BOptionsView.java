@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_core.api;
 
-import com.dlsc.gemsfx.util.SessionManager;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -131,27 +130,27 @@ public abstract class BOptionsView extends MOptionsView {
         return mPlotSelectedScbx.selectedProperty();
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public void registerLayerBundle(LayerBundle layerBundle) {
-        mLabelByProperty.addListener((p, o, n) -> {
-            layerBundle.repaint();
-        });
-
-        mPlotSelectedScbx.selectedProperty().addListener((p, o, n) -> {
-            layerBundle.repaint();
-        });
-        mPlotDebtScbx.selectedProperty().addListener((p, o, n) -> {
-            layerBundle.repaint();
-        });
-
-        getDistanceSliderPane().selectedProperty().addListener((p, o, n) -> {
-            layerBundle.repaint();
-        });
-
-        getDistanceSliderPane().valueProperty().addListener((p, o, n) -> {
-            layerBundle.repaint();
-        });
-
+//        mLabelByProperty.addListener((p, o, n) -> {
+//            layerBundle.repaint();
+//        });
+//
+//        mPlotSelectedScbx.selectedProperty().addListener((p, o, n) -> {
+//            layerBundle.repaint();
+//        });
+//        mPlotDebtScbx.selectedProperty().addListener((p, o, n) -> {
+//            layerBundle.repaint();
+//        });
+//
+//        getDistanceSliderPane().selectedProperty().addListener((p, o, n) -> {
+//            layerBundle.repaint();
+//        });
+//
+//        getDistanceSliderPane().valueProperty().addListener((p, o, n) -> {
+//            layerBundle.repaint();
+//        });
+//
     }
 
     @Deprecated(forRemoval = true)
@@ -179,11 +178,6 @@ public abstract class BOptionsView extends MOptionsView {
         mLabelByIdProperty.set(labelBy.name());
     }
 
-    protected void initSession(SessionManager sessionManager, boolean enableDebt) {
-        initSession(sessionManager);
-        mPlotDebtScbx.setDisable(!enableDebt);
-    }
-
     protected void initSession(BOptionsBase options) {
         mBottomBox.setDisable(false);
         if (options.plotDebtProperty() != null) {
@@ -195,13 +189,6 @@ public abstract class BOptionsView extends MOptionsView {
         }
         mDistanceSliderPane.selectedProperty().bindBidirectional(options.plotSelectedPlusProperty());
         mDistanceSliderPane.valueProperty().bindBidirectional(options.plotDistanceProperty());
-    }
-
-    protected void initSession(SessionManager sessionManager) {
-        mBottomBox.setDisable(false);
-        sessionManager.register(getKeyOptions("plotDebt"), mPlotDebtScbx.selectedProperty());
-        sessionManager.register(getKeyOptions("plotSelected"), mPlotSelectedScbx.selectedProperty());
-        mDistanceSliderPane.initSession(getKeyOptions("plotSelectedDistance"), sessionManager);
     }
 
     private void createUI() {

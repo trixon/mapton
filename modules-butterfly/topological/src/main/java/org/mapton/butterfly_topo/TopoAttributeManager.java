@@ -27,10 +27,10 @@ import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
-import org.mapton.butterfly_topo.api.TopoManager;
 import static org.mapton.butterfly_topo.TopoColorBy.FREQUENCY;
 import static org.mapton.butterfly_topo.TopoColorBy.MEAS_NEED;
 import static org.mapton.butterfly_topo.TopoColorBy.STYLE;
+import org.mapton.butterfly_topo.api.TopoManager;
 
 /**
  *
@@ -39,7 +39,6 @@ import static org.mapton.butterfly_topo.TopoColorBy.STYLE;
 public class TopoAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes[] mBearingAttributes;
-    private TopoColorBy mColorBy;
     private BasicShapeAttributes[][] mComponentCircle1dAttributes;
     private BasicShapeAttributes[] mComponentVector12dAttributes;
     private BasicShapeAttributes[] mComponentVector3dAttributes;
@@ -50,6 +49,7 @@ public class TopoAttributeManager extends BaseAttributeManager {
     private TopoConfig mTopoConfig;
     private BasicShapeAttributes mTraceAttribute;
     private BasicShapeAttributes[] mVectorAlarmAttributes;
+    private final TopoOptions mOptions = TopoOptions.getInstance();
 
     public static TopoAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -74,10 +74,6 @@ public class TopoAttributeManager extends BaseAttributeManager {
         }
 
         return mBearingAttributes[first ? 0 : 1];
-    }
-
-    public TopoColorBy getColorBy() {
-        return mColorBy;
     }
 
     public BasicShapeAttributes getComponentCircle1dAttributes(BTopoControlPoint p, int alarmLevel, boolean rise, boolean maximus) {
@@ -254,7 +250,7 @@ public class TopoAttributeManager extends BaseAttributeManager {
     public PointPlacemarkAttributes getPinAttributes(BTopoControlPoint p) {
         var attrs = getPinAttributes(TopoHelper.getAlarmLevel(p));
 
-        if (mColorBy != null && mColorBy != TopoColorBy.ALARM) {
+        if (mOptions.getColorBy() != null && mOptions.getColorBy() != TopoColorBy.ALARM) {
             attrs = new PointPlacemarkAttributes(attrs);
             attrs.setImageColor(getColor(p));
         }
@@ -275,7 +271,7 @@ public class TopoAttributeManager extends BaseAttributeManager {
 
     public BasicShapeAttributes getSymbolAttributes(BTopoControlPoint p) {
         var attrs = getAlarmInteriorAttributes(TopoHelper.getAlarmLevel(p));
-        if (mColorBy != null && mColorBy != TopoColorBy.ALARM) {
+        if (mOptions.getColorBy() != null && mOptions.getColorBy() != TopoColorBy.ALARM) {
             attrs = new BasicShapeAttributes(attrs);
             attrs.setInteriorMaterial(new Material(getColor(p)));
         }
@@ -295,12 +291,8 @@ public class TopoAttributeManager extends BaseAttributeManager {
         return mTraceAttribute;
     }
 
-    public void setColorBy(TopoColorBy colorBy) {
-        mColorBy = colorBy;
-    }
-
     private Color getColor(BTopoControlPoint p) {
-        switch (mColorBy) {
+        switch (mOptions.getColorBy()) {
             case STYLE -> {
                 if (mTopoConfig == null) {
                     //TODO Make proper fix

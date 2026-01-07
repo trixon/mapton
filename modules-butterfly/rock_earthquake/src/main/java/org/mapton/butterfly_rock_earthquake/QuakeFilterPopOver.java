@@ -86,10 +86,13 @@ public class QuakeFilterPopOver extends BaseTabbedFilterPopOver {
     @Override
     public void load(Butterfly butterfly) {
         var quakes = butterfly.rock().getEarthquakes();
+        try {
+            mFilterSectionPoint.load(quakes);
+            mFilterSectionDate.load(mManager.getTemporalRange());
+            mFilterSectionMisc.load();
 
-        mFilterSectionPoint.load(quakes);
-        mFilterSectionDate.load(mManager.getTemporalRange());
-        mFilterSectionMisc.load();
+        } catch (Exception e) {
+        }
     }
 
     @Override

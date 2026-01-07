@@ -23,8 +23,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.mapton.worldwind.api.LayerBundle;
 import se.trixon.almond.util.OptionsBase;
 import se.trixon.almond.util.fx.BindingHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -111,6 +113,15 @@ public abstract class BOptionsBase extends OptionsBase {
 
     public BooleanProperty plotSelectedProperty() {
         return mPlotSelectedProperty;
+    }
+
+    public void registerLayerBundle(LayerBundle layerBundle) {
+        getPreferences().addPreferenceChangeListener(pce -> {
+            SwingHelper.runLaterDelayed(50, () -> {
+                layerBundle.resetPaintDelayedResetRunner();
+//                layerBundle.repaint();
+            });
+        });
     }
 
     public void reset() {

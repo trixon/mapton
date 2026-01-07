@@ -55,7 +55,6 @@ public class MonLayerBundle extends BfLayerBundle {
         mOptionsView = new MonOptionsView(this);
         mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicsCheckModel());
         initListeners();
-        //        mAttributeManager.setColorBy(mOptions.getColorBy());
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
@@ -82,7 +81,6 @@ public class MonLayerBundle extends BfLayerBundle {
 
     private void initListeners() {
         mOptions.getPreferences().addPreferenceChangeListener(pce -> {
-//            mAttributeManager.setColorBy(mOptions.getColorBy());
             SwingHelper.runLaterDelayed(50, () -> {
                 resetPaintDelayedResetRunner();
             });

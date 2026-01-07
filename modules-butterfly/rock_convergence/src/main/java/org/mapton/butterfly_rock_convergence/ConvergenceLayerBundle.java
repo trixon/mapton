@@ -36,7 +36,6 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SDict;
-import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -57,7 +56,6 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
         mOptionsView = new ConvergenceOptionsView(this);
         mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
         initListeners();
-//        mAttributeManager.setColorBy(mOptions.getColorBy());
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
@@ -85,16 +83,7 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
-//            mAttributeManager.setColorBy(mOptions.getColorBy());
-            SwingHelper.runLaterDelayed(50, () -> {
-                resetPaintDelayedResetRunner();
-            });
-        });
-
-        mOptionsView.registerLayerBundle(this);
-        mManager.registerLayerBundle(this, mOptionsView);
-        mOptionsView.registerLayerBundle(this);
+        mOptions.registerLayerBundle(this);
         mManager.registerLayerBundle(this, mOptionsView);
     }
 

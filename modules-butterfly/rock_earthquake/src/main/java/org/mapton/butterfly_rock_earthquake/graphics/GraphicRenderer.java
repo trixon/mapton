@@ -78,11 +78,19 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockEarth
         mMapObjects = mapObjects;
 
         if (mCheckModel.isChecked(GraphicItem.CIRCLES)) {
-            plotCircle(quake, position);
+            try {
+                plotCircle(quake, position);
+            } catch (Exception e) {
+                System.out.println("%s\n%s".formatted(quake.getName(), e.getMessage()));
+            }
         }
 
         if (mCheckModel.isChecked(GraphicItem.LINES)) {
-            plotLine(quake, position);
+            try {
+                plotLine(quake, position);
+            } catch (Exception e) {
+                System.out.println("%s\n%s".formatted(quake.getName(), e.getMessage()));
+            }
         }
     }
 

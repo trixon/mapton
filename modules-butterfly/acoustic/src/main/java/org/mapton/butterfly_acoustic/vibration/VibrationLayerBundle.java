@@ -32,7 +32,6 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SDict;
-import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -53,7 +52,6 @@ public class VibrationLayerBundle extends BfLayerBundle {
         mOptionsView = new VibrationOptionsView(this);
         mGraphicRenderer = new GraphicRenderer(mLayer, null, mOptionsView.getGraphicCheckModel());
         initListeners();
-//        mAttributeManager.setColorBy(mOptions.getColorBy());
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
@@ -80,13 +78,7 @@ public class VibrationLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
-            //mAttributeManager.setColorBy(mOptions.getColorBy());
-            SwingHelper.runLaterDelayed(50, () -> {
-                resetPaintDelayedResetRunner();
-            });
-        });
-        mOptionsView.registerLayerBundle(this);
+        mOptions.registerLayerBundle(this);
         mManager.registerLayerBundle(this, mOptionsView);
     }
 
