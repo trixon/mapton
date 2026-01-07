@@ -56,6 +56,7 @@ public abstract class MOptionsView {
     public GridPane createGridPane() {
         var gp = new GridPane(FxHelper.getUIScaled(8), FxHelper.getUIScaled(2));
         gp.setPadding(FxHelper.getUIScaledInsets(8));
+        FxHelper.autoSizeColumn(gp, 2);
 
         return gp;
     }
