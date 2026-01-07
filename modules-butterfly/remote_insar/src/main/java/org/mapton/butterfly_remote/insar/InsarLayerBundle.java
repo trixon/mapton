@@ -40,7 +40,6 @@ import org.mapton.worldwind.api.analytic.GridData;
 import org.mapton.worldwind.api.analytic.GridValue;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -56,14 +55,14 @@ public class InsarLayerBundle extends BfLayerBundle {
     private final GraphicRenderer mGraphicRenderer;
     private final InsarManager mManager = InsarManager.getInstance();
     private final InsarOptionsView mOptionsView;
+    private final InsarOptions mOptions = InsarOptions.getInstance();
 
     public InsarLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new InsarOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
         initListeners();
-        mAttributeManager.setColorBy(mOptionsView.getColorBy());
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
@@ -89,14 +88,7 @@ public class InsarLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mOptionsView.colorByProperty().addListener((p, o, n) -> {
-            mAttributeManager.setColorBy(n);
-            SwingHelper.runLaterDelayed(250, () -> {
-                repaint();
-            });
-        });
-
-        mOptionsView.registerLayerBundle(this);
+        mOptions.registerLayerBundle(this);
         mManager.registerLayerBundle(this, mOptionsView);
     }
 
@@ -109,7 +101,7 @@ public class InsarLayerBundle extends BfLayerBundle {
                 return;
             }
 
-            var pointBy = mOptionsView.getPointBy();
+            var pointBy = mOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -131,14 +123,14 @@ public class InsarLayerBundle extends BfLayerBundle {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
-                        var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(p, position, labelPlacemark));
                         mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
 
-                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptionsView);
+                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
 
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);
@@ -160,7 +152,7 @@ public class InsarLayerBundle extends BfLayerBundle {
                 }
             }
 
-            if (mOptionsView.getGraphicCheckModel().isChecked(GraphicItem.HEAT_MAP)) {
+            if (mOptionsView.getGraphicsCheckModel().isChecked(GraphicItem.HEAT_MAP)) {
                 var values = mManager.getTimeFilteredItems().stream()
                         .map(p -> new GridValue(p.getLat(), p.getLon(), p.ext().deltaZero().getDeltaZ() * 1000))
                         //                        .map(p -> new GridValue(p.getLat(), p.getLon(), p.getVelocity()))
@@ -219,7 +211,7 @@ public class InsarLayerBundle extends BfLayerBundle {
     private ArrayList<AVListImpl> plotSymbol(BRemoteInsarPoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
         var attrs = mAttributeManager.getSymbolAttributes(p);
-        var value = switch (mOptionsView.getColorBy()) {
+        var value = switch (mOptions.getColorBy()) {
             case ACCELERATION ->
                 p.getAcceleration();
             case ALARM, DISPLACEMENT ->

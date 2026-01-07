@@ -21,7 +21,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public enum ColorBy {
+public enum InsarColorBy {
     DISPLACEMENT("Rörelse"),
     VELOCITY("Hastighet"),
     VELOCITY_3("Hastighet, 3 månader"),
@@ -30,7 +30,7 @@ public enum ColorBy {
     ALARM(SDict.ALARM.toString());
     private final String mName;
 
-    private ColorBy(String name) {
+    private InsarColorBy(String name) {
         mName = name;
     }
 

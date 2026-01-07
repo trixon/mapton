@@ -15,10 +15,8 @@
  */
 package org.mapton.butterfly_remote.insar;
 
-import java.util.stream.Stream;
-import javafx.beans.property.ObjectProperty;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BOptionsView;
 import org.mapton.butterfly_core.api.LabelBy;
@@ -34,45 +32,27 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public class InsarOptionsView extends BOptionsView {
 
-    private static final ColorBy DEFAULT_COLOR_BY = ColorBy.DISPLACEMENT;
-    private static final InsarLabelBy DEFAULT_LABEL_BY = InsarLabelBy.NONE;
-    private static final InsarPointBy DEFAULT_POINT_BY = InsarPointBy.SYMBOL;
-    private final SessionComboBox<ColorBy> mColorScb = new SessionComboBox<>();
+    private final SessionComboBox<InsarColorBy> mColorScb = new SessionComboBox<>();
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
+    private final InsarOptions mOptions = InsarOptions.getInstance();
     private final SessionComboBox<InsarPointBy> mPointScb = new SessionComboBox<>();
-    private final OptionsManager mOptionsManager = OptionsManager.getInstance();
 
     public InsarOptionsView(InsarLayerBundle layerBundle) {
-        super(layerBundle, Bundle.CTL_InsarAction());
-        setDefaultId(DEFAULT_LABEL_BY);
+        super(layerBundle, Bundle.CTL_InsarAction(), InsarOptions.getInstance(), "insra");
+        setDefaultId(InsarOptions.DEFAULT_LABEL_BY);
+
         createUI();
-        initListeners();
         initSession();
     }
 
-    public ObjectProperty<ColorBy> colorByProperty() {
-        return mColorScb.valueProperty();
-    }
-
-    public ColorBy getColorBy() {
-        return mColorScb.valueProperty().get();
-    }
-
-    public IndexedCheckModel<GraphicItem> getGraphicCheckModel() {
+    public IndexedCheckModel<GraphicItem> getGraphicsCheckModel() {
         return mGraphicSccb.getCheckModel();
-    }
-
-    public InsarPointBy getPointBy() {
-        return mPointScb.valueProperty().get();
     }
 
     private void createUI() {
         getPlotDebtScbx().setDisable(true);
-        mOptionsManager.colorProperty().bind(mColorScb.valueProperty());
         mPointScb.getItems().setAll(InsarPointBy.values());
-        mPointScb.setValue(DEFAULT_POINT_BY);
-        mColorScb.getItems().setAll(ColorBy.values());
-        mColorScb.setValue(DEFAULT_COLOR_BY);
+        mColorScb.getItems().setAll(InsarColorBy.values());
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
@@ -80,47 +60,44 @@ public class InsarOptionsView extends BOptionsView {
 
         LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), InsarLabelBy.values());
 
-        var pointLabel = new Label(Dict.Geometry.POINT.toString());
-        var labelLabel = new Label(Dict.LABEL.toString());
-        var colorLabel = new Label(Dict.COLOR.toString());
-        var graphicLabel = new Label(Dict.GRAPHICS.toString());
-
         int row = 0;
-        var gp = new GridPane(FxHelper.getUIScaled(8), FxHelper.getUIScaled(2));
-        gp.addRow(row++, pointLabel, colorLabel);
+        var gp = createGridPane();
+        gp.addRow(row++, mPointLabel, mColorLabel);
         gp.addRow(row++, mPointScb, mColorScb);
-        gp.addRow(row++, labelLabel);
+        gp.addRow(row++, mLabelLabel);
         gp.add(mLabelMenuButton, 0, row++, GridPane.REMAINING, 1);
-        gp.addRow(row++, graphicLabel);
+        gp.addRow(row++, mGraphicLabel);
         gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
-        gp.setPadding(FxHelper.getUIScaledInsets(8));
+
         FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
 
         setCenter(gp);
-
     }
 
-    private void initListeners() {
-        initListenersSuper();
-
-        mPointScb.valueProperty().addListener(getChangeListener());
-        mColorScb.valueProperty().addListener(getChangeListener());
-
-        Stream.of(
-                mGraphicSccb
-        )
-                .forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
-
-    }
-
+//    private void initListeners() {
+//        Stream.of(
+//                mGraphicSccb
+//        )
+//                .forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
+//
+//    }
     private void initSession() {
-        var sessionManager = getSessionManager();
-        sessionManager.register(getKeyOptions("pointBy"), mPointScb.selectedIndexProperty());
-        sessionManager.register(getKeyOptions("colorBy"), mColorScb.selectedIndexProperty());
-        sessionManager.register(getKeyOptions("labelBy"), labelByIdProperty());
-        sessionManager.register(getKeyOptions("checkedGraphics"), mGraphicSccb.checkedStringProperty());
-        initSession(sessionManager);
+        mPointScb.valueProperty().bindBidirectional(mOptions.pointProperty());
+        mColorScb.valueProperty().bindBidirectional(mOptions.colorByProperty());
+        mGraphicSccb.checkedStringProperty().bindBidirectional(mOptions.graphicsProperty());
 
-        restoreLabelFromId(InsarLabelBy.class, DEFAULT_LABEL_BY);
+        initSession(mOptions);
+
+        restoreLabelFromId(InsarLabelBy.class, mOptions.labelByProperty().get().name(), InsarOptions.DEFAULT_LABEL_BY);
+        labelByProperty().addListener((p, o, n) -> {
+            for (var labelBy : InsarLabelBy.values()) {
+                if (Strings.CS.equals(n.getName(), labelBy.getName())) {
+                    mOptions.labelByProperty().set(labelBy);
+                    break;
+                }
+            }
+        });
+
+        initListenersSuper();
     }
 }

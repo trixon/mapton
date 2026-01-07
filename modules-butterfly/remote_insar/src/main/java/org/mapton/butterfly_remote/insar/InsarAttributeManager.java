@@ -22,7 +22,6 @@ import java.awt.Color;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
-import static org.mapton.butterfly_remote.insar.ColorBy.DISPLACEMENT;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -31,7 +30,6 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class InsarAttributeManager extends BaseAttributeManager {
 
-    private ColorBy mColorBy;
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mInsarAttribute;
     private BasicShapeAttributes mSurfaceAttributes;
@@ -43,60 +41,8 @@ public class InsarAttributeManager extends BaseAttributeManager {
     private InsarAttributeManager() {
     }
 
-    public javafx.scene.paint.Color getColorFx(BRemoteInsarPoint p) {
-        return SwingHelper.colorToColor(getColor(p));
-    }
-
-    public String getValueByColorByWithHeader(BRemoteInsarPoint p) {
-        var format = "%s: %+.1f %s";
-        switch (mColorBy) {
-            case ALARM, DISPLACEMENT -> {
-                return format.formatted("Δ", p.ext().deltaZero().getDeltaZ() * 1000, "mm");
-            }
-            case VELOCITY -> {
-                return format.formatted("Hastighet", p.getVelocity(), "mm/år");
-            }
-            case VELOCITY_3 -> {
-                return format.formatted("Hastighet 3m", p.getVelocity3m(), "mm/år");
-            }
-            case VELOCITY_6 -> {
-                return format.formatted("Hastighet 6m", p.getVelocity6m(), "mm/år");
-            }
-            case ACCELERATION -> {
-                return format.formatted("Acceleration", p.getAcceleration(), "mm/år^2");
-            }
-            default ->
-                throw new AssertionError();
-        }
-
-    }
-
-    public String getValueByColorBy(BRemoteInsarPoint p) {
-        var format = "%+.1f";
-        switch (mColorBy) {
-            case ALARM, DISPLACEMENT -> {
-                return format.formatted(p.ext().deltaZero().getDeltaZ() * 1000);
-            }
-            case VELOCITY -> {
-                return format.formatted(p.getVelocity());
-            }
-            case VELOCITY_3 -> {
-                return format.formatted(p.getVelocity3m());
-            }
-            case VELOCITY_6 -> {
-                return format.formatted(p.getVelocity6m());
-            }
-            case ACCELERATION -> {
-                return format.formatted(p.getAcceleration());
-            }
-            default ->
-                throw new AssertionError();
-        }
-
-    }
-
     public Color getColor(BRemoteInsarPoint p) {
-        switch (mColorBy) {
+        switch (getColorBy()) {
             case ALARM -> {
                 return InsarHelper.getAlarmColorAwt(p);
             }
@@ -120,8 +66,8 @@ public class InsarAttributeManager extends BaseAttributeManager {
         }
     }
 
-    public ColorBy getColorBy() {
-        return mColorBy;
+    public javafx.scene.paint.Color getColorFx(BRemoteInsarPoint p) {
+        return SwingHelper.colorToColor(getColor(p));
     }
 
     public BasicShapeAttributes getComponentEllipsoidAttributes() {
@@ -150,7 +96,7 @@ public class InsarAttributeManager extends BaseAttributeManager {
     public PointPlacemarkAttributes getPinAttributes(BRemoteInsarPoint p) {
         var attrs = getPinAttributes(InsarHelper.getAlarmLevel(p));
 
-        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
+        if (getColorBy() != null && getColorBy() != InsarColorBy.ALARM) {
             attrs = new PointPlacemarkAttributes(attrs);
             attrs.setImageColor(getColor(p));
         }
@@ -172,7 +118,7 @@ public class InsarAttributeManager extends BaseAttributeManager {
 
     public BasicShapeAttributes getSymbolAttributes(BRemoteInsarPoint p) {
         var attrs = getAlarmInteriorAttributes(InsarHelper.getAlarmLevel(p));
-        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
+        if (getColorBy() != null && getColorBy() != InsarColorBy.ALARM) {
             attrs = new BasicShapeAttributes(attrs);
             attrs.setInteriorMaterial(new Material(getColor(p)));
         }
@@ -180,8 +126,56 @@ public class InsarAttributeManager extends BaseAttributeManager {
         return attrs;
     }
 
-    public void setColorBy(ColorBy colorBy) {
-        mColorBy = colorBy;
+    public String getValueByColorBy(BRemoteInsarPoint p) {
+        var format = "%+.1f";
+        switch (getColorBy()) {
+            case ALARM, DISPLACEMENT -> {
+                return format.formatted(p.ext().deltaZero().getDeltaZ() * 1000);
+            }
+            case VELOCITY -> {
+                return format.formatted(p.getVelocity());
+            }
+            case VELOCITY_3 -> {
+                return format.formatted(p.getVelocity3m());
+            }
+            case VELOCITY_6 -> {
+                return format.formatted(p.getVelocity6m());
+            }
+            case ACCELERATION -> {
+                return format.formatted(p.getAcceleration());
+            }
+            default ->
+                throw new AssertionError();
+        }
+
+    }
+
+    public String getValueByColorByWithHeader(BRemoteInsarPoint p) {
+        var format = "%s: %+.1f %s";
+        switch (getColorBy()) {
+            case ALARM, DISPLACEMENT -> {
+                return format.formatted("Δ", p.ext().deltaZero().getDeltaZ() * 1000, "mm");
+            }
+            case VELOCITY -> {
+                return format.formatted("Hastighet", p.getVelocity(), "mm/år");
+            }
+            case VELOCITY_3 -> {
+                return format.formatted("Hastighet 3m", p.getVelocity3m(), "mm/år");
+            }
+            case VELOCITY_6 -> {
+                return format.formatted("Hastighet 6m", p.getVelocity6m(), "mm/år");
+            }
+            case ACCELERATION -> {
+                return format.formatted("Acceleration", p.getAcceleration(), "mm/år^2");
+            }
+            default ->
+                throw new AssertionError();
+        }
+
+    }
+
+    private InsarColorBy getColorBy() {
+        return InsarOptions.getInstance().getColorBy();
     }
 
     private static class Holder {

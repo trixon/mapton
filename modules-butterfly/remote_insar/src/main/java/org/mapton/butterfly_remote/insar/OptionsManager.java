@@ -24,7 +24,7 @@ import javafx.beans.property.SimpleObjectProperty;
  */
 public class OptionsManager {
 
-    private final ObjectProperty<ColorBy> mColorProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<InsarColorBy> mColorProperty = new SimpleObjectProperty<>();
 
     private OptionsManager() {
     }
@@ -33,7 +33,7 @@ public class OptionsManager {
         return OptionsManagerHolder.INSTANCE;
     }
 
-    public ObjectProperty<ColorBy> colorProperty() {
+    public ObjectProperty<InsarColorBy> colorProperty() {
         return mColorProperty;
     }
 
