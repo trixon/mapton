@@ -29,8 +29,8 @@ import org.mapton.butterfly_core.api.BOptionsBase;
 public class MonOptions extends BOptionsBase implements MPresetActions {
 
     public static final MonColorBy DEFAULT_COLOR_BY = MonColorBy.DEFAULT;
-    public static final MonLabelBy DEFAULT_LABEL_BY = MonLabelBy.NAME;
-    public static final MonPointBy DEFAULT_POINT_BY = MonPointBy.PIN;
+    public static final MonLabelBy DEFAULT_LABEL_BY = MonLabelBy.NONE;
+    public static final MonPointBy DEFAULT_POINT_BY = MonPointBy.NONE;
     private final ObjectProperty<MonColorBy> mColorByProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BY);
     private final ObjectProperty<MonLabelBy> mLabelByProperty = new SimpleObjectProperty<>(DEFAULT_LABEL_BY);
     private final ObjectProperty<MonPointBy> mPointByProperty = new SimpleObjectProperty<>(DEFAULT_POINT_BY);

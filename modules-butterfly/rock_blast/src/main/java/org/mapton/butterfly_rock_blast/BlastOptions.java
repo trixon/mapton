@@ -29,7 +29,7 @@ import org.mapton.butterfly_core.api.BOptionsBase;
 public class BlastOptions extends BOptionsBase implements MPresetActions {
 
     public static final BlastColorBy DEFAULT_COLOR_BY = BlastColorBy.DEFAULT;
-    public static final BlastLabelBy DEFAULT_LABEL_BY = BlastLabelBy.NAME;
+    public static final BlastLabelBy DEFAULT_LABEL_BY = BlastLabelBy.MISC_DATE;
     public static final BlastPointBy DEFAULT_POINT_BY = BlastPointBy.PIN;
     private final ObjectProperty<BlastColorBy> mColorByProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BY);
     private final ObjectProperty<BlastLabelBy> mLabelByProperty = new SimpleObjectProperty<>(DEFAULT_LABEL_BY);

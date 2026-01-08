@@ -29,7 +29,7 @@ import org.mapton.butterfly_core.api.BOptionsBase;
 public class InsarOptions extends BOptionsBase implements MPresetActions {
 
     public static final InsarColorBy DEFAULT_COLOR_BY = InsarColorBy.DISPLACEMENT;
-    public static final InsarLabelBy DEFAULT_LABEL_BY = InsarLabelBy.NAME;
+    public static final InsarLabelBy DEFAULT_LABEL_BY = InsarLabelBy.NONE;
     public static final InsarPointBy DEFAULT_POINT_BY = InsarPointBy.PIN;
     private final ObjectProperty<InsarColorBy> mColorByProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BY);
     private final ObjectProperty<InsarLabelBy> mLabelByProperty = new SimpleObjectProperty<>(DEFAULT_LABEL_BY);
