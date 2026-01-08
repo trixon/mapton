@@ -21,7 +21,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.butterfly_core.api.BOptionsBase;
-import org.openide.util.NbPreferences;
 
 /**
  *
@@ -44,7 +43,7 @@ public class TiltOptions extends BOptionsBase implements MPresetActions {
         initColorProxyProperty(mColorByProperty, TiltColorBy.class);
         initLabelProxyProperty(mLabelByProperty, TiltLabelBy.class);
         initPointProxyProperty(mPointByProperty, TiltPointBy.class);
-        setPreferences(NbPreferences.forModule(TiltOptions.class));
+        setPreferences(getPreferencesForPath("optionPresets"));
     }
 
     public ObjectProperty<TiltColorBy> colorByProperty() {

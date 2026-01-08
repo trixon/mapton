@@ -21,7 +21,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.butterfly_core.api.BOptionsBase;
-import org.openide.util.NbPreferences;
 
 /**
  *
@@ -44,7 +43,7 @@ public class QuakeOptions extends BOptionsBase implements MPresetActions {
         initColorProxyProperty(mColorByProperty, QuakeColorBy.class);
         initLabelProxyProperty(mLabelByProperty, QuakeLabelBy.class);
         initPointProxyProperty(mPointByProperty, QuakePointBy.class);
-        setPreferences(NbPreferences.forModule(QuakeOptions.class));
+        setPreferences(getPreferencesForPath("optionPresets"));
     }
 
     public ObjectProperty<QuakeColorBy> colorByProperty() {

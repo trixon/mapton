@@ -21,7 +21,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.butterfly_core.api.BOptionsBase;
-import org.openide.util.NbPreferences;
 
 /**
  *
@@ -44,7 +43,7 @@ public class ConvergenceOptions extends BOptionsBase implements MPresetActions {
         initColorProxyProperty(mColorByProperty, ConvergenceColorBy.class);
         initLabelProxyProperty(mLabelByProperty, ConvergenceLabelBy.class);
         initPointProxyProperty(mPointByProperty, ConvergencePointBy.class);
-        setPreferences(NbPreferences.forModule(ConvergenceOptions.class));
+        setPreferences(getPreferencesForPath("optionPresets"));
     }
 
     public ObjectProperty<ConvergenceColorBy> colorByProperty() {

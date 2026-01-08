@@ -15,12 +15,12 @@
  */
 package org.mapton.butterfly_structural.tilt;
 
-import org.mapton.butterfly_structural.tilt.graphics.GraphicItem;
 import javafx.scene.layout.GridPane;
 import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BOptionsView;
 import org.mapton.butterfly_core.api.LabelBy;
+import org.mapton.butterfly_structural.tilt.graphics.GraphicItem;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
@@ -39,9 +39,9 @@ public class TiltOptionsView extends BOptionsView {
 
     public TiltOptionsView(TiltLayerBundle layerBundle) {
         super(layerBundle, Bundle.CTL_TiltAction(), TiltOptions.getInstance(), "tilt");
-        setDefaultId(TiltOptions.DEFAULT_LABEL_BY);
-
         createUI();
+
+        initListerners();
         initSession();
     }
 
@@ -58,7 +58,8 @@ public class TiltOptionsView extends BOptionsView {
         mGraphicSccb.setShowCheckedCount(true);
         mGraphicSccb.getItems().setAll(GraphicItem.values());
 
-        LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), TiltLabelBy.values());
+        LabelBy.populateMenuButton(mLabelMenuButton, mOptions.labelByOperationProperty(), TiltLabelBy.values());
+        mLabelMenuButton.setText(mOptions.getLabelFromId(TiltLabelBy.class, mOptions.labelByProperty().get().name(), TiltOptions.DEFAULT_LABEL_BY));
 
         int row = 0;
         var gp = createGridPane();
@@ -74,23 +75,27 @@ public class TiltOptionsView extends BOptionsView {
         setCenter(gp);
     }
 
-    private void initSession() {
-        mPointScb.valueProperty().bindBidirectional(mOptions.pointProperty());
-        mColorScb.valueProperty().bindBidirectional(mOptions.colorByProperty());
-        mGraphicSccb.checkedStringProperty().bindBidirectional(mOptions.graphicsProperty());
-
-        initSession(mOptions);
-
-        restoreLabelFromId(TiltLabelBy.class, mOptions.labelByProperty().get().name(), TiltOptions.DEFAULT_LABEL_BY);
-        labelByProperty().addListener((p, o, n) -> {
+    private void initListerners() {
+        mOptions.labelByOperationProperty().addListener((p, o, n) -> {
+            var n2 = (LabelBy.Operations) n;
             for (var labelBy : TiltLabelBy.values()) {
-                if (Strings.CS.equals(n.getName(), labelBy.getName())) {
+                if (Strings.CS.equals(n2.getName(), labelBy.getName())) {
                     mOptions.labelByProperty().set(labelBy);
                     break;
                 }
             }
         });
 
-        initListenersSuper();
+        mOptions.labelByProperty().addListener((p, o, n) -> {
+            mLabelMenuButton.setText(n.getFullName());
+        });
+    }
+
+    private void initSession() {
+        mPointScb.valueProperty().bindBidirectional(mOptions.pointProperty());
+        mColorScb.valueProperty().bindBidirectional(mOptions.colorByProperty());
+        mGraphicSccb.checkedStringProperty().bindBidirectional(mOptions.graphicsProperty());
+
+        initSession(mOptions);
     }
 }

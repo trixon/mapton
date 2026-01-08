@@ -39,9 +39,9 @@ public class InsarOptionsView extends BOptionsView {
 
     public InsarOptionsView(InsarLayerBundle layerBundle) {
         super(layerBundle, Bundle.CTL_InsarAction(), InsarOptions.getInstance(), "insra");
-        setDefaultId(InsarOptions.DEFAULT_LABEL_BY);
-
         createUI();
+
+        initListerners();
         initSession();
     }
 
@@ -58,7 +58,8 @@ public class InsarOptionsView extends BOptionsView {
         mGraphicSccb.setShowCheckedCount(true);
         mGraphicSccb.getItems().setAll(GraphicItem.values());
 
-        LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), InsarLabelBy.values());
+        LabelBy.populateMenuButton(mLabelMenuButton, mOptions.labelByOperationProperty(), InsarLabelBy.values());
+        mLabelMenuButton.setText(mOptions.getLabelFromId(InsarLabelBy.class, mOptions.labelByProperty().get().name(), InsarOptions.DEFAULT_LABEL_BY));
 
         int row = 0;
         var gp = createGridPane();
@@ -74,30 +75,27 @@ public class InsarOptionsView extends BOptionsView {
         setCenter(gp);
     }
 
-//    private void initListeners() {
-//        Stream.of(
-//                mGraphicSccb
-//        )
-//                .forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
-//
-//    }
-    private void initSession() {
-        mPointScb.valueProperty().bindBidirectional(mOptions.pointProperty());
-        mColorScb.valueProperty().bindBidirectional(mOptions.colorByProperty());
-        mGraphicSccb.checkedStringProperty().bindBidirectional(mOptions.graphicsProperty());
-
-        initSession(mOptions);
-
-        restoreLabelFromId(InsarLabelBy.class, mOptions.labelByProperty().get().name(), InsarOptions.DEFAULT_LABEL_BY);
-        labelByProperty().addListener((p, o, n) -> {
+    private void initListerners() {
+        mOptions.labelByOperationProperty().addListener((p, o, n) -> {
+            var n2 = (LabelBy.Operations) n;
             for (var labelBy : InsarLabelBy.values()) {
-                if (Strings.CS.equals(n.getName(), labelBy.getName())) {
+                if (Strings.CS.equals(n2.getName(), labelBy.getName())) {
                     mOptions.labelByProperty().set(labelBy);
                     break;
                 }
             }
         });
 
-        initListenersSuper();
+        mOptions.labelByProperty().addListener((p, o, n) -> {
+            mLabelMenuButton.setText(n.getFullName());
+        });
+    }
+
+    private void initSession() {
+        mPointScb.valueProperty().bindBidirectional(mOptions.pointProperty());
+        mColorScb.valueProperty().bindBidirectional(mOptions.colorByProperty());
+        mGraphicSccb.checkedStringProperty().bindBidirectional(mOptions.graphicsProperty());
+
+        initSession(mOptions);
     }
 }

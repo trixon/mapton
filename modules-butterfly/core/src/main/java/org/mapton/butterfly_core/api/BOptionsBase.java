@@ -16,14 +16,17 @@
 package org.mapton.butterfly_core.api;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import java.util.prefs.Preferences;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.mapton.worldwind.api.LayerBundle;
+import org.openide.util.NbPreferences;
 import se.trixon.almond.util.OptionsBase;
 import se.trixon.almond.util.fx.BindingHelper;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -32,7 +35,7 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
-public abstract class BOptionsBase extends OptionsBase {
+public abstract class BOptionsBase<T> extends OptionsBase {
 
     public static final String DEFAULT_GRAPHICS = "";
     public static final boolean DEFAULT_PLOT_DEBT = false;
@@ -41,6 +44,7 @@ public abstract class BOptionsBase extends OptionsBase {
     public static final boolean DEFAULT_PLOT_SELECTED_PLUS = false;
     private StringProperty mColorByProxyProperty;
     private final StringProperty mGraphicsProperty = new SimpleStringProperty(DEFAULT_GRAPHICS);
+    private final SimpleObjectProperty<LabelBy.Operations> mLabelByOperationProperty = new SimpleObjectProperty<>();
     private StringProperty mLabelByProxyProperty;
     private final BooleanProperty mPlotDebtProperty = new SimpleBooleanProperty(DEFAULT_PLOT_DEBT);
     private final IntegerProperty mPlotDistanceProperty = new SimpleIntegerProperty(DEFAULT_PLOT_DISTANCE);
@@ -51,7 +55,7 @@ public abstract class BOptionsBase extends OptionsBase {
     public BOptionsBase() {
     }
 
-    public StringProperty getColorByProxyProperty() {
+    public StringProperty colorByProxyProperty() {
         return mColorByProxyProperty;
     }
 
@@ -59,16 +63,22 @@ public abstract class BOptionsBase extends OptionsBase {
         return mGraphicsProperty.get();
     }
 
-    public StringProperty getLabelByProxyProperty() {
-        return mLabelByProxyProperty;
+    public String getLabelFromId(Class enumClass, String enumName, LabelBy.Operations defaultValue) {
+        try {
+            Enum a = Enum.valueOf(enumClass, enumName);
+            LabelBy.Operations b = (LabelBy.Operations) a;
+            return b.getFullName();
+        } catch (IllegalArgumentException e) {
+            return defaultValue.getFullName();
+        }
     }
 
     public int getPlotDistance() {
         return mPlotDistanceProperty.get();
     }
 
-    public StringProperty getPointByProxyProperty() {
-        return mPointByProxyProperty;
+    public Preferences getPreferencesForPath(String path) {
+        return NbPreferences.forModule(getClass()).node(path);
     }
 
     public StringProperty graphicsProperty() {
@@ -99,6 +109,14 @@ public abstract class BOptionsBase extends OptionsBase {
         return mPlotSelectedPlusProperty.get();
     }
 
+    public SimpleObjectProperty<LabelBy.Operations> labelByOperationProperty() {
+        return mLabelByOperationProperty;
+    }
+
+    public StringProperty labelByProxyProperty() {
+        return mLabelByProxyProperty;
+    }
+
     public BooleanProperty plotDebtProperty() {
         return mPlotDebtProperty;
     }
@@ -113,6 +131,10 @@ public abstract class BOptionsBase extends OptionsBase {
 
     public BooleanProperty plotSelectedProperty() {
         return mPlotSelectedProperty;
+    }
+
+    public StringProperty pointByProxyProperty() {
+        return mPointByProxyProperty;
     }
 
     public void registerLayerBundle(LayerBundle layerBundle) {

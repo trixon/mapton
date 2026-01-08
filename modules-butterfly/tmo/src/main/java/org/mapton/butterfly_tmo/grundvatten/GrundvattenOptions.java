@@ -21,7 +21,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.butterfly_core.api.BOptionsBase;
-import org.openide.util.NbPreferences;
 
 /**
  *
@@ -44,7 +43,7 @@ public class GrundvattenOptions extends BOptionsBase implements MPresetActions {
         initColorProxyProperty(mColorByProperty, GrundvattenColorBy.class);
         initLabelProxyProperty(mLabelByProperty, GrundvattenLabelBy.class);
         initPointProxyProperty(mPointByProperty, GrundvattenPointBy.class);
-        setPreferences(NbPreferences.forModule(GrundvattenOptions.class));
+        setPreferences(getPreferencesForPath("optionPresets"));
     }
 
     public ObjectProperty<GrundvattenColorBy> colorByProperty() {

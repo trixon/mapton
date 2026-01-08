@@ -39,9 +39,9 @@ public class QuakeOptionsView extends BOptionsView {
 
     public QuakeOptionsView(QuakeLayerBundle layerBundle) {
         super(layerBundle, Bundle.CTL_EarthquakeAction(), QuakeOptions.getInstance(), "quake");
-        setDefaultId(QuakeOptions.DEFAULT_LABEL_BY);
-
         createUI();
+
+        initListerners();
         initSession();
     }
 
@@ -58,7 +58,8 @@ public class QuakeOptionsView extends BOptionsView {
         mGraphicSccb.setShowCheckedCount(true);
         mGraphicSccb.getItems().setAll(GraphicItem.values());
 
-        LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), QuakeLabelBy.values());
+        LabelBy.populateMenuButton(mLabelMenuButton, mOptions.labelByOperationProperty(), QuakeLabelBy.values());
+        mLabelMenuButton.setText(mOptions.getLabelFromId(QuakeLabelBy.class, mOptions.labelByProperty().get().name(), QuakeOptions.DEFAULT_LABEL_BY));
 
         int row = 0;
         var gp = createGridPane();
@@ -74,23 +75,27 @@ public class QuakeOptionsView extends BOptionsView {
         setCenter(gp);
     }
 
-    private void initSession() {
-        mPointScb.valueProperty().bindBidirectional(mOptions.pointProperty());
-        mColorScb.valueProperty().bindBidirectional(mOptions.colorByProperty());
-        mGraphicSccb.checkedStringProperty().bindBidirectional(mOptions.graphicsProperty());
-
-        initSession(mOptions);
-
-        restoreLabelFromId(QuakeLabelBy.class, mOptions.labelByProperty().get().name(), QuakeOptions.DEFAULT_LABEL_BY);
-        labelByProperty().addListener((p, o, n) -> {
+    private void initListerners() {
+        mOptions.labelByOperationProperty().addListener((p, o, n) -> {
+            var n2 = (LabelBy.Operations) n;
             for (var labelBy : QuakeLabelBy.values()) {
-                if (Strings.CS.equals(n.getName(), labelBy.getName())) {
+                if (Strings.CS.equals(n2.getName(), labelBy.getName())) {
                     mOptions.labelByProperty().set(labelBy);
                     break;
                 }
             }
         });
 
-        initListenersSuper();
+        mOptions.labelByProperty().addListener((p, o, n) -> {
+            mLabelMenuButton.setText(n.getFullName());
+        });
+    }
+
+    private void initSession() {
+        mPointScb.valueProperty().bindBidirectional(mOptions.pointProperty());
+        mColorScb.valueProperty().bindBidirectional(mOptions.colorByProperty());
+        mGraphicSccb.checkedStringProperty().bindBidirectional(mOptions.graphicsProperty());
+
+        initSession(mOptions);
     }
 }

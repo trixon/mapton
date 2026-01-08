@@ -39,9 +39,9 @@ public class ConvergenceOptionsView extends BOptionsView {
 
     public ConvergenceOptionsView(ConvergenceLayerBundle layerBundle) {
         super(layerBundle, Bundle.CTL_ConvergenceAction(), ConvergenceOptions.getInstance(), "convergence");
-        setDefaultId(ConvergenceOptions.DEFAULT_LABEL_BY);
-
         createUI();
+
+        initListerners();
         initSession();
     }
 
@@ -58,7 +58,8 @@ public class ConvergenceOptionsView extends BOptionsView {
         mGraphicSccb.setShowCheckedCount(true);
         mGraphicSccb.getItems().setAll(GraphicItem.values());
 
-        LabelBy.populateMenuButton(mLabelMenuButton, labelByProperty(), ConvergenceLabelBy.values());
+        LabelBy.populateMenuButton(mLabelMenuButton, mOptions.labelByOperationProperty(), ConvergenceLabelBy.values());
+        mLabelMenuButton.setText(mOptions.getLabelFromId(ConvergenceLabelBy.class, mOptions.labelByProperty().get().name(), ConvergenceOptions.DEFAULT_LABEL_BY));
 
         int row = 0;
         var gp = createGridPane();
@@ -74,23 +75,27 @@ public class ConvergenceOptionsView extends BOptionsView {
         setCenter(gp);
     }
 
-    private void initSession() {
-        mPointScb.valueProperty().bindBidirectional(mOptions.pointProperty());
-        mColorScb.valueProperty().bindBidirectional(mOptions.colorByProperty());
-        mGraphicSccb.checkedStringProperty().bindBidirectional(mOptions.graphicsProperty());
-
-        initSession(mOptions);
-
-        restoreLabelFromId(ConvergenceLabelBy.class, mOptions.labelByProperty().get().name(), ConvergenceOptions.DEFAULT_LABEL_BY);
-        labelByProperty().addListener((p, o, n) -> {
+    private void initListerners() {
+        mOptions.labelByOperationProperty().addListener((p, o, n) -> {
+            var n2 = (LabelBy.Operations) n;
             for (var labelBy : ConvergenceLabelBy.values()) {
-                if (Strings.CS.equals(n.getName(), labelBy.getName())) {
+                if (Strings.CS.equals(n2.getName(), labelBy.getName())) {
                     mOptions.labelByProperty().set(labelBy);
                     break;
                 }
             }
         });
 
-        initListenersSuper();
+        mOptions.labelByProperty().addListener((p, o, n) -> {
+            mLabelMenuButton.setText(n.getFullName());
+        });
+    }
+
+    private void initSession() {
+        mPointScb.valueProperty().bindBidirectional(mOptions.pointProperty());
+        mColorScb.valueProperty().bindBidirectional(mOptions.colorByProperty());
+        mGraphicSccb.checkedStringProperty().bindBidirectional(mOptions.graphicsProperty());
+
+        initSession(mOptions);
     }
 }

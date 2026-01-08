@@ -21,7 +21,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.butterfly_core.api.BOptionsBase;
-import org.openide.util.NbPreferences;
 
 /**
  *
@@ -44,7 +43,7 @@ public class InclinoOptions extends BOptionsBase implements MPresetActions {
         initColorProxyProperty(mColorByProperty, InclinoColorBy.class);
         initLabelProxyProperty(mLabelByProperty, InclinoLabelBy.class);
         initPointProxyProperty(mPointByProperty, InclinoPointBy.class);
-        setPreferences(NbPreferences.forModule(InclinoOptions.class));
+        setPreferences(getPreferencesForPath("optionPresets"));
     }
 
     public ObjectProperty<InclinoColorBy> colorByProperty() {

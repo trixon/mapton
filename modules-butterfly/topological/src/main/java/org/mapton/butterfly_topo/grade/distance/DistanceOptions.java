@@ -22,7 +22,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.butterfly_core.api.BOptionsBase;
 import org.mapton.butterfly_topo.grade.GradePointBy;
-import org.openide.util.NbPreferences;
 
 /**
  *
@@ -45,7 +44,7 @@ public class DistanceOptions extends BOptionsBase implements MPresetActions {
         initColorProxyProperty(mColorByProperty, DistanceColorBy.class);
         initLabelProxyProperty(mLabelByProperty, DistanceLabelBy.class);
         initPointProxyProperty(mPointByProperty, GradePointBy.class);
-        setPreferences(NbPreferences.forModule(DistanceOptions.class));
+        setPreferences(getPreferencesForPath("optionPresets"));
     }
 
     public ObjectProperty<DistanceColorBy> colorByProperty() {

@@ -21,7 +21,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.butterfly_core.api.BOptionsBase;
-import org.openide.util.NbPreferences;
 
 /**
  *
@@ -44,7 +43,7 @@ public class GroundwaterOptions extends BOptionsBase implements MPresetActions {
         initColorProxyProperty(mColorByProperty, GroundwaterColorBy.class);
         initLabelProxyProperty(mLabelByProperty, GroundwaterLabelBy.class);
         initPointProxyProperty(mPointByProperty, GroundwaterPointBy.class);
-        setPreferences(NbPreferences.forModule(GroundwaterOptions.class));
+        setPreferences(getPreferencesForPath("optionPresets"));
     }
 
     public ObjectProperty<GroundwaterColorBy> colorByProperty() {

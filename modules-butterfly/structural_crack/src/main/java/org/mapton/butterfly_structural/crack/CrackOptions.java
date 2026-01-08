@@ -21,7 +21,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.butterfly_core.api.BOptionsBase;
-import org.openide.util.NbPreferences;
 
 /**
  *
@@ -44,7 +43,7 @@ public class CrackOptions extends BOptionsBase implements MPresetActions {
         initColorProxyProperty(mColorByProperty, CrackColorBy.class);
         initLabelProxyProperty(mLabelByProperty, CrackLabelBy.class);
         initPointProxyProperty(mPointByProperty, CrackPointBy.class);
-        setPreferences(NbPreferences.forModule(CrackOptions.class));
+        setPreferences(getPreferencesForPath("optionPresets"));
     }
 
     public ObjectProperty<CrackColorBy> colorByProperty() {

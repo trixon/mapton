@@ -97,6 +97,7 @@ public abstract class BOptionsView extends MOptionsView {
         return mPlotSelectedScbx;
     }
 
+    @Deprecated(forRemoval = true)
     public void initListenersSuper() {
         mLabelByProperty.addListener((p, o, n) -> {
             mLabelMenuButton.setText(n.getFullName());
@@ -113,6 +114,7 @@ public abstract class BOptionsView extends MOptionsView {
         return mPlotSelectedScbx.isSelected();
     }
 
+    @Deprecated(forRemoval = true)
     public SimpleStringProperty labelByIdProperty() {
         return mLabelByIdProperty;
     }
@@ -132,25 +134,6 @@ public abstract class BOptionsView extends MOptionsView {
 
     @Deprecated(forRemoval = true)
     public void registerLayerBundle(LayerBundle layerBundle) {
-//        mLabelByProperty.addListener((p, o, n) -> {
-//            layerBundle.repaint();
-//        });
-//
-//        mPlotSelectedScbx.selectedProperty().addListener((p, o, n) -> {
-//            layerBundle.repaint();
-//        });
-//        mPlotDebtScbx.selectedProperty().addListener((p, o, n) -> {
-//            layerBundle.repaint();
-//        });
-//
-//        getDistanceSliderPane().selectedProperty().addListener((p, o, n) -> {
-//            layerBundle.repaint();
-//        });
-//
-//        getDistanceSliderPane().valueProperty().addListener((p, o, n) -> {
-//            layerBundle.repaint();
-//        });
-//
     }
 
     @Deprecated(forRemoval = true)
@@ -164,6 +147,7 @@ public abstract class BOptionsView extends MOptionsView {
         }
     }
 
+    @Deprecated(forRemoval = true)
     public void restoreLabelFromId(Class enumClass, String enumName, LabelBy.Operations defaultValue) {
         try {
             Enum a = Enum.valueOf(enumClass, enumName);
@@ -174,6 +158,7 @@ public abstract class BOptionsView extends MOptionsView {
         }
     }
 
+    @Deprecated(forRemoval = true)
     public void setDefaultId(LabelBy.Operations labelBy) {
         mLabelByIdProperty.set(labelBy.name());
     }

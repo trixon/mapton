@@ -21,7 +21,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.butterfly_core.api.BOptionsBase;
-import org.openide.util.NbPreferences;
 
 /**
  *
@@ -44,7 +43,7 @@ public class LoadOptions extends BOptionsBase implements MPresetActions {
         initColorProxyProperty(mColorByProperty, LoadColorBy.class);
         initLabelProxyProperty(mLabelByProperty, LoadLabelBy.class);
         initPointProxyProperty(mPointByProperty, LoadPointBy.class);
-        setPreferences(NbPreferences.forModule(LoadOptions.class));
+        setPreferences(getPreferencesForPath("optionPresets"));
     }
 
     public ObjectProperty<LoadColorBy> colorByProperty() {
