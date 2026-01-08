@@ -102,7 +102,7 @@ public abstract class BOptionsBase<T> extends OptionsBase {
     }
 
     public boolean isPlotDebt() {
-        return mPlotDebtProperty.get();
+        return mPlotDebtProperty != null && mPlotDebtProperty.get();
     }
 
     public boolean isPlotSelected() {

@@ -91,11 +91,11 @@ public class QuakeAttributeManager extends BaseAttributeManager {
     public PointPlacemarkAttributes getPinAttributes(Color color) {
         if (mSinglePinAttributes == null) {
             mSinglePinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mSinglePinAttributes.setImageAddress("https://maps.google.com/mapfiles/kml/shapes/caution.png");
+            mSinglePinAttributes.setImageAddress("http://maps.google.com/mapfiles/kml/shapes/target.png");
             mSinglePinAttributes.setImageColor(color);
-            mSinglePinAttributes.setScale(Mapton.getScalePinImage());
+            mSinglePinAttributes.setScale(Mapton.getScalePinImage() * 1.2);
             mSinglePinAttributes.setLabelScale(Mapton.getScalePinLabel());
-            mSinglePinAttributes.setImageOffset(Offset.BOTTOM_CENTER);
+            mSinglePinAttributes.setImageOffset(Offset.CENTER);
         }
 
         return mSinglePinAttributes;

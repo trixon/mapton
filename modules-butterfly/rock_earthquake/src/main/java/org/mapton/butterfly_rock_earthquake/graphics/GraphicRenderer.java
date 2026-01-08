@@ -28,21 +28,16 @@ import gov.nasa.worldwind.render.FrameFactory;
 import gov.nasa.worldwind.render.GlobeAnnotation;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
-import java.awt.Color;
 import java.nio.DoubleBuffer;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 import javax.swing.Timer;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
-import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.rock.BRockEarthquake;
 import org.mapton.butterfly_rock_earthquake.QuakeAttributeManager;
+import org.mapton.butterfly_rock_earthquake.QuakeHelper;
 import org.mapton.butterfly_rock_earthquake.QuakeManager;
-import org.mapton.butterfly_rock_earthquake.QuakeOptions;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -56,16 +51,7 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockEarth
     private final QuakeAttributeManager mAttributeManager = QuakeAttributeManager.getInstance();
     private Blinker mBlinker;
     private final IndexedCheckModel<GraphicItem> mCheckModel;
-    private final Color mColorsOfDay[] = {
-        Color.RED,
-        Color.ORANGE,
-        Color.YELLOW,
-        Color.GREEN,
-        Color.BLUE,
-        Color.GRAY,
-        Color.BLACK};
     private ArrayList<AVListImpl> mMapObjects;
-    private final QuakeOptions mOptions = QuakeOptions.getInstance();
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer, sPlotLimiter);
@@ -99,21 +85,6 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockEarth
         super.reset();
     }
 
-    private Color getColor(BRockEarthquake quake) {
-        var elapsedDays = Duration.between(quake.getDateLatest(), LocalDateTime.now()).toMillis() / TimeUnit.DAYS.toMillis(1);
-
-        switch (mOptions.getColorBy()) {
-            case AGE:
-                return mColorsOfDay[Math.min((int) elapsedDays, mColorsOfDay.length - 1)];
-            case MAGNITUDE:
-//                return ButterflyHelper.getColorAwt(ButterflyHelper.sGreenToRedColors, 10.0, quake.getMag());
-                return ButterflyHelper.getColorAwt(ButterflyHelper.sGreenToRedColors, 5, quake.getMag() - 3);
-            default:
-                throw new AssertionError();
-        }
-
-    }
-
     private void plotCircle(BRockEarthquake quake, Position position) {
         var annotation = new EqAnnotation(position, mAttributeManager.getAnnotationAttributes());
         annotation.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
@@ -121,7 +92,7 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockEarth
             setBlinker(annotation);
         }
 
-        annotation.getAttributes().setTextColor(getColor(quake));
+        annotation.getAttributes().setTextColor(QuakeHelper.getColor(quake));
         annotation.getAttributes().setScale(Math.abs(quake.getMag()) / 10);
         addRenderable(annotation, true, GraphicItem.CIRCLES, mMapObjects);
     }
@@ -135,7 +106,7 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockEarth
 
         var groundPath = new Path(startPosition, endPosition);
         var attrs = new BasicShapeAttributes(mAttributeManager.getComponentGroundPathAttributes());
-        attrs.setOutlineMaterial(new Material(getColor(quake)));
+        attrs.setOutlineMaterial(new Material(QuakeHelper.getColor(quake)));
         groundPath.setAttributes(attrs);
         addRenderable(groundPath, true, GraphicItem.LINES, mMapObjects);
 

@@ -19,6 +19,7 @@ import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.util.ArrayList;
 import javafx.scene.Node;
@@ -142,7 +143,8 @@ public class QuakeLayerBundle extends BfLayerBundle {
     }
 
     private PointPlacemark plotPin(BRockEarthquake p, Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes(Color.WHITE);
+        var attrs = new PointPlacemarkAttributes(mAttributeManager.getPinAttributes(Color.WHITE));
+        attrs.setImageColor(QuakeHelper.getColor(p));
         p.setValue(BKey.PIN_URL, attrs.getImageAddress());
         p.setValue(BKey.PIN_COLOR, attrs.getImageColor());
 

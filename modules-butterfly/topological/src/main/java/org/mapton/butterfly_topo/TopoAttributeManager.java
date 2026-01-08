@@ -27,9 +27,6 @@ import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
-import static org.mapton.butterfly_topo.TopoColorBy.FREQUENCY;
-import static org.mapton.butterfly_topo.TopoColorBy.MEAS_NEED;
-import static org.mapton.butterfly_topo.TopoColorBy.STYLE;
 import org.mapton.butterfly_topo.api.TopoManager;
 
 /**
