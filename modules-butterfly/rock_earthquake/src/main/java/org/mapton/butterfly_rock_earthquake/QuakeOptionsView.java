@@ -73,6 +73,7 @@ public class QuakeOptionsView extends BOptionsView {
         FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
 
         setCenter(gp);
+        setBottom(null);
     }
 
     private void initListerners() {

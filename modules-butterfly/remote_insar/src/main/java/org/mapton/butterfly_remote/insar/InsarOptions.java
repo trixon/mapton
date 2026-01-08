@@ -44,6 +44,7 @@ public class InsarOptions extends BOptionsBase implements MPresetActions {
         initLabelProxyProperty(mLabelByProperty, InsarLabelBy.class);
         initPointProxyProperty(mPointByProperty, InsarPointBy.class);
         setPreferences(getPreferencesForPath("optionPresets"));
+        disablePlotDebt();
     }
 
     public ObjectProperty<InsarColorBy> colorByProperty() {

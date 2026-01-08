@@ -45,6 +45,7 @@ public class DistanceOptions extends BOptionsBase implements MPresetActions {
         initLabelProxyProperty(mLabelByProperty, DistanceLabelBy.class);
         initPointProxyProperty(mPointByProperty, GradePointBy.class);
         setPreferences(getPreferencesForPath("optionPresets"));
+        disablePlotDebt();
     }
 
     public ObjectProperty<DistanceColorBy> colorByProperty() {

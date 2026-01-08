@@ -45,6 +45,7 @@ public class GradeHOptions extends BOptionsBase implements MPresetActions {
         initLabelProxyProperty(mLabelByProperty, GradeHLabelBy.class);
         initPointProxyProperty(mPointByProperty, GradePointBy.class);
         setPreferences(getPreferencesForPath("optionPresets"));
+        disablePlotDebt();
     }
 
     public ObjectProperty<GradeHColorBy> colorByProperty() {

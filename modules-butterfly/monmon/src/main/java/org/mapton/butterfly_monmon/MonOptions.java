@@ -44,6 +44,7 @@ public class MonOptions extends BOptionsBase implements MPresetActions {
         initLabelProxyProperty(mLabelByProperty, MonLabelBy.class);
         initPointProxyProperty(mPointByProperty, MonPointBy.class);
         setPreferences(getPreferencesForPath("optionPresets"));
+        disablePlotDebt();
     }
 
     public ObjectProperty<MonColorBy> colorByProperty() {

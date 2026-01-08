@@ -195,6 +195,7 @@ public abstract class BOptionsView extends MOptionsView {
 
         mBottomBox.setPadding(FxHelper.getUIScaledInsets(8));
         mBottomBox.setDisable(true);
+        mPlotDebtScbx.setDisable(true);
 
         mDistanceSliderPane = new SliderPane("...plus de inom (m)", 50.0, false);
         mBottomBox.getChildren().addAll(mPlotDebtScbx, mPlotSelectedScbx, mDistanceSliderPane);

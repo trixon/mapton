@@ -46,7 +46,7 @@ public abstract class BOptionsBase<T> extends OptionsBase {
     private final StringProperty mGraphicsProperty = new SimpleStringProperty(DEFAULT_GRAPHICS);
     private final SimpleObjectProperty<LabelBy.Operations> mLabelByOperationProperty = new SimpleObjectProperty<>();
     private StringProperty mLabelByProxyProperty;
-    private final BooleanProperty mPlotDebtProperty = new SimpleBooleanProperty(DEFAULT_PLOT_DEBT);
+    private BooleanProperty mPlotDebtProperty = new SimpleBooleanProperty(DEFAULT_PLOT_DEBT);
     private final IntegerProperty mPlotDistanceProperty = new SimpleIntegerProperty(DEFAULT_PLOT_DISTANCE);
     private final BooleanProperty mPlotSelectedPlusProperty = new SimpleBooleanProperty(DEFAULT_PLOT_SELECTED_PLUS);
     private final BooleanProperty mPlotSelectedProperty = new SimpleBooleanProperty(DEFAULT_PLOT_SELECTED);
@@ -57,6 +57,10 @@ public abstract class BOptionsBase<T> extends OptionsBase {
 
     public StringProperty colorByProxyProperty() {
         return mColorByProxyProperty;
+    }
+
+    public void disablePlotDebt() {
+        mPlotDebtProperty = null;
     }
 
     public String getGraphics() {

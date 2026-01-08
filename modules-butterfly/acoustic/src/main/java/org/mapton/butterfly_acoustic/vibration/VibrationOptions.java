@@ -44,6 +44,7 @@ public class VibrationOptions extends BOptionsBase implements MPresetActions {
         initLabelProxyProperty(mLabelByProperty, VibrationLabelBy.class);
         initPointProxyProperty(mPointByProperty, VibrationPointBy.class);
         setPreferences(getPreferencesForPath("optionPresets"));
+        disablePlotDebt();
     }
 
     public ObjectProperty<VibrationColorBy> colorByProperty() {
