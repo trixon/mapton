@@ -152,10 +152,12 @@ public abstract class BOptionsBase<T> extends OptionsBase {
 
     public void reset() {
         mGraphicsProperty.set(DEFAULT_GRAPHICS);
-        mPlotDebtProperty.set(DEFAULT_PLOT_DEBT);
         mPlotSelectedProperty.set(DEFAULT_PLOT_SELECTED);
         mPlotSelectedPlusProperty.set(DEFAULT_PLOT_SELECTED_PLUS);
         mPlotDistanceProperty.set(DEFAULT_PLOT_DISTANCE);
+        if (mPlotDebtProperty != null) {
+            mPlotDebtProperty.set(DEFAULT_PLOT_DEBT);
+        }
     }
 
     protected <E extends Enum<E>> void initColorProxyProperty(ObjectProperty<E> objectProperty, Class<E> enumClass) {
