@@ -74,6 +74,7 @@ public class EarthquakeGenerator {
     private EarthquakeGenerator() {
         mItemsProperty.setValue(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
         mCacheDir = new File(Mapton.getCacheDir(), "earthquakes");
+        mCacheDir.mkdirs();
         mTrackerFile = new File(mCacheDir, "tracker");
     }
 
