@@ -131,7 +131,7 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
         var avgStroke = new BasicStroke(5.0f);
         int avdDays = 90 * 60 * 24;
         int avgSkipMeasurements = 0;
-        boolean plotAvg = true;
+        boolean plotAvg = false;
 
         getDataset().addSeries(mTimeSeriesX);
         renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesX.getKey()), Color.RED);
