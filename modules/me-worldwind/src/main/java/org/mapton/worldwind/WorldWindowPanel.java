@@ -86,6 +86,7 @@ import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.swing.FileHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -111,11 +112,12 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         MaptonNb.progressStart(MDict.MAP_ENGINE.toString());
         init();
 
-        new Thread(() -> {
+        Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
             initFinalize();
             initListeners();
             postCreateRunnable.run();
-        }, getClass().getCanonicalName()).start();
+            SwingHelper.runLaterDelayed(5000, () -> updateOverlays());
+        });
     }
 
     public void addCustomLayer(Layer layer) {
