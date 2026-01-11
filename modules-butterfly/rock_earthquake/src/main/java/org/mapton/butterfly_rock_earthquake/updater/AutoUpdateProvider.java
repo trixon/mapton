@@ -26,8 +26,8 @@ import org.openide.util.lookup.ServiceProvider;
 public class AutoUpdateProvider extends MSimpleObjectStorageBoolean.UpdaterAutoUpdate {
 
     public AutoUpdateProvider() {
-        setGroup("USGS");
-        setName("Earthquakes");
+        setGroup("Earthquakes");
+        setName("USGS");
     }
 
 }

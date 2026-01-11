@@ -48,6 +48,7 @@ import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.quakeml4j.QuakeParser;
 
 /**
  *
@@ -55,8 +56,10 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class EarthquakeGenerator {
 
-    private final String mBaseUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_%s.geojson";
+    private final String mBaseUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_%s.quakeml";
     private final File mCacheDir;
+    private final File mCacheDirSnsn;
+    private final File mCacheDirUsgs;
     private final ObjectProperty<ObservableList<BRockEarthquake>> mItemsProperty = new SimpleObjectProperty<>();
     private MPrint mPrint;
     private final File mTrackerFile;
@@ -74,8 +77,11 @@ public class EarthquakeGenerator {
     private EarthquakeGenerator() {
         mItemsProperty.setValue(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
         mCacheDir = new File(Mapton.getCacheDir(), "earthquakes");
-        mCacheDir.mkdirs();
-        mTrackerFile = new File(mCacheDir, "tracker");
+        mCacheDirSnsn = new File(mCacheDir, "snsn");
+        mCacheDirUsgs = new File(mCacheDir, "usgs");
+        mCacheDirSnsn.mkdirs();
+        mCacheDirUsgs.mkdirs();
+        mTrackerFile = new File(mCacheDirUsgs, "tracker");
     }
 
     public ObservableList<BRockEarthquake> getItems() {
@@ -87,6 +93,10 @@ public class EarthquakeGenerator {
     }
 
     public void parse() {
+        SystemHelper.runLaterDelayed(20000, () -> Thread.ofVirtual().start(() -> parseXml()));
+    }
+
+    public void parseGeoJson() {
         var earthquakes = new ArrayList<BRockEarthquake>();
         var existingIds = new HashSet<String>();
 
@@ -171,6 +181,51 @@ public class EarthquakeGenerator {
         FxHelper.runLater(() -> mItemsProperty.get().setAll(earthquakes));
     }
 
+    public void parseXml() {
+        var earthquakes = new ArrayList<BRockEarthquake>();
+        var existingIds = new HashSet<String>();
+        var parser = new QuakeParser();
+        var quakes = parser.parseRecursive(mCacheDir).stream()
+                .filter(q -> q.getMagnitude().getValue() != null)
+                .map(xmlQuake -> {
+                    var q = new BRockEarthquake();
+                    q.setName(xmlQuake.getPlace());
+                    q.setClassification("TODO");
+                    q.setCategory(xmlQuake.getType().value());
+                    q.setStatus("status");
+                    q.setTag("tag");
+                    q.setMag(xmlQuake.getMagnitude().getValue());
+                    q.setMagType(xmlQuake.getMagnitude().getType());
+                    q.setSig(666);
+                    q.setExternalId(xmlQuake.getPublicId());
+                    q.setLat(xmlQuake.getOrigin().getLatitude());
+                    q.setLon(xmlQuake.getOrigin().getLongitude());
+                    q.setZeroZ(xmlQuake.getOrigin().getDepth());
+                    existingIds.add(xmlQuake.getPublicId());
+                    q.setDateLatest(xmlQuake.getOrigin().getTime().toLocalDateTime());
+                    q.setUnit(q.getMagType());
+                    q.setOrigin(xmlQuake.getCreationInfo().getAgencyId());
+                    q.setOperator(xmlQuake.getCreationInfo().getAuthor());
+                    q.setGroup("TODO");
+                    q.setAlarm1Id("TODO");
+                    q.setFrequency(666);
+//
+                    q.setDimension(BDimension._1d);
+                    q.setAlarm2Id("");
+                    q.setRollingFormula("");
+                    q.setSparse("");
+                    q.setUnitDiff("");
+                    q.setFrequencyDefault(0);
+                    q.setFrequencyHigh(0);
+                    q.setFrequencyHighParam("");
+
+                    return q;
+                })
+                //.sorted(Comparator.comparing(BRockEarthquake::getDateLatest).reversed())
+                .toList();
+        FxHelper.runLater(() -> mItemsProperty.get().setAll(quakes));
+    }
+
     public void update(MPrint print) throws IOException {
         mPrint = print;
         mPrint.out("USGS: Download BEG");
@@ -207,17 +262,17 @@ public class EarthquakeGenerator {
         var type = feed.name().toLowerCase(Locale.ENGLISH);
         mPrint.out("USGS: Needs update? " + type);
 
-        var maxTimeStamp = Files.walk(mCacheDir.toPath())
+        var maxTimeStamp = Files.walk(mCacheDirUsgs.toPath())
                 .filter(path -> Files.isRegularFile(path))
                 .map(path -> path.toFile())
-                .filter(file -> file.getName().matches("%s_.*\\.geojson".formatted(type)))
+                .filter(file -> file.getName().matches("%s_.*\\.xml".formatted(type)))
                 .max(Comparator.comparingLong(file -> file.lastModified()))
                 .map(file -> file.lastModified())
                 .orElse(null);
 
         if (maxTimeStamp == null || SystemHelper.age(maxTimeStamp) > feed.getAgeLimit()) {
             mPrint.out("USGS: YES");
-            var destFile = new File(mCacheDir, "%s_%s.geojson".formatted(type, timestamp));
+            var destFile = new File(mCacheDirUsgs, "%s_%s.xml".formatted(type, timestamp));
             var url = URI.create(mBaseUrl.formatted(type)).toURL();
             mPrint.out("USGS: Copy <from,to>\n%s\n%s".formatted(url.toString(), destFile.toString()));
             FileUtils.copyURLToFile(url, destFile, 5000, 5000);

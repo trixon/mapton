@@ -32,8 +32,8 @@ public class EarthquakeUpdater extends MUpdater.ByFile {
 
     public EarthquakeUpdater() {
         setFile(mGenerator.getTrackerFile());
-        setComment("All earthquakes");
-        setCategory("USGS");
+        setComment("QuakeML");
+        setCategory("Earthquakes");
         setAutoUpdate(true);
 
         setRunnable(() -> {
@@ -49,12 +49,12 @@ public class EarthquakeUpdater extends MUpdater.ByFile {
     }
 
     @Override
-    public boolean isAutoUpdateEnabled() {
-        return MSimpleObjectStorageManager.getInstance().getBoolean(AutoUpdateProvider.class, false);
+    public String getName() {
+        return "Earthquakes USGS";
     }
 
     @Override
-    public String getName() {
-        return "Earthquakes";
+    public boolean isAutoUpdateEnabled() {
+        return MSimpleObjectStorageManager.getInstance().getBoolean(AutoUpdateProvider.class, false);
     }
 }
