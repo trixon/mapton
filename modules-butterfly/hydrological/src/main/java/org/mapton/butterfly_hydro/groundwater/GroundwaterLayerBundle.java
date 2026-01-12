@@ -110,6 +110,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
                         //mapObjects.addAll(plotIndicators(p, position));
 
                         mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
+                        addClickArea(position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);

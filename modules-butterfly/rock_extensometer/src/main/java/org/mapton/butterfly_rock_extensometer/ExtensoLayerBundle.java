@@ -112,6 +112,8 @@ public class ExtensoLayerBundle extends BfLayerBundle {
                         mapObjects.add(plotPin(extenso, position, labelPlacemark));
 
                         mGraphicRenderer.plot(extenso, mManager.getSelectedItem(), position, mapObjects, mOptions);
+
+                        addClickArea(position, mapObjects);
                     }
 
                     var leftClickRunnable = (Runnable) () -> {

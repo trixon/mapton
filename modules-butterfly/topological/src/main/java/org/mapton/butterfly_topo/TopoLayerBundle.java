@@ -30,15 +30,21 @@ import org.mapton.api.MRunnable;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.PinPaddle;
+import org.mapton.butterfly_format.types.BComponent;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
 import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
+import org.mapton.butterfly_topo.graphics.GraphicItem;
 import org.mapton.butterfly_topo.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
+import org.mapton.worldwind.api.analytic.AnalyticGrid;
+import org.mapton.worldwind.api.analytic.CellAggregate;
+import org.mapton.worldwind.api.analytic.GridData;
+import org.mapton.worldwind.api.analytic.GridValue;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SDict;
@@ -68,7 +74,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
         init();
         initRepaint();
         mOptionsView = new TopoOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -158,6 +164,8 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                                 mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
 
                                 mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
+                                addClickArea(position, mapObjects);
+
                                 var leftClickRunnable = (Runnable) () -> {
                                     mManager.setSelectedItemAfterReset(p);
                                 };
@@ -179,6 +187,38 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                 mGraphicRenderer.postPlot();
             }
 
+            var items = mManager.getTimeFilteredItems();
+            if (mOptionsView.getGraphicsCheckModel().isChecked(GraphicItem.HEAT_MAP) && !items.isEmpty()) {
+                var minLat = items.stream().filter(p -> p.getLat() != null).mapToDouble(p -> p.getLat()).min().getAsDouble();
+                var minLon = items.stream().filter(p -> p.getLat() != null).mapToDouble(p -> p.getLon()).min().getAsDouble();
+                var maxLat = items.stream().filter(p -> p.getLat() != null).mapToDouble(p -> p.getLat()).max().getAsDouble();
+                var maxLon = items.stream().filter(p -> p.getLat() != null).mapToDouble(p -> p.getLon()).max().getAsDouble();
+                var deltaLat = maxLat - minLat;
+                var deltaLon = maxLon - minLon;
+//                var sector = Sector.fromDegrees(minLat, maxLat, minLon, maxLon);
+                var values = items.stream()
+                        .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon(), p.ext().getAlarmPercent(BComponent.HEIGHT)))
+                        //                        .map(p -> {
+                        //                            return new GridValue(p.getLat(), p.getLon(), p.ext().getAlarmPercent(BComponent.HEIGHT) / 100.0);
+                        //                        })
+                        .map(p -> new GridValue(p.getLat(), p.getLon(), -p.ext().deltaZero().getDeltaZ() * 1000))
+                        .toList();
+                int factor = 25000;
+                int width = (int) (factor * deltaLon);
+                int height = (int) (factor * deltaLat);
+                width = 100;
+                height = 100;
+                height = (int) (width * deltaLon / deltaLat);
+                var gridData = new GridData(width, height, values, CellAggregate.MIN);
+                var analyticGrid = new AnalyticGrid(mLayer, 0, -100, +100);
+                analyticGrid.setNullOpacity(0.0);
+                analyticGrid.setZeroOpacity(0.3);
+                analyticGrid.setZeroValueSearchRange(5);
+                analyticGrid.setGridData(gridData);
+                var surface = analyticGrid.getSurface();
+                surface.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                mSurfaceLayer.addRenderable(surface);
+            }
             setDragEnabled(false);
         });
     }

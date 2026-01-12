@@ -16,11 +16,13 @@
 package org.mapton.butterfly_core.api;
 
 import gov.nasa.worldwind.WorldWind;
+import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import java.util.ArrayList;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -37,6 +39,10 @@ public abstract class BfLayerBundle extends LayerBundle {
     protected final RenderableLayer mPinLayer = new RenderableLayer();
     protected final RenderableLayer mSurfaceLayer = new RenderableLayer();
     protected final RenderableLayer mSymbolLayer = new RenderableLayer();
+
+    public void addClickArea(Position position, ArrayList<AVListImpl> mapObjects) {
+        super.addClickArea(position, mLayer, mapObjects);
+    }
 
     public PointPlacemark createPlacemark(Position position, String text, PointPlacemarkAttributes attrs, RenderableLayer layer) {
         var placemark = new PointPlacemark(position);

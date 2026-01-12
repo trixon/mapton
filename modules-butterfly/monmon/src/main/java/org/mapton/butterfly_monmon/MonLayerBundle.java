@@ -147,6 +147,7 @@ public class MonLayerBundle extends BfLayerBundle {
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(mon, position, labelPlacemark, stationIndex));
                         mGraphicRenderer.plot(mon, position, stationIndex, pointToZ, mapObjects);
+                        addClickArea(position, mapObjects);
                     }
 
                     var leftClickRunnable = (Runnable) () -> {

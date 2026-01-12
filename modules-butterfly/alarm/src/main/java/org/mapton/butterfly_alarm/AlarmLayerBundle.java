@@ -121,6 +121,7 @@ public class AlarmLayerBundle extends BfLayerBundle {
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(alarm, position, labelPlacemark));
+                        addClickArea(position, mapObjects);
                     }
 
 //                    mapObjects.add(plotArea(area));

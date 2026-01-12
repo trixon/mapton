@@ -140,6 +140,8 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
                                 mGraphicRenderer.plot(p, position, mapObjects);
                             }
 
+                            addClickArea(position, mapObjects);
+
                             var leftClickRunnable = (Runnable) () -> {
                                 mManager.setSelectedItemAfterReset(p);
                             };

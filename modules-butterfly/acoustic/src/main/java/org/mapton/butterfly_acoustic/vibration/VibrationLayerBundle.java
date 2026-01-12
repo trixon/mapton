@@ -114,6 +114,7 @@ public class VibrationLayerBundle extends BfLayerBundle {
                         mapObjects.add(plotPin(position, labelPlacemark));
 
                         mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
+                        addClickArea(position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);

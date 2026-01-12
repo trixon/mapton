@@ -114,6 +114,7 @@ public class BlastLayerBundle extends BfLayerBundle {
                         mapObjects.add(plotPin(p, position, labelPlacemark));
 
                         mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
+                        addClickArea(position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);

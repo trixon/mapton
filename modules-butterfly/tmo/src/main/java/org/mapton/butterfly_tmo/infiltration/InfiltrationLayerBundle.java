@@ -121,6 +121,8 @@ public class InfiltrationLayerBundle extends BfLayerBundle {
                         mapObjects.add(plotPin(position, labelPlacemark));
 
 //                    mComponentRenderer.plot(p, position, mapObjects);
+                        addClickArea(position, mapObjects);
+
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);
                         };

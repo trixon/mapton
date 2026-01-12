@@ -125,6 +125,7 @@ public class InclinoLayerBundle extends BfLayerBundle {
                         mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
 
                         mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
+                        addClickArea(position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);

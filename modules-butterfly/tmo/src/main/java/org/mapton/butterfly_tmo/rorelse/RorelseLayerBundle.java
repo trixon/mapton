@@ -125,6 +125,8 @@ public class RorelseLayerBundle extends BfLayerBundle {
                         mapObjects.add(plotPin(p, position, labelPlacemark));
 
 //                    mComponentRenderer.plot(p, position, mapObjects);
+                        addClickArea(position, mapObjects);
+
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);
                         };

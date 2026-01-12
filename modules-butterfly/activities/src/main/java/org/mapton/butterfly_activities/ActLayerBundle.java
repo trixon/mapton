@@ -126,6 +126,7 @@ public class ActLayerBundle extends BfLayerBundle {
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(area, position, labelPlacemark));
+                        addClickArea(position, mapObjects);
                     }
 
                     mapObjects.add(plotArea(area));

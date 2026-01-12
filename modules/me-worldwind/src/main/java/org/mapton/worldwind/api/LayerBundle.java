@@ -15,16 +15,21 @@
  */
 package org.mapton.worldwind.api;
 
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.drag.Draggable;
 import gov.nasa.worldwind.event.SelectEvent;
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.AbstractLayer;
 import gov.nasa.worldwind.layers.AnnotationLayer;
 import gov.nasa.worldwind.layers.IconLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.AnnotationAttributes;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.airspaces.AbstractAirspace;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,6 +51,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.DelayedResetRunner;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -57,6 +63,8 @@ public abstract class LayerBundle {
     private static final Set<Runnable> sActivePaintersSet = Collections.synchronizedSet(new HashSet<>());
     private String mCategory;
     private HashSet<Layer> mChildLayers = new HashSet<>();
+    private final AnnotationAttributes mClickAreaAttributes = new AnnotationAttributes();
+    private final int mClickAreaSize = SwingHelper.getUIScaled(32);
     private boolean mInitialized = false;
     private final ObservableList<Layer> mLayers = FXCollections.observableArrayList();
     private final StringProperty mName = new SimpleStringProperty();
@@ -70,6 +78,12 @@ public abstract class LayerBundle {
     private ConcurrentHashMap<String, MTemporalRange> mTemporalRanges;
 
     public LayerBundle() {
+        mClickAreaAttributes.setLeader(AVKey.SHAPE_NONE);
+        mClickAreaAttributes.setDrawOffset(new Point(0, (int) (-mClickAreaSize * .5)));
+        mClickAreaAttributes.setSize(new Dimension(mClickAreaSize, mClickAreaSize));
+        mClickAreaAttributes.setBorderWidth(0);
+        mClickAreaAttributes.setCornerRadius(0);
+        mClickAreaAttributes.setOpacity(0.1);
     }
 
     public void addAllChildLayers(Layer... childLayers) {
@@ -86,6 +100,12 @@ public abstract class LayerBundle {
                 }
             }
         });
+    }
+
+    public void addClickArea(Position position, RenderableLayer layer, ArrayList<AVListImpl> mapObjects) {
+        var annotation = new RoundAnnotation(position, mClickAreaSize, mClickAreaAttributes);
+        layer.addRenderable(annotation);
+        mapObjects.add(annotation);
     }
 
     public void attachTopComponentToLayer(String topComponentID, Layer layer) {

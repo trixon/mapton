@@ -141,6 +141,8 @@ public class DistanceLayerBundle extends TopoBaseLayerBundle {
                                 mGraphicRenderer.plot(p, position, mapObjects);
                             }
 
+                            addClickArea(position, mapObjects);
+
                             var leftClickRunnable = (Runnable) () -> {
                                 mManager.setSelectedItemAfterReset(p);
                             };

@@ -135,6 +135,7 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
                         mapObjects.add(plotPin(p, position, labelPlacemark));
 
                         mGraphicRenderer.plot(p, position, mapObjects);
+                        addClickArea(position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);
