@@ -46,7 +46,7 @@ public class TopoOptionsView extends BOptionsView implements MRunnable {
         initSession();
     }
 
-    public IndexedCheckModel<GraphicItem> getGraphicCheckModel() {
+    public IndexedCheckModel<GraphicItem> getGraphicsCheckModel() {
         return mGraphicSccb.getCheckModel();
     }
 

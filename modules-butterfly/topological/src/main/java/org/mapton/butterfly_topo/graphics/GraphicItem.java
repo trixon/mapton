@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo.graphics;
 
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -55,7 +56,9 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     TREND_1D_STACK("Trend, 1d (stapel)", Integer.MAX_VALUE),
     TREND_2D_PIE("Trend, 2d (paj)", Integer.MAX_VALUE),
     TREND_2D_STACK("Trend, 2d (intervall)", Integer.MAX_VALUE),
-    FREQ_BUFFER("Frekvens, hög (buffer)", Integer.MAX_VALUE);
+    FREQ_BUFFER("Frekvens, hög (buffer)", Integer.MAX_VALUE),
+    HEAT_MAP(Mapton.addWarning("Värmekarta", 5), Integer.MAX_VALUE);
+
     private final String mName;
     private final int mPlotLimit;
 
@@ -70,11 +73,13 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     }
 
     @Override
+
     public int getPlotLimit() {
         return mPlotLimit;
     }
 
     @Override
+
     public String toString() {
         return getName();
     }
