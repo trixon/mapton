@@ -15,20 +15,13 @@
  */
 package org.mapton.butterfly_rock_earthquake.graphics;
 
-import com.jogamp.opengl.GL;
 import gov.nasa.worldwind.WorldWind;
-import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.AnnotationAttributes;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
-import gov.nasa.worldwind.render.DrawContext;
-import gov.nasa.worldwind.render.FrameFactory;
-import gov.nasa.worldwind.render.GlobeAnnotation;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
-import java.nio.DoubleBuffer;
 import java.util.ArrayList;
 import javax.swing.Timer;
 import org.controlsfx.control.IndexedCheckModel;
@@ -38,6 +31,7 @@ import org.mapton.butterfly_format.types.rock.BRockEarthquake;
 import org.mapton.butterfly_rock_earthquake.QuakeAttributeManager;
 import org.mapton.butterfly_rock_earthquake.QuakeHelper;
 import org.mapton.butterfly_rock_earthquake.QuakeManager;
+import org.mapton.worldwind.api.RoundAnnotation;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -86,7 +80,7 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockEarth
     }
 
     private void plotCircle(BRockEarthquake quake, Position position) {
-        var annotation = new EqAnnotation(position, mAttributeManager.getAnnotationAttributes());
+        var annotation = new RoundAnnotation(position, SwingHelper.getUIScaled(32), mAttributeManager.getAnnotationAttributes());
         annotation.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
         if (quake == QuakeManager.getInstance().getTimeFilteredItems().getFirst()) {
             setBlinker(annotation);
@@ -115,7 +109,7 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockEarth
         }
     }
 
-    private void setBlinker(EqAnnotation ea) {
+    private void setBlinker(RoundAnnotation ea) {
         if (mBlinker != null) {
             mBlinker.stop();
         }
@@ -129,14 +123,14 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockEarth
 
     private class Blinker {
 
-        private EqAnnotation annotation;
+        private RoundAnnotation annotation;
         private double initialScale, initialOpacity;
         private int steps = 10;
         private int step = 0;
         private int delay = 100;
         private Timer timer;
 
-        private Blinker(EqAnnotation ea) {
+        private Blinker(RoundAnnotation ea) {
             this.annotation = ea;
             this.initialScale = this.annotation.getAttributes().getScale() * .5;
             this.initialOpacity = this.annotation.getAttributes().getOpacity();
@@ -159,43 +153,4 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockEarth
             timer.start();
         }
     }
-
-    private class EqAnnotation extends GlobeAnnotation {
-
-        public EqAnnotation(Position position, AnnotationAttributes defaults) {
-            super("", position, defaults);
-        }
-
-        @Override
-        protected void applyScreenTransform(DrawContext dc, int x, int y, int width, int height, double scale) {
-            double finalScale = scale * this.computeScale(dc);
-
-            var gl = dc.getGL().getGL2(); // GL initialization checks for GL2 compatibility.
-            gl.glTranslated(x, y, 0);
-            gl.glScaled(finalScale, finalScale, 1);
-        }
-
-        // Override annotation drawing for a simple circle
-        private DoubleBuffer shapeBuffer;
-
-        @Override
-        protected void doDraw(DrawContext dc, int width, int height, double opacity, Position pickPosition) {
-            // Draw colored circle around screen point - use annotation's text color
-            if (dc.isPickingMode()) {
-                this.bindPickableObject(dc, pickPosition);
-            }
-
-            this.applyColor(dc, this.getAttributes().getTextColor(), 0.6 * opacity, true);
-
-            // Draw 32x32 shape from its bottom left corner
-            int size = SwingHelper.getUIScaled(32);
-            if (this.shapeBuffer == null) {
-                this.shapeBuffer = FrameFactory.createShapeBuffer(AVKey.SHAPE_ELLIPSE, size, size, 0, null);
-            }
-            var gl = dc.getGL().getGL2(); // GL initialization checks for GL2 compatibility.
-            gl.glTranslated(-size / 2, -size / 2, 0);
-            FrameFactory.drawBuffer(dc, GL.GL_TRIANGLE_FAN, this.shapeBuffer);
-        }
-    }
-
 }

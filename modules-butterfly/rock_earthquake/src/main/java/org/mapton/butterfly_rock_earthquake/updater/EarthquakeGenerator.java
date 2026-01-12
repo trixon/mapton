@@ -221,8 +221,9 @@ public class EarthquakeGenerator {
 
                     return q;
                 })
-                //.sorted(Comparator.comparing(BRockEarthquake::getDateLatest).reversed())
-                .toList();
+                .sorted(
+                        Comparator.comparing(BRockEarthquake::getDateLatest, Comparator.nullsLast(Comparator.naturalOrder())).reversed()
+                ).toList();
         FxHelper.runLater(() -> mItemsProperty.get().setAll(quakes));
     }
 
