@@ -327,15 +327,15 @@ public class BAlarm extends BBasePoint {
 
                 case ":" -> {
                     if (StringUtils.isNotBlank(l1s)) {
-                        var values1 = Arrays.stream(StringUtils.split(l1s, "..")).map(k -> Double.valueOf(k)).toArray(Double[]::new);
+                        var values1 = Arrays.stream(StringUtils.splitByWholeSeparator(l1s, "..")).map(k -> Double.valueOf(k)).toArray(Double[]::new);
                         mRange0 = Range.of(Precision.EPSILON + values1[0], values1[1] - Precision.EPSILON);
 
                         if (StringUtils.isNotBlank(l2s)) {
-                            var values2 = Arrays.stream(StringUtils.split(l2s, "..")).map(k -> Double.valueOf(k)).toArray(Double[]::new);
+                            var values2 = Arrays.stream(StringUtils.splitByWholeSeparator(l2s, "..")).map(k -> Double.valueOf(k)).toArray(Double[]::new);
                             mRange1 = Range.of(Precision.EPSILON + values2[0], values2[1] - Precision.EPSILON);
 
                             if (StringUtils.isNotBlank(l3s)) {
-                                var values3 = Arrays.stream(StringUtils.split(l3s, "..")).map(k -> Double.valueOf(k)).toArray(Double[]::new);
+                                var values3 = Arrays.stream(StringUtils.splitByWholeSeparator(l3s, "..")).map(k -> Double.valueOf(k)).toArray(Double[]::new);
                                 mRange2 = Range.of(Precision.EPSILON + values3[0], values3[1] - Precision.EPSILON);
                             }
                         }
