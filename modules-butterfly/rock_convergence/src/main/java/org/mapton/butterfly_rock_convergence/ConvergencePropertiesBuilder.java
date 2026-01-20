@@ -20,10 +20,11 @@ import java.util.LinkedHashMap;
 import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
+import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.rock.BRockConvergence;
 import org.mapton.butterfly_format.types.rock.BRockConvergenceObservation;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -96,7 +97,23 @@ public class ConvergencePropertiesBuilder extends BPropertiesBuilder<BRockConver
 
         p.ext().getPairsOrderedByDeltaDesc(function, 5)
                 .forEachOrdered(pair -> {
-                    propertyMap.put(pair.getSimpleName(), "%+.1f".formatted(pair.ext().getDelta(function)));
+                    var observations = pair.ext().getObservationsTimeFiltered();
+                    if (observations.size() > 1) {
+                        var o0 = observations.get(observations.size() - 2);
+                        var o1 = observations.getLast();
+                        var delta0 = pair.ext().getDelta(function, o0);
+                        var delta1 = pair.ext().getDelta(function, o1);
+                        var days = ChronoUnit.DAYS.between(o0.getDate(), o1.getDate());
+                        var blasts = ButterflyManager.getInstance().util().getBlasts(p, 40, o0.getDate(), o1.getDate()).size();
+                        propertyMap.put(pair.getSimpleName(), "%+.1f (%+.1f @ %dd/%ds)".formatted(
+                                pair.ext().getDelta(function),
+                                delta1 - delta0,
+                                days,
+                                blasts
+                        ));
+                    } else {
+                        propertyMap.put(pair.getSimpleName(), "%+.1f".formatted(pair.ext().getDelta(function)));
+                    }
                 });
 
         return propertyMap;
