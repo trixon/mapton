@@ -62,6 +62,7 @@ public class ParameterEditor extends BaseEditor {
     private final ComboBox<BaseManagerProvider> mManagerComboBox = new ComboBox<>();
     private final ParameterEditorBasic mParameterEditorBasic = new ParameterEditorBasic();
     private final ParameterEditorZero mParameterEditorZero = new ParameterEditorZero();
+    private final ParameterEditorMove mParameterEditorMove = new ParameterEditorMove();
     private final LogPanel mPreviewLogPanel = new LogPanel();
     private final TextArea mSourceTextArea = new TextArea();
     private TabPane mTabPane;
@@ -121,7 +122,8 @@ public class ParameterEditor extends BaseEditor {
 
         var baseTab = new Tab("Grunddata", mParameterEditorBasic);
         var zeroTab = new Tab("Nollmätning", mParameterEditorZero);
-        mTabPane = new TabPane(baseTab, zeroTab);
+        var moveTab = new Tab("Flytt", mParameterEditorMove);
+        mTabPane = new TabPane(baseTab, zeroTab, moveTab);
         mTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         mBorderPane.setRight(mTabPane);
@@ -208,6 +210,9 @@ public class ParameterEditor extends BaseEditor {
 
             case 1 -> {
                 mPreviewLogPanel.println(mParameterEditorZero.preview(mManager, names));
+            }
+            case 2 -> {
+                mPreviewLogPanel.println(mParameterEditorMove.preview(mManager, getPointWithNavetNames(names)));
             }
 
             default ->

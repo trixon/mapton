@@ -76,7 +76,7 @@ public class ParameterEditorBasic extends ParameterEditorBase {
     private final CheckBox mUtforareCheckBox = new CheckBox("Utförare");
     private final ComboBox<String> mUtforareComboBox = new ComboBox<>();
     private final CheckBox mUtglesningCheckBox = new CheckBox("Utglesning");
-    private final TextField mUtglesningTextField = new TextField("MEDIAN / 2D");
+    private final TextField mUtglesningTextField = new TextField("MEDIAN / 7D");
 
     public ParameterEditorBasic() {
         createUI();
