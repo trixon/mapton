@@ -81,7 +81,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
                 mSubSetZeroMinute = minute;
             }
 
-            mTimeSeries.add(minute, mFunction.apply(o));
+            mTimeSeries.addOrUpdate(minute, mFunction.apply(o));
 
             mDateEnd = DateHelper.convertToDate(o.getDate());
         });
