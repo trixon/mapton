@@ -377,7 +377,17 @@
             <dependencies>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-internal00</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-internal01</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-internal02</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>

@@ -403,7 +403,7 @@
     </profiles>
 
     <properties>
-        <jackson.version>2.20.1</jackson.version>
+        <jackson.version>2.21.0</jackson.version>
         <brandingToken>mapton</brandingToken>
         <mapton.version>26.01x</mapton.version>
         <geotools.version>34.1</geotools.version>
