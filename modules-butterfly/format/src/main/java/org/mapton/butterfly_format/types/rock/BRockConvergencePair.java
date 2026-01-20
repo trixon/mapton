@@ -135,6 +135,14 @@ public class BRockConvergencePair extends BXyzPoint {
             }
         }
 
+        public Double getDelta(Function<BRockConvergenceObservation, Double> function, BRockConvergenceObservation o) {
+            try {
+                return function.apply(o);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
         public String getDeltaString(String prefix, Function<BRockConvergenceObservation, Double> function) {
             var diff = "";
             try {

@@ -22,7 +22,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
@@ -35,6 +38,7 @@ import org.mapton.butterfly_format.types.BCoordinate;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BHistory;
 import org.mapton.butterfly_format.types.BMeasurementMode;
+import org.mapton.butterfly_format.types.BSystemKeyVal;
 import org.mapton.butterfly_format.types.BSystemSearchProvider;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
@@ -105,9 +109,9 @@ public class Butterfly {
     private final ArrayList<BRemoteInsarPointObservation> mRemoteInsarPointsObservations = new ArrayList<>();
     private final Rock mRock = new Rock();
     private final ArrayList<BRockBlast> mRockBlasts = new ArrayList<>();
-    private final ArrayList<BRockEarthquake> mRockEarthquakes = new ArrayList<>();
     private final ArrayList<BRockConvergence> mRockConvergence = new ArrayList<>();
     private final ArrayList<BRockConvergenceObservation> mRockConvergenceObservations = new ArrayList<>();
+    private final ArrayList<BRockEarthquake> mRockEarthquakes = new ArrayList<>();
     private final ArrayList<BRockExtensometer> mRockExtensometers = new ArrayList<>();
     private final ArrayList<BRockExtensometerPoint> mRockExtensometersPoints = new ArrayList<>();
     private final ArrayList<BRockExtensometerPointObservation> mRockExtensometersPointsObservations = new ArrayList<>();
@@ -122,6 +126,7 @@ public class Butterfly {
     private final ArrayList<BStructuralTiltPoint> mStructuralTiltPoints = new ArrayList<>();
     private final ArrayList<BStructuralTiltPointObservation> mStructuralTiltPointsObservations = new ArrayList<>();
     private final Sys mSys = new Sys();
+    private final ArrayList<BSystemKeyVal> mSystemKeyVals = new ArrayList<>();
     private final ArrayList<BSystemSearchProvider> mSystemSearchProviders = new ArrayList<>();
     private final Tmo mTmo = new Tmo();
     private final Topo mTopo = new Topo();
@@ -336,9 +341,11 @@ public class Butterfly {
         }.load(sourceDir, "geoInclinometerPointsObservations.csv", mGeoInclinometerPointsObservationsPre);
 
         //System
+        new ImportFromCsv<BSystemKeyVal>(BSystemKeyVal.class) {
+        }.load(sourceDir, "systemKeyValStore.csv", mSystemKeyVals);
+
         new ImportFromCsv<BSystemSearchProvider>(BSystemSearchProvider.class) {
         }.load(sourceDir, "systemSearchProviders.csv", mSystemSearchProviders);
-
     }
 
     void postLoad() {
@@ -387,6 +394,7 @@ public class Butterfly {
         structural().postLoad();
         topo().postLoad();
         geotechnical().postLoad();
+        sys().postLoad();
 
         try {
             populateMonmon();
@@ -704,8 +712,54 @@ public class Butterfly {
 
     public class Sys {
 
+        private List<String> mKeyValList = List.of();
+        private Map<String, String> mKeyValMap = Map.of();
+        private Set<String> mKeyValSet = Set.of();
+
+        public Map<String, String> getKeyValMap() {
+            return getKeyVals().stream()
+                    .collect(Collectors.toMap(kv -> kv.getOrigin() + kv.getName(), BSystemKeyVal::getMeta));
+        }
+
+        public ArrayList<BSystemKeyVal> getKeyVals() {
+            return mSystemKeyVals;
+        }
+
         public ArrayList<BSystemSearchProvider> getSearchProviders() {
             return mSystemSearchProviders;
+        }
+
+        public String getVal(String origin, String key) {
+            try {
+                return getKeyValMap().get(origin + key);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public List<String> getValAsList(String origin, String key) {
+            try {
+                return List.of(StringUtils.split(getKeyValMap().get(origin + key), '\n'));
+            } catch (Exception e) {
+                return List.of();
+            }
+        }
+
+        public Map<String, String> getValAsMap(String origin, String key) {
+            return null;
+        }
+
+        public Set<String> getValAsSet(String origin, String key) {
+            try {
+                return new HashSet<>(getValAsList(origin, key));
+            } catch (Exception e) {
+                return Set.of();
+            }
+        }
+
+        private void postLoad() {
+            //TODO Populate lists, sets and maps
+//            mKeyValList = List.of(StringUtils.split(getKeyValMap().get(origin + key), '\n'));
         }
     }
 
