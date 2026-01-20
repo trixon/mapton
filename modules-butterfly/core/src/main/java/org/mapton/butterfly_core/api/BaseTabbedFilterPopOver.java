@@ -55,7 +55,7 @@ public abstract class BaseTabbedFilterPopOver extends BaseFilterPopOver {
     }
 
     private int getInsertPosition() {
-        return getToolBar().getItems().size() - 2;
+        return getToolBar().getItems().size() - 4;
     }
 
 }

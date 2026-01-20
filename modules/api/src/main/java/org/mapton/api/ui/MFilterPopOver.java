@@ -126,11 +126,11 @@ public abstract class MFilterPopOver extends MPopOver implements MPresetActions 
         mPasteNameButton.setOnAction(eventHandler);
     }
 
-    public void addToToolBar(String key, ActionTextBehavior actionTextBehavior) {
+    public void addToToolBar(int inserPosition, String key, ActionTextBehavior actionTextBehavior) {
         var action = mAvailableActions.get(key);
         if (action != null) {
             var button = ActionUtils.createButton(action, actionTextBehavior);
-            mToolBar.getItems().add(button);
+            mToolBar.getItems().add(inserPosition, button);
 
             if (actionTextBehavior == ActionTextBehavior.SHOW) {
                 var color = MOptions.getInstance().getIconColor();
@@ -189,8 +189,6 @@ public abstract class MFilterPopOver extends MPopOver implements MPresetActions 
 
     public abstract void onPolygonFilterChange();
 
-    public abstract void reset();
-
     public void setFilter(FormFilter filter) {
         mFilter = filter;
     }
@@ -215,6 +213,11 @@ public abstract class MFilterPopOver extends MPopOver implements MPresetActions 
             reset();
         });
         allAction.setGraphic(MaterialIcon._Content.SELECT_ALL.getImageView(getIconSizeToolBarInt()));
+
+        var resetStandardAction = new Action(Dict.DEFAULT.toString(), actionEvent -> {
+            reset();
+        });
+        resetStandardAction.setGraphic(MaterialIcon._Content.SELECT_ALL.getImageView(getIconSizeToolBarInt()));
 
         var clearAction = new Action(Dict.CLEAR.toString(), actionEvent -> {
             clear();
@@ -252,11 +255,12 @@ public abstract class MFilterPopOver extends MPopOver implements MPresetActions 
         });
 
         var actions = List.of(
-                allAction,
+                //allAction,
+                //                ActionUtils.ACTION_SEPARATOR,
+                ActionUtils.ACTION_SPAN,
                 clearAction,
-                ActionUtils.ACTION_SEPARATOR,
                 mPolygonFilterAction,
-                ActionUtils.ACTION_SEPARATOR
+                resetStandardAction
         );
 
         mAvailableActions.put("copyNames", copyNamesAction);
