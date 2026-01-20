@@ -21,8 +21,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MDict;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.core.api.ui.MPresetPopOver;
 import org.mapton.worldwind.api.LayerBundle;
@@ -44,14 +45,15 @@ public abstract class BOptionsView extends MOptionsView {
     protected final MenuButton mLabelMenuButton = new MenuButton();
     protected final Label mPointLabel = new Label(Dict.Geometry.POINT.toString());
     protected MPresetPopOver mPresetPopOver;
-    private final VBox mBottomBox = new VBox(FxHelper.getUIScaled(4));
+    private GridPane mBottomPane;
     private SliderPane mDistanceSliderPane;
     @Deprecated(forRemoval = true)
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty();
     @Deprecated(forRemoval = true)
     private final SimpleObjectProperty<LabelBy.Operations> mLabelByProperty = new SimpleObjectProperty<>();
-    private final SessionCheckBox mPlotDebtScbx = new SessionCheckBox("Plotta skuld");
-    private final SessionCheckBox mPlotSelectedScbx = new SessionCheckBox("Plotta bara valt objekt");
+    private final SessionCheckBox mPlotAnnotationScbx = new SessionCheckBox(MDict.ANNOTATION.toString());
+    private final SessionCheckBox mPlotDebtScbx = new SessionCheckBox("Skuld");
+    private final SessionCheckBox mPlotSelectedScbx = new SessionCheckBox("Bara valt");
     private MPresetActions mPresetActions;
 
     public BOptionsView(LayerBundle layerBundle, String title, MPresetActions presetActions, String key) {
@@ -76,6 +78,10 @@ public abstract class BOptionsView extends MOptionsView {
         createUI();
     }
 
+    public void activateAnnotation() {
+        mPlotAnnotationScbx.setDisable(false);
+    }
+
     public SliderPane getDistanceSliderPane() {
         return mDistanceSliderPane;
     }
@@ -87,6 +93,10 @@ public abstract class BOptionsView extends MOptionsView {
 
     public MenuButton getLabelMenuButton() {
         return mLabelMenuButton;
+    }
+
+    public SessionCheckBox getPlotAnnotationScbx() {
+        return mPlotAnnotationScbx;
     }
 
     public SessionCheckBox getPlotDebtScbx() {
@@ -106,10 +116,12 @@ public abstract class BOptionsView extends MOptionsView {
 
     }
 
+    @Deprecated(forRemoval = true)
     public boolean isPlotDebt() {
         return mPlotDebtScbx.isSelected();
     }
 
+    @Deprecated(forRemoval = true)
     public boolean isPlotSelected() {
         return mPlotSelectedScbx.isSelected();
     }
@@ -124,10 +136,12 @@ public abstract class BOptionsView extends MOptionsView {
         return mLabelByProperty;
     }
 
+    @Deprecated(forRemoval = true)
     public BooleanProperty plotSelectedDebt() {
         return mPlotDebtScbx.selectedProperty();
     }
 
+    @Deprecated(forRemoval = true)
     public BooleanProperty plotSelectedProperty() {
         return mPlotSelectedScbx.selectedProperty();
     }
@@ -164,7 +178,11 @@ public abstract class BOptionsView extends MOptionsView {
     }
 
     protected void initSession(BOptionsBase options) {
-        mBottomBox.setDisable(false);
+        mBottomPane.setDisable(false);
+        if (options.plotAnnotationProperty() != null) {
+            mPlotAnnotationScbx.selectedProperty().bindBidirectional(options.plotAnnotationProperty());
+//            mPlotAnnotationScbx.setDisable(false);
+        }
         if (options.plotDebtProperty() != null) {
             mPlotDebtScbx.selectedProperty().bindBidirectional(options.plotDebtProperty());
             mPlotDebtScbx.setDisable(false);
@@ -193,17 +211,21 @@ public abstract class BOptionsView extends MOptionsView {
             createToolbar(actions);
         }
 
-        mBottomBox.setPadding(FxHelper.getUIScaledInsets(8));
-        mBottomBox.setDisable(true);
         mPlotDebtScbx.setDisable(true);
-
+        mPlotAnnotationScbx.setDisable(true);
         mDistanceSliderPane = new SliderPane("...plus de inom (m)", 50.0, false);
-        mBottomBox.getChildren().addAll(mPlotDebtScbx, mPlotSelectedScbx, mDistanceSliderPane);
         mDistanceSliderPane.disableProperty().bind(mPlotSelectedScbx.selectedProperty().not());
 
-        setLabelPadding(mLabelLabel, mGraphicLabel);
+        mBottomPane = createGridPane();
+        mBottomPane.setDisable(true);
 
-        setBottom(mBottomBox);
+        int row = 0;
+        mBottomPane.addRow(row++, mPlotSelectedScbx, mPlotAnnotationScbx, mPlotDebtScbx);
+        mBottomPane.add(mDistanceSliderPane, 0, row++, GridPane.REMAINING, 1);
+        FxHelper.autoSizeColumn(mBottomPane, 3);
+
+        setLabelPadding(mLabelLabel, mGraphicLabel);
+        setBottom(mBottomPane);
     }
 
 }

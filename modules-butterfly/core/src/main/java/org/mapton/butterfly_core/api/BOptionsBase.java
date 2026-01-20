@@ -38,6 +38,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 public abstract class BOptionsBase<T> extends OptionsBase {
 
     public static final String DEFAULT_GRAPHICS = "";
+    public static final boolean DEFAULT_PLOT_ANNOTATION = false;
     public static final boolean DEFAULT_PLOT_DEBT = false;
     public static final int DEFAULT_PLOT_DISTANCE = 15;
     public static final boolean DEFAULT_PLOT_SELECTED = false;
@@ -46,6 +47,7 @@ public abstract class BOptionsBase<T> extends OptionsBase {
     private final StringProperty mGraphicsProperty = new SimpleStringProperty(DEFAULT_GRAPHICS);
     private final SimpleObjectProperty<LabelBy.Operations> mLabelByOperationProperty = new SimpleObjectProperty<>();
     private StringProperty mLabelByProxyProperty;
+    private final BooleanProperty mPlotAnnotationProperty = new SimpleBooleanProperty(DEFAULT_PLOT_ANNOTATION);
     private BooleanProperty mPlotDebtProperty = new SimpleBooleanProperty(DEFAULT_PLOT_DEBT);
     private final IntegerProperty mPlotDistanceProperty = new SimpleIntegerProperty(DEFAULT_PLOT_DISTANCE);
     private final BooleanProperty mPlotSelectedPlusProperty = new SimpleBooleanProperty(DEFAULT_PLOT_SELECTED_PLUS);
@@ -95,10 +97,15 @@ public abstract class BOptionsBase<T> extends OptionsBase {
         sessionManager.register(getKeyOptions("colorBy"), mColorByProxyProperty);
         sessionManager.register(getKeyOptions("labelBy"), mLabelByProxyProperty);
         sessionManager.register(getKeyOptions("graphics"), mGraphicsProperty);
+        sessionManager.register(getKeyOptions("plotAnnotatiion"), mPlotAnnotationProperty);
         sessionManager.register(getKeyOptions("plotDebt"), mPlotDebtProperty);
         sessionManager.register(getKeyOptions("plotSelected"), mPlotSelectedProperty);
         sessionManager.register(getKeyOptions("plotSelectedPlus"), mPlotSelectedPlusProperty);
         sessionManager.register(getKeyOptions("plotSelectedDistance"), mPlotDistanceProperty);
+    }
+
+    public boolean isPlotAnnotation() {
+        return mPlotAnnotationProperty.get();
     }
 
     public boolean isPlotDebt() {
@@ -119,6 +126,10 @@ public abstract class BOptionsBase<T> extends OptionsBase {
 
     public StringProperty labelByProxyProperty() {
         return mLabelByProxyProperty;
+    }
+
+    public BooleanProperty plotAnnotationProperty() {
+        return mPlotAnnotationProperty;
     }
 
     public BooleanProperty plotDebtProperty() {
@@ -155,6 +166,9 @@ public abstract class BOptionsBase<T> extends OptionsBase {
         mPlotSelectedProperty.set(DEFAULT_PLOT_SELECTED);
         mPlotSelectedPlusProperty.set(DEFAULT_PLOT_SELECTED_PLUS);
         mPlotDistanceProperty.set(DEFAULT_PLOT_DISTANCE);
+        if (mPlotAnnotationProperty != null) {
+            mPlotAnnotationProperty.set(DEFAULT_PLOT_ANNOTATION);
+        }
         if (mPlotDebtProperty != null) {
             mPlotDebtProperty.set(DEFAULT_PLOT_DEBT);
         }

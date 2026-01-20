@@ -26,7 +26,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.api.MAnnotation;
 import org.mapton.api.MBaseDataManager;
+import org.mapton.api.MKey;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.MSearchProviderManager;
@@ -35,6 +37,7 @@ import org.mapton.api.Mapton;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.fx.DelayedResetRunner;
@@ -53,7 +56,6 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
     private static BaseManager< BBase> sPrevManager;
     protected boolean mFirstLoad = true;
     protected int mTrendLoadCounter = 0;
-
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
     private final BooleanProperty mDisabledSearchProperty = new SimpleBooleanProperty(true);
@@ -121,10 +123,44 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
         return mDisabledSearchProperty;
     }
 
+    public void displayAnnotation(T t) {
+        if (t instanceof BBasePoint p) {
+            var annotationList = getObjectAnnotation(t);
+            if (annotationList != null && !annotationList.isEmpty()) {
+                var sb = new StringBuilder();
+                for (int i = 0; i < annotationList.size(); i++) {
+                    var s = annotationList.get(i);
+                    if (i == 0) {
+                        sb.append("<b>").append(s).append("</b><br />");
+                    } else {
+                        sb.append(s).append("<br />");
+                    }
+
+                }
+                var latLon = new MLatLon(p.getLat(), p.getLon());
+                var annotation = new MAnnotation(latLon, sb.toString(), getTypeParameterClass());
+                Mapton.getGlobalState().put(MKey.ANNOTATIONS, annotation);
+            }
+        }
+    }
+
     public Callable<List<String>> getCopyNamesCallable() {
         return () -> {
             return getTimeFilteredItems().stream().map(p -> p.getName()).toList();
         };
+    }
+
+    public List<String> getDefaultAnnotation(BOptionsBase options, T t) {
+        if (t instanceof BXyzPoint p && options.isPlotAnnotation()) {
+            var ext = p.extOrNull();
+            return List.of(p.getName(),
+                    ext.getDateLatest() != null ? ext.getDateLatest().toLocalDate().toString() : "-",
+                    ext.getAlarmPercentString(ext),
+                    ext.deltaZero().getDelta(3)
+            );
+        } else {
+            return null;
+        }
     }
 
     public Callable<String> getExternalSysUrlCallable() {
@@ -157,6 +193,10 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
             }
         }
 
+        return null;
+    }
+
+    public List<String> getObjectAnnotation(T t) {
         return null;
     }
 
@@ -193,6 +233,11 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
                 layerBundle.repaint();
             }
         });
+    }
+
+    public void setSelectedItemAfterReset(T item, boolean fromMap) {
+        super.setSelectedItem(item);
+        displayAnnotation(item);
     }
 
     @Override
