@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.util.List;
 import javafx.scene.Node;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TabPane;
@@ -38,17 +39,23 @@ public abstract class BaseTabbedFilterPopOver extends BaseFilterPopOver {
     }
 
     public void populateToolBar(Node... nodes) {
-        getToolBar().getItems().add(new Separator());
-        addToToolBar("mc", ActionUtils.ActionTextBehavior.SHOW);
-        addToToolBar("mr", ActionUtils.ActionTextBehavior.SHOW);
-        addToToolBar("mm", ActionUtils.ActionTextBehavior.SHOW);
-        addToToolBar("mp", ActionUtils.ActionTextBehavior.SHOW);
-        getToolBar().getItems().add(new Separator());
-        addToToolBar("paste", ActionUtils.ActionTextBehavior.HIDE);
+        var items = getToolBar().getItems();
+
+        items.add(getInsertPosition(), new Separator());
+        addToToolBar(getInsertPosition(), "mc", ActionUtils.ActionTextBehavior.SHOW);
+        addToToolBar(getInsertPosition(), "mr", ActionUtils.ActionTextBehavior.SHOW);
+        addToToolBar(getInsertPosition(), "mm", ActionUtils.ActionTextBehavior.SHOW);
+        addToToolBar(getInsertPosition(), "mp", ActionUtils.ActionTextBehavior.SHOW);
+        items.add(getInsertPosition(), new Separator());
+        addToToolBar(getInsertPosition(), "paste", ActionUtils.ActionTextBehavior.HIDE);
 
         if (nodes != null) {
-            getToolBar().getItems().addAll(nodes);
+            items.addAll(getInsertPosition(), List.of(nodes));
         }
+    }
+
+    private int getInsertPosition() {
+        return getToolBar().getItems().size() - 2;
     }
 
 }

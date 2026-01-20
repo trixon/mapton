@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.prefs.BackingStoreException;
 import javafx.beans.property.ObjectProperty;
@@ -56,7 +57,9 @@ import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.ButterflyLoader;
 import org.mapton.butterfly_format.ZipHelper;
 import org.mapton.butterfly_format.types.BAreaBase;
+import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.butterfly_format.types.tmo.BBasObjekt;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.DialogDisplayer;
@@ -65,6 +68,7 @@ import org.openide.modules.Modules;
 import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 import org.openide.windows.WindowManager;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.SystemHelper;
@@ -91,6 +95,7 @@ public class ButterflyManager {
     private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
     private LogoLoader mLogoLoader;
     private File mSource;
+    private final Util mUtil = new Util();
     private final WKTReader mWktReader = new WKTReader();
     private final ZipHelper mZipHelper = ZipHelper.getInstance();
 
@@ -269,6 +274,10 @@ public class ButterflyManager {
         mButterflyProperty.set(butterfly);
     }
 
+    public Util util() {
+        return mUtil;
+    }
+
     private void calculateCoordinates(Butterfly butterfly) {
         calculateLatLons(butterfly);
     }
@@ -440,5 +449,28 @@ public class ButterflyManager {
     private static class Holder {
 
         private static final ButterflyManager INSTANCE = new ButterflyManager();
+    }
+
+    public class Util {
+
+        public List<BRockBlast> getBlasts(BBasePoint p, double maxDistance, LocalDateTime firstDate, LocalDateTime lastDate) {
+            var pointLatLon = new MLatLon(p.getLat(), p.getLon());
+
+            return ButterflyManager.getInstance().getButterfly().rock().getBlasts().stream()
+                    .filter(b -> {
+                        return DateHelper.isBetween(
+                                firstDate.toLocalDate(),
+                                lastDate.toLocalDate(),
+                                b.getDateLatest().toLocalDate());
+                    })
+                    .filter(b -> {
+                        var blastLatLon = new MLatLon(b.getLat(), b.getLon());
+                        var distance = blastLatLon.distance(pointLatLon);
+
+                        return distance <= maxDistance;
+                    })
+                    .toList();
+        }
+
     }
 }

@@ -24,6 +24,7 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.util.ArrayList;
 import org.mapton.worldwind.api.LayerBundle;
+import org.mapton.worldwind.api.RoundAnnotation;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -40,8 +41,8 @@ public abstract class BfLayerBundle extends LayerBundle {
     protected final RenderableLayer mSurfaceLayer = new RenderableLayer();
     protected final RenderableLayer mSymbolLayer = new RenderableLayer();
 
-    public void addClickArea(Position position, ArrayList<AVListImpl> mapObjects) {
-        super.addClickArea(position, mLayer, mapObjects);
+    public RoundAnnotation addClickArea(Position position, ArrayList<AVListImpl> mapObjects) {
+        return super.addClickArea(position, mLayer, mapObjects);
     }
 
     public PointPlacemark createPlacemark(Position position, String text, PointPlacemarkAttributes attrs, RenderableLayer layer) {
