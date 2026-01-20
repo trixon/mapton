@@ -74,6 +74,7 @@ public class GradeVOptionsView extends BOptionsView {
         gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
 
         FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
+//        activateAnnotation();
 
         setCenter(gp);
     }

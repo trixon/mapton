@@ -45,6 +45,7 @@ import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
+import org.mapton.butterfly_topo.TopoOptions;
 import org.mapton.butterfly_topo.TopoPropertiesBuilder;
 import org.mapton.butterfly_topo.TopoTrendsBuilder;
 import org.mapton.butterfly_topo.chart.ChartAggregate;
@@ -63,6 +64,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     private final ChartAggregate mChartAggregate = new ChartAggregate();
     private double mMinimumZscaled = 0.0;
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
+    private final TopoOptions mOptions = TopoOptions.getInstance();
     private final TopoPropertiesBuilder mPropertiesBuilder = new TopoPropertiesBuilder();
     private final StandardMeasurementPopulator mStandardMeasurementPopulator = new StandardMeasurementPopulator();
     private final TopoTrendsBuilder mTrendsBuilder = new TopoTrendsBuilder();
@@ -77,6 +79,11 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
     public double getMinimumZscaled() {
         return mMinimumZscaled;
+    }
+
+    @Override
+    public List<String> getObjectAnnotation(BTopoControlPoint p) {
+        return getDefaultAnnotation(mOptions, p);
     }
 
     @Override

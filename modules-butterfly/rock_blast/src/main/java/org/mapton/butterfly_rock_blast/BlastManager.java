@@ -16,6 +16,7 @@
 package org.mapton.butterfly_rock_blast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MDisruptorProvider;
@@ -36,6 +37,7 @@ public class BlastManager extends BaseManager<BRockBlast> {
 
     private final static String DISRUPTOR_NAME = Bundle.CTL_BlastAction();
     private final BlastMultiChartAggregate mMultiChartAggregate = new BlastMultiChartAggregate();
+    private final BlastOptions mOptions = BlastOptions.getInstance();
     private final BlastPropertiesBuilder mPropertiesBuilder = new BlastPropertiesBuilder();
 
     public static BlastManager getInstance() {
@@ -44,6 +46,19 @@ public class BlastManager extends BaseManager<BRockBlast> {
 
     private BlastManager() {
         super(BRockBlast.class);
+    }
+
+    @Override
+    public List<String> getObjectAnnotation(BRockBlast p) {
+        if (mOptions.isPlotAnnotation()) {
+            var ext = p.extOrNull();
+            return List.of(
+                    p.getName(),
+                    ext.getDateLatest() != null ? ext.getDateLatest().toLocalDate().toString() : "-"
+            );
+        } else {
+            return null;
+        }
     }
 
     @Override

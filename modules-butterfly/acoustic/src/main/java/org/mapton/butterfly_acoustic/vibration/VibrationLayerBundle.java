@@ -118,6 +118,7 @@ public class VibrationLayerBundle extends BfLayerBundle {
 
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);
+                            mManager.displayAnnotation(p);
                         };
 
                         var leftDoubleClickRunnable = (Runnable) () -> {

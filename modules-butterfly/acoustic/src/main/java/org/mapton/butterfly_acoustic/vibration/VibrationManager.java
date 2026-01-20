@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
@@ -38,6 +39,7 @@ import se.trixon.almond.util.DateHelper;
 public class VibrationManager extends BaseManager<BAcousticVibrationPoint> {
 
     private final VibrationChartBuilder mChartBuilder = new VibrationChartBuilder();
+    private final VibrationOptions mOptions = VibrationOptions.getInstance();
     private final VibrationPropertiesBuilder mPropertiesBuilder = new VibrationPropertiesBuilder();
 
     public static VibrationManager getInstance() {
@@ -46,6 +48,19 @@ public class VibrationManager extends BaseManager<BAcousticVibrationPoint> {
 
     private VibrationManager() {
         super(BAcousticVibrationPoint.class);
+    }
+
+    @Override
+    public List<String> getObjectAnnotation(BAcousticVibrationPoint p) {
+        if (mOptions.isPlotAnnotation()) {
+            var ext = p.extOrNull();
+            return List.of(
+                    p.getName(),
+                    ext.getDateLatest() != null ? ext.getDateLatest().toLocalDate().toString() : "-"
+            );
+        } else {
+            return null;
+        }
     }
 
     @Override

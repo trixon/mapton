@@ -167,7 +167,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                                 addClickArea(position, mapObjects);
 
                                 var leftClickRunnable = (Runnable) () -> {
-                                    mManager.setSelectedItemAfterReset(p);
+                                    mManager.setSelectedItemAfterReset(p, true);
                                 };
 
                                 var leftDoubleClickRunnable = (Runnable) () -> {
