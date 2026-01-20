@@ -28,6 +28,7 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.AnnotationAttributes;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.airspaces.AbstractAirspace;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -83,7 +84,8 @@ public abstract class LayerBundle {
         mClickAreaAttributes.setSize(new Dimension(mClickAreaSize, mClickAreaSize));
         mClickAreaAttributes.setBorderWidth(0);
         mClickAreaAttributes.setCornerRadius(0);
-        mClickAreaAttributes.setOpacity(0.1);
+        mClickAreaAttributes.setOpacity(0.001);
+        mClickAreaAttributes.setBackgroundColor(Color.WHITE);
     }
 
     public void addAllChildLayers(Layer... childLayers) {
@@ -102,10 +104,14 @@ public abstract class LayerBundle {
         });
     }
 
-    public void addClickArea(Position position, RenderableLayer layer, ArrayList<AVListImpl> mapObjects) {
+    public RoundAnnotation addClickArea(Position position, RenderableLayer layer, ArrayList<AVListImpl> mapObjects) {
         var annotation = new RoundAnnotation(position, mClickAreaSize, mClickAreaAttributes);
+        annotation.setMaxActiveAltitude(1000);
+
         layer.addRenderable(annotation);
         mapObjects.add(annotation);
+
+        return annotation;
     }
 
     public void attachTopComponentToLayer(String topComponentID, Layer layer) {

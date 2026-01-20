@@ -15,11 +15,12 @@
  */
 package org.mapton.worldwind.api;
 
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.AnnotationAttributes;
 import gov.nasa.worldwind.render.GlobeAnnotation;
 import java.awt.Color;
-import java.awt.Insets;
+import java.awt.Font;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,17 +53,18 @@ public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
     private AnnotationManager() {
         super(GlobeAnnotation.class);
 
-        mDefaultAttributes.setCornerRadius(10);
-        mDefaultAttributes.setInsets(new Insets(8, 8, 8, 8));
-        mDefaultAttributes.setBackgroundColor(new Color(0f, 0f, 0f, .5f));
+        mDefaultAttributes.setCornerRadius(SwingHelper.getUIScaled(8));
+        mDefaultAttributes.setBackgroundColor(new Color(0f, 0f, 0f, .75f));
         mDefaultAttributes.setTextColor(Color.WHITE);
-        mDefaultAttributes.setDrawOffset(new Point(25, 25));
         mDefaultAttributes.setDistanceMinScale(.5);
         mDefaultAttributes.setDistanceMaxScale(2);
         mDefaultAttributes.setDistanceMinOpacity(.5);
-        mDefaultAttributes.setLeaderGapWidth(14);
-        mDefaultAttributes.setDrawOffset(new Point(20, 40));
-        mDefaultAttributes.setInsets(SwingHelper.getUIScaledInsets(6, 28, 6, 6));
+        mDefaultAttributes.setLeaderGapWidth(SwingHelper.getUIScaled(16));
+        mDefaultAttributes.setDrawOffset(new Point(SwingHelper.getUIScaled(30), SwingHelper.getUIScaled(60)));
+        mDefaultAttributes.setInsets(SwingHelper.getUIScaledInsets(6, 12, 12, 12));
+        mDefaultAttributes.setFont(Font.decode("Dialog-PLAIN-%d".formatted(SwingHelper.getUIScaled(14))));
+        mDefaultAttributes.setAdjustWidthToText(AVKey.SIZE_FIT_TEXT);
+        mDefaultAttributes.setSize(SwingHelper.getUIScaledDim(800, 0));
 
         Mapton.getGlobalState().addListener(gsce -> {
             var annotation = gsce.<MAnnotation>getValue();
