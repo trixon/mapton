@@ -32,6 +32,7 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     CLUSTER_DEFORMATION_PLANE_ALTITUDES_LABEL("\tEtikett: Avstånd och bäring", Integer.MAX_VALUE),
     //CLUSTER_DEFORMATION_TIN("Kluster, yta", Integer.MAX_VALUE),
     BEARING(Dict.BEARING.toString(), Integer.MAX_VALUE),
+    MEASUREMENT_MODE("Mätläge", Integer.MAX_VALUE),
     CIRCLE_1D("1d-delta", Integer.MAX_VALUE),
     CIRCLE_2D("2d-delta", Integer.MAX_VALUE),
     CIRCLE_3D("3d-delta", Integer.MAX_VALUE),

@@ -57,6 +57,9 @@ public class GraphicRenderer extends GraphicRendererBase {
         sMapObjects = mapObjects;
 
         plotBearing(p, position);
+        if (sCheckModel.isChecked(GraphicItem.MEASUREMENT_MODE)) {
+            plotMeasMode(p, position);
+        }
 
         if (p.ext().getNumOfObservationsFiltered() > 1) {
             mCircleRenderer.plot(p, position);
