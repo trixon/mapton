@@ -54,6 +54,10 @@ public abstract class BaseTabbedFilterPopOver extends BaseFilterPopOver {
         }
     }
 
+    public void resetTabs() {
+        mTabPane.getSelectionModel().selectFirst();
+    }
+
     private int getInsertPosition() {
         return getToolBar().getItems().size() - 4;
     }
