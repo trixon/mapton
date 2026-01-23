@@ -75,6 +75,8 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMisc.clear();
         mFilterSectionTrend.clear();
         mFilterSectionMeas.clear();
+
+        resetTabs();
     }
 
     @Override

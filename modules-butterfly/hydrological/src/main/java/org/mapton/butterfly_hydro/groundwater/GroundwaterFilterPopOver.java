@@ -71,6 +71,8 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDisruptor.clear();
         mFilterSectionMeas.clear();
         mFilterSectionMisc.clear();
+
+        resetTabs();
     }
 
     @Override

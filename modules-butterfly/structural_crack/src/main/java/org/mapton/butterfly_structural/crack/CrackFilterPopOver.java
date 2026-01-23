@@ -70,6 +70,8 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
         mFilterSectionMisc.clear();
+
+        resetTabs();
     }
 
     @Override

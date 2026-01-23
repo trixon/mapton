@@ -74,6 +74,8 @@ public class GradeFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilterSectionDate.clear();
         mFilterSectionMeas.clear();
+
+        resetTabs();
     }
 
     @Override

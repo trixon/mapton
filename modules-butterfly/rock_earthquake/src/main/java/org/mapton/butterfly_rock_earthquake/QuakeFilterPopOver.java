@@ -69,6 +69,8 @@ public class QuakeFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionPoint.clear();
         mFilterSectionDate.clear();
         mFilterSectionMisc.clear();
+
+        resetTabs();
     }
 
     @Override

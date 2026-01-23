@@ -64,6 +64,8 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionPoint.clear();
         mFilterSectionDate.clear();
         mFilterSectionMisc.clear();
+
+        resetTabs();
     }
 
     @Override

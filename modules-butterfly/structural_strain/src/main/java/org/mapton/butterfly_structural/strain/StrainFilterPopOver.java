@@ -70,6 +70,8 @@ public class StrainFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
         mFilterSectionMisc.clear();
+
+        resetTabs();
     }
 
     @Override

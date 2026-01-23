@@ -105,6 +105,8 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMeas.clear();
         mFilterSectionMisc.clear();
         mFilterSectionTrend.clear();
+
+        resetTabs();
     }
 
     @Override

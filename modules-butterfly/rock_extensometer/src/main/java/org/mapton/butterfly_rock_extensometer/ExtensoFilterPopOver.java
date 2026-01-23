@@ -68,6 +68,8 @@ public class ExtensoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
         mFilterSectionMisc.clear();
+
+        resetTabs();
     }
 
     @Override

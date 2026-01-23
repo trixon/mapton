@@ -70,6 +70,8 @@ public class TiltFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
         mFilterSectionMisc.clear();
+
+        resetTabs();
     }
 
     @Override

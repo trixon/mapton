@@ -69,6 +69,7 @@ public class ConvergenceFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDisruptor.clear();
         mFilterSectionMisc.clear();
 
+        resetTabs();
     }
 
     @Override
