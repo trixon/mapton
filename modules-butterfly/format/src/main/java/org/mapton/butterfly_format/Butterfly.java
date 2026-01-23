@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
@@ -713,12 +713,14 @@ public class Butterfly {
     public class Sys {
 
         private List<String> mKeyValList = List.of();
+        /**
+         * The top level map
+         */
         private Map<String, String> mKeyValMap = Map.of();
         private Set<String> mKeyValSet = Set.of();
 
         public Map<String, String> getKeyValMap() {
-            return getKeyVals().stream()
-                    .collect(Collectors.toMap(kv -> kv.getOrigin() + kv.getName(), BSystemKeyVal::getMeta));
+            return mKeyValMap;
         }
 
         public ArrayList<BSystemKeyVal> getKeyVals() {
@@ -739,27 +741,38 @@ public class Butterfly {
 
         public List<String> getValAsList(String origin, String key) {
             try {
-                return List.of(StringUtils.split(getKeyValMap().get(origin + key), '\n'));
+                var value = getKeyValMap().get(origin + key);
+                if (StringUtils.isBlank(value)) {
+                    return List.of();
+                } else {
+                    return List.of(StringUtils.split(value, '\n'))
+                            .stream()
+                            .sorted()
+                            .toList();
+                }
             } catch (Exception e) {
                 return List.of();
             }
         }
 
         public Map<String, String> getValAsMap(String origin, String key) {
-            return null;
+            return getValAsList(origin, key).stream()
+                    .map(item -> item.split("=", 2))
+                    .filter(parts -> parts.length == 2)
+                    .collect(Collectors.toMap(parts -> parts[0].trim(), parts -> parts[1].trim()));
         }
 
         public Set<String> getValAsSet(String origin, String key) {
             try {
-                return new HashSet<>(getValAsList(origin, key));
+                return new TreeSet<>(getValAsList(origin, key));
             } catch (Exception e) {
                 return Set.of();
             }
         }
 
         private void postLoad() {
-            //TODO Populate lists, sets and maps
-//            mKeyValList = List.of(StringUtils.split(getKeyValMap().get(origin + key), '\n'));
+            mKeyValMap = getKeyVals().stream()
+                    .collect(Collectors.toMap(kv -> kv.getOrigin() + kv.getName(), BSystemKeyVal::getMeta));
         }
     }
 
