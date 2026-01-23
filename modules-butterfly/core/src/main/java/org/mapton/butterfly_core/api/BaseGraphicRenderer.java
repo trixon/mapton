@@ -26,6 +26,7 @@ import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.RigidShape;
 import gov.nasa.worldwind.render.SurfaceCircle;
 import gov.nasa.worldwind.render.airspaces.Polygon;
+import java.awt.Color;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -301,5 +302,32 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
         attrs.setInteriorMaterial(Material.BLACK);
         var circle = new SurfaceCircle(attrs, position, 1.8, 100);
         addRenderable(circle, false, null, null);
+    }
+
+    protected void plotMeasMode(BXyzPoint p, Position position) {
+        var opacity = 1.0;
+        var attrs = new BasicShapeAttributes();
+        attrs.setDrawOutline(false);
+        attrs.setDrawInterior(true);
+        attrs.setInteriorOpacity(opacity);
+        switch (p.getMeasurementMode()) {
+            case AUTOMATIC:
+                attrs.setInteriorMaterial(new Material(Color.GREEN.brighter()));
+
+                break;
+            case MANUAL:
+                attrs.setInteriorMaterial(Material.WHITE);
+
+                break;
+            case UNDEFINED:
+                attrs.setInteriorMaterial(Material.BLUE);
+
+                break;
+            default:
+                throw new AssertionError();
+        }
+        var cylinder = new Cylinder(WWHelper.positionFromPosition(position, 0.1), 0.2, 1.0);
+        cylinder.setAttributes(attrs);
+        addRenderable(cylinder, true, null, null);
     }
 }
