@@ -320,6 +320,11 @@
                     <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-geo-inclinometer</artifactId>
                 </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-geo-predrilling</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-rock</artifactId>

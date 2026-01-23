@@ -42,6 +42,7 @@ limitations under the License.
         <module>monmon</module>
         <module>geo</module>
         <module>geo_inclinometer</module>
+        <module>geo_predrilling</module>
         <module>rock</module>
         <module>rock_blast</module>
         <module>rock_convergence</module>

@@ -235,6 +235,11 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
+                <artifactId>butterfly-geo-predrilling</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
                 <artifactId>butterfly-rock</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
@@ -406,6 +411,6 @@
         <jackson.version>2.21.0</jackson.version>
         <brandingToken>mapton</brandingToken>
         <mapton.version>26.01x</mapton.version>
-        <geotools.version>34.1</geotools.version>
+        <geotools.version>34.2</geotools.version>
     </properties>
 </project>
