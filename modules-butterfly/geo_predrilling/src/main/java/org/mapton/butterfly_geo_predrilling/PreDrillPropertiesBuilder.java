@@ -17,36 +17,94 @@ package org.mapton.butterfly_geo_predrilling;
 
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
-import java.util.Objects;
-import org.mapton.api.ui.forms.PropertiesBuilder;
+import org.mapton.butterfly_core.api.AlarmHelper;
+import org.mapton.butterfly_core.api.BPropertiesBuilder;
+import org.mapton.butterfly_format.types.BComponent;
+import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.geo.BGeoPreDrillPoint;
-import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.MathHelper;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class PreDrillPropertiesBuilder extends PropertiesBuilder<BGeoPreDrillPoint> {
+public class PreDrillPropertiesBuilder extends BPropertiesBuilder<BGeoPreDrillPoint> {
 
     @Override
     public Object build(BGeoPreDrillPoint p) {
         if (p == null) {
             return p;
         }
-
+        p.setMeasurementMode(BMeasurementMode.MANUAL);
+        /*
+         */
         var propertyMap = new LinkedHashMap<String, Object>();
-        var cat1 = Dict.BASIC.toString();
-        var date = Objects.toString(DateHelper.toDateTimeString(p.getDateLatest()), "-");
+//******************************************************************************
+        var basicParams = new BPropertiesBuilder.BasicParams();
+        propertyMap.putAll(populateBasics(p, basicParams));
+//******************************************************************************
+        Double azimuth = null;
+        try {
+            var o = p.ext().getObservationsTimeFiltered().getLast();
+            azimuth = o.ext().getBearing();
+        } catch (Exception e) {
+        }
+        var measParams = new BPropertiesBuilder.MeasParams<BTopoControlPoint>(
+                azimuth,
+                p.ext().getMeasurementUntilNext(ChronoUnit.DAYS),
+                p.ext().getMeasurementAge(ChronoUnit.DAYS),
+                p.ext().getNumOfObservationsFiltered(),
+                p.ext().getNumOfObservations(),
+                p.ext().firstIsZero(),
+                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count(),
+                AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p),
+                AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p),
+                p.ext().getAlarmPercentString(p.ext()),
+                p.ext().getAlarmLevelAge(),
+                p.ext().deltaRolling().getDelta1d2d(3),
+                p.ext().deltaZero().getDelta1d2d(3),
+                p.ext().deltaFirst().getDelta1d2d(3)
+        );
+        propertyMap.putAll(populateMeas(p, measParams));
+//******************************************************************************
+        var dateParams = new BPropertiesBuilder.DateParams(
+                p.ext().getObservationRawFirstDate(),
+                p.ext().getObservationFilteredFirstDate(),
+                p.ext().getObservationRawLastDate(),
+                p.ext().getObservationFilteredLastDate(),
+                p.ext().getObservationRawNextDate()
+        );
+        propertyMap.putAll(populateDates(p, dateParams));
+//******************************************************************************
 
-        propertyMap.put(getCatKey(cat1, "Ext.id"), p.getExternalId());
-        propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
-        propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
-        propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
-        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), date);
-        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
-        propertyMap.put(getCatKey(cat1, "Z"), MathHelper.convertDoubleToString(p.getZeroZ(), 1));
+//TODO Replace with trend based analysis
+//
+//        var category = "Analys (VARNING)";
+//        try {
+//            var trend = p.ext().getHeightDirectionTrendDaysMeas();
+//            propertyMap.put(getCatKeyNum(category, "Trend (dagar::antal)"), "%s::%d::%d".formatted(trend[0], trend[1], trend[2]));
+//
+//        } catch (NullPointerException e) {
+//        }
+//        var speed = p.ext().getSpeed();
+//        var ageIndicator = p.ext().getMeasurementAge(ChronoUnit.DAYS) > 365 ? "*" : "";
+//        var speedString = "%.1f mm/%s (%.1f)%s".formatted(speed[0] * 1000.0, Dict.Time.YEAR.toLower(), speed[1], ageIndicator);
+//
+//        propertyMap.put(getCatKeyNum(category, Dict.SPEED.toString()), speedString);
+//
+//        var limitValuePredictor = p.ext().limitValuePredictor();
+//        if (limitValuePredictor.getRemainingUntilLimit() != null) {
+//            propertyMap.put(getCatKeyNum(category, Dict.REMAINING.toString()), StringHelper.round(limitValuePredictor.getRemainingUntilLimit() * 1000, 1, "", " mm", false));
+//            var limitDate = limitValuePredictor.getExtrapolatedLimitDate();
+//            if (!StringUtils.equalsAny(limitDate, "-", "E")) {
+//                limitDate = "%s (%d)".formatted(limitDate, limitValuePredictor.getExtrapolatedLimitDaysFromNow());
+//            }
+//            propertyMap.put(getCatKeyNum(category, Dict.Time.END_DATE.toString()), limitDate);
+//            var direction = limitValuePredictor.isRisingByTrend() ? Dict.INCREASEING.toString() : Dict.DECREASING.toString();
+//            propertyMap.put(getCatKeyNum(category, Dict.Geometry.DIRECTION.toString()), direction);
+//        }
+//******************************************************************************
+        propertyMap.putAll(populateDatabase(p));
 
         return propertyMap;
     }

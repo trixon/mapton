@@ -309,6 +309,7 @@ public class ButterflyManager {
 
         calculateLatLons(butterfly.noise().getVibrationPoints());
         calculateLatLons(butterfly.rock().getExtensometers());
+        calculateLatLons(butterfly.geotechnical().getGeoPreDrillPoints());
     }
 
     private void createBufferedArea(BAreaBase area) throws ParseException, MismatchedDimensionException, TransformException {

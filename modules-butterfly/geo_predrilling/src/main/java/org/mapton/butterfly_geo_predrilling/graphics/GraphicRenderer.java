@@ -19,15 +19,13 @@ import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Ellipsoid;
-import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.SurfaceCircle;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
@@ -53,6 +51,7 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoPreDri
         mCheckModel = checkModel;
     }
 
+    @Override
     public void plot(BGeoPreDrillPoint drillPoint, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
 
@@ -86,19 +85,11 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoPreDri
         }
 
         if (mCheckModel.isChecked(GraphicItem.RADIUS_40)) {
-            var map = Map.of(40.0, Material.RED, 50.0, Material.ORANGE);
-            List.of(40.0, 50.0, 100.0).forEach(r -> {
-                var circle = new SurfaceCircle(position, r);
-                var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
-                attrs.setDrawInterior(false);
-                attrs.setDrawOutline(true);
-                attrs.setOutlineMaterial(map.getOrDefault(r, Material.GREEN));
-                attrs.setOutlineWidth(1.0);
-                attrs.setOutlineOpacity(0.25);
-                circle.setAttributes(attrs);
+            var cylinder = new Cylinder(WWHelper.positionFromPosition(position, drillPoint.getDepth() / 2), drillPoint.getDepth(), drillPoint.getDiameter() / 2);
+            var attrs = new BasicShapeAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+            cylinder.setAttributes(attrs);
 
-                addRenderable(circle, false, GraphicItem.RADIUS_40, null);
-            });
+            addRenderable(cylinder, true, GraphicItem.RADIUS_40, mMapObjects);
 
         }
 

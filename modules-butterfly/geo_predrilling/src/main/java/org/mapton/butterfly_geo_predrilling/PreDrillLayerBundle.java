@@ -25,6 +25,7 @@ import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
+import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.geo.BGeoPreDrillPoint;
 import org.mapton.butterfly_geo_predrilling.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
@@ -151,6 +152,8 @@ public class PreDrillLayerBundle extends BfLayerBundle {
 
     private PointPlacemark plotPin(BGeoPreDrillPoint p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(Color.WHITE);
+//        var attrs = mAttributeManager.getPinAttributes(p);
+        attrs = PinPaddle.E_STAR.applyToCopy(attrs);
         p.setValue(BKey.PIN_URL, attrs.getImageAddress());
         p.setValue(BKey.PIN_COLOR, attrs.getImageColor());
 

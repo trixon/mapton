@@ -358,6 +358,7 @@ public class Butterfly {
                 mAlarms,
                 mAlarmsHistory,
                 mGeoInclinometerPoints,
+                mGeoPreDrillPoints,
                 mHydroGroundwaterPoints,
                 mRockConvergence,
                 mRockEarthquakes,

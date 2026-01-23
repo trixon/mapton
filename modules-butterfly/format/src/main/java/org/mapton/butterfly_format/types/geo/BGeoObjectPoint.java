@@ -32,4 +32,25 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 })
 public abstract class BGeoObjectPoint extends BXyzPoint {
 
+    private Double mDepth;
+    private Double mDiameter;
+
+    public BGeoObjectPoint() {
+    }
+
+    public Double getDepth() {
+        return mDepth;
+    }
+
+    public Double getDiameter() {
+        return mDiameter;
+    }
+
+    public void setDepth(Double depth) {
+        this.mDepth = depth;
+    }
+
+    public void setDiameter(Double diameter) {
+        this.mDiameter = diameter;
+    }
 }
