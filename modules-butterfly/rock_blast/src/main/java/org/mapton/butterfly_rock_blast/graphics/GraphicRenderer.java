@@ -56,7 +56,7 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockBlast
     public void plot(BRockBlast blast, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
 
-        if (mCheckModel.isChecked(GraphicItem.BALLS)) {
+        if (mCheckModel.isChecked(GraphicItem.ALTUTID)) {
             var timeSpan = ChronoUnit.MINUTES.between(blast.getDateLatest(), LocalDateTime.now());
             var altitude = timeSpan / 24000.0;
             var startPosition = WWHelper.positionFromPosition(position, 0.0);
@@ -64,11 +64,11 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockBlast
             var radius = 1.2;
             var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
             endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            addRenderable(endEllipsoid, true, GraphicItem.BALLS, mMapObjects);
+            addRenderable(endEllipsoid, true, GraphicItem.ALTUTID, mMapObjects);
 
             var groundPath = new Path(startPosition, endPosition);
             groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            addRenderable(groundPath, true, GraphicItem.BALLS, mMapObjects);
+            addRenderable(groundPath, true, GraphicItem.ALTUTID, mMapObjects);
         }
 
         if (mCheckModel.isChecked(GraphicItem.BALLS_Z) && blast.getZeroZ() != null) {

@@ -34,6 +34,9 @@ public abstract class BGeoObjectPoint extends BXyzPoint {
 
     private Double mDepth;
     private Double mDiameter;
+    private boolean mHasDepth;
+    private boolean mHasDiameter;
+    private boolean mHasZ;
 
     public BGeoObjectPoint() {
     }
@@ -46,11 +49,35 @@ public abstract class BGeoObjectPoint extends BXyzPoint {
         return mDiameter;
     }
 
+    public boolean hasDepth() {
+        return mHasDepth;
+    }
+
+    public boolean hasDiameter() {
+        return mHasDiameter;
+    }
+
+    public boolean hasZ() {
+        return mHasZ;
+    }
+
     public void setDepth(Double depth) {
         this.mDepth = depth;
     }
 
     public void setDiameter(Double diameter) {
         this.mDiameter = diameter;
+    }
+
+    public void setHasDepth(boolean hasDepth) {
+        this.mHasDepth = hasDepth;
+    }
+
+    public void setHasDiameter(boolean hasDiameter) {
+        this.mHasDiameter = hasDiameter;
+    }
+
+    public void setHasZ(boolean hasZ) {
+        this.mHasZ = hasZ;
     }
 }

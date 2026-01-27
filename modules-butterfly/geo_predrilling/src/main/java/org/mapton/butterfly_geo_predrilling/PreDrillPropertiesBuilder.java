@@ -15,14 +15,11 @@
  */
 package org.mapton.butterfly_geo_predrilling;
 
-import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
-import org.mapton.butterfly_core.api.AlarmHelper;
+import java.util.Set;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
-import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.geo.BGeoPreDrillPoint;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 
 /**
  *
@@ -40,32 +37,17 @@ public class PreDrillPropertiesBuilder extends BPropertiesBuilder<BGeoPreDrillPo
          */
         var propertyMap = new LinkedHashMap<String, Object>();
 //******************************************************************************
-        var basicParams = new BPropertiesBuilder.BasicParams();
-        propertyMap.putAll(populateBasics(p, basicParams));
-//******************************************************************************
-        Double azimuth = null;
-        try {
-            var o = p.ext().getObservationsTimeFiltered().getLast();
-            azimuth = o.ext().getBearing();
-        } catch (Exception e) {
-        }
-        var measParams = new BPropertiesBuilder.MeasParams<BTopoControlPoint>(
-                azimuth,
-                p.ext().getMeasurementUntilNext(ChronoUnit.DAYS),
-                p.ext().getMeasurementAge(ChronoUnit.DAYS),
-                p.ext().getNumOfObservationsFiltered(),
-                p.ext().getNumOfObservations(),
-                p.ext().firstIsZero(),
-                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count(),
-                AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p),
-                AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p),
-                p.ext().getAlarmPercentString(p.ext()),
-                p.ext().getAlarmLevelAge(),
-                p.ext().deltaRolling().getDelta1d2d(3),
-                p.ext().deltaZero().getDelta1d2d(3),
-                p.ext().deltaFirst().getDelta1d2d(3)
+        var basicExclusions = Set.of(
+                ExcludeBasic.COMMENT,
+                ExcludeBasic.MEAS_MODE,
+                ExcludeBasic.TAG
         );
-        propertyMap.putAll(populateMeas(p, measParams));
+        var basicParams = new BPropertiesBuilder.BasicParams();
+        propertyMap.putAll(populateBasics(p, basicParams, basicExclusions));
+//******************************************************************************
+        propertyMap.put("DJUP", p.getDepth());
+        propertyMap.put("DIAMETER", p.getDiameter());
+
 //******************************************************************************
         var dateParams = new BPropertiesBuilder.DateParams(
                 p.ext().getObservationRawFirstDate(),

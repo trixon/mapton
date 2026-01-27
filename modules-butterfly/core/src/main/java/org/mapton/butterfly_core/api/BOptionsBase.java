@@ -98,10 +98,13 @@ public abstract class BOptionsBase<T> extends OptionsBase {
         sessionManager.register(getKeyOptions("labelBy"), mLabelByProxyProperty);
         sessionManager.register(getKeyOptions("graphics"), mGraphicsProperty);
         sessionManager.register(getKeyOptions("plotAnnotatiion"), mPlotAnnotationProperty);
-        sessionManager.register(getKeyOptions("plotDebt"), mPlotDebtProperty);
         sessionManager.register(getKeyOptions("plotSelected"), mPlotSelectedProperty);
         sessionManager.register(getKeyOptions("plotSelectedPlus"), mPlotSelectedPlusProperty);
         sessionManager.register(getKeyOptions("plotSelectedDistance"), mPlotDistanceProperty);
+
+        if (mPlotDebtProperty != null) {
+            sessionManager.register(getKeyOptions("plotDebt"), mPlotDebtProperty);
+        }
     }
 
     public boolean isPlotAnnotation() {
