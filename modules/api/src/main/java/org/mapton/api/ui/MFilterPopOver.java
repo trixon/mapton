@@ -38,6 +38,7 @@ import org.mapton.api.MCircleFilterManager;
 import org.mapton.api.MDict;
 import org.mapton.api.MOptions;
 import org.mapton.api.MPolygonFilterManager;
+import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.forms.FormFilter;
 import org.openide.util.NbBundle;
@@ -209,15 +210,10 @@ public abstract class MFilterPopOver extends MPopOver implements MPresetActions 
     }
 
     private void initToolbar() {
-        var allAction = new Action(Dict.DEFAULT.toString(), actionEvent -> {
-            reset();
-        });
-        allAction.setGraphic(MaterialIcon._Content.SELECT_ALL.getImageView(getIconSizeToolBarInt()));
-
         var resetStandardAction = new Action(Dict.DEFAULT.toString(), actionEvent -> {
             reset();
         });
-        resetStandardAction.setGraphic(MaterialIcon._Content.SELECT_ALL.getImageView(getIconSizeToolBarInt()));
+        resetStandardAction.setGraphic(MaterialIcon._Action.RESTORE_PAGE.getImageView(Mapton.getIconSizeToolBarInt()));
 
         var clearAction = new Action(Dict.CLEAR.toString(), actionEvent -> {
             clear();
@@ -255,8 +251,6 @@ public abstract class MFilterPopOver extends MPopOver implements MPresetActions 
         });
 
         var actions = List.of(
-                //allAction,
-                //                ActionUtils.ACTION_SEPARATOR,
                 ActionUtils.ACTION_SPAN,
                 clearAction,
                 mPolygonFilterAction,
