@@ -61,8 +61,8 @@ public class ParameterEditor extends BaseEditor {
     private BaseManager<? extends BXyzPoint> mManager;
     private final ComboBox<BaseManagerProvider> mManagerComboBox = new ComboBox<>();
     private final ParameterEditorBasic mParameterEditorBasic = new ParameterEditorBasic();
-    private final ParameterEditorZero mParameterEditorZero = new ParameterEditorZero();
     private final ParameterEditorMove mParameterEditorMove = new ParameterEditorMove();
+    private final ParameterEditorZero mParameterEditorZero = new ParameterEditorZero();
     private final LogPanel mPreviewLogPanel = new LogPanel();
     private final TextArea mSourceTextArea = new TextArea();
     private TabPane mTabPane;
@@ -83,35 +83,6 @@ public class ParameterEditor extends BaseEditor {
         return mBody;
     }
 
-    private String[] getPointWithNavetNames(String[] points) {
-        var names = new ArrayList<String>();
-        for (var name : points) {
-            var p = mManager.getItemForKey(name);
-
-            if (p != null) {
-                if (null == p.getDimension()) {
-                    names.add(name + "_P");
-                } else {
-                    switch (p.getDimension()) {
-                        case _1d ->
-                            names.add(name);
-                        case _2d ->
-                            names.add(name + "_P");
-                        case _3d -> {
-                            names.add(name + "_P");
-                            names.add(name + "_H");
-                        }
-                    }
-                }
-            } else {
-                System.err.println("Point not found: " + name);
-            }
-            mManager.getAllItemsSet();
-        }
-
-        return names.toArray(String[]::new);
-    }
-
     private void createUI() {
         mSourceTextArea.setPromptText(mBundle.getString("prompt_source"));
         mPreviewLogPanel.setWrapText(true);
@@ -127,6 +98,39 @@ public class ParameterEditor extends BaseEditor {
         mTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         mBorderPane.setRight(mTabPane);
+    }
+
+    private String[] getPointWithNavetNames(String[] points) {
+        var names = new ArrayList<String>();
+        for (var name : points) {
+            var p = mManager.getItemForKey(name);
+
+            if (p != null) {
+                if (null == p.getDimension()) {
+                    names.add(name + "_P");
+                } else {
+                    switch (p.getDimension()) {
+                        case _1d ->
+                            names.add(name);
+                        case _2d ->
+                            names.add(name + "_P");
+                        case _3d -> {
+                            if (p.isNoSplit()) {
+                                names.add(name);
+                            } else {
+                                names.add(name + "_P");
+                                names.add(name + "_H");
+                            }
+                        }
+                    }
+                }
+            } else {
+                System.err.println("Point not found: " + name);
+            }
+            mManager.getAllItemsSet();
+        }
+
+        return names.toArray(String[]::new);
     }
 
     private void importPoints() {

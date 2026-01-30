@@ -124,11 +124,12 @@ public class ParameterEditorBasic extends ParameterEditorBase {
             baseName = Strings.CI.removeEnd(baseName, "_P");
             var p = manager.getAllItemsMap().get(baseName);
             var toDate = "ERROR";
-            if (p != null) {
+            try {
                 var date = p.extOrNull().getObservationRawLastDate();
                 if (date != null) {
                     toDate = date.toString();
                 }
+            } catch (NullPointerException e) {
             }
 
             var projid = originToId.getOrDefault(p.getOrigin(), "ERROR");
