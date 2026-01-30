@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
-import javafx.beans.property.SimpleBooleanProperty;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
@@ -46,11 +45,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         FilterSectionMeasProvider {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(InsarFilter.class);
-    private BFilterSectionDisruptor mFilterSectionDisruptor;
-    private BFilterSectionPoint mFilterSectionPoint;
-    private BFilterSectionTrend mFilterSectionTrend;
     private FilterSectionMeas mFilterSectionMeas;
-    private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final InsarManager mManager = InsarManager.getInstance();
 
     public InsarFilter() {
@@ -62,11 +57,6 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
     public void initCheckModelListeners() {
 //        List.of(
 //        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
-    }
-
-    @Override
-    public SimpleBooleanProperty invertProperty() {
-        return mInvertProperty;
     }
 
     @Override
@@ -96,6 +86,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
+                .filter(p -> p.isVisible() != mInvisibleProperty.get())
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
                 .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
@@ -131,7 +122,8 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
 
     private void initListeners() {
         List.of(
-                mInvertProperty
+                mInvertProperty,
+                mInvisibleProperty
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
 
         OptionsManager.getInstance().colorProperty().addListener((p, o, n) -> {

@@ -20,8 +20,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import javafx.beans.property.SimpleBooleanProperty;
-import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
@@ -29,6 +27,7 @@ import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
 import se.trixon.almond.util.Dict;
 
@@ -36,27 +35,18 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class ConvergenceFilter extends FormFilter<ConvergenceManager> implements
+public class ConvergenceFilter extends ButterflyFormFilter<ConvergenceManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
         BFilterSectionDisruptorProvider {
 
-    private BFilterSectionDate mFilterSectionDate;
-    private BFilterSectionDisruptor mFilterSectionDisruptor;
-    private BFilterSectionPoint mFilterSectionPoint;
-    private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final ConvergenceManager mManager = ConvergenceManager.getInstance();
 
     public ConvergenceFilter() {
         super(ConvergenceManager.getInstance());
 
         initListeners();
-    }
-
-    @Override
-    public SimpleBooleanProperty invertProperty() {
-        return mInvertProperty;
     }
 
     @Override
@@ -80,6 +70,7 @@ public class ConvergenceFilter extends FormFilter<ConvergenceManager> implements
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
+                .filter(p -> p.isVisible() != mInvisibleProperty.get())
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
                 .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
@@ -116,7 +107,8 @@ public class ConvergenceFilter extends FormFilter<ConvergenceManager> implements
 
     private void initListeners() {
         List.of(
-                mInvertProperty
+                mInvertProperty,
+                mInvisibleProperty
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

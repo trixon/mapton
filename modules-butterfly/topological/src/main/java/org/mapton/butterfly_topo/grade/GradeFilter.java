@@ -19,36 +19,28 @@ import j2html.tags.ContainerTag;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import javafx.beans.property.SimpleBooleanProperty;
-import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
-import se.trixon.almond.util.Dict;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GradeFilter extends FormFilter<GradeManagerBase> implements
+public class GradeFilter extends ButterflyFormFilter<GradeManagerBase> implements
         BFilterSectionDateProvider,
         FilterSectionMeasProvider,
         BFilterSectionMiscProvider {
 
-    private BFilterSectionDate mFilterSectionDate;
     private FilterSectionMeas mFilterSectionMeas;
-    private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final GradeManagerBase mManager;
 
     public GradeFilter(GradeManagerBase manager) {
         super(manager);
         mManager = manager;
         initListeners();
-    }
-
-    @Override
-    public SimpleBooleanProperty invertProperty() {
-        return mInvertProperty;
     }
 
     @Override
@@ -66,6 +58,7 @@ public class GradeFilter extends FormFilter<GradeManagerBase> implements
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
+                .filter(p -> p.isVisible() != mInvisibleProperty.get())
                 .filter(p -> validateFreeText(p.getName()))
                 //                .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> mFilterSectionMeas.filter(p))
@@ -94,7 +87,8 @@ public class GradeFilter extends FormFilter<GradeManagerBase> implements
 
     private void initListeners() {
         List.of(
-                mInvertProperty
+                mInvertProperty,
+                mInvisibleProperty
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

@@ -86,13 +86,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private final SimpleBooleanProperty mDimens1Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens2Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens3Property = new SimpleBooleanProperty();
-    private BFilterSectionDate mFilterSectionDate;
-    private BFilterSectionDisruptor mFilterSectionDisruptor;
     private FilterSectionMeas mFilterSectionMeas;
-    private BFilterSectionMisc mFilterSectionMisc;
-    private BFilterSectionPoint mFilterSectionPoint;
-    private BFilterSectionTrend mFilterSectionTrend;
-    private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TopoManager mManager = TopoManager.getInstance();
     private final SimpleBooleanProperty mMeasAlarmLevelAgeProperty = new SimpleBooleanProperty();
     private final SimpleIntegerProperty mMeasAlarmLevelAgeValueProperty = new SimpleIntegerProperty();
@@ -153,11 +147,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 mMeasCodeCheckModel,
                 mMeasOperatorsCheckModel
         ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
-    }
-
-    @Override
-    public SimpleBooleanProperty invertProperty() {
-        return mInvertProperty;
     }
 
     public SimpleBooleanProperty measAlarmLevelAgeProperty() {
@@ -317,6 +306,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
+                .filter(p -> p.isVisible() != mInvisibleProperty.get())
                 .filter(p -> {
                     var alarmH = p.ext().getAlarm(BComponent.HEIGHT);
                     var alarmP = p.ext().getAlarm(BComponent.PLANE);
@@ -326,7 +316,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
 
                     return validateFreeText(p.getName(), p.getCategory(), p.getGroup(), p.getAlarm1Id(), p.getAlarm2Id(), nameH, nameP, p.getTag());
                 })
-                .filter(p -> p.isVisible())
                 .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
@@ -483,6 +472,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 mMeasBearingMaxProperty,
                 mSectionMeasProperty,
                 mInvertProperty,
+                mInvisibleProperty,
                 mDimens1Property,
                 mDimens2Property,
                 mDimens3Property,

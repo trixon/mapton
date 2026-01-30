@@ -21,17 +21,16 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
-import javafx.beans.property.SimpleBooleanProperty;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
+import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
-import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 
 /**
  *
@@ -44,10 +43,6 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
         BFilterSectionDisruptorProvider {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilter.class);
-    private BFilterSectionDate mFilterSectionDate;
-    private BFilterSectionDisruptor mFilterSectionDisruptor;
-    private BFilterSectionPoint mFilterSectionPoint;
-    private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final CrackManager mManager = CrackManager.getInstance();
 
     public CrackFilter() {
@@ -59,11 +54,6 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
     public void initCheckModelListeners() {
 //        List.of(
 //        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
-    }
-
-    @Override
-    public SimpleBooleanProperty invertProperty() {
-        return mInvertProperty;
     }
 
     @Override
@@ -87,6 +77,7 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
+                .filter(p -> p.isVisible() != mInvisibleProperty.get())
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
                 .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
@@ -120,7 +111,7 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
 
     private void initListeners() {
         List.of(
-                mInvertProperty
+                mInvertProperty, mInvisibleProperty
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

@@ -20,27 +20,23 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import javafx.beans.property.SimpleBooleanProperty;
-import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class PreDrillFilter extends FormFilter<PreDrillManager> implements
+public class PreDrillFilter extends ButterflyFormFilter<PreDrillManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider {
 
-    private BFilterSectionDate mFilterSectionDate;
-    private BFilterSectionPoint mFilterSectionPoint;
-    private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final PreDrillManager mManager = PreDrillManager.getInstance();
 
     public PreDrillFilter() {
@@ -50,11 +46,6 @@ public class PreDrillFilter extends FormFilter<PreDrillManager> implements
     }
 
     public void initCheckModelListeners() {
-    }
-
-    @Override
-    public SimpleBooleanProperty invertProperty() {
-        return mInvertProperty;
     }
 
     @Override
@@ -72,6 +63,7 @@ public class PreDrillFilter extends FormFilter<PreDrillManager> implements
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
+                .filter(p -> p.isVisible() != mInvisibleProperty.get())
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment(), p.getExternalId()))
                 .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
@@ -103,7 +95,8 @@ public class PreDrillFilter extends FormFilter<PreDrillManager> implements
 
     private void initListeners() {
         List.of(
-                mInvertProperty
+                mInvertProperty,
+                mInvisibleProperty
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }
