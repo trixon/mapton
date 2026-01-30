@@ -111,7 +111,7 @@ public class ButterflyManager {
     }
 
     public void calculateLatLons(ArrayList<? extends BXyzPoint> baseControlPoints) {
-        for (var cp : baseControlPoints) {
+        baseControlPoints.parallelStream().forEach(cp -> {
             var x = cp.getZeroX();
             var y = cp.getZeroY();
 
@@ -121,11 +121,11 @@ public class ButterflyManager {
                 cp.setLon(MathHelper.round(wgs84.getX(), 6));
                 cp.setValue("MLATLON", new MLatLon(wgs84.getY(), wgs84.getX()));
             }
-        }
+        });
     }
 
     public void calculateLatLonsTmo(ArrayList<? extends BBasObjekt> baseControlPoints) {
-        for (var cp : baseControlPoints) {
+        baseControlPoints.parallelStream().forEach(cp -> {
             var x = cp.getX();
             var y = cp.getY();
 
@@ -134,7 +134,7 @@ public class ButterflyManager {
                 cp.setLat(MathHelper.round(wgs84.getY(), 6));
                 cp.setLon(MathHelper.round(wgs84.getX(), 6));
             }
-        }
+        });
     }
 
     public Butterfly getButterfly() {
@@ -288,7 +288,7 @@ public class ButterflyManager {
         calculateLatLons(butterfly.topo().getControlPoints());
         calculateLatLons(butterfly.rock().getConvergence());
 
-        for (var alarm : butterfly.getAlarms()) {
+        butterfly.getAlarms().parallelStream().forEach(alarm -> {
             var points = alarm.ext().getPoints();
 
             if (!points.isEmpty()) {
@@ -298,7 +298,7 @@ public class ButterflyManager {
                 } catch (Exception e) {
                 }
             }
-        }
+        });
 
         calculateLatLonsTmo(butterfly.tmo().getGrundvatten());
         calculateLatLonsTmo(butterfly.tmo().getInfiltration());
