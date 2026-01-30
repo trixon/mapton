@@ -56,6 +56,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
     private final DistanceMeasure mDistanceMeasure;
     private final FormFilter<? extends MBaseDataManager> mFilter;
     private final CheckBox mInvertCheckbox = new CheckBox();
+    private final CheckBox mInvisibleCheckbox = new CheckBox();
     private final GridPane mRoot = new GridPane(columnGap, rowGap);
 
     public BFilterSectionMisc(FormFilter<? extends MBaseDataManager> filter) {
@@ -85,6 +86,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         mDeltaRSlider.clear();
         FxHelper.setSelected(false,
                 mInvertCheckbox,
+                mInvisibleCheckbox,
                 mClusterCheckbox
         );
     }
@@ -142,6 +144,19 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         return internalBox;
     }
 
+    public CheckBox getInvisibleCheckbox() {
+        return mInvisibleCheckbox;
+    }
+
+    public Node getInvisibleCheckboxToolBarItem() {
+        mInvisibleCheckbox.setText(mBundle.getString("invisibleCheckBoxText"));
+        var internalBox = new HBox(FxHelper.getUIScaled(8.0), mInvisibleCheckbox);
+        internalBox.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, 8.0));
+        internalBox.setAlignment(Pos.CENTER_LEFT);
+
+        return internalBox;
+    }
+
     public void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
         List.of(
                 selectedProperty(),
@@ -170,6 +185,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
 
     public void initListeners(BFilterSectionMiscProvider filter) {
         filter.invertProperty().bind(invertSelectionProperty());
+        filter.invisibleProperty().bind(invisibleObjectsProperty());
     }
 
     @Override
@@ -182,10 +198,15 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
 
         sessionManager.register(getKeyFilter("autocluster"), mClusterCheckbox.selectedProperty());
         sessionManager.register(getKeyFilter("invert"), invertSelectionProperty());
+        sessionManager.register(getKeyFilter("invisible"), invisibleObjectsProperty());
     }
 
     public BooleanProperty invertSelectionProperty() {
         return mInvertCheckbox.selectedProperty();
+    }
+
+    public BooleanProperty invisibleObjectsProperty() {
+        return mInvisibleCheckbox.selectedProperty();
     }
 
     public void load() {

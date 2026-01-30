@@ -29,6 +29,8 @@ public interface BFilterSectionMiscProvider {
 
     public SimpleBooleanProperty invertProperty();
 
+    public SimpleBooleanProperty invisibleProperty();
+
     public default void setFilterSection(BFilterSectionMisc filterSection) {
 
     }

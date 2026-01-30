@@ -16,6 +16,7 @@
 package org.mapton.butterfly_core.api;
 
 import java.time.LocalDate;
+import javafx.beans.property.SimpleBooleanProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MBaseDataManager;
@@ -31,8 +32,24 @@ import org.mapton.butterfly_format.types.BXyzPoint;
  */
 public abstract class ButterflyFormFilter<ManagerType extends MBaseDataManager> extends FormFilter {
 
+    protected BFilterSectionDate mFilterSectionDate;
+    protected BFilterSectionDisruptor mFilterSectionDisruptor;
+    protected BFilterSectionMisc mFilterSectionMisc;
+    protected BFilterSectionPoint mFilterSectionPoint;
+    protected BFilterSectionTrend mFilterSectionTrend;
+    protected final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
+    protected final SimpleBooleanProperty mInvisibleProperty = new SimpleBooleanProperty();
+
     public ButterflyFormFilter(MBaseDataManager manager) {
         super(manager);
+    }
+
+    public SimpleBooleanProperty invertProperty() {
+        return mInvertProperty;
+    }
+
+    public SimpleBooleanProperty invisibleProperty() {
+        return mInvisibleProperty;
     }
 
     @Deprecated
