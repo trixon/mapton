@@ -80,7 +80,7 @@ public class TopoPropertiesBuilder extends BPropertiesBuilder<BTopoControlPoint>
         mDashBoardScrollPane.setFitToWidth(true);
         mSplitProperties.load(mDashBoardScrollPane, buildDetails(p));
 
-        return mSplitProperties;
+        return buildDetails(p);
     }
 
     private LinkedHashMap<String, Object> buildDetails(BTopoControlPoint p) {
