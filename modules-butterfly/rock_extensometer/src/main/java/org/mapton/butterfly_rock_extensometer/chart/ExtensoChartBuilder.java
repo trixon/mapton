@@ -224,7 +224,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BRockExtensometer> {
 
             renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);
             var plotBlastLabels = p == extenso.getPoints().getFirst();// && extenso.ext().getReferencePoint() == null;
-            XyzChartBuilder.plotBlasts(subplot, extenso, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate(), plotBlastLabels);
+            XyzChartBuilder.plotBlasts(subplot, extenso, p.ext().getObservationFilteredFirstDate(), plotBlastLabels);
             XyzChartBuilder.plotMeasNeed(subplot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
             for (var o : p.ext().getObservationsTimeFiltered()) {

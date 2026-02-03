@@ -99,7 +99,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
 
     private void plotMarkers(BRockConvergence p) {
         var plot = (XYPlot) mChart.getPlot();
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {

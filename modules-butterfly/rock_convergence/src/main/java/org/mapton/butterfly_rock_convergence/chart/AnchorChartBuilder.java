@@ -26,8 +26,8 @@ import org.jfree.chart.title.TextTitle;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MTemporalManager;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.rock.BRockConvergencePair;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -111,7 +111,7 @@ public class AnchorChartBuilder extends XyzChartBuilder<BRockConvergencePair> {
         plotZ(p, p.getP1());
         plotZ(p, p.getP2());
 
-        plotBlasts(plot, p, p.ext().getDateFirst().toLocalDate(), p.ext().getDateLatest().toLocalDate());
+        plotBlasts(plot, p, p.ext().getDateFirst().toLocalDate());
     }
 
     private void plotZ(BRockConvergencePair pair, BTopoControlPoint p) {

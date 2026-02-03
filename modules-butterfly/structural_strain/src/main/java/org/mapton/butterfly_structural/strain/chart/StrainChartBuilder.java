@@ -104,7 +104,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
         var plot = (XYPlot) mChart.getPlot();
         resetPlot(plot);
 
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         updateDatasetTemperature(p);

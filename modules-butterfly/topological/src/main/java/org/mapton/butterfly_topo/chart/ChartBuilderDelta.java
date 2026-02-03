@@ -34,6 +34,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -153,22 +154,26 @@ public class ChartBuilderDelta extends ChartBuilderBase {
     }
 
     private void plotMarkers(BTopoControlPoint p) {
-        var plot = (XYPlot) mChart.getPlot();
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
-        plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
+        SwingHelper.runLater(() -> {
+            var plot = (XYPlot) mChart.getPlot();
+            plotGroundwater(plot, p, p.ext().getObservationFilteredFirstDate());
+            plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
+            plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
-        p.ext().getObservationsTimeFiltered().forEach(o -> {
-            addNEMarkers(plot, o, true);
+            p.ext().getObservationsTimeFiltered().forEach(o -> {
+                addNEMarkers(plot, o, true);
 
-            var minute = ChartHelper.convertToMinute(o.getDate());
-            mSubSetLastMinute = minute;
-            if (o.isZeroMeasurement()) {
-                mSubSetZeroMinute = minute;
-            }
+                var minute = ChartHelper.convertToMinute(o.getDate());
+                mSubSetLastMinute = minute;
+                if (o.isZeroMeasurement()) {
+                    mSubSetZeroMinute = minute;
+                }
 
-            mDateEnd = DateHelper.convertToDate(o.getDate());
+                mDateEnd = DateHelper.convertToDate(o.getDate());
+            });
+            mChart.fireChartChanged();
+//getChartPanel();
         });
-
     }
 
 }

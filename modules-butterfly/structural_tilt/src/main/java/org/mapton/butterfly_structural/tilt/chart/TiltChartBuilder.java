@@ -114,7 +114,8 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
         var plot = (XYPlot) mChart.getPlot();
         resetPlot(plot);
 
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+        plotGroundwater(plot, p, p.ext().getObservationFilteredFirstDate());
+        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {

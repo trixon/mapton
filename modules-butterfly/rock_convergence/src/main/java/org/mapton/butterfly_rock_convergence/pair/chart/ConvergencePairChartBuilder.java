@@ -122,7 +122,7 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BRockConvergencePa
             var lastDate = p.ext().getObservationsTimeFiltered().getLast().getDate().toLocalDate();
             var firstDate = p.ext().getObservationsTimeFiltered().getFirst().getDate().toLocalDate();
 
-            plotBlasts(plot, p, firstDate, lastDate);
+            plotBlasts(plot, p, firstDate);
         }
         mDataset.addSeries(mTimeSeriesDeltaL);
         if (!mTimeSeriesBlast.isEmpty()) {

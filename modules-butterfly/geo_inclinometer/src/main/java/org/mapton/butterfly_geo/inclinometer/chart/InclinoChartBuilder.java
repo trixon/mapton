@@ -153,6 +153,7 @@ public class InclinoChartBuilder extends XyzChartBuilder<BGeoInclinometerPoint> 
         var plot = (CombinedDomainXYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
         new ArrayList<>(plot.getSubplots()).stream().forEach(p -> plot.remove(p));
+        plotGroundwater(plot, ppp, ppp.ext().getObservationFilteredFirstDate());
 
         var rangeMin = Double.MAX_VALUE;
         var rangeMax = Double.MIN_VALUE;

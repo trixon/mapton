@@ -133,7 +133,8 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
             label = "mm";
         }
         plot.getRangeAxis().setLabel(label);
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+        plotGroundwater(plot, p, p.ext().getObservationFilteredFirstDate());
+        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
         p.getCommonObservations().entrySet().forEach(entry -> {
             var date = entry.getKey();
             var p2 = entry.getValue();

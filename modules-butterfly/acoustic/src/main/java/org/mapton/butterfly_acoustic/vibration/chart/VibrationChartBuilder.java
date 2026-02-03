@@ -118,7 +118,7 @@ public class VibrationChartBuilder extends XyzChartBuilder<BAcousticVibrationPoi
             mTimeSeriesFreqZ.add(minute, o.getFrequencyZ());
 
         });
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
 
         mFreqDataset.addSeries(mTimeSeriesFreqZ);
 
