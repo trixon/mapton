@@ -28,11 +28,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.api.Mapton;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
+import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BTrendPeriod;
+import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.butterfly_topo.TopoLayerBundle;
@@ -78,6 +82,9 @@ public class GraphicRendererVector extends GraphicRendererBase {
 
         if (sCheckModel.isChecked(GraphicItem.PIN) && dimension != BDimension._2d) {
             plotPoint(p, position);
+        }
+        if (sCheckModel.isChecked(GraphicItem.CLUSTER_GROUNDWATER_CONNECTOR)) {
+            plotGroundwaterConnector(p, position);
         }
     }
 
@@ -276,6 +283,22 @@ public class GraphicRendererVector extends GraphicRendererBase {
         addRenderable(pathDeltaR, true, null, sMapObjects);
 
         plotLabel(p, positions[0]);
+    }
+
+    private void plotGroundwaterConnector(BTopoControlPoint p, Position position) {
+        for (var gw : ButterflyHelper.getGroundwaterPoints(p, 100, 5, p.getDateZero())) {
+            var p1 = WWHelper.positionFromPosition(position, 0.1);
+            var p2 = WWHelper.positionFromPosition(BCoordinatrix.toPositionWW2d(gw), 0.1);
+            var path = new Path(p1, p2);
+            path.setAttributes(mAttributeManager.getGroundwaterAttributes());
+            addRenderable(path, true, null, null);
+            var leftClickRunnable = (Runnable) () -> {
+                Mapton.getGlobalState().put(BHydroGroundwaterPoint.class.getName() + "select", gw);
+            };
+
+            path.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+
+        }
     }
 
     private void plotPoint(BTopoControlPoint p, Position position) {

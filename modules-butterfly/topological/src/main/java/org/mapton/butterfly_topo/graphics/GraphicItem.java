@@ -27,6 +27,7 @@ import se.trixon.almond.util.SDict;
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
     PIN(Dict.PIN.toString(), Integer.MAX_VALUE),
     LABEL("\t— %s".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
+    CLUSTER_GROUNDWATER_CONNECTOR("Kluster, grundvatten", Integer.MAX_VALUE),
     CLUSTER_DEFORMATION("Kluster, deformation", Integer.MAX_VALUE),
     CLUSTER_DEFORMATION_PLANE_ALTITUDES("Kluster, deformation plan på olika höjder", Integer.MAX_VALUE),
     CLUSTER_DEFORMATION_PLANE_ALTITUDES_LABEL("\tEtikett: Avstånd och bäring", Integer.MAX_VALUE),
