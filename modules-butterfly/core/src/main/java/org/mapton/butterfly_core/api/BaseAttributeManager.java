@@ -213,11 +213,14 @@ public abstract class BaseAttributeManager {
     public BasicShapeAttributes getGroundwaterAttributes() {
         if (mGroundwaterAttributes == null) {
             mGroundwaterAttributes = new BasicShapeAttributes();
-            mGroundwaterAttributes.setDrawInterior(false);
+//            mGroundwaterAttributes.setDrawInterior(false);
             mGroundwaterAttributes.setDrawOutline(true);
-            mGroundwaterAttributes.setOutlineWidth(1.5);
+//            mGroundwaterAttributes.setOutlineWidth(1.5);
             mGroundwaterAttributes.setOutlineMaterial(Material.BLUE);
-            mGroundwaterAttributes.setEnableLighting(true);
+//            mGroundwaterAttributes.setEnableLighting(true);
+            mGroundwaterAttributes.setEnableLighting(false);
+            mGroundwaterAttributes.setOutlineWidth(0.6);
+
         }
 
         return mGroundwaterAttributes;

@@ -34,6 +34,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     private final GraphicRendererAlarmLevel mAlarmRenderer;
     private final GraphicRendererCircle mCircleRenderer;
     private final GraphicRendererCount mCountRenderer;
+    private final GraphicRendererGroundwater mGroundwaterRenderer;
     private final GraphicRendererGroup mGroupRenderer;
     private final GraphicRendererTrace mTraceRenderer;
     private final GraphicRendererTrend mTrendRenderer;
@@ -48,6 +49,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         mAlarmRenderer = new GraphicRendererAlarmLevel(layer, passiveLayer);
         mTrendRenderer = new GraphicRendererTrend(layer, passiveLayer);
         mGroupRenderer = new GraphicRendererGroup(layer, passiveLayer);
+        mGroundwaterRenderer = new GraphicRendererGroundwater(layer, passiveLayer);
 
         sCheckModel = checkModel;
     }
@@ -70,6 +72,8 @@ public class GraphicRenderer extends GraphicRendererBase {
             mTrendRenderer.plot(p, position);
             mGroupRenderer.plot(p, position);
         }
+
+        mGroundwaterRenderer.plot(p, position);
     }
 
     @Override

@@ -192,6 +192,7 @@ public class ButterflyHelper {
         var pointLatLon = new MLatLon(p.getLat(), p.getLon());
         var groundwaterPoints = ButterflyManager.getInstance().getButterfly().hydro().getGroundwaterPoints().stream()
                 .filter(gw -> gw != p)
+                .filter(gw -> gw.ext().getObservationsTimeFiltered().size() > 1)
                 .filter(gw -> {
                     return gw.getDateLatest() != null && DateHelper.isBetween(
                             startDate,
