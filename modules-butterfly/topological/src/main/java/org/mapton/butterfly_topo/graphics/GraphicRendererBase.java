@@ -94,7 +94,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
 
     public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, boolean plotEnabled, double scaleZero, boolean plotCurrent) {
         return sPointToPositionMap.computeIfAbsent(p, k -> {
-            return plot3dOffsetPoleNoCache(p, position, plotEnabled, 0, plotCurrent);
+            return plot3dOffsetPoleNoCache(p, position, plotEnabled, scaleZero, plotCurrent);
         });
     }
 
@@ -123,19 +123,17 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
 
         var currentPosition = startPosition;
         if (plotCurrent) {
-//            var o1 = p.ext().getObservationsTimeFiltered().getFirst();
+            var o1 = p.ext().getReferenceObservation();
             var o2 = p.ext().getObservationsTimeFiltered().getLast();
 
-            if (o2.ext().getDeltaZ() != null) {
-                var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * mScale3dP;
-                var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * mScale3dP;
-                var z = +o2.getMeasuredZ()
-                        + TopoLayerBundle.getZOffset()
-                        + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * mScale3dH;
+            var x = o1.getMeasuredX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * mScale3dP;
+            var y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * mScale3dP;
+            var z = o1.getMeasuredZ()
+                    + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * mScale3dH
+                    + TopoLayerBundle.getZOffset();
 
-                var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
-                currentPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
-            }
+            var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
+            currentPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
 
             var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
             currentEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));

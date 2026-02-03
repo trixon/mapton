@@ -40,6 +40,8 @@ import se.trixon.almond.util.MathHelper;
  */
 public class GraphicRendererTrace extends GraphicRendererBase {
 
+    private boolean mGotZeroMeas = false;
+
     public GraphicRendererTrace(RenderableLayer layer, RenderableLayer passiveLayer) {
         super(layer, passiveLayer);
     }
@@ -121,9 +123,16 @@ public class GraphicRendererTrace extends GraphicRendererBase {
             return;
         }
         var o1 = p.ext().getReferenceObservation();
-
+        mGotZeroMeas = false;
         var collectedNodes = p.ext().getObservationsTimeFiltered().stream()
                 .filter(o -> ObjectUtils.allNotNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ(), o1.getMeasuredX(), o1.getMeasuredY(), o1.getMeasuredZ()))
+                .dropWhile(o -> {
+                    if (o.isZeroMeasurement()) {
+                        mGotZeroMeas = true;
+                    }
+
+                    return !mGotZeroMeas;
+                })
                 .map(o -> {
                     var x = o1.getMeasuredX() + MathHelper.convertDoubleToDouble(o.ext().getDeltaX()) * mScale3dP;
                     var y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o.ext().getDeltaY()) * mScale3dP;
