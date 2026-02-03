@@ -41,6 +41,7 @@ public abstract class BaseAttributeManager {
     private BasicShapeAttributes mComponentGroundPathOddAttributes;
     private BasicShapeAttributes[][] mComponentTrace1dAttributes;
     private BasicShapeAttributes mComponentZeroAttributes;
+    private BasicShapeAttributes mGroundwaterAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
     private PointPlacemarkAttributes mSinglePinAttributes;
@@ -207,6 +208,19 @@ public abstract class BaseAttributeManager {
         }
 
         return mComponentAlarmLevelTrace2dAttributes;
+    }
+
+    public BasicShapeAttributes getGroundwaterAttributes() {
+        if (mGroundwaterAttributes == null) {
+            mGroundwaterAttributes = new BasicShapeAttributes();
+            mGroundwaterAttributes.setDrawInterior(false);
+            mGroundwaterAttributes.setDrawOutline(true);
+            mGroundwaterAttributes.setOutlineWidth(1.5);
+            mGroundwaterAttributes.setOutlineMaterial(Material.BLUE);
+            mGroundwaterAttributes.setEnableLighting(true);
+        }
+
+        return mGroundwaterAttributes;
     }
 
     public PointPlacemarkAttributes getLabelPlacemarkAttributes() {

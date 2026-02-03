@@ -29,6 +29,7 @@ import org.apache.commons.numbers.core.Precision;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.block.BlockContainer;
@@ -61,7 +62,9 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
+import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.MinMaxCollection;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -107,12 +110,11 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         }
     }
 
-    public static void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDate) {
-        plotBlasts(plot, p, firstDate, lastDate, true);
+    public static void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate) {
+        plotBlasts(plot, p, firstDate, true);
     }
 
-    public static void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDateNOTUSED, boolean plotLabel) {
-        //TODO Remove lastDate parameter is everything looks ok
+    public static void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, boolean plotLabel) {
         var lastDate = LocalDate.now().plusDays(1);
         var distanceLimitDefault = 40.0;
         if (p instanceof BXyzPoint xyz && xyz.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext && ext.getFrequenceHighBuffer() != null) {
@@ -147,7 +149,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                             marker.setStroke(otherStroke);
                             distanceQuota = Math.min(1, distanceQuota);
                             int alpha = (int) (Math.max(distanceQuota, 0.25) * 255d);
-                            color = new Color(0, 0, 255, alpha);
+                            color = new Color(200, 100, 0, alpha);
                             if (plotLabel) {
                                 marker.setLabel("%.0f".formatted(distance));
                                 marker.setLabelFont(new Font("Dialog", Font.PLAIN, SwingHelper.getUIScaled(10)));
@@ -159,6 +161,45 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                         plot.addDomainMarker(marker);
                     }
                 });
+    }
+
+    public static synchronized void plotGroundwater(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
+        var startDate = aStartDate == null ? LocalDate.now().minusYears(5) : aStartDate;
+        var groundwaterPoints = ButterflyHelper.getGroundwaterPoints(p, 100, 5, startDate);
+        var gwRenderer = new XYLineAndShapeRenderer(true, false);
+        var gwDataset = new TimeSeriesCollection();
+        var gwAxis = new NumberAxis(SDict.GROUNDWATER.toString());
+        plot.setRangeAxis(2, gwAxis);
+        plot.setDataset(2, gwDataset);
+        plot.mapDatasetToRangeAxis(2, 2);
+        plot.setRangeAxisLocation(2, AxisLocation.BOTTOM_OR_RIGHT);
+        plot.setRenderer(2, gwRenderer);
+        var color = Color.BLUE;
+        for (int i = 0; i < groundwaterPoints.size(); i++) {
+            if (i > 0) {
+                color = GraphicsHelper.brighten(color, 0.25);
+            }
+            var groundwaterPoint = groundwaterPoints.get(i);
+            var distance = groundwaterPoint.<Double>getValue(ButterflyHelper.KEY_DISTANCE);
+            var timeSeries = new TimeSeries("%c.%.0f".formatted('A' + i, distance));
+
+            for (var o : groundwaterPoint.ext().getObservationsTimeFiltered()) {
+                if (o.getDate().isAfter(startDate.atStartOfDay())) {
+                    timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), o.getGroundwaterLevel());
+                }
+            }
+
+            gwDataset.addSeries(timeSeries);
+            int series = gwDataset.getSeriesIndex(timeSeries.getKey());
+            gwRenderer.setSeriesToolTipGenerator(series, (xyDataset, seriesx, item) -> {
+                return "%.0fm  %s".formatted(distance, groundwaterPoint.getName());
+            });
+
+            gwRenderer.setSeriesVisibleInLegend(series, true);
+            gwRenderer.setSeriesPaint(series, color, true);
+            var width = 3f - i * 0.5f;
+            gwRenderer.setSeriesStroke(series, new BasicStroke(width));
+        }
     }
 
     public static void plotMeasNeed(XYPlot plot, BBaseControlPoint p, long days) {
@@ -202,7 +243,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     public TimeSeries createSubSetMovingAverage(TimeSeries timeSeries, Minute start, Minute end, String name, int periodCount, int skip) {
         try {
             return MovingAverage.createMovingAverage(timeSeries.createCopy(start, end), name, periodCount, skip);
-        } catch (CloneNotSupportedException ex) {
+        } catch (CloneNotSupportedException | IllegalArgumentException ex) {
 //            Exceptions.printStackTrace(ex);
         }
 

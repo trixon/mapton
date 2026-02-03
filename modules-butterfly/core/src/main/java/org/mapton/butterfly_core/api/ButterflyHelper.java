@@ -18,9 +18,15 @@ package org.mapton.butterfly_core.api;
 import gov.nasa.worldwind.render.Material;
 import java.awt.Color;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.api.MLatLon;
+import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.openide.modules.Modules;
 import org.openide.windows.WindowManager;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -28,6 +34,8 @@ import se.trixon.almond.util.swing.SwingHelper;
  * @author Patrik Karlström
  */
 public class ButterflyHelper {
+
+    public static final String KEY_DISTANCE = "distanceToPoint";
 
     public static final Color[] sGreenToRedColors;
     public static final Material[] sGreenToRedMaterials;
@@ -176,6 +184,31 @@ public class ButterflyHelper {
         int index = (int) Math.min(length - 1, (Math.abs(value) / limit) * (length - 1));
 
         return index;
+    }
+
+    public static List<BHydroGroundwaterPoint> getGroundwaterPoints(BBasePoint p, double maxDistance, int limit, LocalDate aStartDate) {
+        var startDate = aStartDate == null ? LocalDate.now().minusYears(5) : aStartDate;
+        var lastDate = LocalDate.now().plusDays(1);
+        var pointLatLon = new MLatLon(p.getLat(), p.getLon());
+        var groundwaterPoints = ButterflyManager.getInstance().getButterfly().hydro().getGroundwaterPoints().stream()
+                .filter(gw -> gw != p)
+                .filter(gw -> {
+                    return gw.getDateLatest() != null && DateHelper.isBetween(
+                            startDate,
+                            lastDate,
+                            gw.getDateLatest().toLocalDate());
+                })
+                .filter(gw -> {
+                    var gwLatLon = new MLatLon(gw.getLat(), gw.getLon());
+                    var distance = gwLatLon.distance(pointLatLon);
+                    gw.setValue(KEY_DISTANCE, distance);
+                    return distance <= maxDistance;
+                })
+                .sorted((gw1, gw2) -> Double.compare(gw1.getValue(KEY_DISTANCE), gw2.getValue(KEY_DISTANCE)))
+                .limit(limit)
+                .toList();
+
+        return groundwaterPoints;
     }
 
     public static Color getRangeColor(Double value, double limit) {
