@@ -108,6 +108,12 @@ public abstract class MBaseDataManager<T> {
             }
         });
         mZoomExtentsAction.setGraphic(MaterialIcon._Action.ALL_OUT.getImageView(getIconSizeToolBarInt()));
+
+        Mapton.getGlobalState().addListener(gsce -> {
+            if (gsce.<T>getValue() instanceof T) {
+                setSelectedItem(gsce.<T>getValue());
+            }
+        }, mTypeParameterClass.getName() + "select");
     }
 
     public ObjectProperty<ObservableList<T>> allItemsProperty() {
