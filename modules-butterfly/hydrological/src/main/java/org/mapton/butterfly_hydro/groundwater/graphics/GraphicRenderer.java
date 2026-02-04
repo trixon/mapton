@@ -20,6 +20,8 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Path;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -28,9 +30,12 @@ import java.util.Comparator;
 import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.api.Mapton;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
 import org.mapton.butterfly_hydro.groundwater.GroundwaterAttributeManager;
+import org.mapton.butterfly_hydro.groundwater.GroundwaterManager;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -44,14 +49,26 @@ public class GraphicRenderer extends GraphicRendererBase {
     private static final int DAYS_TO_SKIP = 30;
     private static final int KEEP_END = 10;
     private static final int KEEP_START = 10;
-
     private final GroundwaterAttributeManager mAttributeManager = GroundwaterAttributeManager.getInstance();
+    private final GroundwaterManager mManager = GroundwaterManager.getInstance();
+    private double mMidLevel;
+    private double mMinLevel;
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer);
         sCheckModel = checkModel;
     }
 
+    public void init() {
+        mMinLevel = mManager.getTimeFilteredItems().stream()
+                .flatMap(p -> p.ext().getObservationsAllRaw().stream())
+                .filter(o -> o.getGroundwaterLevel() != null)
+                .mapToDouble(o -> o.getGroundwaterLevel())
+                .min()
+                .orElse(0);
+    }
+
+    @Override
     public void plot(BHydroGroundwaterPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         GraphicRendererBase.sMapObjects = mapObjects;
 
@@ -60,6 +77,10 @@ public class GraphicRenderer extends GraphicRendererBase {
         plotTrace(p, position, GraphicItem.LEVEL_12, 12);
         plotTrace(p, position, GraphicItem.LEVEL_18, 18);
         plotTrace(p, position, GraphicItem.LEVEL_ALL, Integer.MAX_VALUE);
+
+        if (sCheckModel.isChecked(GraphicItem.CHART)) {
+            plotGroundwaterGraph(p, position);
+        }
     }
 
     private Double getMedian(BHydroGroundwaterPoint p) {
@@ -76,6 +97,51 @@ public class GraphicRenderer extends GraphicRendererBase {
                 : waterLevels.skip(list.size() / 2).findFirst().getAsDouble();
 
         return median;
+    }
+
+    private void plotGroundwaterGraph(BHydroGroundwaterPoint p, Position position) {
+        var offset = 20;
+        var adjustment = Math.abs(mMinLevel);
+        var totalDuration = Duration.between(p.ext().getDateFirst(), p.ext().getDateLatest());
+        var daysPerMeter = 30d;
+        var days = totalDuration.toDays();
+        var midDate = p.ext().getDateFirst().plusDays((long) (days * .5));
+        var totalDistance = days / daysPerMeter;
+        var ll = BCoordinatrix.toLatLon(p);
+        var ll1 = ll.getDestinationPoint(-90, .5 * totalDistance);
+        var ll2 = ll.getDestinationPoint(+90, .5 * totalDistance);
+        var p1 = WWHelper.positionFromLatLon(ll1);
+
+        var bearing = ll1.getBearing(ll2);
+        var scale = totalDistance / (totalDuration.toHours() / 24.0);
+        var nodes = p.ext().getObservationsAllRaw().stream()
+                .filter(o -> o.getGroundwaterLevel() != null)
+                .map(o -> {
+                    var duration = Duration.between(p.ext().getDateFirst(), o.getDate());
+                    var distance = scale * (duration.toHours() / 24.0);
+                    var level = offset + o.getGroundwaterLevel() + adjustment;
+                    if (DateHelper.isBeforeOrEqual(o.getDate().toLocalDate(), midDate.toLocalDate())) {
+                        mMidLevel = level;
+                    }
+                    var node = WWHelper.movePolar(p1, bearing, distance, level);
+                    return node;
+                })
+                .toList();
+
+        var path = new Path(nodes);
+//        path.setShowPositions(true);
+
+        path.setAttributes(mAttributeManager.getGroundwaterAttributes());
+        addRenderable(path, true, null, null);
+        var leftClickRunnable = (Runnable) () -> {
+            Mapton.getGlobalState().put(BHydroGroundwaterPoint.class.getName() + "select", p);
+        };
+
+        path.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+        var groundPath = new Path(WWHelper.positionFromPosition(position, 0), WWHelper.positionFromPosition(position, mMidLevel));
+        var attrs = new BasicShapeAttributes(mAttributeManager.getGroundwaterAttributes());
+        groundPath.setAttributes(attrs);
+        addRenderable(groundPath, false, null, null);
     }
 
     private void plotTrace(BHydroGroundwaterPoint p, Position position, List<BHydroGroundwaterPointObservation> list, GraphicItem rendererItem) {

@@ -24,7 +24,7 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
-
+    CHART(Dict.CHART.toString(), Integer.MAX_VALUE),
     LEVEL_3("%s, 3 %s".formatted(SDict.LEVEL.toString(), Dict.Time.MONTHS.toLower()), 10_000),
     LEVEL_6("%s, 6 %s".formatted(SDict.LEVEL.toString(), Dict.Time.MONTHS.toLower()), 10_000),
     LEVEL_12("%s, 12 %s".formatted(SDict.LEVEL.toString(), Dict.Time.MONTHS.toLower()), 10_000),

@@ -96,7 +96,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
                 default ->
                     throw new AssertionError();
             }
-
+            mGraphicRenderer.init();
             synchronized (mManager.getTimeFilteredItems()) {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
