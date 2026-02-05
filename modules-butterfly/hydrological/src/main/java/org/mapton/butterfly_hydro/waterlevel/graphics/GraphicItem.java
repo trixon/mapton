@@ -1,0 +1,55 @@
+/*
+ * Copyright 2023 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.mapton.butterfly_hydro.waterlevel.graphics;
+
+import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+public enum GraphicItem implements GraphicRenderItemLimitProvider {
+    CHART(Dict.CHART.toString(), Integer.MAX_VALUE),
+    LEVEL_3("%s, 3 %s".formatted(SDict.LEVEL.toString(), Dict.Time.MONTHS.toLower()), 10_000),
+    LEVEL_6("%s, 6 %s".formatted(SDict.LEVEL.toString(), Dict.Time.MONTHS.toLower()), 10_000),
+    LEVEL_12("%s, 12 %s".formatted(SDict.LEVEL.toString(), Dict.Time.MONTHS.toLower()), 10_000),
+    LEVEL_18("%s, 18 %s".formatted(SDict.LEVEL.toString(), Dict.Time.MONTHS.toLower()), 10_000),
+    LEVEL_ALL(SDict.LEVEL.toString(), 10_000);
+    private final String mName;
+    private final int mPlotLimit;
+
+    private GraphicItem(String name, int plotLimit) {
+        mName = name;
+        mPlotLimit = plotLimit;
+    }
+
+    @Override
+    public String getName() {
+        return mName;
+    }
+
+    @Override
+    public int getPlotLimit() {
+        return mPlotLimit;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
+}

@@ -284,6 +284,7 @@ public class ButterflyManager {
 
     private void calculateLatLons(Butterfly butterfly) {
         calculateLatLons(butterfly.hydro().getGroundwaterPoints());
+        calculateLatLons(butterfly.hydro().getWaterLevelPoints());
         calculateLatLons(butterfly.structural().getTiltPoints());
         calculateLatLons(butterfly.topo().getControlPoints());
         calculateLatLons(butterfly.rock().getConvergence());

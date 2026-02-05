@@ -1,0 +1,74 @@
+/*
+ * Copyright 2023 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.mapton.butterfly_hydro.waterlevel;
+
+import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashMap;
+import org.mapton.butterfly_core.api.BPropertiesBuilder;
+import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPoint;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+public class WaterLevelPropertiesBuilder extends BPropertiesBuilder<BHydroWaterLevelPoint> {
+
+    @Override
+    public Object build(BHydroWaterLevelPoint p) {
+        if (p == null) {
+            return p;
+        }
+        var propertyMap = new LinkedHashMap<String, Object>();
+
+//******************************************************************************
+        var basicParams = new BPropertiesBuilder.BasicParams();
+        propertyMap.putAll(populateBasics(p, basicParams));
+//******************************************************************************
+        Double azimuth = null;
+        var measParams = new BPropertiesBuilder.MeasParams<BHydroWaterLevelPoint>(
+                azimuth,
+                p.ext().getMeasurementUntilNext(ChronoUnit.DAYS),
+                p.ext().getMeasurementAge(ChronoUnit.DAYS),
+                p.ext().getNumOfObservationsFiltered(),
+                p.ext().getNumOfObservations(),
+                null,
+                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        propertyMap.putAll(populateMeas(p, measParams));
+//******************************************************************************
+        var dateParams = new BPropertiesBuilder.DateParams(
+                p.ext().getObservationRawFirstDate(),
+                p.ext().getObservationFilteredFirstDate(),
+                p.ext().getObservationRawLastDate(),
+                p.ext().getObservationFilteredLastDate(),
+                null
+        );
+        propertyMap.putAll(populateDates(p, dateParams));
+//******************************************************************************
+//******************************************************************************
+        propertyMap.putAll(populateDatabase(p));
+
+        return propertyMap;
+    }
+
+}

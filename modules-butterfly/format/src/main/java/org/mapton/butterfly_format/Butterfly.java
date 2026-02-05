@@ -53,6 +53,8 @@ import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservationPre
 import org.mapton.butterfly_format.types.geo.BGeoPreDrillPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
+import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPointObservation;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPointObservation;
@@ -101,8 +103,6 @@ public class Butterfly {
     private final ArrayList<BGeoInclinometerPointObservationPre> mGeoInclinometerPointsObservationsPre = new ArrayList<>();
     private final Geotechnical mGeotechnical = new Geotechnical();
     private final Hydro mHydro = new Hydro();
-    private final ArrayList<BHydroGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
-    private final ArrayList<BHydroGroundwaterPointObservation> mHydroGroundwaterPointsObservations = new ArrayList<>();
     private final ButterflyManipulator mManipulator = new ButterflyManipulator();
     private final ArrayList<BMonmon> mMonmons = new ArrayList<>();
     private final Noise mNoise = new Noise();
@@ -304,12 +304,7 @@ public class Butterfly {
         new ImportFromCsv<BRockExtensometerPointObservation>(BRockExtensometerPointObservation.class) {
         }.load(sourceDir, "rockExtensometersPointsObservations.csv", mRockExtensometersPointsObservations);
 
-        //Hydro
-        new ImportFromCsv<BHydroGroundwaterPoint>(BHydroGroundwaterPoint.class) {
-        }.load(sourceDir, "hydroGroundwaterPoints.csv", mHydroGroundwaterPoints);
-
-        new ImportFromCsv<BHydroGroundwaterPointObservation>(BHydroGroundwaterPointObservation.class) {
-        }.load(sourceDir, "hydroGroundwaterPointsObservations.csv", mHydroGroundwaterPointsObservations);
+        hydro().load();
 
         //TMO
         new ImportFromCsv<BGrundvatten>(BGrundvatten.class) {
@@ -359,7 +354,6 @@ public class Butterfly {
                 mAlarmsHistory,
                 mGeoInclinometerPoints,
                 mGeoPreDrillPoints,
-                mHydroGroundwaterPoints,
                 mRockConvergence,
                 mRockEarthquakes,
                 mRockExtensometers,
@@ -381,10 +375,7 @@ public class Butterfly {
                 }
             }
         }
-
-        for (var p : mHydroGroundwaterPoints) {
-            p.setDimension(BDimension._1d);
-        }
+        hydro().postLoad();
         for (var p : mTopoControlPoints) {
             calcFreqHighBuffer(p);
         }
@@ -517,6 +508,11 @@ public class Butterfly {
 
     public class Hydro {
 
+        private final ArrayList<BHydroGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
+        private final ArrayList<BHydroGroundwaterPointObservation> mHydroGroundwaterPointsObservations = new ArrayList<>();
+        private final ArrayList<BHydroWaterLevelPoint> mHydroWaterLevelPoints = new ArrayList<>();
+        private final ArrayList<BHydroWaterLevelPointObservation> mHydroWaterLevelPointsObservations = new ArrayList<>();
+
         public ArrayList<BHydroGroundwaterPoint> getGroundwaterPoints() {
             return mHydroGroundwaterPoints;
         }
@@ -525,6 +521,42 @@ public class Butterfly {
             return mHydroGroundwaterPointsObservations;
         }
 
+        public ArrayList<BHydroWaterLevelPoint> getWaterLevelPoints() {
+            return mHydroWaterLevelPoints;
+        }
+
+        public ArrayList<BHydroWaterLevelPointObservation> getWaterLevelPointsObservations() {
+            return mHydroWaterLevelPointsObservations;
+        }
+
+        private void load() {
+            new ImportFromCsv<BHydroGroundwaterPoint>(BHydroGroundwaterPoint.class) {
+            }.load(mSourceDir, "hydroGroundwaterPoints.csv", mHydroGroundwaterPoints);
+
+            new ImportFromCsv<BHydroGroundwaterPointObservation>(BHydroGroundwaterPointObservation.class) {
+            }.load(mSourceDir, "hydroGroundwaterPointsObservations.csv", mHydroGroundwaterPointsObservations);
+
+            new ImportFromCsv<BHydroWaterLevelPoint>(BHydroWaterLevelPoint.class) {
+            }.load(mSourceDir, "hydroWaterLevelPoints.csv", mHydroWaterLevelPoints);
+
+            new ImportFromCsv<BHydroWaterLevelPointObservation>(BHydroWaterLevelPointObservation.class) {
+            }.load(mSourceDir, "hydroWaterLevelPointsObservations.csv", mHydroWaterLevelPointsObservations);
+        }
+
+        private void postLoad() {
+            List.of(
+                    mHydroGroundwaterPoints,
+                    mHydroWaterLevelPoints
+            ).forEach(items -> items.forEach(item -> item.setButterfly(Butterfly.this)));
+
+            for (var p : mHydroGroundwaterPoints) {
+                p.setDimension(BDimension._1d);
+            }
+
+            for (var p : mHydroWaterLevelPoints) {
+                p.setDimension(BDimension._1d);
+            }
+        }
     }
 
     public class Noise {

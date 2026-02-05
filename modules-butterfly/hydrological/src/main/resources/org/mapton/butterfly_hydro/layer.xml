@@ -29,6 +29,7 @@ limitations under the License.
         <folder name="Groups">
             <folder name="MapGroup">
                 <file name="GroundwaterTopComponent.wstcgrp" url="GroundwaterTopComponentWstcgrp.xml"/>
+                <file name="WaterLevelTopComponent.wstcgrp" url="WaterLevelTopComponentWstcgrp.xml"/>
             </folder>
         </folder>
     </folder>

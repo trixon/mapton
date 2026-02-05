@@ -1,0 +1,277 @@
+/*
+ * Copyright 2025 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.mapton.butterfly_hydro.waterlevel;
+
+import com.dlsc.gemsfx.util.SessionManager;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.controlsfx.tools.Borders;
+import org.mapton.api.MTemporalRange;
+import org.mapton.api.ui.forms.DateRangePane;
+import org.mapton.api.ui.forms.MBaseFilterSection;
+import static org.mapton.api.ui.forms.MBaseFilterSection.GAP_H;
+import static org.mapton.api.ui.forms.MBaseFilterSection.GAP_V;
+import org.mapton.api.ui.forms.NegPosStringConverterDouble;
+import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPoint;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.session.SessionComboBox;
+import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+public class FilterSectionMeas extends MBaseFilterSection {
+
+    private final Direction mDefaultDirection = Direction.DOWN;
+
+    private final double mDefaultLevelPeriodValue = 0.5;
+    private final SessionDoubleSpinner mLevelPeriodAllSds = new SessionDoubleSpinner(-20.0, 20.0, mDefaultLevelPeriodValue, 0.1);
+    private final CheckBox mLevelPeriodCheckbox = new CheckBox();
+    private final SessionComboBox<Direction> mLevelPeriodDirectionScb = new SessionComboBox<>();
+    private final DateRangePane mLeverPeriodDateRangePane = new DateRangePane();
+    private final MeasFilterUI mMeasFilterUI;
+
+    public FilterSectionMeas() {
+        super(SDict.MEASUREMENTS.toString());
+        mMeasFilterUI = new MeasFilterUI();
+        setContent(mMeasFilterUI.getRoot());
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+
+        mLevelPeriodDirectionScb.getSelectionModel().select(mDefaultDirection);
+        mLevelPeriodAllSds.getValueFactory().setValue(mDefaultLevelPeriodValue);
+        mLeverPeriodDateRangePane.reset();
+        FxHelper.setSelected(false, mLevelPeriodCheckbox);
+    }
+
+    @Override
+    public void createInfoContent(LinkedHashMap<String, String> map) {
+        if (!isSelected()) {
+            return;
+        }
+
+        map.put(SDict.MEASUREMENTS.toString(), ".");
+        map.put("Period " + Dict.FROM.toString(), levelPeriodDateLowProperty().get() != null ? levelPeriodDateLowProperty().get().toString() : "");
+        map.put("Period " + Dict.TO.toString(), levelPeriodDateHighProperty().get() != null ? levelPeriodDateHighProperty().get().toString() : "");
+    }
+
+    @Override
+    public void initSession(SessionManager sessionManager) {
+        setSessionManager(sessionManager);
+        sessionManager.register(getKeyFilter("section"), selectedProperty());
+        sessionManager.register(getKeyFilter("levelPeriod"), mLevelPeriodCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("levelPeriod.Value"), mLevelPeriodAllSds.sessionValueProperty());
+        sessionManager.register(getKeyFilter("levelPeriod.DateLow"), mLeverPeriodDateRangePane.lowStringProperty());
+        sessionManager.register(getKeyFilter("levelPeriod.DateHigh"), mLeverPeriodDateRangePane.highStringProperty());
+        sessionManager.register(getKeyFilter("levelPeriod.Direction"), mLevelPeriodDirectionScb.selectedIndexProperty());
+    }
+
+    @Override
+    public void onShownFirstTime() {
+        mMeasFilterUI.onShownFirstTime();
+    }
+
+    @Override
+    public void reset(PropertiesConfiguration filterConfig) {
+        if (filterConfig != null) {
+            mMeasFilterUI.reset(filterConfig);
+        }
+    }
+
+    boolean filter(BHydroWaterLevelPoint p) {
+        if (isSelected()) {
+            return true//validatePeriodChanges(p)
+                    && true;
+        } else {
+            return true;
+        }
+    }
+
+    void initListeners(ChangeListener changeListenerObject, ListChangeListener<Object> listChangeListener) {
+        List.of(
+                selectedProperty(),
+                //
+                levelPeriodDateHighProperty(),
+                levelPeriodDateLowProperty(),
+                mLevelPeriodCheckbox.selectedProperty(),
+                mLevelPeriodAllSds.valueProperty(),
+                mLevelPeriodDirectionScb.getSelectionModel().selectedItemProperty()
+        ).forEach(propertyBase -> propertyBase.addListener(changeListenerObject));
+    }
+
+    void load(ArrayList<BHydroWaterLevelPoint> items, MTemporalRange temporalRange) {
+        mLevelPeriodAllSds.load();
+        mLevelPeriodAllSds.disableProperty().bind(mLevelPeriodCheckbox.selectedProperty().not());
+        if (temporalRange != null) {
+            mLeverPeriodDateRangePane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
+        }
+        mLevelPeriodDirectionScb.load();
+
+        var sessionManager = getSessionManager();
+        sessionManager.register(getKeyFilter("dateLevelPeriodLow"), mLeverPeriodDateRangePane.lowStringProperty());
+        sessionManager.register(getKeyFilter("datePeriodHigh"), mLeverPeriodDateRangePane.highStringProperty());
+    }
+
+    private SimpleObjectProperty<LocalDate> levelPeriodDateHighProperty() {
+        return mLeverPeriodDateRangePane.highDateProperty();
+    }
+
+    private SimpleObjectProperty<LocalDate> levelPeriodDateLowProperty() {
+        return mLeverPeriodDateRangePane.lowDateProperty();
+    }
+
+//    private boolean validatePeriodChanges(BHydroWaterLevelPoint p) {
+//        if (!mLevelPeriodCheckbox.isSelected()) {
+//            return true;
+//        }
+//        var direction = mLevelPeriodDirectionScb.getValue();
+//        var lim = mLevelPeriodAllSds.getValue();
+//        if (direction == Direction.MIN_MAX_SPAN) {
+//            var value = p.ext().getGroundwaterLevelMinMaxSpan(levelPeriodDateLowProperty().get(), levelPeriodDateHighProperty().get());
+//            if (value == null) {
+//                return false;
+//            }
+//
+//            if (lim == 0) {
+//                return value == 0;
+//            } else if (lim < 0) {//Up to
+//                return value <= Math.abs(lim);
+//            } else {//at least
+//                return value >= lim;
+//            }
+//        } else {
+//            var value = p.ext().getGroundwaterLevelDiff(levelPeriodDateLowProperty().get(), levelPeriodDateHighProperty().get());
+//            if (value == null) {
+//                return false;
+//            }
+//            var validDirection = value < 0 && direction == Direction.DOWN
+//                    || value > 0 && direction == Direction.UP
+//                    || direction == Direction.EITHER;
+//            value = Math.abs(value);
+//
+//            if (lim == 0) {
+//                return value == 0;
+//            } else if (lim < 0) {//Up to
+//                return value <= Math.abs(lim) && validDirection;
+//            } else {//at least
+//                return value >= lim && validDirection;
+//            }
+//        }
+//    }
+    public class MeasFilterUI {
+
+        private Node mBaseBorderBox;
+        private GridPane mRoot;
+
+        public MeasFilterUI() {
+            createUI();
+        }
+
+        public GridPane getRoot() {
+            return mRoot;
+        }
+
+        public void onShownFirstTime() {
+        }
+
+        private void createUI() {
+            mLevelPeriodCheckbox.setText("Nivåförändring");
+            mLevelPeriodAllSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
+
+            mLevelPeriodDirectionScb.getItems().setAll(Direction.values());
+            mLevelPeriodDirectionScb.getSelectionModel().select(mDefaultDirection);
+            var levelPeriodGridPane = new GridPane(GAP_H, GAP_V);
+            levelPeriodGridPane.add(mLevelPeriodCheckbox, 0, 0, 2, 1);
+            levelPeriodGridPane.addRow(1, mLevelPeriodAllSds, mLevelPeriodDirectionScb);
+            FxHelper.autoSizeColumn(levelPeriodGridPane, 2);
+
+            mRoot = new GridPane();
+            double borderInnerPadding = FxHelper.getUIScaled(8.0);
+            double topBorderInnerPadding = FxHelper.getUIScaled(0.0);
+
+            var wrappedDateBox = Borders.wrap(mLeverPeriodDateRangePane.getRoot())
+                    .etchedBorder()
+                    .title("Nivåförändringsperiod")
+                    .innerPadding(topBorderInnerPadding, borderInnerPadding, borderInnerPadding, borderInnerPadding)
+                    .outerPadding(0)
+                    .raised()
+                    .build()
+                    .build();
+
+            var leftBox = new VBox(rowGap,
+                    levelPeriodGridPane,
+                    wrappedDateBox
+            );
+
+            var rightBox = new VBox(rowGap,
+                    new Label("")
+            );
+
+            int row = 1;
+            mRoot.addRow(row++, leftBox, rightBox);
+
+            var spinners = new Spinner[]{mLevelPeriodAllSds};
+            FxHelper.setEditable(true, spinners);
+            FxHelper.autoCommitSpinners(spinners);
+            FxHelper.autoSizeRegionHorizontal(mLevelPeriodDirectionScb);
+
+            FxHelper.autoSizeColumn(mRoot, 2);
+            FxHelper.bindWidthForChildrens(leftBox, rightBox);
+
+            mLevelPeriodDirectionScb.disableProperty().bind(mLevelPeriodCheckbox.selectedProperty().not().or(mLevelPeriodAllSds.valueProperty().isEqualTo(0.0)));
+            wrappedDateBox.disableProperty().bind(mLevelPeriodCheckbox.selectedProperty().not());
+        }
+
+        private void reset(PropertiesConfiguration filterConfig) {
+        }
+    }
+
+    private enum Direction {
+        UP("Höjning"),
+        DOWN("Sänkning"),
+        EITHER("±"),
+        MIN_MAX_SPAN("Min-Max spann");
+        private final String mTitle;
+
+        private Direction(String title) {
+            mTitle = title;
+        }
+
+        @Override
+        public String toString() {
+            return mTitle;
+        }
+
+    }
+}

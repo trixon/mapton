@@ -1,0 +1,217 @@
+/*
+ * Copyright 2023 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.mapton.butterfly_hydro.waterlevel;
+
+import com.sun.jna.platform.KeyboardUtils;
+import java.awt.event.KeyEvent;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import org.mapton.api.MDisruptorProvider;
+import org.mapton.api.MLatLon;
+import org.mapton.api.MTemporalRange;
+import org.mapton.butterfly_core.api.BMeasurementReport;
+import org.mapton.butterfly_core.api.BMeasurementTab;
+import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPointObservation;
+import org.mapton.butterfly_hydro.waterlevel.chart.ChartAggregate;
+import org.mapton.butterfly_hydro.waterlevel.chart.GroundwaterChartBuilder;
+import org.mapton.butterfly_hydro.waterlevel.chart.MultiChartAggregate;
+import org.mapton.butterfly_hydro.waterlevel.table.StandardMeasurementPopulator;
+import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.CollectionHelper;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+public class WaterLevelManager extends BaseManager<BHydroWaterLevelPoint> {
+
+    private final static String DISRUPTOR_NAME = Bundle.CTL_WaterLevelAction();
+    private final ChartAggregate mChartAggregate = new ChartAggregate();
+    private final GroundwaterChartBuilder mChartBuilder = new GroundwaterChartBuilder();
+    private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
+    private final WaterLevelPropertiesBuilder mPropertiesBuilder = new WaterLevelPropertiesBuilder();
+    private final StandardMeasurementPopulator mStandardMeasurementPopulator = new StandardMeasurementPopulator();
+
+    public static WaterLevelManager getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    private WaterLevelManager() {
+        super(BHydroWaterLevelPoint.class);
+    }
+
+    @Override
+    public Object getObjectChart(BHydroWaterLevelPoint selectedObject) {
+        if (KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
+            return mChartBuilder.build(selectedObject);
+        } else {
+            boolean isCtrlPressed = KeyboardUtils.isPressed(KeyEvent.VK_CONTROL);
+            if (isCtrlPressed) {
+                return mMultiChartAggregate.build(selectedObject);
+            } else {
+                return mChartAggregate.build(selectedObject);
+            }
+        }
+    }
+
+    @Override
+    public Object getObjectMeasurements(BHydroWaterLevelPoint p) {
+        if (p == null) {
+            return null;
+        } else {
+            mStandardMeasurementPopulator.populate(p);
+            var tabs = List.of(new BMeasurementTab("Standard", mStandardMeasurementPopulator.getTableView()));
+            var measurementReport = new BMeasurementReport(p, tabs);
+            var ext = p.ext();
+            measurementReport.setFirstDate(ext.getObservationFilteredFirstDate());
+            measurementReport.setLastDate(ext.getObservationFilteredLastDate());
+            measurementReport.setNumOfReplacements(0);
+            measurementReport.setNumOfMeasurements(ext.getNumOfObservations());
+            return measurementReport;
+        }
+    }
+
+    @Override
+    public Object getObjectProperties(BHydroWaterLevelPoint selectedObject) {
+        return mPropertiesBuilder.build(selectedObject);
+    }
+
+    @Override
+    public void load(Butterfly butterfly) {
+        try {
+            initAllItems(butterfly.hydro().getWaterLevelPoints());
+            initObjectToItemMap();
+
+            var nameToObservations = new LinkedHashMap<String, ArrayList<BHydroWaterLevelPointObservation>>();
+            for (var o : butterfly.hydro().getWaterLevelPointsObservations()) {
+                nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
+            }
+
+            for (var p : butterfly.hydro().getWaterLevelPoints()) {
+                var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
+                if (!observations.isEmpty()) {
+                    p.ext().setDateFirst(observations.getFirst().getDate());
+                    p.setDateLatest(observations.getLast().getDate());
+                } else {
+                    p.ext().setDateFirst(LocalDateTime.MIN);
+                }
+
+                p.ext().setDateLatest(p.getDateLatest());
+                p.ext().setObservationsAllRaw(observations);
+                p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
+                for (var o : p.ext().getObservationsAllRaw()) {
+                    if (o.isZeroMeasurement()) {
+                        p.ext().setStoredZeroDateTime(o.getDate());
+                        break;
+                    }
+                }
+            }
+
+            var origins = getAllItems()
+                    .stream().map(p -> p.getOrigin())
+                    .collect(Collectors.toCollection(TreeSet::new))
+                    .stream()
+                    .collect(Collectors.toCollection(ArrayList<String>::new));
+            setValue("origins", origins);
+
+            var dates = new TreeSet<LocalDateTime>();
+            getAllItems().stream().forEachOrdered(p -> {
+                dates.addAll(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());
+            });
+
+            if (!dates.isEmpty()) {
+                setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
+                boolean layerBundleEnabled = isLayerBundleEnabled();
+                updateTemporal(!layerBundleEnabled);
+                updateTemporal(layerBundleEnabled);
+            }
+        } catch (Exception e) {
+            Exceptions.printStackTrace(e);
+        }
+
+        //butterfly.getManipulator().updateMultipleObservationsPerDay(butterfly.hydro().getGroundwaterPoints());
+    }
+
+    @Override
+    protected void applyTemporalFilter() {
+        var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        var timeFilteredItems = new ArrayList<BHydroWaterLevelPoint>();
+
+        p:
+        for (var p : getFilteredItems()) {
+            if (p.getDateLatest() == null || p.ext().getObservationsAllRaw().isEmpty()) {
+                timeFilteredItems.add(p);
+            } else {
+                for (var o : p.ext().getObservationsAllRaw()) {
+                    if (getTemporalManager().isValid(o.getDate())) {
+                        timeFilteredItems.add(p);
+                        continue p;
+                    }
+                }
+            }
+        }
+
+        getTimeFilteredItemsMap().clear();
+        timeFilteredItems.stream().forEach(p -> {
+            getTimeFilteredItemsMap().put(p.getName(), p);
+            var timeFilteredObservations = p.ext().getObservationsAllRaw().stream()
+                    .filter(o -> getTemporalManager().isValid(o.getDate()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            p.ext().setObservationsTimeFiltered(timeFilteredObservations);
+            //p.ext().calculateObservations(timeFilteredObservations);
+
+            var measCountStats = new LinkedHashMap<String, Integer>();
+            p.ext().setMeasurementCountStats(measCountStats);
+            timeFilteredObservations.forEach(o -> {
+                CollectionHelper.incInteger(measCountStats, o.getDate().format(measCountStatsDateTimeFormatter));
+            });
+        });
+
+        var latLonDisruptors = timeFilteredItems.stream().map(p -> new MLatLon(p.getLat(), p.getLon())).toList();
+        mDisruptorManager.putLatLons(DISRUPTOR_NAME, latLonDisruptors);
+
+        setItemsTimeFiltered(timeFilteredItems);
+    }
+
+    @Override
+    protected void load(ArrayList<BHydroWaterLevelPoint> items) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @ServiceProvider(service = MDisruptorProvider.class)
+    public static class GroundwaterDisruptorProvider implements MDisruptorProvider {
+
+        @Override
+        public String getName() {
+            return DISRUPTOR_NAME;
+        }
+    }
+
+    private static class Holder {
+
+        private static final WaterLevelManager INSTANCE = new WaterLevelManager();
+    }
+}
