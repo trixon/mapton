@@ -34,7 +34,7 @@ public class WaterLevelManagerProvider extends BaseManagerProvider {
 
     @Override
     public String getName() {
-        return "Grundvatten";
+        return Bundle.CTL_WaterLevelAction();
     }
 
 }

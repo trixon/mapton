@@ -169,12 +169,15 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         var gwRenderer = new XYLineAndShapeRenderer(true, false);
         var gwDataset = new TimeSeriesCollection();
         var gwAxis = new NumberAxis(SDict.GROUNDWATER.toString());
+        gwAxis.setAutoRangeIncludesZero(false);
+        gwAxis.setAutoRange(true);
         plot.setRangeAxis(2, gwAxis);
         plot.setDataset(2, gwDataset);
         plot.mapDatasetToRangeAxis(2, 2);
         plot.setRangeAxisLocation(2, AxisLocation.BOTTOM_OR_RIGHT);
         plot.setRenderer(2, gwRenderer);
-        var color = Color.BLUE;
+        var color = GraphicsHelper.colorAddAlpha(Color.BLUE, 80);
+
         for (int i = 0; i < groundwaterPoints.size(); i++) {
             if (i > 0) {
                 color = GraphicsHelper.brighten(color, 0.25);
@@ -197,7 +200,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
 
             gwRenderer.setSeriesVisibleInLegend(series, true);
             gwRenderer.setSeriesPaint(series, color, true);
-            var width = 3f - i * 0.5f;
+            var width = i == 0 ? 3f : 1.5f;
             gwRenderer.setSeriesStroke(series, new BasicStroke(width));
         }
     }

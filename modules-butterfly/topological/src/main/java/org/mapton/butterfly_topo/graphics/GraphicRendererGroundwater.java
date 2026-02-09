@@ -82,6 +82,7 @@ public class GraphicRendererGroundwater extends GraphicRendererBase {
 //        double adjustment;
         var minLevel = groundwaterPoints.stream()
                 .flatMap(gw -> gw.ext().getObservationsAllRaw().stream())
+                .filter(o -> o.getGroundwaterLevel() != null)
                 .mapToDouble(o -> o.getGroundwaterLevel())
                 .min()
                 .orElse(0);
@@ -96,7 +97,7 @@ public class GraphicRendererGroundwater extends GraphicRendererBase {
             var totalDistance = ll1.distance(ll2);
             var bearing = ll1.getBearing(ll2);
 //            var minLevel = gw.ext().getObservationsAllRaw().stream().mapToDouble(o -> o.getGroundwaterLevel()).min().orElse(0);
-            var maxLevel = gw.ext().getObservationsAllRaw().stream().mapToDouble(o -> o.getGroundwaterLevel()).max().orElse(0);
+//            var maxLevel = gw.ext().getObservationsAllRaw().stream().mapToDouble(o -> o.getGroundwaterLevel()).max().orElse(0);
             var totalDuration = Duration.between(gw.ext().getDateFirst(), gw.ext().getDateLatest());
             var scale = totalDistance / (totalDuration.toHours() / 24.0);
 

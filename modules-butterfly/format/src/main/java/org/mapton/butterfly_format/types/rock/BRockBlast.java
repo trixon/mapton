@@ -37,6 +37,7 @@ public class BRockBlast extends BXyzPoint {
     public BRockBlast() {
     }
 
+    @Override
     public Ext ext() {
         if (mExt == null) {
             mExt = new Ext();

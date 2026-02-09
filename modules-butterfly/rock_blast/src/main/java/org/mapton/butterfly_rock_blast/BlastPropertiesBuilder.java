@@ -46,7 +46,9 @@ public class BlastPropertiesBuilder extends PropertiesBuilder<BRockBlast> {
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
         propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), date);
         propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
-        propertyMap.put(getCatKey(cat1, "Z"), MathHelper.convertDoubleToString(p.getZeroZ(), 1));
+        propertyMap.put(getCatKey(cat1, "N"), MathHelper.convertDoubleToString(p.getZeroY(), 0));
+        propertyMap.put(getCatKey(cat1, "E"), MathHelper.convertDoubleToString(p.getZeroX(), 0));
+        propertyMap.put(getCatKey(cat1, "H"), MathHelper.convertDoubleToString(p.getZeroZ(), 1));
 
         return propertyMap;
     }

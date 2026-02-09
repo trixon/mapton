@@ -137,6 +137,20 @@ public class ButterflyManager {
         });
     }
 
+    public void calculateLocalFromLatLons(ArrayList<? extends BXyzPoint> baseControlPoints) {
+        baseControlPoints.parallelStream().forEach(cp -> {
+            var lat = cp.getLat();
+            var lon = cp.getLon();
+
+            if (ObjectUtils.allNotNull(lat, lon)) {
+                var local = getCooTrans().fromWgs84(lat, lon);
+                cp.setZeroY(MathHelper.round(local.getY(), 3));
+                cp.setZeroX(MathHelper.round(local.getX(), 3));
+//                cp.setValue("LOCAL", new MLatLon(local.getY(), local.getX()));
+            }
+        });
+    }
+
     public Butterfly getButterfly() {
         return mButterflyProperty.get();
     }
@@ -280,6 +294,7 @@ public class ButterflyManager {
 
     private void calculateCoordinates(Butterfly butterfly) {
         calculateLatLons(butterfly);
+        calculateLocalFromLatLons(butterfly);
     }
 
     private void calculateLatLons(Butterfly butterfly) {
@@ -311,6 +326,10 @@ public class ButterflyManager {
         calculateLatLons(butterfly.noise().getVibrationPoints());
         calculateLatLons(butterfly.rock().getExtensometers());
         calculateLatLons(butterfly.geotechnical().getGeoPreDrillPoints());
+    }
+
+    private void calculateLocalFromLatLons(Butterfly butterfly) {
+        calculateLocalFromLatLons(butterfly.rock().getBlasts());
     }
 
     private void createBufferedArea(BAreaBase area) throws ParseException, MismatchedDimensionException, TransformException {
