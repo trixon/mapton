@@ -77,7 +77,7 @@ public class DateDiffPane {
         filter.measDateDiffValueProperty().bind(mMeters1dSds.sessionValueProperty());
         filter.measDateDiffValueProperty().bind(mMeters2dSds.sessionValueProperty());
 //**
-        filter.measAlarmLevelChangeModeProperty().bind(mMeasAlarmLevelChangeModeScb.getSelectionModel().selectedItemProperty());
+//        filter.measAlarmLevelChangeModeProperty().bind(mMeasAlarmLevelChangeModeScb.getSelectionModel().selectedItemProperty());
 
     }
 

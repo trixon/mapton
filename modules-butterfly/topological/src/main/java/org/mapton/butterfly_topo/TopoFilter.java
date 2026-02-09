@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -91,9 +90,9 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private final SimpleBooleanProperty mMeasAlarmLevelAgeProperty = new SimpleBooleanProperty();
     private final SimpleIntegerProperty mMeasAlarmLevelAgeValueProperty = new SimpleIntegerProperty();
     private final SimpleIntegerProperty mMeasAlarmLevelChangeLimitProperty = new SimpleIntegerProperty();
-    private final SimpleObjectProperty mMeasAlarmLevelChangeModeProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<AlarmLevelChangeMode> mMeasAlarmLevelChangeModeProperty = new SimpleObjectProperty();
     private final SimpleBooleanProperty mMeasAlarmLevelChangeProperty = new SimpleBooleanProperty();
-    private final SimpleObjectProperty mMeasAlarmLevelChangeUnitProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<AlarmLevelChangeUnit> mMeasAlarmLevelChangeUnitProperty = new SimpleObjectProperty();
     private final SimpleIntegerProperty mMeasAlarmLevelChangeValueProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mMeasDateDiffProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasDateDiffValueProperty = new SimpleDoubleProperty();
@@ -161,7 +160,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         return mMeasAlarmLevelChangeLimitProperty;
     }
 
-    public SimpleObjectProperty measAlarmLevelChangeModeProperty() {
+    public SimpleObjectProperty<AlarmLevelChangeMode> measAlarmLevelChangeModeProperty() {
         return mMeasAlarmLevelChangeModeProperty;
     }
 
@@ -169,7 +168,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         return mMeasAlarmLevelChangeProperty;
     }
 
-    public SimpleObjectProperty measAlarmLevelChangeUnitProperty() {
+    public SimpleObjectProperty<AlarmLevelChangeUnit> measAlarmLevelChangeUnitProperty() {
         return mMeasAlarmLevelChangeUnitProperty;
     }
 
@@ -731,7 +730,11 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
             return true;
         }
 
-        var observations = p.ext().getObservationsTimeFiltered();
+        var observations = p.ext().getObservationsTimeFiltered().stream()
+                .filter(o -> MTemporalManager.getInstance().isValid(o.getDate()))
+                .filter(o -> DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), p.getDateZero()))
+                .toList();
+
         if (observations.size() < 2) {
             return false;
         }
@@ -741,29 +744,26 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         int value = mMeasAlarmLevelChangeValueProperty.get();
         int limit = mMeasAlarmLevelChangeLimitProperty.get();
 
-        Stream<BTopoControlPointObservation> source;
         if (unit == AlarmLevelChangeUnit.DAYS) {
-            source = observations.stream()
-                    .filter(o -> MTemporalManager.getInstance().isValid(o.getDate()))
-                    .filter(o -> DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), LocalDate.now().minusDays(value)));
+            observations = observations.stream()
+                    .filter(o -> DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), LocalDate.now().minusDays(value)))
+                    .toList();
         } else {
-            source = observations.stream()
-                    .filter(o -> MTemporalManager.getInstance().isValid(o.getDate()))
-                    .skip(Math.max(0, observations.size() - value));
+            observations = observations.stream()
+                    .skip(Math.max(0, observations.size() - value))
+                    .toList();
         }
 
-        var filteredObservations = source.toList();
-
-        if (filteredObservations.isEmpty()) {
+        if (observations.size() < 2) {
             return false;
         }
 
         int countBetter = 0;
         int countWorse = 0;
 
-        for (int i = 1; i < filteredObservations.size(); i++) {
-            var prev = filteredObservations.get(i - 1);
-            var current = filteredObservations.get(i);
+        for (int i = 1; i < observations.size(); i++) {
+            var prev = observations.get(i - 1);
+            var current = observations.get(i);
             int prevLevel = p.ext().getAlarmLevel(prev);
             int currentLevel = p.ext().getAlarmLevel(current);
 
