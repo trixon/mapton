@@ -83,8 +83,8 @@ public class RoiManager extends BaseManager<BRoi> {
             }
 
             for (var item : items) {
-//                item.ext().setDateLatest(item.getDat());
-//                item.ext().setDateFirst(item.getDateLatest());
+                item.setDateLatest(item.getDat());
+                item.setDateZero(item.getDateLatest().toLocalDate());
             }
         } catch (Exception e) {
             Exceptions.printStackTrace(e);

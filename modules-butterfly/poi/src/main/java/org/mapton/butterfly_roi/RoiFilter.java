@@ -67,8 +67,8 @@ public class RoiFilter extends ButterflyFormFilter<RoiManager> implements
                 .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
-                //                .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
-                //                .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
+                .filter(p -> mFilterSectionPoint.filter(p, 0L))
+                .filter(p -> mFilterSectionDate.filter(p, p.getDateZero().atStartOfDay()))
                 .toList();
 
         if (mInvertProperty.get()) {

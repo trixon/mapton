@@ -16,18 +16,14 @@
 package org.mapton.butterfly_roi;
 
 import java.util.LinkedHashMap;
-import java.util.Objects;
-import org.mapton.api.ui.forms.PropertiesBuilder;
+import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.BRoi;
-import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.MathHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class RoiPropertiesBuilder extends PropertiesBuilder<BRoi> {
+public class RoiPropertiesBuilder extends BPropertiesBuilder<BRoi> {
 
     @Override
     public Object build(BRoi p) {
@@ -36,18 +32,40 @@ public class RoiPropertiesBuilder extends PropertiesBuilder<BRoi> {
         }
 
         var propertyMap = new LinkedHashMap<String, Object>();
-        var cat1 = Dict.BASIC.toString();
-        var date = Objects.toString(DateHelper.toDateTimeString(p.getDateLatest()), "-");
-
-        propertyMap.put(getCatKey(cat1, "Ext.id"), p.getExternalId());
-        propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
-        propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
-        propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
-        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), date);
-//        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
-        propertyMap.put(getCatKey(cat1, "N"), MathHelper.convertDoubleToString(p.getZeroY(), 0));
-        propertyMap.put(getCatKey(cat1, "E"), MathHelper.convertDoubleToString(p.getZeroX(), 0));
-        propertyMap.put(getCatKey(cat1, "H"), MathHelper.convertDoubleToString(p.getZeroZ(), 1));
+//******************************************************************************
+        var basicParams = new BPropertiesBuilder.BasicParams();
+        propertyMap.putAll(populateBasics(p, basicParams));
+//******************************************************************************
+//        Double azimuth = null;
+//        var measParams = new BPropertiesBuilder.MeasParams<BTopoControlPoint>(
+//                azimuth,
+//                p.ext().getMeasurementUntilNext(ChronoUnit.DAYS),
+//                p.ext().getMeasurementAge(ChronoUnit.DAYS),
+//                p.ext().getNumOfObservationsFiltered(),
+//                p.ext().getNumOfObservations(),
+//                p.ext().firstIsZero(),
+//                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count(),
+//                AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p),
+//                AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p),
+//                p.ext().getAlarmPercentString(p.ext()),
+//                p.ext().getAlarmLevelAge(),
+//                p.ext().deltaRolling().getDelta(3),
+//                p.ext().deltaZero().getDelta(3),
+//                p.ext().deltaFirst().getDelta(3)
+//        );
+//        propertyMap.putAll(populateMeas(p, measParams));
+//******************************************************************************
+//        var dateParams = new BPropertiesBuilder.DateParams(
+//                p.ext().getObservationRawFirstDate(),
+//                p.ext().getObservationFilteredFirstDate(),
+//                p.ext().getObservationRawLastDate(),
+//                p.ext().getObservationFilteredLastDate(),
+//                p.ext().getObservationRawNextDate()
+//        );
+//        propertyMap.putAll(populateDates(p, dateParams));
+//******************************************************************************
+//        propertyMap.putAll(populateDatabase(p));
+//        removeByKeyContains(propertyMap, "Δ", Dict.BEARING.toString());
 
         return propertyMap;
     }

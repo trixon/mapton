@@ -29,7 +29,7 @@ import org.mapton.butterfly_core.api.BOptionsBase;
 public class RoiOptions extends BOptionsBase implements MPresetActions {
 
     public static final RoiColorBy DEFAULT_COLOR_BY = RoiColorBy.DEFAULT;
-    public static final RoiLabelBy DEFAULT_LABEL_BY = RoiLabelBy.MISC_DATE;
+    public static final RoiLabelBy DEFAULT_LABEL_BY = RoiLabelBy.NAME;
     public static final RoiPointBy DEFAULT_POINT_BY = RoiPointBy.PIN;
     private final ObjectProperty<RoiColorBy> mColorByProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BY);
     private final ObjectProperty<RoiLabelBy> mLabelByProperty = new SimpleObjectProperty<>(DEFAULT_LABEL_BY);

@@ -70,9 +70,9 @@ public class RoiAttributeManager extends BaseAttributeManager {
     public PointPlacemarkAttributes getPinAttributes(Color color) {
         if (mSinglePinAttributes == null) {
             mSinglePinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mSinglePinAttributes.setImageAddress("https://maps.google.com/mapfiles/kml/shapes/falling_rocks.png");
+            mSinglePinAttributes.setImageAddress("https://maps.google.com/mapfiles/kml/pal2/icon17.png");
             mSinglePinAttributes.setImageColor(color);
-            mSinglePinAttributes.setScale(Mapton.getScalePinImage());
+            mSinglePinAttributes.setScale(Mapton.getScalePinImage() * 2.5);
             mSinglePinAttributes.setLabelScale(Mapton.getScalePinLabel());
             mSinglePinAttributes.setImageOffset(Offset.BOTTOM_CENTER);
         }

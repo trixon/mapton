@@ -150,7 +150,7 @@ public class RoiLayerBundle extends BfLayerBundle {
     }
 
     private PointPlacemark plotPin(BRoi p, Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes(Color.WHITE);
+        var attrs = mAttributeManager.getPinAttributes(Color.ORANGE);
         p.setValue(BKey.PIN_URL, attrs.getImageAddress());
         p.setValue(BKey.PIN_COLOR, attrs.getImageColor());
 

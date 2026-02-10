@@ -124,13 +124,20 @@ public class RoiFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilterSectionPoint.disable(
                 PointElement.ALARM,
-                PointElement.CATEGORY,
-                PointElement.FREQUENCY,
+                PointElement.ALARM_STAT,
+                //                PointElement.FREQUENCY,
                 PointElement.FREQUENCY_DEFAULT,
                 PointElement.FREQUENCY_DEFAULT_STAT,
+                PointElement.FREQUENCY_INTENSE,
+                PointElement.FREQUENCY_INTENSE_STAT,
                 PointElement.MEAS_MODE,
+                PointElement.MEAS_MODE_SUB,
                 PointElement.MEAS_NEXT,
-                PointElement.STATUS
+                PointElement.ALTITUDE,
+                PointElement.UNIT,
+                PointElement.UNIT_DIFF,
+                PointElement.FORMULA_ROLLING,
+                PointElement.FORMULA_SPARSE
         );
 
         mFilterSectionDate.disable(

@@ -15,14 +15,12 @@
  */
 package org.mapton.butterfly_roi;
 
-import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_format.types.BRoi;
-import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.MathHelper;
+import se.trixon.almond.util.SDict;
 
 /**
  *
@@ -35,28 +33,108 @@ public enum RoiLabelBy implements LabelBy.Operations {
     NONE(LabelBy.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
-    MISC_DATE(LabelBy.CAT_MISC, Dict.DATE.toString(), p -> {
-        var date = Objects.toString(DateHelper.toDateString(p.getDateLatest()), "-");
-
-        return date;
-    }),
-    MISC_DATE_TIME(LabelBy.CAT_MISC, Dict.DATE.toString() + " & tid", p -> {
-        var date = Objects.toString(DateHelper.toDateTimeString(p.getDateLatest()), "-");
-
-        return date;
-    }),
-    //    MISC_AGE(LabelBy.CAT_MISC, Dict.AGE.toString(), p -> {
-    //        return String.valueOf(p.ext().getMeasurementAge(ChronoUnit.DAYS));
+    //    ALARM_NAME(LabelBy.CAT_ALARM, Dict.NAME.toString(), p -> {
+    //        return LabelBy.alarmHName(p);
     //    }),
+    //    ALARM_VALUE(LabelBy.CAT_ALARM, Dict.VALUE.toString(), p -> {
+    //        return LabelBy.alarmHValue(p);
+    //    }),
+    //    ALARM_PERCENT(LabelBy.CAT_ALARM, "%", p -> {
+    //        return LabelBy.alarmHPercent(p);
+    //    }),
+    //    DATE_NEXT(LabelBy.CAT_DATE, Dict.NEXT.toString(), p -> {
+    //        return LabelBy.dateNext(p);
+    //    }),
+    DATE_LATEST(LabelBy.CAT_DATE, SDict.LATEST.toString(), p -> {
+        return LabelBy.dateLatest(p);
+    }),
+    DATE_LATEST_WITH_TIME(LabelBy.CAT_DATE, SDict.LATEST.toString() + " (med tid)", p -> {
+        return LabelBy.dateLatestWithTime(p);
+    }),
+    //    DATE_ROLLING(LabelBy.CAT_DATE, SDict.ROLLING.toString(), p -> {
+    //        return LabelBy.dateRolling(p);
+    //    }),
+    DATE_ZERO(LabelBy.CAT_DATE, SDict.ZERO.toString(), p -> {
+        return LabelBy.dateZero(p);
+    }),
+    DATE_FIRST(LabelBy.CAT_DATE, Dict.FIRST.toString(), p -> {
+        return LabelBy.dateFirst(p);
+    }),
+    DATE_VALIDITY(LabelBy.CAT_DATE, "%s - %s".formatted(Dict.FROM.toString(), Dict.TO.toString()), p -> {
+        return LabelBy.dateValidity(p);
+    }),
     MISC_GROUP(LabelBy.CAT_MISC, Dict.GROUP.toString(), p -> {
-        return Objects.toString(p.getGroup(), "NODATA");
+        return LabelBy.miscGroup(p);
     }),
-    MISC_EXT_ID(LabelBy.CAT_MISC, "Ext.id", p -> {
-        return p.getExternalId();
+    MISC_CATEGORY(LabelBy.CAT_MISC, Dict.CATEGORY.toString(), p -> {
+        return LabelBy.miscCategory(p);
     }),
-    MISC_Z(LabelBy.CAT_MISC, "Z", p -> {
-        return MathHelper.convertDoubleToString(p.getZeroZ(), 1);
+    MISC_STATUS(LabelBy.CAT_MISC, Dict.STATUS.toString(), p -> {
+        return LabelBy.miscStatus(p);
+    }),
+    MISC_OPERATOR(LabelBy.CAT_MISC, SDict.OPERATOR.toString(), p -> {
+        return LabelBy.miscOperator(p);
+    }),
+    MISC_ORIGIN(LabelBy.CAT_MISC, Dict.ORIGIN.toString(), p -> {
+        return LabelBy.miscOrigin(p);
+    }),
+    MISC_FREQUENCY(LabelBy.CAT_MISC, SDict.FREQUENCY.toString(), p -> {
+        return LabelBy.miscFrequency(p);
     });
+//    MISC_FREQUENCY_ALL(LabelBy.CAT_MISC, "%s (aktuell : %s : %s)".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toLower(), Dict.HIGH.toLower()), p -> {
+//        return LabelBy.miscFrequencyAll(p);
+//    }),
+//    MISC_FREQUENCY_DEFAULT(LabelBy.CAT_MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toLower()), p -> {
+//        return LabelBy.miscFrequencyDefault(p);
+//    }),
+//    MISC_FREQUENCY_HIGH(LabelBy.CAT_MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.HIGH.toLower()), p -> {
+//        return LabelBy.miscFrequencyHigh(p);
+//    }),
+//    MISC_FREQUENCY_HIGH_PARAM(LabelBy.CAT_MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), "%s, villkor".formatted(Dict.HIGH.toLower())), p -> {
+//        return LabelBy.miscFrequencyHighParam(p);
+//    }),
+//    MISC_DIMENS(LabelBy.CAT_MISC, SDict.DIMENSION.toString(), p -> {
+//        return LabelBy.miscDimens(p);
+//    }),
+//    MISC_DIMENS_FREQUENCY(LabelBy.CAT_MISC, LabelBy.DIMENS_FREQ, p -> {
+//        return "%sD %s".formatted(MISC_DIMENS.getLabel(p), MISC_FREQUENCY.getLabel(p));
+//    }),
+//    MISC_ROLLING_FORMULA(LabelBy.CAT_MISC, "Formel, rullande", p -> {
+//        return LabelBy.miscRollingFormula(p);
+//    }),
+//    MISC_ROLLING_SPARSE(LabelBy.CAT_MISC, "Formel, utglesning", p -> {
+//        return LabelBy.miscSparse(p);
+//    }),
+//    MEAS_LATEST_OPERATOR(LabelBy.CAT_MEAS, SDict.LATEST_S.toString().formatted(SDict.OPERATOR.toLower()), p -> {
+//        return LabelBy.measLatestOperator(p);
+//    }),
+//    MEAS_COUNT_ALL(LabelBy.CAT_MEAS, LabelBy.MEAS_COUNT_ALL, p -> {
+//        return LabelBy.measCountAll(p);
+//    }),
+//    MEAS_COUNT_SELECTION(LabelBy.CAT_MEAS, LabelBy.MEAS_COUNT_SELECTION, p -> {
+//        return LabelBy.measCountFiltered(p);
+//    }),
+//    MEAS_COUNT_SELECTION_ALL(LabelBy.CAT_MEAS, LabelBy.MEAS_COUNT, p -> {
+//        return LabelBy.measCountFilteredAll(p);
+//    }),
+//    MEAS_AGE(LabelBy.CAT_MEAS, Dict.AGE.toString(), p -> {
+//        return LabelBy.measAge(p);
+//    }),
+//    MEAS_AGE_ZERO(LabelBy.CAT_MEAS, "%s, %s".formatted(Dict.AGE.toString(), SDict.ZERO.toLower()), p -> {
+//        return LabelBy.measAgeZero(p);
+//    }),
+//    MEAS_AGE_ALARMLEVEL(LabelBy.CAT_MEAS, "%s, %s".formatted(Dict.AGE.toString(), SDict.ALARM_LEVEL.toLower()), p -> {
+//        return LabelBy.measAgeAlarmLevel(p);
+//    }),
+//    MEAS_NEED(LabelBy.CAT_MEAS, Dict.NEED.toString(), p -> {
+//        return LabelBy.measNeed(p);
+//    }),
+//    MEAS_NEED_FREQ(LabelBy.CAT_MEAS, "%s (%s)".formatted(Dict.NEED.toString(), SDict.FREQUENCY.toString()), p -> {
+//        return LabelBy.measNeedFreq(p);
+//    }),
+//    VALUE_DELTA_ZERO(LabelBy.CAT_VALUE, Dict.VALUE.toString(), p -> {
+//        return "%.0f".formatted(p.ext().getObservationFilteredLast().getMeasuredZ());
+//    });
     private final String mCategory;
     private final Function<BRoi, String> mFunction;
     private final String mName;

@@ -15,60 +15,87 @@
  */
 package org.mapton.butterfly_roi;
 
-import java.util.Objects;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.layout.VBox;
+import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_core.api.BListCell;
 import org.mapton.butterfly_format.types.BRoi;
-import se.trixon.almond.util.DateHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class RoiListCell extends ListCell<BRoi> {
+class RoiListCell extends BListCell<BRoi> {
 
-    private final Label mDateLabel = new Label();
-    private final Label mGroupLabel = new Label();
-    private final Label mNameLabel = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
-    private VBox mVBox;
+    private final Label mDesc1Label = new Label();
+    private final Label mDesc2Label = new Label();
+    private final Label mDesc3Label = new Label();
+    private final Label mDesc4Label = new Label();
 
     public RoiListCell() {
         createUI();
     }
 
+//    @Override
+//    protected void updateItem(BRoi roi, boolean empty) {
+//        super.updateItem(roi, empty);
+//        if (roi == null || empty) {
+//            clearContent();
+//        } else {
+//            addContent(roi);
+//        }
+//    }
     @Override
-    protected void updateItem(BRoi roi, boolean empty) {
-        super.updateItem(roi, empty);
-        if (roi == null || empty) {
-            clearContent();
-        } else {
-            addContent(roi);
-        }
-    }
-
-    private void addContent(BRoi roi) {
+    protected void addContent(BRoi p) {
         setText(null);
-        var date = Objects.toString(DateHelper.toDateTimeString(roi.getDateLatest()), "-");
-        mNameLabel.setText(roi.getName());
-        mDateLabel.setText("%s %s".formatted(date, roi.getComment()));
-        mGroupLabel.setText(roi.getGroup());
         setGraphic(mVBox);
-    }
 
-    private void clearContent() {
-        setText(null);
-        setGraphic(null);
-    }
+        var header = "%s  %s".formatted(p.getOrigin(), p.getName());
+        var sta = p.getStatus();
+        var cls = p.getClassification();
+        if (!StringUtils.isAllBlank(sta, cls)) {
+            var sb = new StringBuilder();
+            if (StringUtils.isNotBlank(sta)) {
+                sb.append(sta);
+                if (StringUtils.isNotBlank(cls)) {
+                    sb.append(" ");
+                }
+            }
+            if (StringUtils.isNotBlank(cls)) {
+                sb.append(cls);
+            }
+            header = "%s [%s]".formatted(header, sb.toString());
+        }
 
-    private void createUI() {
-        mNameLabel.setStyle(mStyleBold);
-        mVBox = new VBox(
-                mNameLabel,
-                mDateLabel,
-                mGroupLabel
+        var desc1 = "%s: %s".formatted(
+                StringUtils.defaultIfBlank(p.getGroup(), "NOVALUE"),
+                StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE")
         );
+
+//        var date = Objects.toString(DateHelper.toDateTimeString(p.getDateLatest()), "-");
+//        mHeaderLabel.setText(p.getName());
+//        mDateLabel.setText("%s %s".formatted(date, p.getComment()));
+//        mGroupLabel.setText(p.getGroup());
+//        setGraphic(mVBox);
+        mHeaderLabel.setText(header);
+        mDesc1Label.setText(desc1);
+        mDesc2Label.setText(p.getComment());
+    }
+
+//    private void clearContent() {
+//        setText(null);
+//        setGraphic(null);
+//    }
+    private void createUI() {
+        mVBox.getChildren().setAll(
+                mHeaderLabel,
+                mDesc1Label,
+                mDesc2Label
+        //                mDesc3Label
+        //                mDesc4Label
+        );
+
+//        mHeaderLabel.setGraphic(mAlarmIndicator);
+        activateTooltip();
     }
 
 }
