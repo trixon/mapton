@@ -330,6 +330,7 @@ public class ButterflyManager {
 
     private void calculateLocalFromLatLons(Butterfly butterfly) {
         calculateLocalFromLatLons(butterfly.rock().getBlasts());
+        calculateLocalFromLatLons(butterfly.getRois());
     }
 
     private void createBufferedArea(BAreaBase area) throws ParseException, MismatchedDimensionException, TransformException {

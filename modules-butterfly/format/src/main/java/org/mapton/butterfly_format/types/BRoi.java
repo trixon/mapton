@@ -37,7 +37,6 @@ public class BRoi extends BXyzPoint {
     private LocalDateTime datTo;
     private String description;
     private transient Geometry geometry;
-    private String id;
     private transient Geometry targetGeometry;
     private String wkt;
 
@@ -66,10 +65,6 @@ public class BRoi extends BXyzPoint {
 
     public Geometry getGeometry() {
         return geometry;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public Geometry getTargetGeometry() {
@@ -102,10 +97,6 @@ public class BRoi extends BXyzPoint {
 
     public void setGeometry(Geometry geometry) {
         this.geometry = geometry;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setTargetGeometry(Geometry targetGeometry) {

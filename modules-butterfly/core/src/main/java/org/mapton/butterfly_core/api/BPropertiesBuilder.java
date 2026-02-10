@@ -69,7 +69,8 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
                     StringHelper.join(SEPARATOR, "", p.getOrigin(), p.getOperator()));
         }
         if (isValid(exclusion, ExcludeBasic.MEAS_MODE)) {
-            map.put(getCatKeyNum(CAT_BASIC, "Mätläge"), p.getMeasurementMode().toString());
+            var measurementMode = p.getMeasurementMode();
+            map.put(getCatKeyNum(CAT_BASIC, "Mätläge"), measurementMode == null ? "-" : measurementMode.toString());
         }
         if (isValid(exclusion, ExcludeBasic.TAG)) {
             map.put(getCatKeyNum(CAT_BASIC, Dict.TAG.toString()), p.getTag());

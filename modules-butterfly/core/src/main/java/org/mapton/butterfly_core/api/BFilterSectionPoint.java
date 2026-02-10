@@ -429,6 +429,9 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
     public boolean validateNextMeas(BXyzPoint p, IndexedCheckModel<String> checkModel, long remainingDays) {
         var frequency = p.getFrequency();
+        if (frequency == null) {
+            return true;
+        }
         var latest = p.getDateLatest() != null ? p.getDateLatest().toLocalDate() : LocalDate.MIN;
         var today = LocalDate.now();
         var nextMeas = latest.plusDays(frequency);
