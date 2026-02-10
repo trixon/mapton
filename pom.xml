@@ -240,6 +240,11 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
+                <artifactId>butterfly-roi</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
                 <artifactId>butterfly-rock</artifactId>
                 <version>${mapton.version}</version>
             </dependency>

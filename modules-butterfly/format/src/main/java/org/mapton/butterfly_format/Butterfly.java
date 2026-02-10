@@ -38,6 +38,7 @@ import org.mapton.butterfly_format.types.BCoordinate;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BHistory;
 import org.mapton.butterfly_format.types.BMeasurementMode;
+import org.mapton.butterfly_format.types.BRoi;
 import org.mapton.butterfly_format.types.BSystemKeyVal;
 import org.mapton.butterfly_format.types.BSystemSearchProvider;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -91,6 +92,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
  */
 public class Butterfly {
 
+    private final ArrayList<BRoi> mRois = new ArrayList<>();
     private final ArrayList<BAlarm> mAlarms = new ArrayList<>();
     private final ArrayList<BHistory> mAlarmsHistory = new ArrayList<>();
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
@@ -179,6 +181,10 @@ public class Butterfly {
         return mMonmons;
     }
 
+    public ArrayList<BRoi> getRois() {
+        return mRois;
+    }
+
     public Hydro hydro() {
         return mHydro;
     }
@@ -226,6 +232,9 @@ public class Butterfly {
         mSourceDir = sourceDir;
         new ImportFromCsv<BCoordinate>(BCoordinate.class) {
         }.load(sourceDir, "coordinates.csv", mCoordinates);
+
+        new ImportFromCsv<BRoi>(BRoi.class) {
+        }.load(sourceDir, "roi.csv", mRois);
 
         new ImportFromCsv<BAcousticVibrationPoint>(BAcousticVibrationPoint.class) {
         }.load(sourceDir, "noiseVibrationPoints.csv", mVibrationPoints);
