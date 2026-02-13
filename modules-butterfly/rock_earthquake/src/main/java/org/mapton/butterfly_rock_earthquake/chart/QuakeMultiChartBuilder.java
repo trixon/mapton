@@ -150,6 +150,6 @@ public class QuakeMultiChartBuilder extends XyzChartBuilder<BRockEarthquake> {
             getDataset().addSeries(timeSeries);
         }
 
-        plotBlasts(plot, b, mDateFirst);
+        plotOverlays(plot, b, mDateFirst);
     }
 }
