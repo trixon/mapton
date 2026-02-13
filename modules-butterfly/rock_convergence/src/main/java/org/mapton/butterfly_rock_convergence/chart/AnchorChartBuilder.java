@@ -111,7 +111,7 @@ public class AnchorChartBuilder extends XyzChartBuilder<BRockConvergencePair> {
         plotZ(p, p.getP1());
         plotZ(p, p.getP2());
 
-        plotBlasts(plot, p, p.ext().getDateFirst().toLocalDate());
+        plotOverlays(plot, p, p.ext().getDateFirst().toLocalDate());
     }
 
     private void plotZ(BRockConvergencePair pair, BTopoControlPoint p) {

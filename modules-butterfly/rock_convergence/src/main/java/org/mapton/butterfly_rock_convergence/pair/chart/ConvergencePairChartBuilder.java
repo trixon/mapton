@@ -44,7 +44,7 @@ import org.mapton.api.MKey;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.Mapton;
 import org.mapton.api.ui.forms.ChartBuilder;
-import static org.mapton.butterfly_core.api.XyzChartBuilder.plotBlasts;
+import static org.mapton.butterfly_core.api.XyzChartBuilder.plotOverlays;
 import org.mapton.butterfly_format.types.rock.BRockConvergencePair;
 import org.mapton.butterfly_rock_convergence.pair.ConvergencePairManager;
 import org.mapton.ce_jfreechart.api.ChartHelper;
@@ -122,7 +122,7 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BRockConvergencePa
             var lastDate = p.ext().getObservationsTimeFiltered().getLast().getDate().toLocalDate();
             var firstDate = p.ext().getObservationsTimeFiltered().getFirst().getDate().toLocalDate();
 
-            plotBlasts(plot, p, firstDate);
+            plotOverlays(plot, p, firstDate);
         }
         mDataset.addSeries(mTimeSeriesDeltaL);
         if (!mTimeSeriesBlast.isEmpty()) {

@@ -74,7 +74,7 @@ public class ConvergenceChartBuilder extends XyzChartBuilder<BRockConvergence> {
     public synchronized void updateDataset(BRockConvergence p) {
         var plot = (XYPlot) mChart.getPlot();
         resetPlot(plot);
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
+        plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         for (var pair : p.ext().getPairs()) {
