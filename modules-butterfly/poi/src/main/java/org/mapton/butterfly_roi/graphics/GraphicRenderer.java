@@ -18,22 +18,19 @@ package org.mapton.butterfly_roi.graphics;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.BasicShapeAttributes;
-import gov.nasa.worldwind.render.Ellipsoid;
-import gov.nasa.worldwind.render.Material;
-import gov.nasa.worldwind.render.Path;
-import gov.nasa.worldwind.render.SurfaceCircle;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import gov.nasa.worldwind.render.Renderable;
+import gov.nasa.worldwind.render.SurfacePolygon;
+import gov.nasa.worldwind.render.SurfacePolyline;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.controlsfx.control.IndexedCheckModel;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.BRoi;
 import org.mapton.butterfly_roi.RoiAttributeManager;
 import org.mapton.worldwind.api.WWHelper;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -57,73 +54,42 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRoi> {
     public void plot(BRoi roi, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
 
-        if (mCheckModel.isChecked(GraphicItem.ALTUTID)) {
-            var timeSpan = ChronoUnit.MINUTES.between(roi.getDateLatest(), LocalDateTime.now());
-            var altitude = timeSpan / 24000.0;
-            var startPosition = WWHelper.positionFromPosition(position, 0.0);
-            var endPosition = WWHelper.positionFromPosition(position, altitude);
-            var radius = 1.2;
-            var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
-            endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            addRenderable(endEllipsoid, true, GraphicItem.ALTUTID, mMapObjects);
-
-            var groundPath = new Path(startPosition, endPosition);
-            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            addRenderable(groundPath, true, GraphicItem.ALTUTID, mMapObjects);
-        }
-
-        if (mCheckModel.isChecked(GraphicItem.BALLS_Z) && roi.getZeroZ() != null) {
-            var altitude = roi.getZeroZ();
-            var startPosition = WWHelper.positionFromPosition(position, 0.0);
-            var endPosition = WWHelper.positionFromPosition(position, altitude);
-            var radius = 1.2;
-            var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
-            endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            addRenderable(endEllipsoid, true, GraphicItem.BALLS_Z, mMapObjects);
-
-            var groundPath = new Path(startPosition, endPosition);
-            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            addRenderable(groundPath, true, GraphicItem.BALLS_Z, mMapObjects);
-        }
-
-        if (mCheckModel.isChecked(GraphicItem.RADIUS_40)) {
-            var map = Map.of(40.0, Material.RED, 50.0, Material.ORANGE);
-            List.of(40.0, 50.0, 100.0).forEach(r -> {
-                var circle = new SurfaceCircle(position, r);
-                var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
-                attrs.setDrawInterior(false);
-                attrs.setDrawOutline(true);
-                attrs.setOutlineMaterial(map.getOrDefault(r, Material.GREEN));
-                attrs.setOutlineWidth(1.0);
-                attrs.setOutlineOpacity(0.25);
-                circle.setAttributes(attrs);
-
-                addRenderable(circle, false, GraphicItem.RADIUS_40, null);
-            });
-
-        }
-
-        if (mCheckModel.isChecked(GraphicItem.RECENT)) {
-//            var age = blast.ext().getMeasurementAge(ChronoUnit.DAYS);
-//            var maxAge = 30.0;
-//
-//            if (age < maxAge) {
-//                var circle = new SurfaceCircle(position, 40.0);
-//                var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
-//                var reducer = age / maxAge;//  1/30   15/30 30/30
-//                var maxOpacity = 0.2;
-//                var opacity = maxOpacity - reducer * maxOpacity;
-//                attrs.setInteriorOpacity(opacity);
-//                circle.setAttributes(attrs);
-//
-//                addRenderable(circle, false, GraphicItem.RECENT, null);
-//            }
+        if (mCheckModel.isChecked(GraphicItem.SURFACE)) {
+            plotArea(roi);
         }
     }
 
     @Override
     public void reset() {
         super.reset();
+    }
+
+    private void plotArea(BRoi roi) {
+        var attrs = mAttributeManager.getSurfaceAttributes(roi);
+        var attrsHighlight = mAttributeManager.getSurfaceHighlightAttributes(roi);
+        Renderable renderable = null;
+        try {
+            var geometry = roi.getGeometry();
+            if (geometry instanceof LineString lineString) {
+                var surfaceObject = new SurfacePolyline(attrs, WWHelper.positionsFromGeometry(lineString, 0));
+                surfaceObject.setHighlightAttributes(attrsHighlight);
+                renderable = surfaceObject;
+//                mLayer.addRenderable(renderable);
+
+            } else if (geometry instanceof Polygon polygon) {
+                var surfaceObject = new SurfacePolygon(attrs, WWHelper.positionsFromGeometry(polygon, 0));
+                surfaceObject.setHighlightAttributes(attrsHighlight);
+                renderable = surfaceObject;
+//                mLayer.addRenderable(renderable);
+            }
+        } catch (Exception ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        if (renderable != null) {
+            addRenderable(renderable, true, GraphicItem.SURFACE, mMapObjects);
+
+        }
     }
 
 }

@@ -24,6 +24,7 @@ import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
+import org.mapton.butterfly_format.types.BRoi;
 
 /**
  *
@@ -33,6 +34,8 @@ public class RoiAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
+    private BasicShapeAttributes mShapeAttributes;
+    private BasicShapeAttributes mShapeHighlightAttributes;
     private PointPlacemarkAttributes mSinglePinAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
 
@@ -80,6 +83,20 @@ public class RoiAttributeManager extends BaseAttributeManager {
         return mSinglePinAttributes;
     }
 
+    public BasicShapeAttributes getSurfaceAttributes(BRoi roi) {
+        if (mShapeAttributes == null) {
+            mShapeAttributes = new BasicShapeAttributes();
+            mShapeAttributes.setOutlineWidth(3.0);
+            mShapeAttributes.setDrawInterior(true);
+            mShapeAttributes.setDrawOutline(true);
+            mShapeAttributes.setInteriorOpacity(0.1);
+            mShapeAttributes.setInteriorMaterial(Material.ORANGE);
+            mShapeAttributes.setOutlineMaterial(Material.YELLOW);
+        }
+
+        return mShapeAttributes;
+    }
+
     public BasicShapeAttributes getSurfaceAttributes() {
         if (mSurfaceAttributes == null) {
             mSurfaceAttributes = new BasicShapeAttributes();
@@ -90,6 +107,17 @@ public class RoiAttributeManager extends BaseAttributeManager {
         }
 
         return mSurfaceAttributes;
+    }
+
+    public BasicShapeAttributes getSurfaceHighlightAttributes(BRoi a) {
+        if (mShapeHighlightAttributes == null) {
+            mShapeHighlightAttributes = new BasicShapeAttributes(getSurfaceAttributes(a));
+            mShapeHighlightAttributes.setInteriorOpacity(0.20);
+            mShapeHighlightAttributes.setOutlineOpacity(0.20);
+
+        }
+
+        return mShapeHighlightAttributes;
     }
 
     private static class Holder {

@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MDisruptorProvider;
-import org.mapton.api.MLatLon;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
@@ -97,8 +96,11 @@ public class RoiManager extends BaseManager<BRoi> {
                 .filter(p -> p.getDateLatest() == null ? true : getTemporalManager().isValid(p.getDateLatest()))
                 .toList();
 
-        var latLonDisruptors = timeFilteredItems.stream().map(p -> new MLatLon(p.getLat(), p.getLon())).toList();
-        mDisruptorManager.putLatLons(DISRUPTOR_NAME, latLonDisruptors);
+        var geometries = timeFilteredItems.stream()
+                .map(roi -> roi.getTargetGeometry())
+                .toList();
+        mDisruptorManager.putGeometries(DISRUPTOR_NAME, geometries);
+
         setItemsTimeFiltered(timeFilteredItems);
     }
 

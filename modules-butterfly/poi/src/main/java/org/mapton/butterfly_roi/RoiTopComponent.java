@@ -46,7 +46,7 @@ import org.openide.windows.TopComponent;
         preferredID = "RoiTopComponent"
 )
 @Messages({
-    "CTL_RoiAction=Roi"
+    "CTL_RoiAction=Geometries"
 })
 public final class RoiTopComponent extends MTopComponent {
 

@@ -113,7 +113,7 @@ public class RoiLayerBundle extends BfLayerBundle {
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(p, position, labelPlacemark));
 
-//                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
+                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
                         addClickArea(position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {

@@ -16,16 +16,14 @@
 package org.mapton.butterfly_roi.graphics;
 
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
-    ALTUTID("Altutid", Integer.MAX_VALUE),
-    BALLS_Z("Klot z", Integer.MAX_VALUE),
-    RADIUS_40("Radie 40m", Integer.MAX_VALUE),
-    RECENT("Senaste cirklar", Integer.MAX_VALUE);
+    SURFACE(Dict.Geometry.SURFACE.toString(), Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 
