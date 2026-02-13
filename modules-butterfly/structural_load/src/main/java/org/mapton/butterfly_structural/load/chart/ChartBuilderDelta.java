@@ -136,7 +136,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
 
     private void plotMarkers(BStructuralLoadCellPoint p) {
         var plot = (XYPlot) mChart.getPlot();
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
+        plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {

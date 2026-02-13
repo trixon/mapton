@@ -81,7 +81,7 @@ public class LoadChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint> 
         var plot = (XYPlot) mChart.getPlot();
         resetPlot(plot);
 
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
+        plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         var timeSeries = new TimeSeries(p.getName());
