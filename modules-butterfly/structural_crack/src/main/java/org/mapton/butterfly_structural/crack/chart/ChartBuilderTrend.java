@@ -69,8 +69,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
 
         }
 
-        plotGroundwater(plot, p, p.ext().getObservationFilteredFirstDate());
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
+        plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
