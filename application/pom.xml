@@ -322,7 +322,7 @@
                 </dependency>
                 <dependency>
                     <groupId>org.mapton</groupId>
-                    <artifactId>butterfly-geo-predrilling</artifactId>
+                    <artifactId>butterfly-geo-reinforcement</artifactId>
                     <version>${mapton.version}</version>
                 </dependency>
                 <dependency>
