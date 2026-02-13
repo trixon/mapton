@@ -83,8 +83,7 @@ public class GroundwaterChartBuilder extends XyzChartBuilder<BHydroWaterLevelPoi
             mTimeSeriesH.addOrUpdate(minute, o.getGroundwaterLevel());
         });
         getDataset().addSeries(mTimeSeriesH);
-        plotGroundwater(plot, p, p.ext().getObservationFilteredFirstDate());
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
+        plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
     }
 
 }
