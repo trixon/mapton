@@ -140,7 +140,7 @@ public class DoubleStorageTab<T extends MSimpleObjectStorageDouble> extends Base
                 var group = simpleStorage.getGroup();
                 if (!groups.contains(group)) {
                     groups.add(group);
-                    gp.add(getGroupLabel(group), 0, 0, GridPane.REMAINING, 1);
+                    gp.add(createGroupLabel(group), 0, 0, GridPane.REMAINING, 1);
                 }
 
                 mItemBox.getChildren().add(gp);

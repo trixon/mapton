@@ -35,7 +35,7 @@ public abstract class BaseTab extends Tab implements MGenericLoader<Object>, MGe
         setClosable(false);
     }
 
-    public Label getGroupLabel(String group) {
+    public static Label createGroupLabel(String group) {
         var label = new Label(group);
         var fontSize = FxHelper.getScaledFontSize();
         var fontStyle = "-fx-font-size: %.0fpx; -fx-font-weight: %s;";

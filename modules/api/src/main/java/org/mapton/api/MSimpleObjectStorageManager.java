@@ -56,23 +56,23 @@ public class MSimpleObjectStorageManager {
         }
     }
 
-    public Boolean getBoolean(Class c, Boolean defaultValue) {
+    public Boolean getBoolean(Class<? extends MSimpleObjectStorageBoolean> c, Boolean defaultValue) {
         return getNode("boolean", c).getBoolean(c.getName(), defaultValue);
     }
 
-    public Double getDouble(Class c, Double defaultValue) {
+    public Double getDouble(Class<? extends MSimpleObjectStorageDouble> c, Double defaultValue) {
         return getNode("double", c).getDouble(c.getName(), defaultValue);
     }
 
-    public File getFile(Class c, File defaultValue) {
+    public File getFile(Class<? extends MSimpleObjectStorageString> c, File defaultValue) {
         return new File(getString(c, defaultValue.getAbsolutePath()));
     }
 
-    public Integer getInteger(Class c, Integer defaultValue) {
+    public Integer getInteger(Class<? extends MSimpleObjectStorageInteger> c, Integer defaultValue) {
         return getNode("integer", c).getInt(c.getName(), defaultValue);
     }
 
-    public String getString(Class c, String defaultValue) {
+    public String getString(Class<? extends MSimpleObjectStorageString> c, String defaultValue) {
         return getNode("string", c).get(c.getName(), defaultValue);
     }
 

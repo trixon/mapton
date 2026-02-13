@@ -105,7 +105,7 @@ public class StringStorageTab<T extends MSimpleObjectStorageString> extends Base
                 String group = stringStorage.getGroup();
                 if (!groups.contains(group)) {
                     groups.add(group);
-                    box.getChildren().add(0, getGroupLabel(group));
+                    box.getChildren().add(0, createGroupLabel(group));
                 }
 
                 mItemBox.getChildren().add(box);

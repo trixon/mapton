@@ -24,6 +24,7 @@ import se.trixon.almond.util.Dict;
  */
 public abstract class MSimpleObjectStorage<T> {
 
+    private String mCategory = "options";
     private T mDefaultValue = null;
     private String mGroup = Dict.MISCELLANEOUS.toString();
     private String mName;
@@ -32,6 +33,10 @@ public abstract class MSimpleObjectStorage<T> {
     private T mValue;
 
     public MSimpleObjectStorage() {
+    }
+
+    public String getCategory() {
+        return mCategory;
     }
 
     public T getDefaultValue() {
@@ -56,6 +61,10 @@ public abstract class MSimpleObjectStorage<T> {
 
     public T getValue() {
         return mValue;
+    }
+
+    public void setCategory(String category) {
+        mCategory = category;
     }
 
     public void setDefaultValue(T defaultValue) {
