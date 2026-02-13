@@ -150,6 +150,6 @@ public class BlastMultiChartBuilder extends XyzChartBuilder<BRockBlast> {
             getDataset().addSeries(timeSeries);
         }
 
-        plotBlasts(plot, b, mDateFirst);
+        plotOverlays(plot, b, mDateFirst);
     }
 }
