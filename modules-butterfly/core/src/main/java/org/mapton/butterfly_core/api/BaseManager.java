@@ -60,6 +60,14 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
     private final BooleanProperty mDisabledSearchProperty = new SimpleBooleanProperty(true);
 
+    static {
+        Mapton.getGlobalState().addListener(gsce -> {
+            if (ObjectUtils.allNotNull(getCurrManager(), getCurrItem())) {
+                getCurrManager().setSelectedItemAfterReset(getCurrItem());
+            }
+        }, MKey.OBJECT_RESELECT);
+    }
+
     public static BBase getCurrItem() {
         return sCurrItem;
     }

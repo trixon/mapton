@@ -40,6 +40,7 @@ import org.apache.commons.lang3.Strings;
 import org.apache.commons.math3.util.FastMath;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.operation.TransformException;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.mapton.api.MArea;
@@ -271,7 +272,25 @@ public class ButterflyManager {
                         Exceptions.printStackTrace(ex);
                     }
                 }
+                for (var roi : butterfly.getRois()) {
+                    try {
+//                        var geometry = createBufferedGeometry(roi.getWkt(), 10);
+//                        roi.setWkt(geometry.toString());
+//                        roi.setGeometry(geometry);
+                        var geometry = mWktReader.read(roi.getWkt());
+                        roi.setGeometry(geometry);
 
+                        try {
+                            var targetGeometry = MOptions.getInstance().getMapCooTrans().transform(geometry);
+                            roi.setTargetGeometry(targetGeometry);
+                        } catch (MismatchedDimensionException | TransformException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                    } catch (ParseException | MismatchedDimensionException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+
+                }
                 butterfly.sys().getSearchProviders().forEach(p -> MSearchProviderManager.getInstance().getMap().put(p.getId(), p.getKey()));
                 setButterfly(butterfly);
                 mButterflyMonitor.start();
@@ -342,6 +361,14 @@ public class ButterflyManager {
         geometry = cooTrans.transformInverse(targetGeometry);
         area.setGeometry(geometry);
         area.setWkt(geometry.toString());
+    }
+
+    private Geometry createBufferedGeometry(String wkt, double buffer) throws ParseException, MismatchedDimensionException, TransformException {
+        var cooTrans = MOptions.getInstance().getMapCooTrans();
+        var geometry = mWktReader.read(wkt);
+        var targetGeometry = cooTrans.transform(geometry);
+        targetGeometry = targetGeometry.buffer(buffer);
+        return cooTrans.transformInverse(targetGeometry);
     }
 
     private void extractXfiles() {

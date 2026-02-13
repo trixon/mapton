@@ -23,7 +23,9 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPoint;
 import org.openide.modules.Modules;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.util.DateHelper;
@@ -230,6 +232,58 @@ public class ButterflyHelper {
         } else {
             return sVerticalPosMaterials[getColorIndex(sVerticalPosMaterials.length, limit, value)];
         }
+    }
+
+    public static List<BAcousticVibrationPoint> getVibrationPoints(BBasePoint p, double maxDistance, int limit, LocalDate aStartDate) {
+        var startDate = aStartDate == null ? LocalDate.now().minusYears(5) : aStartDate;
+        var lastDate = LocalDate.now().plusDays(1);
+        var pointLatLon = new MLatLon(p.getLat(), p.getLon());
+        var vibrationPoints = ButterflyManager.getInstance().getButterfly().noise().getVibrationPoints().stream()
+                .filter(gw -> gw != p)
+                .filter(gw -> gw.ext().getObservationsTimeFiltered().size() > 1)
+                .filter(gw -> {
+                    return gw.getDateLatest() != null && DateHelper.isBetween(
+                            startDate,
+                            lastDate,
+                            gw.getDateLatest().toLocalDate());
+                })
+                .filter(gw -> {
+                    var gwLatLon = new MLatLon(gw.getLat(), gw.getLon());
+                    var distance = gwLatLon.distance(pointLatLon);
+                    gw.setValue(KEY_DISTANCE, distance);
+                    return distance <= maxDistance;
+                })
+                .sorted((gw1, gw2) -> Double.compare(gw1.getValue(KEY_DISTANCE), gw2.getValue(KEY_DISTANCE)))
+                .limit(limit)
+                .toList();
+
+        return vibrationPoints;
+    }
+
+    public static List<BHydroWaterLevelPoint> getWaterLevelPoints(BBasePoint p, double maxDistance, int limit, LocalDate aStartDate) {
+        var startDate = aStartDate == null ? LocalDate.now().minusYears(5) : aStartDate;
+        var lastDate = LocalDate.now().plusDays(1);
+        var pointLatLon = new MLatLon(p.getLat(), p.getLon());
+        var waterLevelPoints = ButterflyManager.getInstance().getButterfly().hydro().getWaterLevelPoints().stream()
+                .filter(gw -> gw != p)
+                .filter(gw -> gw.ext().getObservationsTimeFiltered().size() > 1)
+                .filter(gw -> {
+                    return gw.getDateLatest() != null && DateHelper.isBetween(
+                            startDate,
+                            lastDate,
+                            gw.getDateLatest().toLocalDate());
+                })
+                .filter(gw -> {
+                    var gwLatLon = new MLatLon(gw.getLat(), gw.getLon());
+                    var distance = gwLatLon.distance(pointLatLon);
+                    gw.setValue(KEY_DISTANCE, distance);
+                    return distance <= maxDistance;
+                })
+                .sorted((gw1, gw2) -> Double.compare(gw1.getValue(KEY_DISTANCE), gw2.getValue(KEY_DISTANCE)))
+                .limit(limit)
+                .toList();
+
+        return waterLevelPoints;
     }
 
     public static void refreshTitle() {

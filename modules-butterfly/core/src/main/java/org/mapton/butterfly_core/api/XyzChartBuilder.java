@@ -23,13 +23,13 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
 import org.apache.commons.numbers.core.Precision;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.block.BlockContainer;
@@ -51,7 +51,7 @@ import org.jfree.data.time.Minute;
 import org.jfree.data.time.MovingAverage;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.mapton.api.MLatLon;
+import org.mapton.api.MChartOverlay;
 import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
@@ -61,10 +61,9 @@ import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
+import org.openide.util.Lookup;
 import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.MinMaxCollection;
-import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -110,99 +109,17 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         }
     }
 
-    public static void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate) {
-        plotBlasts(plot, p, firstDate, true);
-    }
+    public static void plotOverlays(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
+//    public static void plotOverlays(XYPlot plot, BBasePoint p, LocalDate aStartDate, Class<? extends BChartOverlay>... excludedOverlays) {
+//        var excludedOverlaysSet = new HashSet();
+//        if (excludedOverlays != null) {
+//            Collections.addAll(excludedOverlaysSet, excludedOverlays);
+//        }
 
-    public static void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, boolean plotLabel) {
-        var lastDate = LocalDate.now().plusDays(1);
-        var distanceLimitDefault = 40.0;
-        if (p instanceof BXyzPoint xyz && xyz.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext && ext.getFrequenceHighBuffer() != null) {
-            distanceLimitDefault = ext.getFrequenceHighBuffer();
-        }
-        var distanceLimit = distanceLimitDefault;
-        var currentStroke = new BasicStroke(4f);
-        var otherStroke = new BasicStroke(1.2f);
-        var pointLatLon = new MLatLon(p.getLat(), p.getLon());
-
-        ButterflyManager.getInstance().getButterfly().rock().getBlasts().stream()
-                .filter(b -> {
-                    return DateHelper.isBetween(
-                            firstDate,
-                            lastDate,
-                            b.getDateLatest().toLocalDate());
-                })
-                .forEachOrdered(b -> {
-                    var blastLatLon = new MLatLon(b.getLat(), b.getLon());
-                    var distance = blastLatLon.distance(pointLatLon);
-
-                    if (distance <= distanceLimit) {
-                        var minute = ChartHelper.convertToMinute(b.getDateLatest());
-                        var marker = new ValueMarker(minute.getFirstMillisecond());
-                        Color color;
-
-                        if (b == p) {
-                            color = Color.RED;
-                            marker.setStroke(currentStroke);
-                        } else {
-                            var distanceQuota = (distanceLimit - distance) / (distanceLimit - 10.0);
-                            marker.setStroke(otherStroke);
-                            distanceQuota = Math.min(1, distanceQuota);
-                            int alpha = (int) (Math.max(distanceQuota, 0.25) * 255d);
-                            color = new Color(200, 100, 0, alpha);
-                            if (plotLabel) {
-                                marker.setLabel("%.0f".formatted(distance));
-                                marker.setLabelFont(new Font("Dialog", Font.PLAIN, SwingHelper.getUIScaled(10)));
-                                marker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
-                                marker.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
-                            }
-                        }
-                        marker.setPaint(color);
-                        plot.addDomainMarker(marker);
-                    }
-                });
-    }
-
-    public static synchronized void plotGroundwater(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
-        var startDate = aStartDate == null ? LocalDate.now().minusYears(5) : aStartDate;
-        var groundwaterPoints = ButterflyHelper.getGroundwaterPoints(p, 100, 5, startDate);
-        var gwRenderer = new XYLineAndShapeRenderer(true, false);
-        var gwDataset = new TimeSeriesCollection();
-        var gwAxis = new NumberAxis(SDict.GROUNDWATER.toString());
-        gwAxis.setAutoRangeIncludesZero(false);
-        gwAxis.setAutoRange(true);
-        plot.setRangeAxis(2, gwAxis);
-        plot.setDataset(2, gwDataset);
-        plot.mapDatasetToRangeAxis(2, 2);
-        plot.setRangeAxisLocation(2, AxisLocation.BOTTOM_OR_RIGHT);
-        plot.setRenderer(2, gwRenderer);
-        var color = GraphicsHelper.colorAddAlpha(Color.BLUE, 80);
-
-        for (int i = 0; i < groundwaterPoints.size(); i++) {
-            if (i > 0) {
-                color = GraphicsHelper.brighten(color, 0.25);
-            }
-            var groundwaterPoint = groundwaterPoints.get(i);
-            var distance = groundwaterPoint.<Double>getValue(ButterflyHelper.KEY_DISTANCE);
-            var timeSeries = new TimeSeries("%c.%.0f".formatted('A' + i, distance));
-
-            for (var o : groundwaterPoint.ext().getObservationsTimeFiltered()) {
-                if (o.getDate().isAfter(startDate.atStartOfDay())) {
-                    timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), o.getGroundwaterLevel());
-                }
-            }
-
-            gwDataset.addSeries(timeSeries);
-            int series = gwDataset.getSeriesIndex(timeSeries.getKey());
-            gwRenderer.setSeriesToolTipGenerator(series, (xyDataset, seriesx, item) -> {
-                return "%.0fm  %s".formatted(distance, groundwaterPoint.getName());
-            });
-
-            gwRenderer.setSeriesVisibleInLegend(series, true);
-            gwRenderer.setSeriesPaint(series, color, true);
-            var width = i == 0 ? 3f : 1.5f;
-            gwRenderer.setSeriesStroke(series, new BasicStroke(width));
-        }
+        Lookup.getDefault().lookupAll(BChartOverlay.class).stream()
+                //                .filter(o -> !excludedOverlaysSet.contains(o.getClass()))
+                .sorted(Comparator.comparingInt(MChartOverlay::getPosition))
+                .forEach(chartOverlay -> chartOverlay.plot(plot, p, aStartDate));
     }
 
     public static void plotMeasNeed(XYPlot plot, BBaseControlPoint p, long days) {
