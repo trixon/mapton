@@ -103,8 +103,7 @@ public class InsarChartBuilder extends XyzChartBuilder<BRemoteInsarPoint> {
         var plot = (XYPlot) mChart.getPlot();
         resetPlot(plot);
 
-        plotGroundwater(plot, p, p.ext().getObservationFilteredFirstDate());
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
+        plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         updateDatasetTemperature(p);

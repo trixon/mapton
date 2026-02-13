@@ -140,8 +140,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
 
     private void plotMarkers(BRemoteInsarPoint p) {
         var plot = (XYPlot) mChart.getPlot();
-        plotGroundwater(plot, p, p.ext().getObservationFilteredFirstDate());
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
+        plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
