@@ -54,7 +54,7 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
     private final SessionDoubleSpinner mDisruptorSds = new SessionDoubleSpinner(0, 500.0, mDefaultDisruptorDistance, 5.0);
 
     public BFilterSectionDisruptor() {
-        super("Störningskällor");
+        super("Buffertkällor");
         mDisruptorFilterUI = new DisruptorFilterUI();
         setContent(mDisruptorFilterUI.mRoot);
     }
