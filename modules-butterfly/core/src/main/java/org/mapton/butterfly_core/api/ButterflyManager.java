@@ -344,7 +344,7 @@ public class ButterflyManager {
 
         calculateLatLons(butterfly.noise().getVibrationPoints());
         calculateLatLons(butterfly.rock().getExtensometers());
-        calculateLatLons(butterfly.geotechnical().getGeoPreDrillPoints());
+        calculateLatLons(butterfly.geotechnical().getReinforcementPoints());
     }
 
     private void calculateLocalFromLatLons(Butterfly butterfly) {

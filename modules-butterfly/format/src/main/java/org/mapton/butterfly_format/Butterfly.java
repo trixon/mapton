@@ -51,7 +51,7 @@ import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation.ObservationItem;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservationPre;
-import org.mapton.butterfly_format.types.geo.BGeoPreDrillPoint;
+import org.mapton.butterfly_format.types.geo.BGeoReinforcementPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
 import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPoint;
@@ -100,7 +100,7 @@ public class Butterfly {
     private final ArrayList<BCoordinate> mCoordinates = new ArrayList<>();
     private final Dev mDev = new Dev();
     private final ArrayList<BGeoInclinometerPoint> mGeoInclinometerPoints = new ArrayList<>();
-    private final ArrayList<BGeoPreDrillPoint> mGeoPreDrillPoints = new ArrayList<>();
+    private final ArrayList<BGeoReinforcementPoint> mGeoReinforcementPoints = new ArrayList<>();
     private final ArrayList<BGeoInclinometerPointObservation> mGeoInclinometerPointsObservations = new ArrayList<>();
     private final ArrayList<BGeoInclinometerPointObservationPre> mGeoInclinometerPointsObservationsPre = new ArrayList<>();
     private final Geotechnical mGeotechnical = new Geotechnical();
@@ -340,8 +340,8 @@ public class Butterfly {
         }.load(sourceDir, "tmoRorelseObservations.csv", mTmo.getRorelseObservations());
 
         //Geotechnical
-        new ImportFromCsv<BGeoPreDrillPoint>(BGeoPreDrillPoint.class) {
-        }.load(sourceDir, "geoPreDrillingPoints.csv", mGeoPreDrillPoints);
+        new ImportFromCsv<BGeoReinforcementPoint>(BGeoReinforcementPoint.class) {
+        }.load(sourceDir, "geoReinforcementPoints.csv", mGeoReinforcementPoints);
 
         new ImportFromCsv<BGeoInclinometerPoint>(BGeoInclinometerPoint.class) {
         }.load(sourceDir, "geoInclinometerPoints.csv", mGeoInclinometerPoints);
@@ -362,7 +362,7 @@ public class Butterfly {
                 mAlarms,
                 mAlarmsHistory,
                 mGeoInclinometerPoints,
-                mGeoPreDrillPoints,
+                mGeoReinforcementPoints,
                 mRockConvergence,
                 mRockEarthquakes,
                 mRockExtensometers,
@@ -474,8 +474,8 @@ public class Butterfly {
             return mGeoInclinometerPointsObservations;
         }
 
-        public ArrayList<BGeoPreDrillPoint> getGeoPreDrillPoints() {
-            return mGeoPreDrillPoints;
+        public ArrayList<BGeoReinforcementPoint> getReinforcementPoints() {
+            return mGeoReinforcementPoints;
         }
 
         private void postLoad() {
