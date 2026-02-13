@@ -46,7 +46,7 @@ import org.openide.windows.TopComponent;
         preferredID = "PreDrillTopComponent"
 )
 @Messages({
-    "CTL_PreDrillAction=Pre-drilling"
+    "CTL_PreDrillAction=Reinforcements"
 })
 public final class PreDrillTopComponent extends MTopComponent {
 
