@@ -20,7 +20,6 @@ import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 import javafx.scene.layout.BorderPane;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
-import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
@@ -37,7 +36,7 @@ public class VibrationFilterPopOver extends BaseTabbedFilterPopOver {
     private final ResourceBundle mBundle = NbBundle.getBundle(VibrationFilterPopOver.class);
     private final VibrationFilter mFilter;
     private final BFilterSectionDate mFilterSectionDate;
-    private final BFilterSectionDisruptor mFilterSectionDisruptor;
+//    private final BFilterSectionDisruptor mFilterSectionDisruptor;
     private final BFilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final VibrationManager mManager = VibrationManager.getInstance();
@@ -45,13 +44,13 @@ public class VibrationFilterPopOver extends BaseTabbedFilterPopOver {
     public VibrationFilterPopOver(VibrationFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
-        mFilterSectionDisruptor = new BFilterSectionDisruptor();
+//        mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMisc = new BFilterSectionMisc(filter);
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
-        mFilter.setFilterSection(mFilterSectionDisruptor);
+//        mFilter.setFilterSection(mFilterSectionDisruptor);
 
         setFilter(filter);
         createUI();
@@ -68,7 +67,7 @@ public class VibrationFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilterSectionPoint.clear();
         mFilterSectionDate.clear();
-        mFilterSectionDisruptor.clear();
+//        mFilterSectionDisruptor.clear();
         mFilterSectionMisc.clear();
 
         resetTabs();
@@ -92,7 +91,7 @@ public class VibrationFilterPopOver extends BaseTabbedFilterPopOver {
         var items = butterfly.noise().getVibrationPoints();
 
         mFilterSectionPoint.load(items);
-        mFilterSectionDisruptor.load();
+//        mFilterSectionDisruptor.load();
         mFilterSectionDate.load(mManager.getTemporalRange());
         mFilterSectionMisc.load();
     }
@@ -126,8 +125,8 @@ public class VibrationFilterPopOver extends BaseTabbedFilterPopOver {
 
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),
-                mFilterSectionDate.getTab(),
-                mFilterSectionDisruptor.getTab()
+                mFilterSectionDate.getTab()
+        //                mFilterSectionDisruptor.getTab()
         );
 
         setContentNode(root);
@@ -153,7 +152,7 @@ public class VibrationFilterPopOver extends BaseTabbedFilterPopOver {
         var sessionManager = new SessionManager(preferences);
         mFilterSectionPoint.initSession(sessionManager);
         mFilterSectionDate.initSession(sessionManager);
-        mFilterSectionDisruptor.initSession(sessionManager);
+//        mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
 
         return sessionManager;

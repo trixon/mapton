@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
-import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
-import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
@@ -39,8 +37,7 @@ import se.trixon.almond.util.Dict;
 public class VibrationFilter extends ButterflyFormFilter<VibrationManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
-        BFilterSectionDateProvider,
-        BFilterSectionDisruptorProvider {
+        BFilterSectionDateProvider {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(VibrationFilter.class);
     private final VibrationManager mManager = VibrationManager.getInstance();
@@ -66,12 +63,11 @@ public class VibrationFilter extends ButterflyFormFilter<VibrationManager> imple
         mFilterSectionPoint.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
-    @Override
-    public void setFilterSection(BFilterSectionDisruptor filterSection) {
-        mFilterSectionDisruptor = filterSection;
-        mFilterSectionDisruptor.initListeners(mChangeListenerObject, mListChangeListener);
-    }
-
+//    @Override
+//    public void setFilterSection(BFilterSectionDisruptor filterSection) {
+//        mFilterSectionDisruptor = filterSection;
+//        mFilterSectionDisruptor.initListeners(mChangeListenerObject, mListChangeListener);
+//    }
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
@@ -82,7 +78,7 @@ public class VibrationFilter extends ButterflyFormFilter<VibrationManager> imple
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
-                .filter(p -> mFilterSectionDisruptor.filter(p))
+                //                .filter(p -> mFilterSectionDisruptor.filter(p))
                 .toList();
 
         if (mInvertProperty.get()) {
@@ -102,7 +98,7 @@ public class VibrationFilter extends ButterflyFormFilter<VibrationManager> imple
         map.put(Dict.TEXT.toString(), getFreeText());
         mFilterSectionPoint.createInfoContent(map);
         mFilterSectionDate.createInfoContent(map);
-        mFilterSectionDisruptor.createInfoContent(map);
+//        mFilterSectionDisruptor.createInfoContent(map);
 
         return createHtmlFilterInfo(map);
     }

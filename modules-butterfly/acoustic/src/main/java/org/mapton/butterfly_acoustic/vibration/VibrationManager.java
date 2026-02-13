@@ -23,12 +23,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.mapton.api.MDisruptorProvider;
+import org.mapton.api.MLatLon;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_acoustic.vibration.chart.VibrationChartBuilder;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.CollectionHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -37,6 +40,8 @@ import se.trixon.almond.util.DateHelper;
  * @author Patrik Karlström
  */
 public class VibrationManager extends BaseManager<BAcousticVibrationPoint> {
+
+    private final static String DISRUPTOR_NAME = Bundle.CTL_VibrationAction();
 
     private final VibrationChartBuilder mChartBuilder = new VibrationChartBuilder();
     private final VibrationOptions mOptions = VibrationOptions.getInstance();
@@ -161,12 +166,23 @@ public class VibrationManager extends BaseManager<BAcousticVibrationPoint> {
             });
         });
 
+        var latLonDisruptors = timeFilteredItems.stream().map(p -> new MLatLon(p.getLat(), p.getLon())).toList();
+        mDisruptorManager.putLatLons(DISRUPTOR_NAME, latLonDisruptors);
         setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override
     protected void load(ArrayList<BAcousticVibrationPoint> items) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @ServiceProvider(service = MDisruptorProvider.class)
+    public static class BlastDisruptorProvider implements MDisruptorProvider {
+
+        @Override
+        public String getName() {
+            return DISRUPTOR_NAME;
+        }
     }
 
     private static class Holder {
