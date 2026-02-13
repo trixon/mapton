@@ -27,7 +27,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MTemporalManager;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import static org.mapton.butterfly_core.api.XyzChartBuilder.plotBlasts;
 import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
@@ -133,8 +132,7 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
             label = "mm";
         }
         plot.getRangeAxis().setLabel(label);
-        plotGroundwater(plot, p, p.ext().getObservationFilteredFirstDate());
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate());
+        plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
         p.getCommonObservations().entrySet().forEach(entry -> {
             var date = entry.getKey();
             var p2 = entry.getValue();
