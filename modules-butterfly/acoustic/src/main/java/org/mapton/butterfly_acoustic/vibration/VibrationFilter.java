@@ -37,9 +37,11 @@ import se.trixon.almond.util.Dict;
 public class VibrationFilter extends ButterflyFormFilter<VibrationManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
-        BFilterSectionDateProvider {
+        BFilterSectionDateProvider,
+        FilterSectionMeasProvider {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(VibrationFilter.class);
+    private FilterSectionMeas mFilterSectionMeas;
     private final VibrationManager mManager = VibrationManager.getInstance();
 
     public VibrationFilter() {
@@ -49,6 +51,12 @@ public class VibrationFilter extends ButterflyFormFilter<VibrationManager> imple
     }
 
     public void initCheckModelListeners() {
+    }
+
+    @Override
+    public void setFilterSection(FilterSectionMeas filterSectionMeas) {
+        mFilterSectionMeas = filterSectionMeas;
+        mFilterSectionMeas.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
@@ -78,6 +86,7 @@ public class VibrationFilter extends ButterflyFormFilter<VibrationManager> imple
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
+                .filter(p -> mFilterSectionMeas.filter(p))
                 //                .filter(p -> mFilterSectionDisruptor.filter(p))
                 .toList();
 
