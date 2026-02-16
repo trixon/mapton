@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_format.types;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import org.mapton.butterfly_format.Butterfly;
@@ -39,6 +40,8 @@ public abstract class BBase {
     private String unitDiff;
     private transient final HashMap<Object, Object> values = new HashMap<>();
     private Boolean visible;
+    @JsonProperty(defaultValue = "UNKNOWN")
+    private BStep step = BStep.UNKNOWN;
 
     public Double getAzimuth() {
         return azimuth;
@@ -78,6 +81,10 @@ public abstract class BBase {
 
     public String getOrigin() {
         return origin;
+    }
+
+    public BStep getStep() {
+        return step;
     }
 
     public String getUnit() {
@@ -151,6 +158,10 @@ public abstract class BBase {
 
     public void setOrigin(String origin) {
         this.origin = origin;
+    }
+
+    public void setStep(BStep step) {
+        this.step = step;
     }
 
     public void setUnit(String unit) {
