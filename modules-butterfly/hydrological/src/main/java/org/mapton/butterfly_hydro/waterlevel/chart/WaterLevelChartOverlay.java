@@ -28,7 +28,7 @@ import org.mapton.api.MChartOverlay;
 import org.mapton.butterfly_core.api.BChartOverlay;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BBasePoint;
-import org.mapton.butterfly_hydro.waterlevel.WaterLevelChartSOSB;
+import org.mapton.butterfly_hydro.waterlevel.WaterLevel2ChartSOSB;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.GraphicsHelper;
@@ -52,7 +52,7 @@ public class WaterLevelChartOverlay extends BChartOverlay {
 
     @Override
     public synchronized void plot(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
-        if (!mObjectStorageManager.getBoolean(WaterLevelChartSOSB.class, false)) {
+        if (!mObjectStorageManager.getBoolean(WaterLevel2ChartSOSB.class, false)) {
             plot.setDataset(mIndex, null);
             plot.setRangeAxis(mIndex, null);
 
