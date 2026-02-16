@@ -17,6 +17,7 @@ package org.mapton.butterfly_rock_blast;
 
 import org.mapton.api.MChartSOSB;
 import org.mapton.api.MSimpleObjectStorageBoolean;
+import org.mapton.butterfly_rock_blast.chart.BlastChartOverlay;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -30,6 +31,7 @@ public class BlastChartSOSB extends MChartSOSB {
 
     public BlastChartSOSB() {
         setName(Bundle.CTL_BlastAction());
+        setTooltipText("Sprängsalvor inom %.0f m.".formatted(BlastChartOverlay.DEFAULT_DISTANCE_LIMIT));
     }
 
 }
