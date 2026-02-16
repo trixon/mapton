@@ -63,8 +63,8 @@ public class FilterSectionMeas extends MBaseFilterSection {
     @Override
     public void clear() {
         super.clear();
-        mSpeedValueSliderPane.valueProperty().setValue(DEFAULT_SPEED);
-        mSpeedCountSliderPane.valueProperty().setValue(DEFAULT_COUNT);
+        mSpeedValueSliderPane.setValue(DEFAULT_SPEED);
+        mSpeedCountSliderPane.setValue(DEFAULT_COUNT);
         mSpeedPeriodDateRangePane.reset();
         FxHelper.setSelected(false, mSpeedPeriodCheckbox);
     }
@@ -143,9 +143,9 @@ public class FilterSectionMeas extends MBaseFilterSection {
         if (!mSpeedPeriodCheckbox.isSelected()) {
             return true;
         }
-        return mSpeedCountSliderPane.valueProperty().get() <= p.ext().getObservationsTimeFiltered().stream()
+        return mSpeedCountSliderPane.getValue() <= p.ext().getObservationsTimeFiltered().stream()
                 .filter(o -> DateHelper.isBetween(speedPeriodDateLowProperty().get(), speedPeriodDateHighProperty().get(), o.getDate().toLocalDate()))
-                .filter(o -> o.getMeasuredZ() >= mSpeedValueSliderPane.valueProperty().get())
+                .filter(o -> o.getMeasuredZ() >= mSpeedValueSliderPane.getValue())
                 .count();
     }
 
