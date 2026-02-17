@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_structural.tilt;
 
+import com.sun.jna.platform.KeyboardUtils;
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPointObservation;
+import org.mapton.butterfly_structural.tilt.chart.ChartAggregate;
+import org.mapton.butterfly_structural.tilt.chart.MultiChartAggregate;
 import org.mapton.butterfly_structural.tilt.chart.TiltChartBuilder;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
@@ -39,6 +43,8 @@ public class TiltManager extends BaseManager<BStructuralTiltPoint> {
 
     private final TiltChartBuilder mChartBuilder = new TiltChartBuilder();
     private final TiltPropertiesBuilder mPropertiesBuilder = new TiltPropertiesBuilder();
+    private final ChartAggregate mChartAggregate = new ChartAggregate();
+    private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
 
     public static TiltManager getInstance() {
         return Holder.INSTANCE;
@@ -50,7 +56,12 @@ public class TiltManager extends BaseManager<BStructuralTiltPoint> {
 
     @Override
     public Object getObjectChart(BStructuralTiltPoint selectedObject) {
-        return mChartBuilder.build(selectedObject);
+        boolean isCtrlPressed = KeyboardUtils.isPressed(KeyEvent.VK_CONTROL);
+        if (isCtrlPressed) {
+            return mMultiChartAggregate.build(selectedObject);
+        } else {
+            return mChartAggregate.build(selectedObject);
+        }
     }
 
     @Override
