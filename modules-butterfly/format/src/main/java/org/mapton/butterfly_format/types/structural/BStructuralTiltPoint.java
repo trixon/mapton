@@ -109,7 +109,7 @@ public class BStructuralTiltPoint extends BXyzPoint {
         }
 
         private String getDelta(Delta delta) {
-            var s = "X=%.1f, Y=%.1f, R=%.1f".formatted(delta.getDeltaX(), delta.getDeltaY(), delta.getDelta2());
+            var s = "T=%+.1f, L=%+.1f, R=%+.1f".formatted(delta.getDeltaX(), delta.getDeltaY(), delta.getDelta2());
 
             return s;
         }
