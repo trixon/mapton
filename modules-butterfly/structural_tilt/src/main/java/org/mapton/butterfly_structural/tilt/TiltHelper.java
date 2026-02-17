@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.tilt;
 
+import java.awt.Color;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.mapton.butterfly_core.api.AlarmManager;
@@ -27,6 +28,10 @@ import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
  * @author Patrik Karlström
  */
 public class TiltHelper {
+
+    public static Color getAlarmColorHeightAwt(BStructuralTiltPoint p) {
+        return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
+    }
 
     public static javafx.scene.paint.Color getAlarmColorHeightFx(BStructuralTiltPoint p) {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevel(p));

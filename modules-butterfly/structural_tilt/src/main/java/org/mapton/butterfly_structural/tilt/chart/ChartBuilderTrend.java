@@ -40,15 +40,15 @@ import se.trixon.almond.util.Dict;
  */
 public class ChartBuilderTrend extends ChartBuilderBase {
 
-    private final BDimension mDimension;
     private final Function<BXyzPointObservation, Double> mFunction;
     private final TimeSeries mTimeSeries;
+    private final String mType;
 
-    public ChartBuilderTrend(BDimension dimension, Function<BXyzPointObservation, Double> function) {
-        mDimension = dimension;
+    public ChartBuilderTrend(String type, Function<BXyzPointObservation, Double> function) {
+        mType = type;
         mFunction = function;
-        mTimeSeries = new TimeSeries(dimension == BDimension._1d ? Dict.Geometry.HEIGHT : Dict.Geometry.PLANE);
-        initChart(null, null);
+        mTimeSeries = new TimeSeries("%s %s".formatted(Dict.TREND.toString(), type));
+        initChart("mm/m", "0.0");
     }
 
     @Override
@@ -90,8 +90,15 @@ public class ChartBuilderTrend extends ChartBuilderBase {
             getDataset().addSeries(mTimeSeries);
             var renderer = new XYLineAndShapeRenderer(true, false);
             plot.setRenderer(0, renderer);
-
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeries.getKey()), mDimension == BDimension._1d ? Color.RED : Color.BLUE);
+            var color = switch (mType) {
+                case "T" ->
+                    Color.RED;
+                case "L" ->
+                    Color.GREEN;
+                default ->
+                    Color.BLUE;
+            };
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeries.getKey()), color);
         }
 
         var startDateFirst = p.ext().getDateFirst();
@@ -152,7 +159,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
             var now = LocalDateTime.now();
             var val1 = trend.function().getValue(ChartHelper.convertToMinute(now.plusYears(1)).getFirstMillisecond());
             var val2 = trend.function().getValue(ChartHelper.convertToMinute(now).getFirstMillisecond());
-            return "%.1f mm/år".formatted((val1 - val2) * 1000);
+            return "%.1f mm/m/år".formatted((val1 - val2));
         });
 
         plot.setRenderer(index, renderer);

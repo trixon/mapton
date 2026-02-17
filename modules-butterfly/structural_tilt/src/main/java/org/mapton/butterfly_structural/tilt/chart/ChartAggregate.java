@@ -18,7 +18,6 @@ package org.mapton.butterfly_structural.tilt.chart;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 import javax.swing.JTabbedPane;
-import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 
@@ -30,15 +29,18 @@ public class ChartAggregate {
 
     private final ChartBuilderDelta mBuilderDeltaAvg = new ChartBuilderDelta(true, null);
     private final ChartBuilderDeltaSplit mBuilderDeltaSplit = new ChartBuilderDeltaSplit();
-    private final ChartBuilderTrend mBuilderTrend1d;
-    private final ChartBuilderTrend mBuilderTrend2d;
+    private final ChartBuilderTrend mBuilderTrendR;
+    private final ChartBuilderTrend mBuilderTrendX;
+    private final ChartBuilderTrend mBuilderTrendY;
     private final JTabbedPane mTabbedPane;
 
     public ChartAggregate() {
-        final Function<BXyzPointObservation, Double> func1d = (var o) -> o.ext().getDelta1d();
-        final Function<BXyzPointObservation, Double> func2d = (var o) -> o.ext().getDelta2d();
-        mBuilderTrend1d = new ChartBuilderTrend(BDimension._1d, func1d);
-        mBuilderTrend2d = new ChartBuilderTrend(BDimension._2d, func2d);
+        final Function<BXyzPointObservation, Double> funcX = (var o) -> o.ext().getDeltaX();
+        final Function<BXyzPointObservation, Double> funcY = (var o) -> o.ext().getDeltaY();
+        final Function<BXyzPointObservation, Double> funcR = (var o) -> o.ext().getDelta2d();
+        mBuilderTrendX = new ChartBuilderTrend("T", funcX);
+        mBuilderTrendY = new ChartBuilderTrend("L", funcY);
+        mBuilderTrendR = new ChartBuilderTrend("R", funcR);
 
         mTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
     }
@@ -55,12 +57,9 @@ public class ChartAggregate {
                 if (p.ext().getObservationsTimeFiltered().size() > 1) {
                     mTabbedPane.add("Delta", mBuilderDeltaSplit.build(p).call());
                     mTabbedPane.add("Delta (avg)", mBuilderDeltaAvg.build(p).call());
-                    if (p.getDimension() != BDimension._2d) {
-                        mTabbedPane.add("Trend 1d", mBuilderTrend1d.build(p).call());
-                    }
-                    if (p.getDimension() != BDimension._1d) {
-                        mTabbedPane.add("Trend 2d", mBuilderTrend2d.build(p).call());
-                    }
+                    mTabbedPane.add("Trend T", mBuilderTrendX.build(p).call());
+                    mTabbedPane.add("Trend L", mBuilderTrendY.build(p).call());
+                    mTabbedPane.add("Trend R", mBuilderTrendR.build(p).call());
 
                     if (prevIndex > -1) {
                         mTabbedPane.setSelectedIndex(prevIndex);

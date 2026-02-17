@@ -28,7 +28,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
@@ -48,7 +47,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         setRecentDaysDefault(recentDaysDefault);
         setRecentDays(recentDaysDefault);
         mPlotAvg = plotAvg;
-        initChart("mm/m", "0");
+        initChart("mm/m", "0.0");
     }
 
     @Override
@@ -74,19 +73,10 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         var nowAsDate = DateHelper.convertToDate(now.plusDays(1));
         if (isCompleteView()) {
             dateAxis.setRange(DateHelper.convertToDate(p.ext().getDateFirst()), nowAsDate);
-            setRange(1.05, 1000, p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
+            setRange(1.05, p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
         } else {
-            var sb = new StringBuilder();
-            if (p.getDimension() != BDimension._2d) {
-                sb.append("rrrΔ1d %+.0f".formatted(deltaX));
-                if (p.getDimension() == BDimension._3d) {
-                    sb.append(", ");
-                }
-            }
-            if (p.getDimension() != BDimension._1d) {
-                sb.append("rrr Δ2d %+.0f".formatted(deltaY));
-            }
-            getRightSubTextTitle().setText(sb.toString());
+            var title = "T=%+.1f, L=%+.1f, R=%+.1f".formatted(deltaX, deltaY, deltaR);
+            getRightSubTextTitle().setText(title);
             dateAxis.setRange(DateHelper.convertToDate(now.minusDays(getRecentDays())), nowAsDate);
             rangeAxis.setLabel("");
             rangeAxis.setAutoRange(true);
@@ -101,7 +91,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         Double lastDelta = null;
         for (var o : p.ext().getObservationsTimeFiltered()) {
             if (o.getDate().isAfter(startDate)) {
-                var delta = function.apply(o) * 1000;
+                var delta = function.apply(o);
                 if (firstDelta == null) {
                     firstDelta = delta;
                 }

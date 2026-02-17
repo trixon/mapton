@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_structural.tilt.chart;
 
-import java.awt.Color;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -27,6 +26,7 @@ import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
+import org.mapton.butterfly_structural.tilt.TiltHelper;
 import se.trixon.almond.util.DateHelper;
 
 /**
@@ -42,7 +42,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralTiltPo
     protected final TimeSeries mTimeSeriesZ = new TimeSeries("Resultant");
 
     public ChartBuilderBase() {
-        initChart("mm/m", "0");
+        initChart("mm/m", "0.0");
     }
 
     @Override
@@ -66,7 +66,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralTiltPo
             var date = isCompleteView() ? mDateNull : Date.from(Instant.now().minus(getRecentDays(), ChronoUnit.DAYS));
             setDateRangeNullNow(plot, p, date);
             plot.clearRangeMarkers();
-            plotAlarmIndicators(p, 1000);
+            plotAlarmIndicators(p);
 
             return getChartPanel();
         };
@@ -76,13 +76,8 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralTiltPo
 
     @Override
     public void setTitle(BStructuralTiltPoint p) {
-//        setTitle(p, TiltHelper.getAlarmColorAwt(p));
-//        Color color = TopoHelper.getAlarmColorAwt(p);
-        var color = Color.BLUE;
-        if (color == Color.RED || color == Color.GREEN) {
-            color = color.darker();
-        }
-        setTitle(p, color);
+        setTitle(p, TiltHelper.getAlarmColorHeightAwt(p));
+
         if (isCompleteView()) {
             var dateFirst = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredFirstDate()), "");
             var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
@@ -90,9 +85,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralTiltPo
             getLeftSubTextTitle().setText(date);
         }
 
-//        String delta = p.ext().deltaZero().getDelta1d2d(0, 1000);
         var rightTitle = "%s".formatted(p.ext().getDeltaZero());
-
         getRightSubTextTitle().setText(rightTitle);
     }
 }
