@@ -15,9 +15,12 @@
  */
 package org.mapton.butterfly_geo_reinforcement;
 
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.geo.BGeoReinforcementPoint;
 
@@ -58,33 +61,41 @@ public class ReinforcementPropertiesBuilder extends BPropertiesBuilder<BGeoReinf
         );
         propertyMap.putAll(populateDates(p, dateParams));
 //******************************************************************************
+        Double azimuth = null;
+        try {
+            var o = p.ext().getObservationsTimeFiltered().getLast();
+            azimuth = o.ext().getBearing();
+        } catch (Exception e) {
+        }
+        var measParams = new BPropertiesBuilder.MeasParams<BGeoReinforcementPoint>(
+                azimuth,
+                p.ext().getMeasurementUntilNext(ChronoUnit.DAYS),
+                p.ext().getMeasurementAge(ChronoUnit.DAYS),
+                p.ext().getNumOfObservationsFiltered(),
+                p.ext().getNumOfObservations(),
+                p.ext().firstIsZero(),
+                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count(),
+                AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p),
+                AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p),
+                p.ext().getAlarmPercentString(p.ext()),
+                p.ext().getAlarmLevelAge(),
+                p.ext().deltaRolling().getDelta(3),
+                p.ext().deltaZero().getDelta(3),
+                p.ext().deltaFirst().getDelta(3)
+        );
+        var measExclusions = Set.of(
+                ExcludeMeas.PLANE,
+                ExcludeMeas.FREQ,
+                ExcludeMeas.FREQ_CONDITION,
+                ExcludeMeas.MEAS_FIRST_ZERO,
+                ExcludeMeas.MEAS_REPLACEMENT,
+                ExcludeMeas.BEARING,
+                ExcludeMeas.SPARSE,
+                ExcludeMeas.ROLLING_FORMULA,
+                ExcludeMeas.ROLLING_VALUE
+        );
 
-//TODO Replace with trend based analysis
-//
-//        var category = "Analys (VARNING)";
-//        try {
-//            var trend = p.ext().getHeightDirectionTrendDaysMeas();
-//            propertyMap.put(getCatKeyNum(category, "Trend (dagar::antal)"), "%s::%d::%d".formatted(trend[0], trend[1], trend[2]));
-//
-//        } catch (NullPointerException e) {
-//        }
-//        var speed = p.ext().getSpeed();
-//        var ageIndicator = p.ext().getMeasurementAge(ChronoUnit.DAYS) > 365 ? "*" : "";
-//        var speedString = "%.1f mm/%s (%.1f)%s".formatted(speed[0] * 1000.0, Dict.Time.YEAR.toLower(), speed[1], ageIndicator);
-//
-//        propertyMap.put(getCatKeyNum(category, Dict.SPEED.toString()), speedString);
-//
-//        var limitValuePredictor = p.ext().limitValuePredictor();
-//        if (limitValuePredictor.getRemainingUntilLimit() != null) {
-//            propertyMap.put(getCatKeyNum(category, Dict.REMAINING.toString()), StringHelper.round(limitValuePredictor.getRemainingUntilLimit() * 1000, 1, "", " mm", false));
-//            var limitDate = limitValuePredictor.getExtrapolatedLimitDate();
-//            if (!StringUtils.equalsAny(limitDate, "-", "E")) {
-//                limitDate = "%s (%d)".formatted(limitDate, limitValuePredictor.getExtrapolatedLimitDaysFromNow());
-//            }
-//            propertyMap.put(getCatKeyNum(category, Dict.Time.END_DATE.toString()), limitDate);
-//            var direction = limitValuePredictor.isRisingByTrend() ? Dict.INCREASEING.toString() : Dict.DECREASING.toString();
-//            propertyMap.put(getCatKeyNum(category, Dict.Geometry.DIRECTION.toString()), direction);
-//        }
+        propertyMap.putAll(populateMeas(p, measParams, measExclusions));
 //******************************************************************************
         propertyMap.putAll(populateDatabase(p));
 

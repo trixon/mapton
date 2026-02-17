@@ -70,7 +70,7 @@ public class ReinforcementLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Mapton.addWarning(Bundle.CTL_ReinforcementAction(), 1), SDict.GEOTECHNICAL.toString(), "ReinforcementTopComponent");
+        initCommons(Mapton.addWarning(Bundle.CTL_ReinforcementAction(), 0), SDict.GEOTECHNICAL.toString(), "ReinforcementTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
@@ -104,7 +104,7 @@ public class ReinforcementLayerBundle extends BfLayerBundle {
                 default ->
                     throw new AssertionError();
             }
-
+            mGraphicRenderer.preInit();
             synchronized (mManager.getTimeFilteredItems()) {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {

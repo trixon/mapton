@@ -23,9 +23,10 @@ import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
  */
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
     ALTUTID("Altutid", Integer.MAX_VALUE),
-    SHAPE("Basform", Integer.MAX_VALUE);
-//    BALLS_Z("Klot z", Integer.MAX_VALUE),
-//    RECENT("Senaste cirklar", Integer.MAX_VALUE);
+    SHAPE("Cylinder", Integer.MAX_VALUE),
+    SHAPE_HOVERING("Cylinder, svävande", Integer.MAX_VALUE),
+    RADIUS("Radie 20m", Integer.MAX_VALUE),
+    RECENT("Senaste cirklar", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 

@@ -25,15 +25,19 @@ import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.RigidShape;
+import gov.nasa.worldwind.render.SurfaceCircle;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.geo.BGeoReinforcementPoint;
 import org.mapton.butterfly_geo_reinforcement.ReinforcementAttributeManager;
+import org.mapton.butterfly_geo_reinforcement.ReinforcementManager;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -47,6 +51,8 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoReinfo
     private final ReinforcementAttributeManager mAttributeManager = ReinforcementAttributeManager.getInstance();
     private final IndexedCheckModel<GraphicItem> mCheckModel;
     private ArrayList<AVListImpl> mMapObjects;
+    private final ReinforcementManager mManager = ReinforcementManager.getInstance();
+    private double mMaxFilteredLength;
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer, sPlotLimiter);
@@ -59,87 +65,146 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoReinfo
         mMapObjects = mapObjects;
 
         if (mCheckModel.isChecked(GraphicItem.ALTUTID)) {
-            var dateLatest = p.getDateLatest() != null ? p.getDateLatest() : LocalDate.parse("2025-01-01").atStartOfDay();
-            var timeSpan = ChronoUnit.MINUTES.between(dateLatest, LocalDateTime.now());
-            var altitude = timeSpan / 24000.0;
-            var startPosition = WWHelper.positionFromPosition(position, 0.0);
-            var endPosition = WWHelper.positionFromPosition(position, altitude);
-            var radius = 0.6;
-            var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
-            var attrs = new BasicShapeAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            if (p.getDateLatest() == null) {
-                attrs.setInteriorMaterial(Material.RED);
-            }
-            endEllipsoid.setAttributes(attrs);
-            addRenderable(endEllipsoid, true, GraphicItem.ALTUTID, mMapObjects);
-
-            var groundPath = new Path(startPosition, endPosition);
-            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            addRenderable(groundPath, true, GraphicItem.ALTUTID, mMapObjects);
+            plotAltutid(p, position);
         }
 
-//        if (mCheckModel.isChecked(GraphicItem.BALLS_Z) && drillPoint.getZeroZ() != null) {
-//            var altitude = drillPoint.getZeroZ();
-//            var startPosition = WWHelper.positionFromPosition(position, 0.0);
-//            var endPosition = WWHelper.positionFromPosition(position, altitude);
-//            var radius = 1.2;
-//            var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
-//            endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-//            addRenderable(endEllipsoid, true, GraphicItem.BALLS_Z, mMapObjects);
-//
-//            var groundPath = new Path(startPosition, endPosition);
-//            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-//            addRenderable(groundPath, true, GraphicItem.BALLS_Z, mMapObjects);
-//        }
         if (mCheckModel.isChecked(GraphicItem.SHAPE)) {
-            var attrs = new BasicShapeAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            RigidShape shape;
-
-            var centerPosition = WWHelper.positionFromPosition(position, p.getDepth() / 2);
-            var height = p.getDepth();
-            var radius = p.getDiameter() / 2;
-
-            if (p.hasDiameter()) {
-                shape = new Cylinder(centerPosition, height, radius);
-            } else {
-                shape = new Box(centerPosition, radius, height, radius);
-            }
-
-            if (!p.hasZ()) {
-                attrs.setInteriorOpacity(0.5);
-            }
-
-            if (p.getDateLatest() != null) {
-                attrs.setInteriorMaterial(Material.RED);
-            }
-
-            shape.setAttributes(attrs);
-
-            addRenderable(shape, true, GraphicItem.SHAPE, mMapObjects);
-
+            plotShape(p, position);
+        }
+        if (mCheckModel.isChecked(GraphicItem.SHAPE_HOVERING)) {
+            plotShapeHovering(p, position);
         }
 
-//        if (mCheckModel.isChecked(GraphicItem.RECENT)) {
-//            var age = drillPoint.ext().getMeasurementAge(ChronoUnit.DAYS);
-//            var maxAge = 30.0;
-//
-//            if (age < maxAge) {
-//                var circle = new SurfaceCircle(position, 40.0);
-//                var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
-//                var reducer = age / maxAge;//  1/30   15/30 30/30
-//                var maxOpacity = 0.2;
-//                var opacity = maxOpacity - reducer * maxOpacity;
-//                attrs.setInteriorOpacity(opacity);
-//                circle.setAttributes(attrs);
-//
-//                addRenderable(circle, false, GraphicItem.RECENT, null);
-//            }
-//        }
+        if (mCheckModel.isChecked(GraphicItem.RADIUS)) {
+            plotRadius(p, position);
+        }
+
+        if (mCheckModel.isChecked(GraphicItem.RECENT)) {
+            plotRecent(p, position);
+        }
+    }
+
+    public void preInit() {
+        mMaxFilteredLength = 5 + mManager.getTimeFilteredItems().stream()
+                .mapToDouble(p -> p.getDepth() - p.getZeroZ())
+                .max().orElse(0);
     }
 
     @Override
     public void reset() {
         super.reset();
+    }
+
+    private void plotAltutid(BGeoReinforcementPoint p, Position position) {
+        var dateLatest = p.getDateLatest() != null ? p.getDateLatest() : LocalDate.parse("2025-01-01").atStartOfDay();
+        var timeSpan = ChronoUnit.MINUTES.between(dateLatest, LocalDateTime.now());
+        var altitude = timeSpan / 24000.0;
+        var startPosition = WWHelper.positionFromPosition(position, 0.0);
+        var endPosition = WWHelper.positionFromPosition(position, altitude);
+        var radius = 0.6;
+        var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
+        var attrs = new BasicShapeAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+        if (p.getDateLatest() == null) {
+            attrs.setInteriorMaterial(Material.RED);
+        }
+        endEllipsoid.setAttributes(attrs);
+        addRenderable(endEllipsoid, true, GraphicItem.ALTUTID, mMapObjects);
+
+        var groundPath = new Path(startPosition, endPosition);
+        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        addRenderable(groundPath, true, GraphicItem.ALTUTID, mMapObjects);
+    }
+
+    private void plotRadius(BGeoReinforcementPoint p, Position position) {
+        var map = Map.of(20.0, Material.RED, 30.0, Material.ORANGE);
+        List.of(20.0, 30.0, 40.0).forEach(r -> {
+            var circle = new SurfaceCircle(position, r);
+            var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
+            attrs.setDrawInterior(false);
+            attrs.setDrawOutline(true);
+            attrs.setOutlineMaterial(map.getOrDefault(r, Material.GREEN));
+            attrs.setOutlineWidth(1.0);
+            attrs.setOutlineOpacity(0.25);
+            circle.setAttributes(attrs);
+
+            addRenderable(circle, false, GraphicItem.RADIUS, null);
+        });
+    }
+
+    private void plotRecent(BGeoReinforcementPoint p, Position position) {
+        var age = p.ext().getMeasurementAge(ChronoUnit.DAYS);
+        var maxAge = 30.0;
+
+        if (age < maxAge) {
+            var circle = new SurfaceCircle(position, 4.0);
+            var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
+            var reducer = age / maxAge;//  1/30   15/30 30/30
+            var maxOpacity = 0.2;
+            var opacity = maxOpacity - reducer * maxOpacity;
+            attrs.setInteriorOpacity(opacity);
+            circle.setAttributes(attrs);
+
+            addRenderable(circle, false, GraphicItem.RECENT, null);
+        }
+    }
+
+    private void plotShape(BGeoReinforcementPoint p, Position position) {
+        var attrs = new BasicShapeAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+        RigidShape shape;
+
+        var centerPosition = WWHelper.positionFromPosition(position, p.getDepth() / 2);
+        var height = p.getDepth();
+        var radius = p.getDiameter() / 2;
+
+        if (p.hasDiameter()) {
+            shape = new Cylinder(centerPosition, height, radius);
+        } else {
+            shape = new Box(centerPosition, radius, height, radius);
+        }
+
+        if (!p.hasZ()) {
+            attrs.setInteriorOpacity(0.5);
+        }
+
+        if (p.getDateLatest() != null) {
+            attrs.setInteriorMaterial(Material.RED);
+        }
+
+        shape.setAttributes(attrs);
+
+        addRenderable(shape, true, GraphicItem.SHAPE, mMapObjects);
+    }
+
+    private void plotShapeHovering(BGeoReinforcementPoint p, Position position) {
+        var attrs = new BasicShapeAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+        RigidShape shape;
+        var topAltitude = mMaxFilteredLength;
+        var centerAltitude = topAltitude - (p.getDepth() / 2);
+
+        var centerPosition = WWHelper.positionFromPosition(position, centerAltitude);
+        var height = p.getDepth();
+        var radius = p.getDiameter() / 2;
+        if (p.hasDiameter()) {
+            shape = new Cylinder(centerPosition, height, radius);
+        } else {
+            shape = new Box(centerPosition, radius, height / 2, radius);
+        }
+
+        if (!p.hasZ()) {
+            attrs.setInteriorOpacity(0.5);
+        }
+
+        if (p.getDateLatest() != null) {
+            attrs.setInteriorMaterial(Material.RED);
+        }
+
+        shape.setAttributes(attrs);
+        addRenderable(shape, true, GraphicItem.SHAPE, mMapObjects);
+
+        var groundPath = new Path(WWHelper.positionFromPosition(position, 0), WWHelper.positionFromPosition(position, topAltitude - height));
+        var attrs2 = new BasicShapeAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        groundPath.setAttributes(attrs2);
+        addRenderable(groundPath, false, null, null);
     }
 
 }
