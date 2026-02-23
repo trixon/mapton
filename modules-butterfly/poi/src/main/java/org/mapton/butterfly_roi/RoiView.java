@@ -42,7 +42,7 @@ public class RoiView {
         mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
-                new ExportAction("Salvor"),
+                new ExportAction(Dict.Geometry.GEOMETRIES.toString()),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),

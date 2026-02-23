@@ -69,6 +69,9 @@ public enum RoiLabelBy implements LabelBy.Operations {
     MISC_CATEGORY(LabelBy.CAT_MISC, Dict.CATEGORY.toString(), p -> {
         return LabelBy.miscCategory(p);
     }),
+    MISC_COMMENT(LabelBy.CAT_MISC, Dict.COMMENT.toString(), p -> {
+        return LabelBy.miscComment(p);
+    }),
     MISC_STATUS(LabelBy.CAT_MISC, Dict.STATUS.toString(), p -> {
         return LabelBy.miscStatus(p);
     }),

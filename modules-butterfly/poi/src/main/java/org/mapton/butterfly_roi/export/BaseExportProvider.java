@@ -17,6 +17,7 @@ package org.mapton.butterfly_roi.export;
 
 import org.mapton.butterfly_roi.RoiManager;
 import org.mapton.core.api.ui.ExportProvider;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -27,6 +28,6 @@ public abstract class BaseExportProvider extends ExportProvider {
     protected RoiManager mManager = RoiManager.getInstance();
 
     public BaseExportProvider() {
-        super("Salvor");
+        super(Dict.Geometry.GEOMETRIES.toString());
     }
 }

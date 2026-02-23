@@ -15,24 +15,22 @@
  */
 package org.mapton.butterfly_roi.export;
 
-import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
-import de.micromata.opengis.kml.v_2_2_0.ColorMode;
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
-import de.micromata.opengis.kml.v_2_2_0.TimeStamp;
+import de.micromata.opengis.kml.v_2_2_0.LinearRing;
 import de.micromata.opengis.kml.v_2_2_0.Units;
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
-import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.api.MKmlCreator;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
 import org.mapton.butterfly_core.api.BKey;
-import org.mapton.butterfly_format.types.BRoi;
 import org.mapton.butterfly_roi.RoiManager;
 import org.mapton.core.api.ui.ExportConfiguration;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
 
 /**
@@ -52,9 +50,8 @@ public class KmlGenerator {
     }
 
     public Kml generate(ExportConfiguration ec) {
-        mRootFolder = mDocument.createAndAddFolder().withName("Sprängsalvor").withOpen(true);
-        var iconFolder = mRootFolder.createAndAddFolder().withName("Ikoner").withOpen(false);
-        var influenceFolder = mRootFolder.createAndAddFolder().withName("Influens 40-60-80").withOpen(false);
+        mRootFolder = mDocument.createAndAddFolder().withName(Dict.Geometry.GEOMETRIES.toString()).withOpen(true);
+        var iconFolder = mRootFolder.createAndAddFolder().withName("Ytor").withOpen(false);
         var styleIds = new HashSet<String>();
         for (var p : mManager.getFilteredItems()) {
             var styleNormalId = "s_%s".formatted(p.getName());
@@ -64,7 +61,7 @@ public class KmlGenerator {
                         .createAndAddStyle()
                         .withId(styleNormalId);
 
-                Color color = ObjectUtils.defaultIfNull(p.getValue(BKey.PIN_COLOR), Color.RED);
+                var color = ObjectUtils.getIfNull(p.getValue(BKey.PIN_COLOR), Color.RED);
                 var normalIconStyle = normalStyle
                         .createAndSetIconStyle()
                         .withColor(GraphicsHelper.colorToAABBGGRR(color))
@@ -94,49 +91,42 @@ public class KmlGenerator {
                 styleIds.add(styleNormalId);
             }
 
-            var timePrimitive = KmlFactory.createTimeStamp().withWhen(p.getDateLatest().format(mDateTimeFormatter));
             var placemark = KmlFactory.createPlacemark()
                     .withName(p.getValue(BKey.PIN_NAME))
                     //                    .withSnippet(mBlankSnippet)
-                    .withTimePrimitive(timePrimitive)
                     .withStyleUrl("#" + styleNormalId);
             placemark.createAndSetPoint().addToCoordinates(p.getLon(), p.getLat());
             iconFolder.addToFeature(placemark);
 
-            var influenceCircles = List.of(
-                    new InfluenceCircle(40.0, Color.RED, new Color(255, 0, 0, 0)),
-                    new InfluenceCircle(60.0, Color.YELLOW, new Color(0, 0, 0, 0)),
-                    new InfluenceCircle(80.0, Color.GREEN, new Color(0, 0, 0, 0))
-            );
-
-//            if (p.ext().getMeasurementAge(ChronoUnit.DAYS) < 15) {
-//                plot(new InfluenceCircle(40.0, Color.RED, new Color(255, 0, 0, 90)),
-//                        influenceFolder, p, timePrimitive);
-//            }
-            for (var influenceCircle : influenceCircles) {
-                plot(influenceCircle, influenceFolder, p, timePrimitive);
+            var polygon = placemark.createAndSetPolygon();
+            var boundary = polygon.createAndSetOuterBoundaryIs();
+            var linearRing = boundary.createAndSetLinearRing();
+            var geometry = p.getGeometry();
+            switch (geometry) {
+                case LineString lineString -> {
+                    //TODO
+                }
+                case org.locationtech.jts.geom.Polygon outPolygon -> {
+                    addLinearRing(linearRing, outPolygon);
+                }
+                case org.locationtech.jts.geom.MultiPolygon multiPolygon -> {
+                    for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+                        var outPolygon = (org.locationtech.jts.geom.Polygon) multiPolygon.getGeometryN(i);
+                        addLinearRing(linearRing, outPolygon);
+                    }
+                }
+                default -> {
+                }
             }
         }
 
         return mKml;
     }
 
-    private void plot(InfluenceCircle influenceCircle, Folder folder, BRoi p, TimeStamp timeStamp) {
-        var circle = MKmlCreator.createCircle("",
-                p.getLat(), p.getLon(),
-                influenceCircle.radius(),
-                80,
-                1,
-                GraphicsHelper.colorToAABBGGRR(influenceCircle.lineColor()),
-                GraphicsHelper.colorToAABBGGRR(influenceCircle.fillColor()),
-                ColorMode.NORMAL,
-                AltitudeMode.CLAMP_TO_GROUND);
-
-        circle.setTimePrimitive(timeStamp);
-        folder.addToFeature(circle);
+    private void addLinearRing(LinearRing linearRing, Polygon polygon) {
+        for (var coordinate : polygon.getCoordinates()) {
+            linearRing.addToCoordinates(coordinate.x, coordinate.y);
+        }
     }
 
-    public record InfluenceCircle(double radius, Color lineColor, Color fillColor) {
-
-    }
 }

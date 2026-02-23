@@ -24,6 +24,7 @@ import gov.nasa.worldwind.render.SurfacePolyline;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
@@ -70,17 +71,27 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRoi> {
         Renderable renderable = null;
         try {
             var geometry = roi.getGeometry();
-            if (geometry instanceof LineString lineString) {
-                var surfaceObject = new SurfacePolyline(attrs, WWHelper.positionsFromGeometry(lineString, 0));
-                surfaceObject.setHighlightAttributes(attrsHighlight);
-                renderable = surfaceObject;
-//                mLayer.addRenderable(renderable);
-
-            } else if (geometry instanceof Polygon polygon) {
-                var surfaceObject = new SurfacePolygon(attrs, WWHelper.positionsFromGeometry(polygon, 0));
-                surfaceObject.setHighlightAttributes(attrsHighlight);
-                renderable = surfaceObject;
-//                mLayer.addRenderable(renderable);
+            switch (geometry) {
+                case LineString lineString -> {
+                    var surfaceObject = new SurfacePolyline(attrs, WWHelper.positionsFromGeometry(lineString, 0));
+                    surfaceObject.setHighlightAttributes(attrsHighlight);
+                    renderable = surfaceObject;
+                }
+                case Polygon polygon -> {
+                    var surfaceObject = new SurfacePolygon(attrs, WWHelper.positionsFromGeometry(polygon, 0));
+                    surfaceObject.setHighlightAttributes(attrsHighlight);
+                    renderable = surfaceObject;
+                }
+                case MultiPolygon multiPolygon -> {
+                    for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+                        var polygon = (Polygon) multiPolygon.getGeometryN(i);
+                        var surfaceObject = new SurfacePolygon(attrs, WWHelper.positionsFromGeometry(polygon, 0));
+                        surfaceObject.setHighlightAttributes(attrsHighlight);
+                        renderable = surfaceObject;
+                    }
+                }
+                default -> {
+                }
             }
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
