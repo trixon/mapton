@@ -54,10 +54,8 @@ public class GraphicRenderer extends GraphicRendererBase {
         sCheckModel = checkModel;
     }
 
+    @Override
     public void plot(BGeoInclinometerPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        if (p.ext().getObservationsTimeFiltered().isEmpty()) {
-            return;
-        }
         sMapObjects = mapObjects;
         mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosi.class, ScalePlot3dPSosi.DEFAULT_VALUE);
         mScaleIndicatorSize = 0.010 * mScale3dP;
@@ -65,15 +63,23 @@ public class GraphicRenderer extends GraphicRendererBase {
         if (sCheckModel.isChecked(GraphicItem.AXIS)) {
             plotAxis(p, position);
         }
+
+        if (p.ext().getObservationsTimeFiltered().isEmpty()) {
+//            return;
+        }
+
         if (sCheckModel.isChecked(GraphicItem.WEDGE)) {
             plotWedge(p, position);
         }
+
         if (sCheckModel.isChecked(GraphicItem.CIRCLE)) {
             plotCircle(p, position);
         }
+
         if (sCheckModel.isChecked(GraphicItem.PATH)) {
             plotPath(p, position);
         }
+
         if (sCheckModel.isChecked(GraphicItem.VALUE)) {
             plotValue(p, position);
         }

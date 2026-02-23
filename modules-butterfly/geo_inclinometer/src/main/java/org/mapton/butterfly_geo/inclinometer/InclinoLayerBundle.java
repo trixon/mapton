@@ -73,7 +73,7 @@ public class InclinoLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Mapton.addWarning(Bundle.CTL_InclinometerAction(), 5), GeotechnicalHelper.CAT_GEO, "InclinometerTopComponent");
+        initCommons(Mapton.addWarning(Bundle.CTL_InclinometerAction(), 4), GeotechnicalHelper.CAT_GEO, "InclinometerTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
