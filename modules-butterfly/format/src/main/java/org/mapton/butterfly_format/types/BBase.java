@@ -41,7 +41,7 @@ public abstract class BBase {
     private transient final HashMap<Object, Object> values = new HashMap<>();
     private Boolean visible;
     @JsonProperty(defaultValue = "UNKNOWN")
-    private BStep step = BStep.UNKNOWN;
+    private BStatusStep statusStep = BStatusStep.UNKNOWN;
 
     public Double getAzimuth() {
         return azimuth;
@@ -83,8 +83,8 @@ public abstract class BBase {
         return origin;
     }
 
-    public BStep getStep() {
-        return step;
+    public BStatusStep getStatusStep() {
+        return statusStep;
     }
 
     public String getUnit() {
@@ -160,8 +160,8 @@ public abstract class BBase {
         this.origin = origin;
     }
 
-    public void setStep(BStep step) {
-        this.step = step;
+    public void setStatusStep(BStatusStep statusStep) {
+        this.statusStep = statusStep;
     }
 
     public void setUnit(String unit) {

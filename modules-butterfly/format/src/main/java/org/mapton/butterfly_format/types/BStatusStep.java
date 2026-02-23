@@ -19,10 +19,23 @@ package org.mapton.butterfly_format.types;
  *
  * @author Patrik Karlström
  */
-public enum BStep {
-    UNKNOWN,
-    PLANNED,
-    PAUSED,
-    CANCELED,
-    DONE;
+public enum BStatusStep {
+    UNKNOWN("Okänt"),
+    PLANNED("Planerad"),
+    ACTIVE("Aktiv"),
+    PAUSED("Pausad"),
+    CANCELED("Avbruten"),
+    CANCELED_HARD("Hårt avbruten"),
+    DONE("Färdig");
+    private final String mTitle;
+
+    private BStatusStep(String title) {
+        mTitle = title;
+    }
+
+    @Override
+    public String toString() {
+        return mTitle;
+    }
+
 }
