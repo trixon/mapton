@@ -44,6 +44,7 @@ import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
 import org.mapton.butterfly_format.types.BMeasurementMode;
+import org.mapton.butterfly_format.types.BStatusStep;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
@@ -81,6 +82,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     private final SessionCheckComboBox<String> mRollingSccb;
     private final SessionCheckComboBox<String> mSparseSccb;
     private final SessionCheckComboBox<String> mStatusSccb;
+    private final SessionCheckComboBox<BStatusStep> mStatusStepSccb;
     private final SessionCheckComboBox<String> mTagSccb;
     private final SessionCheckComboBox<String> mUnitDiffSccb;
     private final SessionCheckComboBox<String> mUnitSccb;
@@ -101,6 +103,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mFrequencySccb = new SessionCheckComboBox<>();
         mDefaultFrequencySccb = new SessionCheckComboBox<>();
         mDefaultFrequencyStatSccb = new SessionCheckComboBox<>();
+        mStatusStepSccb = new SessionCheckComboBox<>();
         mAlarmStatSccb = new SessionCheckComboBox<>();
         mIntenseFrequencySccb = new SessionCheckComboBox<>();
         mIntenseFrequencyStatSccb = new SessionCheckComboBox<>();
@@ -163,6 +166,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put(OPERATOR, mOperatorSccb);
         map.put(ORIGIN, mOriginSccb);
         map.put(STATUS, mStatusSccb);
+        map.put(STATUS_STEP, mStatusStepSccb);
         map.put(CLASSIFICATION, mClassificationSccb);
         map.put(UNIT, mUnitSccb);
         map.put(UNIT_DIFF, mUnitDiffSccb);
@@ -175,6 +179,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     public boolean filter(BXyzPoint p, Long remainingDays) {
         if (isSelected()) {
             return validateCheck(mStatusSccb.getCheckModel(), p.getStatus())
+                    && validateStatusStep(p, mStatusStepSccb.getCheckModel())
                     && validateCheck(mClassificationSccb.getCheckModel(), p.getClassification())
                     && validateCheck(mGroupSccb.getCheckModel(), p.getGroup())
                     && validateCheck(mCategorySccb.getCheckModel(), p.getCategory())
@@ -217,6 +222,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         List.of(
                 mMeasNextSccb.getCheckModel(),
                 mStatusSccb.getCheckModel(),
+                mStatusStepSccb.getCheckModel(),
                 mClassificationSccb.getCheckModel(),
                 mGroupSccb.getCheckModel(),
                 mCategorySccb.getCheckModel(),
@@ -456,6 +462,14 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         }
     }
 
+    public boolean validateStatusStep(BXyzPoint p, IndexedCheckModel checkModel) {
+        if (checkModel.isEmpty()) {
+            return true;
+        }
+
+        return checkModel.isChecked(p.getStatusStep());
+    }
+
     private void init() {
     }
 
@@ -599,6 +613,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         OPERATOR,
         ORIGIN,
         STATUS,
+        STATUS_STEP,
         UNIT,
         UNIT_DIFF;
     }
@@ -618,6 +633,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             mAltitudeRangeSlider.clear();
             SessionCheckComboBox.clearChecks(
                     mStatusSccb,
+                    mStatusStepSccb,
                     mClassificationSccb,
                     mGroupSccb,
                     mCategorySccb,
@@ -675,6 +691,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             sessionManager.register(getKeyFilter("checkedOperators"), mOperatorSccb.checkedStringProperty());
             sessionManager.register(getKeyFilter("checkedOrigin"), mOriginSccb.checkedStringProperty());
             sessionManager.register(getKeyFilter("checkedStatus"), mStatusSccb.checkedStringProperty());
+            sessionManager.register(getKeyFilter("checkedStatusStep"), mStatusStepSccb.checkedStringProperty());
             sessionManager.register(getKeyFilter("checkedClassification"), mClassificationSccb.checkedStringProperty());
             sessionManager.register(getKeyFilter("checkedUnit"), mUnitSccb.checkedStringProperty());
             sessionManager.register(getKeyFilter("checkedUnitDiff"), mUnitDiffSccb.checkedStringProperty());
@@ -707,6 +724,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             FxHelper.setShowCheckedCount(true,
                     mMeasNextSccb,
                     mStatusSccb,
+                    mStatusStepSccb,
                     mClassificationSccb,
                     mGroupSccb,
                     mCategorySccb,
@@ -748,6 +766,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             mAlarmStatSccb.getItems().setAll(AlarmFlags.values());
             mDefaultFrequencyStatSccb.setTitle("Status, standard");
             mDefaultFrequencyStatSccb.getItems().setAll(DefaultFreqFlags.values());
+            mStatusStepSccb.setTitle("Statussteg");
+            mStatusStepSccb.getItems().setAll(BStatusStep.values());
 
             mIntenseFrequencySccb.setTitle("%s, %s".formatted(SDict.FREQUENCY.toString(), Dict.HIGH.toLower()));
             mIntenseFrequencyStatSccb.setTitle("%s, %s".formatted(Dict.STATUS.toString(), Dict.HIGH.toLower()));
@@ -767,8 +787,10 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
             int rowGap = FxHelper.getUIScaled(12);
             mBaseBox = new GridPane(rowGap, rowGap);
+            var dummyLabel = new Label();
+            dummyLabel.prefHeightProperty().bind(mMeasurementModeSccb.heightProperty());
             var leftBox = new VBox(rowGap,
-                    mStatusSccb,
+                    mStatusStepSccb,
                     mFrequencySccb,
                     mDefaultFrequencySccb,
                     mIntenseFrequencySccb,
@@ -782,18 +804,15 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mAltitudeRangeSlider
             );
 
-            var dummyLabel = new Label();
-            dummyLabel.prefHeightProperty().bind(mMeasurementModeSccb.heightProperty());
-
             var rightBox = new VBox(rowGap,
-                    mClassificationSccb,
+                    mStatusSccb,
                     mMeasNextSccb,
                     mDefaultFrequencyStatSccb,
                     mIntenseFrequencyStatSccb,
                     mAlarmStatSccb,
                     mCategorySccb,
                     mMeasurementModeSubSccb,
-                    dummyLabel,
+                    mClassificationSccb,
                     mOperatorSccb,
                     mUnitDiffSccb,
                     mSparseSccb
