@@ -27,6 +27,6 @@ public abstract class BaseExportProvider extends ExportProvider {
     protected QuakeManager mManager = QuakeManager.getInstance();
 
     public BaseExportProvider() {
-        super("Salvor");
+        super("Quake");
     }
 }
