@@ -116,8 +116,11 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoReinfo
     }
 
     private void plotRadius(BGeoReinforcementPoint p, Position position) {
-        var map = Map.of(20.0, Material.RED, 30.0, Material.ORANGE);
-        List.of(20.0, 30.0, 40.0).forEach(r -> {
+        var r1 = p.getDepth() * 1.5;
+        var r2 = r1 * 1.5;
+        var r3 = r1 * 2.0;
+        var map = Map.of(r1, Material.RED, r2, Material.ORANGE);
+        List.of(r1, r2, r3).forEach(r -> {
             var circle = new SurfaceCircle(position, r);
             var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
             attrs.setDrawInterior(false);
@@ -162,12 +165,12 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoReinfo
             shape = new Box(centerPosition, radius, height, radius);
         }
 
-        if (!p.hasZ()) {
-            attrs.setInteriorOpacity(0.5);
-        }
-
         if (p.getDateLatest() != null) {
-            attrs.setInteriorMaterial(Material.RED);
+            var age = p.extOrNull().getMeasurementAge(ChronoUnit.DAYS);
+            attrs.setInteriorOpacity(age > 14 ? 0.5 : 1.0);
+            attrs.setInteriorMaterial(Material.GREEN);
+        } else {
+            attrs.setInteriorMaterial(Material.ORANGE);
         }
 
         shape.setAttributes(attrs);
@@ -190,12 +193,12 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoReinfo
             shape = new Box(centerPosition, radius, height / 2, radius);
         }
 
-        if (!p.hasZ()) {
-            attrs.setInteriorOpacity(0.5);
-        }
-
         if (p.getDateLatest() != null) {
-            attrs.setInteriorMaterial(Material.RED);
+            var age = p.extOrNull().getMeasurementAge(ChronoUnit.DAYS);
+            attrs.setInteriorOpacity(age > 14 ? 0.5 : 1.0);
+            attrs.setInteriorMaterial(Material.GREEN);
+        } else {
+            attrs.setInteriorMaterial(Material.ORANGE);
         }
 
         shape.setAttributes(attrs);

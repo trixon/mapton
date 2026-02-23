@@ -27,6 +27,6 @@ public abstract class BaseExportProvider extends ExportProvider {
     protected ReinforcementManager mManager = ReinforcementManager.getInstance();
 
     public BaseExportProvider() {
-        super("Salvor");
+        super("Reinforcement");
     }
 }

@@ -42,7 +42,7 @@ public class ReinforcementView {
         mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
-                new ExportAction("Salvor"),
+                new ExportAction("Reinforcement"),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),

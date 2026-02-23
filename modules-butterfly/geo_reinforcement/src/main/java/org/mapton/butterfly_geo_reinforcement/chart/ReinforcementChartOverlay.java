@@ -28,7 +28,7 @@ import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BChartOverlay;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_format.types.BBasePoint;
-import org.mapton.butterfly_format.types.BStep;
+import org.mapton.butterfly_format.types.BStatusStep;
 import org.mapton.butterfly_geo_reinforcement.ReinforcementChartSOSB;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -60,7 +60,7 @@ public class ReinforcementChartOverlay extends BChartOverlay {
         var pointLatLon = new MLatLon(p.getLat(), p.getLon());
 
         ButterflyManager.getInstance().getButterfly().geotechnical().getReinforcementPoints().stream()
-                .filter(b -> b.getStep() == BStep.DONE)
+                .filter(b -> b.getStatusStep() == BStatusStep.DONE)
                 .filter(b -> b.getDateLatest() != null)
                 .filter(b -> {
                     return DateHelper.isBetween(
