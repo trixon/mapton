@@ -56,6 +56,7 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
     private static BaseManager< BBase> sPrevManager;
     protected boolean mFirstLoad = true;
     protected int mTrendLoadCounter = 0;
+    protected OffsetManager mOffsetManager = OffsetManager.getInstance();
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
     private final BooleanProperty mDisabledSearchProperty = new SimpleBooleanProperty(true);
