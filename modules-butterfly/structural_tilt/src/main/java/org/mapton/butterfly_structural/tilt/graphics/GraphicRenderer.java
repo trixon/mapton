@@ -61,7 +61,9 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
 
         if (sCheckModel.isChecked(GraphicItem.AXIS)) {
-            plotAxis(p, position, DEFAULT_AXIS_LENGTH);
+            Double bearing = MathHelper.convertCcwDegreeToCw(p.getAzimuth());
+
+            plotAxis(p, position, DEFAULT_AXIS_LENGTH, bearing);
         }
 
         if (sCheckModel.isChecked(GraphicItem.TILT)) {
