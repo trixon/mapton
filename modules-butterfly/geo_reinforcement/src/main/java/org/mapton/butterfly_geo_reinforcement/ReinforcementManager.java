@@ -107,6 +107,11 @@ public class ReinforcementManager extends BaseManager<BGeoReinforcementPoint> {
         var latLonDisruptors = timeFilteredItems.stream().map(p -> new MLatLon(p.getLat(), p.getLon())).toList();
         mDisruptorManager.putLatLons(DISRUPTOR_NAME, latLonDisruptors);
         setItemsTimeFiltered(timeFilteredItems);
+
+        var offsetZ = 5 + timeFilteredItems.stream()
+                .mapToDouble(p -> p.getDepth() - p.getZeroZ())
+                .max().orElse(0);
+        mOffsetManager.putZ(getClass(), offsetZ);
     }
 
     @Override

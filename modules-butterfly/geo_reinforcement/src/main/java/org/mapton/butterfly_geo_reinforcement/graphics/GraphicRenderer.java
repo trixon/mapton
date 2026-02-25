@@ -52,7 +52,7 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoReinfo
     private final IndexedCheckModel<GraphicItem> mCheckModel;
     private ArrayList<AVListImpl> mMapObjects;
     private final ReinforcementManager mManager = ReinforcementManager.getInstance();
-    private double mMaxFilteredLength;
+    private double mHeightOffset = 25.0;
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer, sPlotLimiter);
@@ -62,6 +62,7 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoReinfo
 
     @Override
     public void plot(BGeoReinforcementPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+        mHeightOffset = Math.abs(mOffsetManager.getMinZ());
         mMapObjects = mapObjects;
 
         if (mCheckModel.isChecked(GraphicItem.ALTUTID)) {
@@ -82,12 +83,6 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoReinfo
         if (mCheckModel.isChecked(GraphicItem.RECENT)) {
             plotRecent(p, position);
         }
-    }
-
-    public void preInit() {
-        mMaxFilteredLength = 5 + mManager.getTimeFilteredItems().stream()
-                .mapToDouble(p -> p.getDepth() - p.getZeroZ())
-                .max().orElse(0);
     }
 
     @Override
@@ -181,7 +176,7 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoReinfo
     private void plotShapeHovering(BGeoReinforcementPoint p, Position position) {
         var attrs = new BasicShapeAttributes(mAttributeManager.getComponentEllipsoidAttributes());
         RigidShape shape;
-        var topAltitude = mMaxFilteredLength;
+        var topAltitude = mHeightOffset;
         var centerAltitude = topAltitude - (p.getDepth() / 2);
 
         var centerPosition = WWHelper.positionFromPosition(position, centerAltitude);

@@ -104,7 +104,7 @@ public class ReinforcementLayerBundle extends BfLayerBundle {
                 default ->
                     throw new AssertionError();
             }
-            mGraphicRenderer.preInit();
+
             synchronized (mManager.getTimeFilteredItems()) {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
