@@ -28,14 +28,17 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.RigidShape;
-import gov.nasa.worldwind.render.Wedge;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.butterfly_geo.inclinometer.InclinoAttributeManager;
+import org.mapton.butterfly_geo.inclinometer.InclinoHelper;
+import org.mapton.worldwind.api.CylinderWithOffset;
 import org.mapton.worldwind.api.WWHelper;
+import org.mapton.worldwind.api.WedgeWithOffset;
 
 /**
  *
@@ -45,7 +48,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     private final InclinoAttributeManager mAttributeManager = InclinoAttributeManager.getInstance();
     private final double mHeightMargin = 2.0;
-    private final double mHeightOffset = 25.0;
+    private double mHeightOffset = 25.0;
     private int mScale3dP;
     private double mScaleIndicatorSize;
 
@@ -56,6 +59,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     @Override
     public void plot(BGeoInclinometerPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+        mHeightOffset = Math.abs(mOffsetManager.getMinZ());
         sMapObjects = mapObjects;
         mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosi.class, ScalePlot3dPSosi.DEFAULT_VALUE);
         mScaleIndicatorSize = 0.010 * mScale3dP;
@@ -85,7 +89,90 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
     }
 
-    private ArrayList<Position> createPoints(BGeoInclinometerPoint p, Position position) {
+    private void plotAxis(BGeoInclinometerPoint p, Position position) {
+        Double azimuth = p.getAzimuth();
+        if (azimuth != null) {
+            azimuth += 90;
+        } else {
+            azimuth = 0.0;
+        }
+
+        plotAxis(p, position, mScaleIndicatorSize, azimuth);
+        plotAxis(p, position, mScaleIndicatorSize, azimuth, mHeightOffset + mHeightMargin);
+
+        double topZ = mHeightOffset + mHeightMargin;
+        var path = new Path(WWHelper.positionFromPosition(position, 0), WWHelper.positionFromPosition(position, topZ));
+        addRenderable(path, false, null, null);
+
+        plotRod(position);
+    }
+
+    private void plotCircle(BGeoInclinometerPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicItem.CIRCLE, position) || p.ext().getObservationFilteredLast() == null) {
+            return;
+        }
+
+        var observationItems = p.ext().getObservationFilteredLast().getObservationItems().reversed();
+        if (observationItems.size() < 2) {
+            return;
+        }
+
+        for (int i = 0; i < observationItems.size(); i++) {
+            var item = observationItems.get(i);
+            Double pHeight = null;
+            Double nHeight = null;
+            var down = item.getDown();
+
+            if (i > 0) {
+                var pItem = observationItems.get(i - 1);
+                var pDown = pItem.getDown();
+                pHeight = (down - pDown) * .5;
+            }
+
+            if (i < observationItems.size() - 1) {
+                var nItem = observationItems.get(i + 1);
+                var nDown = nItem.getDown();
+                nHeight = Math.abs((nDown - down) * .5);
+            }
+
+            if (pHeight == null) {
+                pHeight = nHeight;
+            } else if (nHeight == null) {
+                nHeight = pHeight;
+            }
+
+            pHeight = pHeight / 2.0;
+            nHeight = nHeight / 2.0;
+
+            var distance = mScale3dP * item.getDistance();
+            var azimuth = item.getAzimuth();
+            if (p.getAzimuth() != null) {
+                azimuth = Angle.normalizedDegrees(azimuth + p.getAzimuth());
+            }
+
+            var position2 = position;
+            if (distance > 0) {
+                position2 = WWHelper.movePolar(position, azimuth, distance);
+            }
+
+            var visualPosition = WWHelper.positionFromPosition(position2, mHeightOffset + down);
+
+            try {
+                var cylinder = new CylinderWithOffset(visualPosition, nHeight, pHeight, mScaleIndicatorSize);
+                var alarmLevel = p.ext().getAlarmLevel(BComponent.HEIGHT, distance);
+
+                cylinder.setAttributes(mAttributeManager.getSurfaceAttributes(alarmLevel));
+                addRenderable(cylinder, true, GraphicItem.CIRCLE.getPlotLimit(), sMapObjects);
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    private void plotPath(BGeoInclinometerPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicItem.PATH, position) || p.ext().getObservationFilteredLast() == null) {
+            return;
+        }
+
         var positions = new ArrayList<Position>();
         positions.add(WWHelper.positionFromPosition(position, mHeightOffset));
         for (var item : p.ext().getObservationFilteredLast().getObservationItems()) {
@@ -100,78 +187,37 @@ public class GraphicRenderer extends GraphicRendererBase {
                 position2 = WWHelper.movePolar(position, azimuth, distance);
             }
 
-            positions.add(WWHelper.positionFromPosition(position2, mHeightOffset + item.getDown()));
-        }
+            var visualPosition = WWHelper.positionFromPosition(position2, mHeightOffset + item.getDown());
+            positions.add(visualPosition);
 
-        return positions;
-    }
-
-    private void plotAxis(BGeoInclinometerPoint p, Position position) {
-        Double azimuth = p.getAzimuth();
-        if (azimuth != null) {
-            azimuth -= 90;
-        } else {
-            azimuth = 0.0;
-        }
-
-        plotAxis(p, position, mScaleIndicatorSize, azimuth);
-        plotAxis(p, position, mScaleIndicatorSize, azimuth, mHeightOffset + mHeightMargin);
-
-        double topZ = mHeightOffset + mHeightMargin;
-        var path = new Path(WWHelper.positionFromPosition(position, 0), WWHelper.positionFromPosition(position, topZ));
-        addRenderable(path, false, null, null);
-    }
-
-    private void plotCircle(BGeoInclinometerPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicItem.CIRCLE, position) || p.ext().getObservationFilteredLast() == null) {
-            return;
-        }
-
-        var positions = createPoints(p, position);
-        plotRod(position, positions);
-
-        for (var node : positions) {
-            var h = 2;
-            var r = 4;
-            var cylinder = new Cylinder(node, h, r);
-            cylinder.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            addRenderable(cylinder, true, GraphicItem.CIRCLE.getPlotLimit(), sMapObjects);
-        }
-    }
-
-    private void plotPath(BGeoInclinometerPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicItem.PATH, position) || p.ext().getObservationFilteredLast() == null) {
-            return;
-        }
-
-        var positions = createPoints(p, position);
-        plotRod(position, positions);
-
-        for (var node : positions) {
             var r = 0.25;
-            var ellipsoid = new Ellipsoid(node, r, r, r);
-            ellipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+            var ellipsoid = new Ellipsoid(visualPosition, r, r, r);
+            var alarmLevel = p.ext().getAlarmLevel(BComponent.HEIGHT, distance);
+            ellipsoid.setAttributes(mAttributeManager.getSurfaceAttributes(alarmLevel));
+
             addRenderable(ellipsoid, true, null, null);
         }
 
         var path = new Path(positions);
-        path.setAttributes(mAttributeManager.getInclinoAttribute());
+        path.setAttributes(mAttributeManager.getComponentVector3dAttributes(InclinoHelper.getAlarmLevel(p)));
         addRenderable(path, true, GraphicItem.PATH.getPlotLimit(), sMapObjects);
     }
 
-    private void plotRod(Position position, ArrayList<Position> positions) {
+    private void plotRod(Position position) {
         var topZ = mHeightOffset + mHeightMargin * 0.5;
-
         var attrs = new BasicShapeAttributes();
         attrs.setDrawOutline(false);
         attrs.setInteriorMaterial(Material.BLACK);
-        attrs.setInteriorOpacity(0.2);
+        attrs.setInteriorOpacity(0.1);
         var cylinder = new Cylinder(WWHelper.positionFromPosition(position, topZ / 2), topZ, mScaleIndicatorSize);
         cylinder.setAttributes(attrs);
         addRenderable(cylinder, false, null, null);
     }
 
     private void plotValue(BGeoInclinometerPoint p, Position position) {
+        if (p.ext().getObservationFilteredLast() == null) {
+            return;
+        }
         for (var item : p.ext().getObservationFilteredLast().getObservationItems()) {
             var distance = 1.5 + mScale3dP * item.getDistance();
             var azimuth = item.getAzimuth();
@@ -189,7 +235,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
             placemark.setAltitudeMode(WorldWind.ABSOLUTE);
             placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-            placemark.setLabelText("%.1f".formatted(item.getDistance() * 1000));
+            placemark.setLabelText("%.0f @ %.1f".formatted(item.getDistance() * 1000, item.getDown()));
             addRenderable(placemark, false, null, null);
         }
     }
@@ -199,31 +245,59 @@ public class GraphicRenderer extends GraphicRendererBase {
             return;
         }
 
-        var positions = createPoints(p, position);
-        plotRod(position, positions);
+        var observationItems = p.ext().getObservationFilteredLast().getObservationItems().reversed();
+        if (observationItems.size() < 2) {
+            return;
+        }
 
-        for (var observationItem : p.ext().getObservationFilteredLast().getObservationItems()) {
-            var wedgeHeight = 2.0;
-            var angle = 45.0;
-            var wedgeRadius = mScale3dP * observationItem.getDistance();
-            var position2 = WWHelper.positionFromPosition(position, observationItem.getDown() + mHeightOffset);
+        for (int i = 0; i < observationItems.size(); i++) {
+            var item = observationItems.get(i);
+            Double pHeight = null;
+            Double nHeight = null;
+            var down = item.getDown();
 
-            RigidShape shape;
-            if (wedgeRadius > 0) {
-                var bearing = observationItem.getAzimuth();
-                if (p.getAzimuth() != null) {
-                    bearing = Angle.normalizedDegrees(bearing + p.getAzimuth());
-                }
-                shape = new Wedge(position2, Angle.fromDegrees(angle), wedgeHeight, wedgeRadius);
-                var az = Angle.normalizedDegrees(bearing - angle / 2);
-                shape.setHeading(Angle.fromDegrees(az));
-            } else {
-                var size = 0.25;
-                shape = new Box(position2, size, size, size);
+            if (i > 0) {
+                var pItem = observationItems.get(i - 1);
+                var pDown = pItem.getDown();
+                pHeight = (down - pDown) * .5;
             }
 
-            shape.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            addRenderable(shape, true, GraphicItem.WEDGE.getPlotLimit(), sMapObjects);
+            if (i < observationItems.size() - 1) {
+                var nItem = observationItems.get(i + 1);
+                var nDown = nItem.getDown();
+                nHeight = Math.abs((nDown - down) * .5);
+            }
+
+            if (pHeight == null) {
+                pHeight = nHeight;
+            } else if (nHeight == null) {
+                nHeight = pHeight;
+            }
+
+            var distance = mScale3dP * item.getDistance();
+            var azimuth = item.getAzimuth();
+            if (p.getAzimuth() != null) {
+                azimuth = Angle.normalizedDegrees(azimuth + p.getAzimuth());
+            }
+
+            var visualPosition = WWHelper.positionFromPosition(position, mHeightOffset + down);
+
+            try {
+                var angle = 5.0;
+                RigidShape shape;
+                if (distance > 0) {
+                    shape = new WedgeWithOffset(Angle.fromDegrees(angle), visualPosition, nHeight, pHeight, distance);
+                    var az = Angle.normalizedDegrees(azimuth - angle / 2);
+                    shape.setHeading(Angle.fromDegrees(az));
+                } else {
+                    var size = 0.25;
+                    shape = new Box(visualPosition, size, size, size);
+                }
+
+                shape.setAttributes(mAttributeManager.getSurfaceAttributes(InclinoHelper.getAlarmLevel(p)));
+                addRenderable(shape, true, GraphicItem.WEDGE.getPlotLimit(), sMapObjects);
+            } catch (Exception e) {
+            }
         }
     }
 

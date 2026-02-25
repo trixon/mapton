@@ -17,6 +17,7 @@ package org.mapton.butterfly_geo.inclinometer;
 
 import java.awt.Color;
 import org.mapton.butterfly_core.api.ButterflyHelper;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 
 /**
@@ -30,15 +31,21 @@ public class InclinoHelper {
     }
 
     public static javafx.scene.paint.Color getAlarmColorHeightFx(BGeoInclinometerPoint p) {
-        return ButterflyHelper.getAlarmColorFx(getAlarmLevelHeight(p));
+        return ButterflyHelper.getAlarmColorFx(getAlarmLevel(p));
     }
 
     public static int getAlarmLevel(BGeoInclinometerPoint p) {
-        return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
-    }
+        try {
+            var alarmLevel = p.ext().getObservationFilteredLast().getObservationItems().stream().mapToInt(o -> {
+                return p.ext().getAlarmLevel(BComponent.HEIGHT, o.getDistance());
+            })
+                    .max().orElse(-1);
 
-    public static int getAlarmLevelHeight(BGeoInclinometerPoint p) {
-        return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
+            return alarmLevel;
+
+        } catch (Exception e) {
+            return -1;
+        }
     }
 
 }

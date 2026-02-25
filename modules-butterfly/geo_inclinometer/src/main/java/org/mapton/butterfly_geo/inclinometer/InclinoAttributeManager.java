@@ -19,6 +19,7 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
+import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 
 /**
@@ -28,8 +29,10 @@ import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 public class InclinoAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
+//    private BasicShapeAttributes mSurfaceAttributes;
+    private BasicShapeAttributes[] mComponentVector3dAttributes;
     private BasicShapeAttributes mInclinoAttribute;
-    private BasicShapeAttributes mSurfaceAttributes;
+    private BasicShapeAttributes[] mSurfaceAttributes;
 
     public static InclinoAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -47,6 +50,22 @@ public class InclinoAttributeManager extends BaseAttributeManager {
         }
 
         return mComponentEllipsoidAttributes;
+    }
+
+    public BasicShapeAttributes getComponentVector3dAttributes(int alarmLevel) {
+        if (mComponentVector3dAttributes == null) {
+            mComponentVector3dAttributes = new BasicShapeAttributes[5];
+            for (int i = 0; i < 5; i++) {
+                var attrs = new BasicShapeAttributes();
+                attrs.setDrawOutline(true);
+                attrs.setOutlineMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
+                attrs.setEnableLighting(false);
+                attrs.setOutlineWidth(2.0);
+                mComponentVector3dAttributes[i] = attrs;
+            }
+        }
+
+        return mComponentVector3dAttributes[alarmLevel + 1];
     }
 
     public BasicShapeAttributes getInclinoAttribute() {
@@ -72,16 +91,20 @@ public class InclinoAttributeManager extends BaseAttributeManager {
         return attrs;
     }
 
-    public BasicShapeAttributes getSurfaceAttributes() {
+    public BasicShapeAttributes getSurfaceAttributes(int alarmLevel) {
         if (mSurfaceAttributes == null) {
-            mSurfaceAttributes = new BasicShapeAttributes();
-            mSurfaceAttributes.setDrawOutline(false);
-            mSurfaceAttributes.setDrawInterior(true);
-            mSurfaceAttributes.setInteriorMaterial(Material.RED);
-            mSurfaceAttributes.setEnableLighting(false);
+            mSurfaceAttributes = new BasicShapeAttributes[5];
+            for (int i = 0; i < 5; i++) {
+                var attrs = new BasicShapeAttributes();
+                attrs.setDrawOutline(false);
+                attrs.setDrawInterior(true);
+                attrs.setEnableLighting(true);
+                attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
+                mSurfaceAttributes[i] = attrs;
+            }
         }
 
-        return mSurfaceAttributes;
+        return mSurfaceAttributes[alarmLevel + 1];
     }
 
     private static class Holder {

@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_geo.inclinometer;
 
-import gov.nasa.worldwind.geom.Angle;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import org.mapton.butterfly_core.api.AlarmHelper;
@@ -60,18 +59,18 @@ public class InclinoPropertiesBuilder extends BPropertiesBuilder<BGeoInclinomete
 //        }
         var cat = "CUSTOM";
         propertyMap.put(getCatKeyNum(cat, Dict.BEARING.toString()), StringHelper.round(p.getAzimuth(), 0));
-        var lastObservation = p.ext().getObservationFilteredLast();
-
-        if (lastObservation != null) {
-            for (var o : lastObservation.getObservationItems()) {
-                var azimuth = Angle.normalizedDegrees(o.getAzimuth() + p.getAzimuth());
-                if (azimuth < 0) {
-                    azimuth += 360;
-                }
-                var value = "%smm :: %.0f°".formatted(StringHelper.round(o.getDistance() * 1000, 1), azimuth);
-                propertyMap.put(getCatKeyNum(cat, "%.1f".formatted(o.getDown())), value);
-            }
-        }
+//        var lastObservation = p.ext().getObservationFilteredLast();
+//
+//        if (lastObservation != null) {
+//            for (var o : lastObservation.getObservationItems()) {
+//                var azimuth = Angle.normalizedDegrees(o.getAzimuth() + p.getAzimuth());
+//                if (azimuth < 0) {
+//                    azimuth += 360;
+//                }
+//                var value = "%smm :: %.0f°".formatted(StringHelper.round(o.getDistance() * 1000, 1), azimuth);
+//                propertyMap.put(getCatKeyNum(cat, "%.1f".formatted(o.getDown())), value);
+//            }
+//        }
 
         var measParams = new MeasParams<BXyzPoint>(
                 0.0,

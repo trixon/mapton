@@ -20,7 +20,9 @@ import java.awt.Font;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
@@ -157,17 +159,10 @@ public class InclinoChartBuilder extends XyzChartBuilder<BGeoInclinometerPoint> 
 
         var rangeMin = Double.MAX_VALUE;
         var rangeMax = Double.MIN_VALUE;
-//        for (var p : ppp.getPoints()) {
-//            double pMin = p.ext().getObservationsTimeFiltered().stream().mapToDouble(o -> o.ext().getDelta()).min().getAsDouble();
-//            double pMax = p.ext().getObservationsTimeFiltered().stream().mapToDouble(o -> o.ext().getDelta()).max().getAsDouble();
-//            rangeMin = Math.min(rangeMin, pMin);
-//            rangeMax = Math.max(rangeMax, pMax);
-//        }
         rangeMin = Math.min(rangeMin, 0);
         rangeMax = Math.max(rangeMax, 0.030);
 
         var depthToSeries = new LinkedHashMap<Double, TimeSeries>();
-
         for (var o : ppp.ext().getObservationsTimeFiltered()) {
             var minute = ChartHelper.convertToMinute(o.getDate());
             for (var oi : o.getObservationItems()) {
@@ -176,27 +171,22 @@ public class InclinoChartBuilder extends XyzChartBuilder<BGeoInclinometerPoint> 
             }
         }
 
-        for (var entry : depthToSeries.entrySet()) {
-//            var series=entry.getValue();
+        var topItems = depthToSeries.entrySet().stream()
+                .sorted((Map.Entry<Double, TimeSeries> o1, Map.Entry<Double, TimeSeries> o2) -> {
+                    var ser1 = o1.getValue();
+                    var val1 = ser1.getValue(ser1.getItemCount() - 1).doubleValue();
+                    var ser2 = o2.getValue();
+                    var val2 = ser2.getValue(ser2.getItemCount() - 1).doubleValue();
+
+                    return Double.compare(val2, val1);
+                })
+                .limit(3)
+                .sorted((entry1, entry2) -> Double.compare(entry2.getKey(), entry1.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        for (var entry : topItems.entrySet()) {
             var name = "%.1f".formatted(entry.getKey());
             var series = entry.getValue();
-//        }
-//        for (var depth : ppp.ext().getDepths()) {
-//            for (var o : ppp.ext().getObservationsTimeFiltered()) {
-//                o.getObservationItems();
-//            }
-//        }
-//
-//        for (var p : ppp.getPoints()) {
-//            var name = p.getName();
-//            name = StringUtils.removeStartIgnoreCase(name, ppp.getName());
-//            name = StringUtils.removeStartIgnoreCase(name, "-");
-//            var series = new TimeSeries(name);
-//            for (var o : p.ext().getObservationsTimeFiltered()) {
-//                var minute = ChartHelper.convertToMinute(o.getDate());
-//                series.add(minute, o.ext().getDelta());
-//            }
-
             var timeSeriesCollection = new TimeSeriesCollection(series);
             var renderer = new StandardXYItemRenderer();
             var rangeAxis = new NumberAxis(name);
@@ -208,6 +198,8 @@ public class InclinoChartBuilder extends XyzChartBuilder<BGeoInclinometerPoint> 
 //            subplot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
             subplot.setDomainCrosshairVisible(true);
             subplot.setRangeCrosshairVisible(true);
+//                        plotAlarmIndicators(p);
+
             rangeAxis.setRange(rangeMin, rangeMax);
             subplot.getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, SwingHelper.getUIScaled(12)));
             renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);

@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_geo.inclinometer;
 
-import org.mapton.butterfly_geo.inclinometer.chart.InclinoChartBuilder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,8 +26,10 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation;
+import org.mapton.butterfly_geo.inclinometer.chart.InclinoChartBuilder;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -147,6 +148,23 @@ public class InclinoManager extends BaseManager<BGeoInclinometerPoint> {
             });
         });
 
+        double offsetZ;
+        try {
+            offsetZ = timeFilteredItems.stream()
+                    .mapToDouble(p -> {
+                        var zeroZ = MathHelper.convertDoubleToDouble(p.getZeroZ());
+                        var minDown = p.ext().getObservationFilteredLast().getObservationItems().stream()
+                                .mapToDouble(item -> item.getDown()).min().orElse(0);
+                        var offset = zeroZ + minDown;
+
+                        return offset;
+                    })
+                    .min().orElse(0.0);
+        } catch (Exception e) {
+            offsetZ = 10.0;
+        }
+
+        mOffsetManager.putZ(getClass(), offsetZ);
         setItemsTimeFiltered(timeFilteredItems);
     }
 
