@@ -29,7 +29,9 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     CIRCLE(Dict.Geometry.CIRCLE.toString(), Integer.MAX_VALUE),
     PATH(Dict.Geometry.PATH.toString(), Integer.MAX_VALUE),
     VALUE(Dict.VALUE.toString(), Integer.MAX_VALUE),
-    WEDGE(Dict.Geometry.WEDGE.toString(), Integer.MAX_VALUE);
+    WEDGE(Dict.Geometry.WEDGE.toString(), Integer.MAX_VALUE),
+    VALUE_AB("AB " + Dict.VALUE.toString(), Integer.MAX_VALUE),
+    WEDGE_AB("AB " + Dict.Geometry.WEDGE.toString(), Integer.MAX_VALUE);
 
     private final String mName;
     private final int mPlotLimit;

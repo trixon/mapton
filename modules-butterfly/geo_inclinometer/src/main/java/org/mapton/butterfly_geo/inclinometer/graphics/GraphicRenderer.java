@@ -29,6 +29,7 @@ import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.RigidShape;
 import java.util.ArrayList;
+import java.util.List;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
@@ -74,6 +75,10 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         if (sCheckModel.isChecked(GraphicItem.WEDGE)) {
             plotWedge(p, position);
+        }
+
+        if (sCheckModel.isChecked(GraphicItem.WEDGE_AB)) {
+            plotWedgeAB(p, position);
         }
 
         if (sCheckModel.isChecked(GraphicItem.CIRCLE)) {
@@ -218,6 +223,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         if (p.ext().getObservationFilteredLast() == null) {
             return;
         }
+
         for (var item : p.ext().getObservationFilteredLast().getObservationItems()) {
             var distance = 1.5 + mScale3dP * item.getDistance();
             var azimuth = item.getAzimuth();
@@ -297,6 +303,96 @@ public class GraphicRenderer extends GraphicRendererBase {
                 shape.setAttributes(mAttributeManager.getSurfaceAttributes(InclinoHelper.getAlarmLevel(p)));
                 addRenderable(shape, true, GraphicItem.WEDGE.getPlotLimit(), sMapObjects);
             } catch (Exception e) {
+            }
+        }
+    }
+
+    private void plotWedgeAB(BGeoInclinometerPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicItem.WEDGE_AB, position) || p.ext().getObservationFilteredLast() == null) {
+            return;
+        }
+
+        var observationItems = p.ext().getObservationFilteredLast().getObservationItems().reversed();
+        if (observationItems.size() < 2) {
+            return;
+        }
+
+        for (int i = 0; i < observationItems.size(); i++) {
+            var item = observationItems.get(i);
+            Double pHeight = null;
+            Double nHeight = null;
+            var down = item.getDown();
+
+            if (i > 0) {
+                var pItem = observationItems.get(i - 1);
+                var pDown = pItem.getDown();
+                pHeight = (down - pDown) * .5;
+            }
+
+            if (i < observationItems.size() - 1) {
+                var nItem = observationItems.get(i + 1);
+                var nDown = nItem.getDown();
+                nHeight = Math.abs((nDown - down) * .5);
+            }
+
+            if (pHeight == null) {
+                pHeight = nHeight;
+            } else if (nHeight == null) {
+                nHeight = pHeight;
+            }
+
+            for (var axis : List.of("A", "B")) {
+                Double distance;
+                Double azimuth = p.getAzimuth() == null ? 0 : p.getAzimuth();
+                Double value;
+
+                if (axis.equalsIgnoreCase("A")) {
+                    value = item.getA();
+                } else {
+                    value = item.getB();
+                    azimuth += 90;
+                }
+
+                distance = mScale3dP * value;
+                if (distance < 0) {
+                    azimuth += 180;
+                }
+
+                azimuth = Angle.normalizedDegrees(azimuth);
+                if (azimuth < 0) {
+                    azimuth += 360;
+                }
+
+                var visualPosition = WWHelper.positionFromPosition(position, mHeightOffset + down);
+                try {
+                    var angle = 1.0;
+                    RigidShape shape;
+                    distance = Math.abs(distance);
+                    if (distance > 0) {
+                        shape = new WedgeWithOffset(Angle.fromDegrees(angle), visualPosition, nHeight, pHeight, distance);
+                        var az = Angle.normalizedDegrees(azimuth - angle / 2);
+                        shape.setHeading(Angle.fromDegrees(az));
+                    } else {
+                        var size = 0.25;
+                        shape = new Box(visualPosition, size, size, size);
+                    }
+
+                    var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes(InclinoHelper.getAlarmLevel(p)));
+                    attrs.setInteriorOpacity(0.5);
+                    shape.setAttributes(attrs);
+                    addRenderable(shape, true, GraphicItem.WEDGE.getPlotLimit(), sMapObjects);
+                } catch (Exception e) {
+                }
+
+                if (sCheckModel.isChecked(GraphicItem.VALUE_AB)) {
+                    var position2 = WWHelper.movePolar(visualPosition, azimuth, distance + 2, visualPosition.getAltitude());
+                    var placemark = new PointPlacemark(position2);
+                    placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+                    placemark.setAltitudeMode(WorldWind.ABSOLUTE);
+                    placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+                    placemark.setLabelText("%.0f @ %.1f".formatted(value * 1000, item.getDown()));
+                    addRenderable(placemark, false, null, null);
+                }
             }
         }
     }
