@@ -28,6 +28,7 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.RigidShape;
+import gov.nasa.worldwind.render.SurfaceCircle;
 import java.util.ArrayList;
 import java.util.List;
 import org.controlsfx.control.IndexedCheckModel;
@@ -77,11 +78,15 @@ public class GraphicRenderer extends GraphicRendererBase {
             plotWedge(p, position);
         }
 
+        if (sCheckModel.isChecked(GraphicItem.AREA)) {
+            plotArea(p, position);
+        }
+
         if (sCheckModel.isChecked(GraphicItem.WEDGE_AB)) {
             plotWedgeAB(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicItem.CIRCLE)) {
+        if (sCheckModel.isChecked(GraphicItem.CIRCLES)) {
             plotCircle(p, position);
         }
 
@@ -92,6 +97,23 @@ public class GraphicRenderer extends GraphicRendererBase {
         if (sCheckModel.isChecked(GraphicItem.VALUE)) {
             plotValue(p, position);
         }
+    }
+
+    private void plotArea(BGeoInclinometerPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicItem.AREA, position) || p.ext().getObservationFilteredLast() == null) {
+            return;
+        }
+
+        var r = p.ext().getObservationFilteredLast().getObservationItems().stream()
+                .mapToDouble(item -> Math.abs(item.getDown()))
+                .max()
+                .orElse(1.0);
+
+        var circle = new SurfaceCircle(position, r);
+        var attrs = mAttributeManager.getGroundSurfaceAttributes();
+        circle.setAttributes(attrs);
+
+        addRenderable(circle, false, GraphicItem.AREA, null);
     }
 
     private void plotAxis(BGeoInclinometerPoint p, Position position) {
@@ -113,7 +135,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     private void plotCircle(BGeoInclinometerPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicItem.CIRCLE, position) || p.ext().getObservationFilteredLast() == null) {
+        if (isPlotLimitReached(p, GraphicItem.CIRCLES, position) || p.ext().getObservationFilteredLast() == null) {
             return;
         }
 
@@ -167,7 +189,7 @@ public class GraphicRenderer extends GraphicRendererBase {
                 var alarmLevel = p.ext().getAlarmLevel(BComponent.HEIGHT, distance);
 
                 cylinder.setAttributes(mAttributeManager.getSurfaceAttributes(alarmLevel));
-                addRenderable(cylinder, true, GraphicItem.CIRCLE.getPlotLimit(), sMapObjects);
+                addRenderable(cylinder, true, GraphicItem.CIRCLES.getPlotLimit(), sMapObjects);
             } catch (Exception e) {
             }
         }

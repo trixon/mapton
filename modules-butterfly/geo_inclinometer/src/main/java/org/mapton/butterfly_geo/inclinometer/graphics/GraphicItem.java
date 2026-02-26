@@ -26,7 +26,8 @@ import se.trixon.almond.util.Dict;
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
 
     AXIS(MDict.COORDINATE_SYSTEM.toString(), Integer.MAX_VALUE),
-    CIRCLE(Dict.Geometry.CIRCLE.toString(), Integer.MAX_VALUE),
+    AREA("Område", Integer.MAX_VALUE),
+    CIRCLES(Dict.Geometry.CIRCLES.toString(), Integer.MAX_VALUE),
     PATH(Dict.Geometry.PATH.toString(), Integer.MAX_VALUE),
     VALUE(Dict.VALUE.toString(), Integer.MAX_VALUE),
     WEDGE(Dict.Geometry.WEDGE.toString(), Integer.MAX_VALUE),

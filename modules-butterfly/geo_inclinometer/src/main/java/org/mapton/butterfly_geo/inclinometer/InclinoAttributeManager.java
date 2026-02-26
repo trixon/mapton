@@ -31,6 +31,7 @@ public class InclinoAttributeManager extends BaseAttributeManager {
     private BasicShapeAttributes mComponentEllipsoidAttributes;
 //    private BasicShapeAttributes mSurfaceAttributes;
     private BasicShapeAttributes[] mComponentVector3dAttributes;
+    private BasicShapeAttributes mGroundSurfaceAttributes;
     private BasicShapeAttributes mInclinoAttribute;
     private BasicShapeAttributes[] mSurfaceAttributes;
 
@@ -66,6 +67,19 @@ public class InclinoAttributeManager extends BaseAttributeManager {
         }
 
         return mComponentVector3dAttributes[alarmLevel + 1];
+    }
+
+    public BasicShapeAttributes getGroundSurfaceAttributes() {
+        if (mGroundSurfaceAttributes == null) {
+            mGroundSurfaceAttributes = new BasicShapeAttributes();
+            mGroundSurfaceAttributes.setDrawOutline(false);
+            mGroundSurfaceAttributes.setDrawInterior(true);
+            mGroundSurfaceAttributes.setInteriorMaterial(Material.RED);
+            mGroundSurfaceAttributes.setInteriorOpacity(0.2);
+            mGroundSurfaceAttributes.setEnableLighting(false);
+        }
+
+        return mGroundSurfaceAttributes;
     }
 
     public BasicShapeAttributes getInclinoAttribute() {
