@@ -26,18 +26,18 @@ import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
  */
 public class InclinoHelper {
 
-    public static Color getAlarmColorAwt(BGeoInclinometerPoint p) {
-        return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
+    public static Color getWorstAlarmColorAwt(BGeoInclinometerPoint p) {
+        return ButterflyHelper.getAlarmColorAwt(getWorstAlarmLevel(p));
     }
 
-    public static javafx.scene.paint.Color getAlarmColorHeightFx(BGeoInclinometerPoint p) {
-        return ButterflyHelper.getAlarmColorFx(getAlarmLevel(p));
+    public static javafx.scene.paint.Color getWorstAlarmColorHeightFx(BGeoInclinometerPoint p) {
+        return ButterflyHelper.getAlarmColorFx(getWorstAlarmLevel(p));
     }
 
-    public static int getAlarmLevel(BGeoInclinometerPoint p) {
+    public static int getWorstAlarmLevel(BGeoInclinometerPoint p) {
         try {
             var alarmLevel = p.ext().getObservationFilteredLast().getObservationItems().stream().mapToInt(o -> {
-                return p.ext().getAlarmLevel(BComponent.HEIGHT, o.getDistance());
+                return p.ext().getAlarmLevel(BComponent.HEIGHT, o.getDistance() * 1000);
             })
                     .max().orElse(-1);
 

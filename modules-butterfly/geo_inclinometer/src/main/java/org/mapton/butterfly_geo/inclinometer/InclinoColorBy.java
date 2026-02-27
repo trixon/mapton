@@ -15,14 +15,14 @@
  */
 package org.mapton.butterfly_geo.inclinometer;
 
-import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum InclinoColorBy {
-    DEFAULT(Dict.DEFAULT.toString());
+    ALARM(SDict.ALARM.toString());
     private final String mName;
 
     private InclinoColorBy(String name) {

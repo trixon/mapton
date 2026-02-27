@@ -73,7 +73,7 @@ public class InclinoLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Mapton.addWarning(Bundle.CTL_InclinometerAction(), 4), GeotechnicalHelper.CAT_GEO, "InclinometerTopComponent");
+        initCommons(Mapton.addWarning(Bundle.CTL_InclinometerAction(), 2), GeotechnicalHelper.CAT_GEO, "InclinometerTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
@@ -188,7 +188,7 @@ public class InclinoLayerBundle extends BfLayerBundle {
     private ArrayList<AVListImpl> plotSymbol(BGeoInclinometerPoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
         var cylinder = new Cylinder(position, SYMBOL_HEIGHT, SYMBOL_RADIUS);
-        var attrs = mAttributeManager.getAlarmInteriorAttributes(InclinoHelper.getAlarmLevel(p));
+        var attrs = mAttributeManager.getAlarmInteriorAttributes(InclinoHelper.getWorstAlarmLevel(p));
 
         cylinder.setAttributes(attrs);
         mapObjects.add(cylinder);

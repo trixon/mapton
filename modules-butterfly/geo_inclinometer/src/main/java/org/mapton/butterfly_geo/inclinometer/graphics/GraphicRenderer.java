@@ -41,6 +41,7 @@ import org.mapton.butterfly_geo.inclinometer.InclinoHelper;
 import org.mapton.worldwind.api.CylinderWithOffset;
 import org.mapton.worldwind.api.WWHelper;
 import org.mapton.worldwind.api.WedgeWithOffset;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -97,6 +98,32 @@ public class GraphicRenderer extends GraphicRendererBase {
         if (sCheckModel.isChecked(GraphicItem.VALUE)) {
             plotValue(p, position);
         }
+    }
+
+    private ValueLimiter createValueLimiter(BGeoInclinometerPoint p, Double originalValue) {
+        if (mOptions.isScaleByAlarmProperty()) {
+            var defaultMax = 20.0;
+            var maxResultInMeters = defaultMax * 1.5;
+            var percentI = MathHelper.convertIntegerToInteger(p.ext().getAlarmPercent(BComponent.HEIGHT, 1000 * MathHelper.convertDoubleToDouble(originalValue)));
+            var percentD = percentI / 100.0;
+            var value = Math.max(percentD * 20, 0.1);
+            var cappedValue = Math.min(value, maxResultInMeters);
+
+            return new ValueLimiter(cappedValue, value, percentI, percentD, percentD > 1.0);
+        } else {
+            return new ValueLimiter(mScale3dP * originalValue, originalValue, 0, 0, false);
+
+        }
+    }
+
+    private BasicShapeAttributes getAttrs(BGeoInclinometerPoint p, double value, ValueLimiter valueLimiter) {
+        var alarmLevel = p.ext().getAlarmLevel(BComponent.HEIGHT, value * 1000);
+        var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes(alarmLevel));
+        if (valueLimiter.percentageD > 1.5) {
+            attrs.setInteriorMaterial(Material.MAGENTA);
+        }
+
+        return attrs;
     }
 
     private void plotArea(BGeoInclinometerPoint p, Position position) {
@@ -171,24 +198,24 @@ public class GraphicRenderer extends GraphicRendererBase {
             pHeight = pHeight / 2.0;
             nHeight = nHeight / 2.0;
 
-            var distance = mScale3dP * item.getDistance();
+            var value = item.getDistance();
+            var valueLimiter = createValueLimiter(p, value);
+            var scaledDistance = valueLimiter.cappedValue;
             var azimuth = item.getAzimuth();
             if (p.getAzimuth() != null) {
                 azimuth = Angle.normalizedDegrees(azimuth + p.getAzimuth());
             }
 
             var position2 = position;
-            if (distance > 0) {
-                position2 = WWHelper.movePolar(position, azimuth, distance);
+            if (scaledDistance > 0) {
+                position2 = WWHelper.movePolar(position, azimuth, scaledDistance);
             }
 
             var visualPosition = WWHelper.positionFromPosition(position2, mHeightOffset + down);
 
             try {
                 var cylinder = new CylinderWithOffset(visualPosition, nHeight, pHeight, mScaleIndicatorSize);
-                var alarmLevel = p.ext().getAlarmLevel(BComponent.HEIGHT, distance);
-
-                cylinder.setAttributes(mAttributeManager.getSurfaceAttributes(alarmLevel));
+                cylinder.setAttributes(getAttrs(p, value, valueLimiter));
                 addRenderable(cylinder, true, GraphicItem.CIRCLES.getPlotLimit(), sMapObjects);
             } catch (Exception e) {
             }
@@ -203,30 +230,31 @@ public class GraphicRenderer extends GraphicRendererBase {
         var positions = new ArrayList<Position>();
         positions.add(WWHelper.positionFromPosition(position, mHeightOffset));
         for (var item : p.ext().getObservationFilteredLast().getObservationItems()) {
-            var distance = mScale3dP * item.getDistance();
+            var value = item.getDistance();
+            var valueLimiter = createValueLimiter(p, value);
+            var scaledDistance = valueLimiter.cappedValue;
             var azimuth = item.getAzimuth();
             if (p.getAzimuth() != null) {
                 azimuth = Angle.normalizedDegrees(azimuth + p.getAzimuth());
             }
 
             var position2 = position;
-            if (distance > 0) {
-                position2 = WWHelper.movePolar(position, azimuth, distance);
+            if (scaledDistance > 0) {
+                position2 = WWHelper.movePolar(position, azimuth, scaledDistance);
             }
 
             var visualPosition = WWHelper.positionFromPosition(position2, mHeightOffset + item.getDown());
             positions.add(visualPosition);
 
-            var r = 0.25;
+            var r = 0.4;
             var ellipsoid = new Ellipsoid(visualPosition, r, r, r);
-            var alarmLevel = p.ext().getAlarmLevel(BComponent.HEIGHT, distance);
-            ellipsoid.setAttributes(mAttributeManager.getSurfaceAttributes(alarmLevel));
+            ellipsoid.setAttributes(getAttrs(p, value, valueLimiter));
 
             addRenderable(ellipsoid, true, null, null);
         }
 
         var path = new Path(positions);
-        path.setAttributes(mAttributeManager.getComponentVector3dAttributes(InclinoHelper.getAlarmLevel(p)));
+        path.setAttributes(mAttributeManager.getComponentVector3dAttributes(InclinoHelper.getWorstAlarmLevel(p)));
         addRenderable(path, true, GraphicItem.PATH.getPlotLimit(), sMapObjects);
     }
 
@@ -247,15 +275,17 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
 
         for (var item : p.ext().getObservationFilteredLast().getObservationItems()) {
-            var distance = 1.5 + mScale3dP * item.getDistance();
+            var value = item.getDistance();
+            var valueLimiter = createValueLimiter(p, value);
+            var scaledDistance = 1.5 + valueLimiter.cappedValue;
             var azimuth = item.getAzimuth();
             if (p.getAzimuth() != null) {
                 azimuth = Angle.normalizedDegrees(azimuth + p.getAzimuth());
             }
 
             var position2 = position;
-            if (distance > 0) {
-                position2 = WWHelper.movePolar(position, azimuth, distance);
+            if (scaledDistance > 0) {
+                position2 = WWHelper.movePolar(position, azimuth, scaledDistance);
             }
 
             var position3 = WWHelper.positionFromPosition(position2, mHeightOffset + item.getDown());
@@ -263,7 +293,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
             placemark.setAltitudeMode(WorldWind.ABSOLUTE);
             placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-            placemark.setLabelText("%.0f @ %.1f".formatted(item.getDistance() * 1000, item.getDown()));
+            placemark.setLabelText("%.0f @ %.1f".formatted(value * 1000, item.getDown()));
             addRenderable(placemark, false, null, null);
         }
     }
@@ -302,7 +332,9 @@ public class GraphicRenderer extends GraphicRendererBase {
                 nHeight = pHeight;
             }
 
-            var distance = mScale3dP * item.getDistance();
+            var value = item.getDistance();
+            var valueLimiter = createValueLimiter(p, value);
+            var scaledDistance = valueLimiter.cappedValue;
             var azimuth = item.getAzimuth();
             if (p.getAzimuth() != null) {
                 azimuth = Angle.normalizedDegrees(azimuth + p.getAzimuth());
@@ -313,8 +345,8 @@ public class GraphicRenderer extends GraphicRendererBase {
             try {
                 var angle = 5.0;
                 RigidShape shape;
-                if (distance > 0) {
-                    shape = new WedgeWithOffset(Angle.fromDegrees(angle), visualPosition, nHeight, pHeight, distance);
+                if (scaledDistance > 0) {
+                    shape = new WedgeWithOffset(Angle.fromDegrees(angle), visualPosition, nHeight, pHeight, scaledDistance);
                     var az = Angle.normalizedDegrees(azimuth - angle / 2);
                     shape.setHeading(Angle.fromDegrees(az));
                 } else {
@@ -322,7 +354,7 @@ public class GraphicRenderer extends GraphicRendererBase {
                     shape = new Box(visualPosition, size, size, size);
                 }
 
-                shape.setAttributes(mAttributeManager.getSurfaceAttributes(InclinoHelper.getAlarmLevel(p)));
+                shape.setAttributes(getAttrs(p, value, valueLimiter));
                 addRenderable(shape, true, GraphicItem.WEDGE.getPlotLimit(), sMapObjects);
             } catch (Exception e) {
             }
@@ -364,7 +396,6 @@ public class GraphicRenderer extends GraphicRendererBase {
             }
 
             for (var axis : List.of("A", "B")) {
-                Double distance;
                 Double azimuth = p.getAzimuth() == null ? 0 : p.getAzimuth();
                 Double value;
 
@@ -375,8 +406,9 @@ public class GraphicRenderer extends GraphicRendererBase {
                     azimuth += 90;
                 }
 
-                distance = mScale3dP * value;
-                if (distance < 0) {
+                var valueLimiter = createValueLimiter(p, value);
+                var scaledDistance = valueLimiter.cappedValue;
+                if (value < 0) {
                     azimuth += 180;
                 }
 
@@ -389,9 +421,9 @@ public class GraphicRenderer extends GraphicRendererBase {
                 try {
                     var angle = 1.0;
                     RigidShape shape;
-                    distance = Math.abs(distance);
-                    if (distance > 0) {
-                        shape = new WedgeWithOffset(Angle.fromDegrees(angle), visualPosition, nHeight, pHeight, distance);
+                    scaledDistance = Math.abs(scaledDistance);
+                    if (scaledDistance > 0) {
+                        shape = new WedgeWithOffset(Angle.fromDegrees(angle), visualPosition, nHeight, pHeight, scaledDistance);
                         var az = Angle.normalizedDegrees(azimuth - angle / 2);
                         shape.setHeading(Angle.fromDegrees(az));
                     } else {
@@ -399,15 +431,21 @@ public class GraphicRenderer extends GraphicRendererBase {
                         shape = new Box(visualPosition, size, size, size);
                     }
 
-                    var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes(InclinoHelper.getAlarmLevel(p)));
+                    var attrs = getAttrs(p, value, valueLimiter);
                     attrs.setInteriorOpacity(0.5);
+                    if (axis.equalsIgnoreCase("A")) {
+                        attrs.setOutlineMaterial(Material.CYAN);
+                        attrs.setOutlineWidth(2.0);
+                        attrs.setDrawOutline(true);
+                    }
+
                     shape.setAttributes(attrs);
                     addRenderable(shape, true, GraphicItem.WEDGE.getPlotLimit(), sMapObjects);
                 } catch (Exception e) {
                 }
 
                 if (sCheckModel.isChecked(GraphicItem.VALUE_AB)) {
-                    var position2 = WWHelper.movePolar(visualPosition, azimuth, distance + 2, visualPosition.getAltitude());
+                    var position2 = WWHelper.movePolar(visualPosition, azimuth, scaledDistance + 2, visualPosition.getAltitude());
                     var placemark = new PointPlacemark(position2);
                     placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
                     placemark.setAltitudeMode(WorldWind.ABSOLUTE);
@@ -419,4 +457,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
     }
 
+    private record ValueLimiter(double cappedValue, double value, int percentageI, double percentageD, boolean isCapped) {
+
+    }
 }

@@ -95,7 +95,7 @@ public class InclinoAttributeManager extends BaseAttributeManager {
     }
 
     public PointPlacemarkAttributes getPinAttributes(BGeoInclinometerPoint p) {
-        var attrs = getPinAttributes(InclinoHelper.getAlarmLevel(p));
+        var attrs = getPinAttributes(InclinoHelper.getWorstAlarmLevel(p));
 //        attrs.setImageAddress("https://maps.google.com/mapfiles/kml/paddle/wht-circle.png");
 //        PinPaddle.SQUARE.apply(attrs);
 //        if (mColorBy != null && mColorBy != ColorBy.ALARM) {

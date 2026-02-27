@@ -23,6 +23,7 @@ import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_geo.inclinometer.graphics.GraphicItem;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.session.SessionCheckBox;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
 
@@ -33,10 +34,10 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
 public class InclinoOptionsView extends BOptionsView {
 
     private final SessionComboBox<InclinoColorBy> mColorScb = new SessionComboBox<>();
-
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
-    private final SessionComboBox<InclinoPointBy> mPointScb = new SessionComboBox<>();
     private final InclinoOptions mOptions = InclinoOptions.getInstance();
+    private final SessionComboBox<InclinoPointBy> mPointScb = new SessionComboBox<>();
+    private final SessionCheckBox mScaleScb = new SessionCheckBox("Skala efter gränsvärde");
 
     public InclinoOptionsView(InclinoLayerBundle layerBundle) {
         super(layerBundle, Bundle.CTL_InclinometerAction(), InclinoOptions.getInstance(), "inclino");
@@ -53,7 +54,6 @@ public class InclinoOptionsView extends BOptionsView {
     private void createUI() {
         mPointScb.getItems().setAll(InclinoPointBy.values());
         mColorScb.getItems().setAll(InclinoColorBy.values());
-        mColorScb.setDisable(true);
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
@@ -70,8 +70,15 @@ public class InclinoOptionsView extends BOptionsView {
         gp.add(mLabelMenuButton, 0, row++, GridPane.REMAINING, 1);
         gp.addRow(row++, mGraphicLabel);
         gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
+        gp.add(mScaleScb, 0, row++, GridPane.REMAINING, 1);
 
-        FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
+        FxHelper.autoSizeRegionHorizontal(
+                mPointScb,
+                mColorScb,
+                mLabelMenuButton,
+                mGraphicSccb,
+                mScaleScb
+        );
 //        activateAnnotation();
 
         setCenter(gp);
@@ -97,6 +104,7 @@ public class InclinoOptionsView extends BOptionsView {
         mPointScb.valueProperty().bindBidirectional(mOptions.pointProperty());
         mColorScb.valueProperty().bindBidirectional(mOptions.colorByProperty());
         mGraphicSccb.checkedStringProperty().bindBidirectional(mOptions.graphicsProperty());
+        mScaleScb.selectedProperty().bindBidirectional(mOptions.scaleByAlarmProperty());
 
         initSession(mOptions);
     }

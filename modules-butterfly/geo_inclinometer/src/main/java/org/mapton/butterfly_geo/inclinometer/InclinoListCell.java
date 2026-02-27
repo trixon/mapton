@@ -104,7 +104,7 @@ class InclinoListCell extends BListCell<BGeoInclinometerPoint> {
 
         @Override
         public void update(BGeoInclinometerPoint p) {
-            m1dShape.setFill(InclinoHelper.getAlarmColorHeightFx(p));
+            m1dShape.setFill(InclinoHelper.getWorstAlarmColorHeightFx(p));
         }
     }
 }
