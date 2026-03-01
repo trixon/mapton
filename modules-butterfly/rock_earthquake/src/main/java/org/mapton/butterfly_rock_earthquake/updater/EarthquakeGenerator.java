@@ -103,7 +103,7 @@ public class EarthquakeGenerator {
         var mapper = new ObjectMapper();
         mapper.registerModule(new JtsModule());
 
-        try (var paths = Files.walk(Paths.get(mCacheDir.toURI()))) {
+        try (var paths = Files.walk(Paths.get(mCacheDirUsgs.toURI()))) {
             paths.filter(Files::isRegularFile)
                     .map(path -> path.toFile())
                     .filter(file -> file.getName().endsWith(".geojson"))
@@ -185,7 +185,7 @@ public class EarthquakeGenerator {
         var earthquakes = new ArrayList<BRockEarthquake>();
         var existingIds = new HashSet<String>();
         var parser = new QuakeParser();
-        var quakes = parser.parseRecursive(mCacheDir).stream()
+        var quakes = parser.parseRecursive(mCacheDirSnsn).stream()
                 .filter(q -> q.getMagnitude().getValue() != null)
                 .map(xmlQuake -> {
                     var q = new BRockEarthquake();
