@@ -12,8 +12,13 @@ Azul provides their Zulu https://www.azul.com/downloads/zulu-community/ and Bell
 
 Both can also be installed with https://sdkman.io/.
 ## Dependencies
-Clone and build https://github.com/trixon/almond, also with a FX JDK.
+Clone and build the following projects in order, before building mapton.
 
-Clone and build https://github.com/trixon/trv-traffic-information
+- https://github.com/trixon/netbeans-platform
+- https://github.com/trixon/trv-traffic-information
+- https://github.com/trixon/almond
+- https://github.com/trixon/quakeml4j
+- https://github.com/trixon/quake
+- https://github.com/trixon/netbeans-plugins
 
 ## Build Mapton
