@@ -9,7 +9,7 @@
 
     <groupId>org.mapton</groupId>
     <artifactId>mapton-parent</artifactId>
-    <version>26.01x</version>
+    <version>26.03</version>
     <packaging>pom</packaging>
 
     <name>mapton-parent</name>
@@ -415,7 +415,7 @@
     <properties>
         <jackson.version>2.21.1</jackson.version>
         <brandingToken>mapton</brandingToken>
-        <mapton.version>26.01x</mapton.version>
+        <mapton.version>26.03</mapton.version>
         <geotools.version>34.2</geotools.version>
     </properties>
 </project>

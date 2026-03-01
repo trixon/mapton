@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mapton</groupId>
         <artifactId>mapton-parent</artifactId>
-        <version>26.01x</version>
+        <version>26.03</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>mapton-api</artifactId>
