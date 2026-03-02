@@ -91,3 +91,4 @@ $RECYCLE.BIN/
 /packaging/snap/squashfs-root/
 /packaging/snap/mapton*.snap
 /modules-butterfly/topological/src/main/java/org/mapton/butterfly_topo/test/
+!/libs/wwj-ce-2.3.1.jar
