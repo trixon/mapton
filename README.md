@@ -17,8 +17,13 @@ Clone and build the following projects in order, before building mapton.
 - https://github.com/trixon/netbeans-platform
 - https://github.com/trixon/trv-traffic-information
 - https://github.com/trixon/almond
-- https://github.com/trixon/quakeml4j
-- https://github.com/trixon/quake
+- (optional) https://github.com/trixon/quakeml4j
+- (optional) https://github.com/trixon/quake
 - https://github.com/trixon/netbeans-plugins
+- https://github.com/WorldWindEarth/WorldWindJava
+
+Install the generated artifact in the last step with
+
+`mvn install:install-file -Dfile=./build/libs/worldwind-2.3.1.jar -DgroupId=earth.worldwind -DartifactId=wwj-ce -Dversion=2.3.1 -Dpackaging=jar`
 
 ## Build Mapton
