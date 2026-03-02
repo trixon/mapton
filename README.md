@@ -20,10 +20,9 @@ Clone and build the following projects in order, before building mapton.
 - (optional) https://github.com/trixon/quakeml4j
 - (optional) https://github.com/trixon/quake
 - https://github.com/trixon/netbeans-plugins
-- https://github.com/WorldWindEarth/WorldWindJava
 
-Install the generated artifact in the last step with
+And finally, install the provided wwj-ce from the libs directory (a build of https://github.com/WorldWindEarth/WorldWindJava)
 
-`mvn install:install-file -Dfile=./build/libs/worldwind-2.3.1.jar -DgroupId=earth.worldwind -DartifactId=wwj-ce -Dversion=2.3.1 -Dpackaging=jar`
+`mvn install:install-file -Dfile=./libs/wwj-ce-2.3.1.jar -DgroupId=earth.worldwind -DartifactId=wwj-ce -Dversion=2.3.1 -Dpackaging=jar`
 
 ## Build Mapton
