@@ -49,8 +49,14 @@ public enum ReinforcementLabelBy implements LabelBy.Operations {
     MISC_AGE(LabelBy.CAT_MISC, Dict.AGE.toString(), p -> {
         return String.valueOf(p.ext().getMeasurementAge(ChronoUnit.DAYS));
     }),
+    MISC_DIMENS(LabelBy.CAT_MISC, Dict.SIZE.toString(), p -> {
+        return "%.1f x %.3f".formatted(p.getDepth(), p.getDiameter());
+    }),
     MISC_GROUP(LabelBy.CAT_MISC, Dict.GROUP.toString(), p -> {
-        return Objects.toString(p.getGroup(), "NODATA");
+        return LabelBy.miscGroup(p);
+    }),
+    MISC_CATEGORY(LabelBy.CAT_MISC, Dict.CATEGORY.toString(), p -> {
+        return LabelBy.miscCategory(p);
     }),
     MISC_EXT_ID(LabelBy.CAT_MISC, "Ext.id", p -> {
         return p.getExternalId();
