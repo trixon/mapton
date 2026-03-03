@@ -203,6 +203,7 @@ public class InclinoChartBuilder extends XyzChartBuilder<BGeoInclinometerPoint> 
             rangeAxis.setRange(rangeMin, rangeMax);
             subplot.getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, SwingHelper.getUIScaled(12)));
             renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);
+            plotOverlays(subplot, ppp, ppp.getDateZero());
 
             plot.add(subplot, 1);
         }

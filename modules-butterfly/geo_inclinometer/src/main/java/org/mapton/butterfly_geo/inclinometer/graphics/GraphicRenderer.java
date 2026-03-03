@@ -106,7 +106,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             var maxResultInMeters = defaultMax * 1.5;
             var percentI = MathHelper.convertIntegerToInteger(p.ext().getAlarmPercent(BComponent.HEIGHT, 1000 * MathHelper.convertDoubleToDouble(originalValue)));
             var percentD = percentI / 100.0;
-            var value = Math.max(percentD * 20, 0.1);
+            var value = Math.max(percentD * defaultMax, 0.1);
             var cappedValue = Math.min(value, maxResultInMeters);
 
             return new ValueLimiter(cappedValue, value, percentI, percentD, percentD > 1.0);
@@ -157,6 +157,22 @@ public class GraphicRenderer extends GraphicRendererBase {
         double topZ = mHeightOffset + mHeightMargin;
         var path = new Path(WWHelper.positionFromPosition(position, 0), WWHelper.positionFromPosition(position, topZ));
         addRenderable(path, false, null, null);
+
+        var z = mHeightOffset;
+        do {
+            var shapeSize = 2.0;
+            var indicatorAttributes = new BasicShapeAttributes(mAttributeManager.getAlarmInteriorAttributes(-1));
+            indicatorAttributes.setInteriorMaterial(Material.CYAN);
+            var r = 0.2;
+            RigidShape shape;
+            var indicatorPos = WWHelper.positionFromPosition(position, z);
+            //shape = new Ellipsoid(indicatorPos, r, r, r);
+            shape = new Cylinder(indicatorPos, 0.05, shapeSize * .75);
+            shape.setAttributes(indicatorAttributes);
+            addRenderable(shape, false, null, null);
+
+            z -= 10;
+        } while (z > 0);
 
         plotRod(position);
     }
