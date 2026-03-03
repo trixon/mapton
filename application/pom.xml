@@ -309,11 +309,6 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>butterfly-monmon</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-geo</artifactId>
                 </dependency>
                 <dependency>

@@ -13,22 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_monmon;
+package org.mapton.butterfly_topo.monmon;
 
-import org.openide.windows.OnShowing;
-import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-@OnShowing
-public class DoOnShowing implements Runnable {
+public enum MonPointBy {
+    PIN(Dict.PIN.toString()),
+    NONE(Dict.NONE.toString());
+    private final String mName;
+
+    private MonPointBy(String name) {
+        mName = name;
+    }
 
     @Override
-    public void run() {
-        //Pre-load but don't display
-        Almond.getTopComponent("MonmonTopComponent");
+    public String toString() {
+        return mName;
     }
 
 }

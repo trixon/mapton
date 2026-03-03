@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_monmon;
+package org.mapton.butterfly_topo.monmon;
 
 import javafx.scene.Scene;
 import org.mapton.core.api.MTopComponent;

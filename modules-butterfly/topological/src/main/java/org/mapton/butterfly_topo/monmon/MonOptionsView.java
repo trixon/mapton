@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_monmon;
+package org.mapton.butterfly_topo.monmon;
 
 import javafx.scene.layout.GridPane;
 import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BOptionsView;
 import org.mapton.butterfly_core.api.LabelBy;
-import org.mapton.butterfly_monmon.graphics.GraphicItem;
+import org.mapton.butterfly_topo.monmon.graphics.GraphicItem;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;

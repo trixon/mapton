@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_monmon;
+package org.mapton.butterfly_topo.monmon;
 
 import se.trixon.almond.util.Dict;
 
@@ -21,12 +21,11 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public enum MonPointBy {
-    PIN(Dict.PIN.toString()),
-    NONE(Dict.NONE.toString());
+public enum MonColorBy {
+    DEFAULT(Dict.DEFAULT.toString());
     private final String mName;
 
-    private MonPointBy(String name) {
+    private MonColorBy(String name) {
         mName = name;
     }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_monmon.graphics;
+package org.mapton.butterfly_topo.monmon.graphics;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -25,7 +25,7 @@ import java.util.HashMap;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
-import org.mapton.butterfly_monmon.MonAttributeManager;
+import org.mapton.butterfly_topo.monmon.MonAttributeManager;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.worldwind.api.WWHelper;
 

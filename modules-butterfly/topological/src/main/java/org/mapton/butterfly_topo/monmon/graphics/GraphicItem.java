@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_monmon.graphics;
+package org.mapton.butterfly_topo.monmon.graphics;
 
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 
