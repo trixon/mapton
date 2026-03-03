@@ -84,10 +84,8 @@ public class BGeoInclinometerPointObservation extends BXyzPointObservation {
         }
 
         public void recalc() {
-            if (mA != 0 && mB != 0) {
-                setAzimuth(MathHelper.azimuthToDegrees(mA, mB));
-                setDistance(Math.hypot(mA, mB));
-            }
+            setAzimuth(MathHelper.azimuthToDegrees(mA, mB));
+            setDistance(Math.hypot(mA, mB));
         }
 
         public void setA(Double a) {

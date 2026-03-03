@@ -494,13 +494,24 @@ public class Butterfly {
                         o.setName(o0.getName());
                         var item = new ObservationItem();
                         try {
-                            item.setA(o0.getA() / 1000.0);
-                            item.setB(o0.getB() / 1000.0);
+                            if (o0.getA() != null) {
+                                item.setA(o0.getA() / 1000.0);
+                            } else {
+                                item.setA(0.0);
+                            }
+
+                            if (o0.getB() != null) {
+                                item.setB(o0.getB() / 1000.0);
+                            } else {
+                                item.setB(0.0);
+                            }
+
                             item.setDown(o0.getDown());
                             item.recalc();
                             o.getObservationItems().add(item);
                         } catch (NullPointerException e) {
                             //nvm
+                            System.out.println(e);
                         }
                     }
 

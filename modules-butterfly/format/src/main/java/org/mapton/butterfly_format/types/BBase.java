@@ -30,18 +30,19 @@ public abstract class BBase {
     private transient Butterfly butterfly;
     private LocalDateTime dateChanged;
     private LocalDateTime dateCreated;
+    private Double declination;
     private String externalId;
     private String externalSysId;
     private String externalSysKey;
     private String meta;
     private String name;
     private String origin;
+    @JsonProperty(defaultValue = "UNKNOWN")
+    private BStatusStep statusStep = BStatusStep.UNKNOWN;
     private String unit;
     private String unitDiff;
     private transient final HashMap<Object, Object> values = new HashMap<>();
     private Boolean visible;
-    @JsonProperty(defaultValue = "UNKNOWN")
-    private BStatusStep statusStep = BStatusStep.UNKNOWN;
 
     public Double getAzimuth() {
         return azimuth;
@@ -57,6 +58,10 @@ public abstract class BBase {
 
     public LocalDateTime getDateCreated() {
         return dateCreated;
+    }
+
+    public Double getDeclination() {
+        return declination;
     }
 
     public String getExternalId() {
@@ -134,6 +139,10 @@ public abstract class BBase {
 
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    public void setDeclination(Double declination) {
+        this.declination = declination;
     }
 
     public void setExternalId(String externalId) {
