@@ -25,9 +25,11 @@ import gov.nasa.worldwind.render.Path;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.types.BComponent;
@@ -37,6 +39,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.butterfly_topo.TopoLayerBundle;
 import static org.mapton.butterfly_topo.graphics.GraphicRendererBase.sMapObjects;
+import org.mapton.butterfly_topo.monmon.MonManager;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
@@ -46,6 +49,8 @@ import se.trixon.almond.util.MathHelper;
  * @author Patrik Karlström
  */
 public class GraphicRendererVector extends GraphicRendererBase {
+
+    private HashSet<BTopoControlPoint> mPlottedStations = new HashSet<>();
 
     public GraphicRendererVector(RenderableLayer layer, RenderableLayer passiveLayer) {
         super(layer, passiveLayer);
@@ -76,9 +81,19 @@ public class GraphicRendererVector extends GraphicRendererBase {
             plot3d(p, position);
         }
 
+        if (sCheckModel.isChecked(GraphicItem.VECTOR_3D_LINE_OF_SIGHT) && dimension == BDimension._3d) {
+            plot3dLineOfSight(p, position);
+        }
+
         if (sCheckModel.isChecked(GraphicItem.PIN) && dimension != BDimension._2d) {
             plotPoint(p, position);
         }
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        mPlottedStations.clear();
     }
 
     private void plot1d(BTopoControlPoint p, Position position) {
@@ -278,6 +293,48 @@ public class GraphicRendererVector extends GraphicRendererBase {
         plotLabel(p, positions[0]);
     }
 
+    private void plot3dLineOfSight(BTopoControlPoint p, Position position) {
+        var p1 = WWHelper.positionFromPosition(position, Math.abs(p.getZeroZ()));
+        MonManager.getInstance().getAllItems().stream()
+                .filter(m -> m.getControlPoint().equals(p))
+                .map(m -> m.getStationPoint())
+                .forEachOrdered(s -> {
+                    try {
+                        if (mPlottedStations.add(s)) {
+                            plotGroundPath(s);
+                        }
+                        var stn = BCoordinatrix.toPositionWW3d(s);
+                        stn = WWHelper.positionFromPosition(stn, Math.abs(s.getZeroZ()));
+                        var path = new Path(stn, p1);
+                        var attrs = new BasicShapeAttributes(s.getValue("MONMON_ATTRS"));
+                        if (p.getZeroZ() < 0) {
+                            attrs.setOutlineStippleFactor(3);
+                        }
+
+                        path.setAttributes(attrs);
+                        addRenderable(path, true, null, sMapObjects);
+
+                        plotGroundPath(p);
+                    } catch (Exception e) {
+                        System.out.println("Monmon plot failure: " + p.getName());
+                    }
+                });
+    }
+
+    private void plotGroundPath(BTopoControlPoint p) {
+        var p1 = BCoordinatrix.toPositionWW3d(p);
+        p1 = WWHelper.positionFromPosition(p1, Math.abs(p.getZeroZ()));
+        var p0 = WWHelper.positionFromPosition(p1, 0);
+        var groundPath = new Path(p0, p1);
+        var attrs = new BasicShapeAttributes(mAttributeManager.getComponentGroundPathAttributes());
+
+        if (p.getZeroZ() < 0) {
+            attrs.setOutlineStippleFactor(3);
+        }
+        groundPath.setAttributes(attrs);
+        addRenderable(groundPath, false, null, sMapObjects);
+    }
+
     private void plotPoint(BTopoControlPoint p, Position position) {
         if (ObjectUtils.anyNull(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
             return;
@@ -286,5 +343,4 @@ public class GraphicRendererVector extends GraphicRendererBase {
         var positions = plot3dOffsetPole(p, position, true, 0.75, false);
         plotLabel(p, positions[0]);
     }
-
 }

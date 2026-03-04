@@ -72,6 +72,16 @@ public class MonManager extends BaseManager<BMonmon> {
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
+        var sortedStations = getAllItems().stream()
+                .filter(m -> m.isParent())
+                .map(m -> m.getControlPoint())
+                .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()))
+                .toList();
+
+        for (int i = 0; i < sortedStations.size(); i++) {
+            var p = sortedStations.get(i);
+            p.setValue("MONMON_ATTRS", MonAttributeManager.getInstance().getStationConnectorAttribute(i));
+        }
     }
 
     @Override

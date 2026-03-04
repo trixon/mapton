@@ -48,6 +48,7 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     //    VECTOR_2D(SDict.VECTOR_2D.toString()),
     TRACE_3D(SDict.TRACE_3D.toString(), Integer.MAX_VALUE),
     VECTOR_3D(SDict.VECTOR_3D.toString(), Integer.MAX_VALUE),
+    VECTOR_3D_LINE_OF_SIGHT("3d-siktlinjer", Integer.MAX_VALUE),
     MEASUREMENTS(Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower()), Integer.MAX_VALUE),
     MEASUREMENTS_PER_MONTH(Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower() + "/" + Dict.Time.MONTH.toLower()), 10_000),
     ALARM_LEVEL(SDict.ALARM_LEVEL.toString(), Integer.MAX_VALUE),
