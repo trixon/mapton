@@ -20,6 +20,7 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.AbstractShape;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Box;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
@@ -167,12 +168,22 @@ public class GraphicRendererTrend extends GraphicRendererBase {
 
                 var pos = WWHelper.positionFromPosition(position, mAltitude);
                 AbstractShape shape = null;
+                AbstractShape shapeMax = new Cylinder(pos, 1.0, maxRadius * 1.25);
                 AbstractAirspace airspace = null;
                 if (component == BComponent.HEIGHT) {
                     if (p.getDimension() == BDimension._1d) {
-                        shape = new Cylinder(pos, height, radius);
+                        if (speed > 0) {
+                            shape = new Box(pos, radius, height * .5, radius);
+                        } else {
+                            shape = new Cylinder(pos, height, radius);
+                        }
                     } else {
-                        airspace = new PartialCappedCylinder(pos, radius, Angle.fromDegrees(0.0), Angle.fromDegrees(180.0));
+                        if (speed > 0) {
+                            pos = WWHelper.movePolar(pos, 90.0, radius, pos.getElevation());
+                            shape = new Box(pos, radius, height * .5, radius);
+                        } else {
+                            airspace = new PartialCappedCylinder(pos, radius, Angle.fromDegrees(0.0), Angle.fromDegrees(180.0));
+                        }
                     }
                 } else {
                     var p0 = WWHelper.movePolar(position, 0, radius);
@@ -184,39 +195,25 @@ public class GraphicRendererTrend extends GraphicRendererBase {
 
                 if (shape != null) {
                     var attrs = new BasicShapeAttributes();
-                    attrs.setInteriorOpacity(0.75);
+                    attrs.setInteriorOpacity(1.0);
                     attrs.setDrawOutline(false);
                     attrs.setInteriorMaterial(mIntervalToMaterialMap.getOrDefault(key, Material.GRAY));
                     attrs.setEnableLighting(true);
                     shape.setAttributes(attrs);
+                    shapeMax.setAttributes(attrs);
                     addRenderable(shape, true, graphicItem, sMapObjects);
                     if (radius == maxRadius) {
-                        attrs.setInteriorOpacity(1.0);
-                    }
-
-                    if (speed > 0) {
-                        attrs.setDrawOutline(true);
-                        if (mIntervalToMaterialMap.get(key).equals(Material.BLACK)) {
-                            attrs.setOutlineMaterial(Material.WHITE);
-                        }
+                        addRenderable(shapeMax, true, graphicItem, sMapObjects);
                     }
                 } else if (airspace != null) {
                     airspace.setAltitudes(mAltitude - height / 2, mAltitude + height / 2);
                     var attrs = new BasicAirspaceAttributes();
-                    attrs.setInteriorOpacity(0.75);
+                    attrs.setInteriorOpacity(1.0);
                     attrs.setInteriorMaterial(mIntervalToMaterialMap.getOrDefault(key, Material.GRAY));
 
                     airspace.setAttributes(attrs);
                     addRenderable(airspace, true, graphicItem, sMapObjects);
                     if (radius == maxRadius) {
-                        attrs.setInteriorOpacity(1.0);
-                    }
-
-                    if (speed > 0) {
-                        attrs.setDrawOutline(true);
-                        if (mIntervalToMaterialMap.get(key).equals(Material.BLACK)) {
-                            attrs.setOutlineMaterial(Material.WHITE);
-                        }
                     }
                 }
             }

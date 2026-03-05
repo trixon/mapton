@@ -59,7 +59,7 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     TREND_1D_PIE("Trend, 1d (paj)", Integer.MAX_VALUE),
     TREND_1D_STACK("Trend, 1d (stapel)", Integer.MAX_VALUE),
     TREND_2D_PIE("Trend, 2d (paj)", Integer.MAX_VALUE),
-    TREND_2D_STACK("Trend, 2d (intervall)", Integer.MAX_VALUE),
+    TREND_2D_STACK("Trend, 2d (stapel)", Integer.MAX_VALUE),
     FREQ_BUFFER("Frekvens, hög (buffer)", Integer.MAX_VALUE),
     HEAT_MAP(Mapton.addWarning("Värmekarta", 5), Integer.MAX_VALUE);
 
