@@ -49,7 +49,7 @@ public class GraphicRendererGroundwater extends GraphicRendererBase {
     }
 
     private List<BHydroGroundwaterPoint> getGroundwaterPoints(BTopoControlPoint p) {
-        return ButterflyHelper.getGroundwaterPoints(p, 100, 5, p.getDateZero());
+        return ButterflyHelper.getLimitedPoints(p, p.getButterfly().hydro().getGroundwaterPoints(), 100, 5, p.getDateZero());
     }
 
     private void plotGroundwaterConnector(BTopoControlPoint p, Position position) {

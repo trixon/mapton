@@ -38,6 +38,7 @@ import org.mapton.butterfly_topo.shared.AlarmLevelFilter;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.fx.BindingHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.RangeSliderPane;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
@@ -343,8 +344,8 @@ class FilterSectionMeas extends MBaseFilterSection {
         mRoot.add(wrapInTitleBorder("Larmnivå", alarmBox), 1, row++, 1, 1);
         mRoot.add(wrapInTitleBorder("Övrigt", miscBox), 1, row++, 1, 1);
         FxHelper.autoSizeRegionHorizontal(mMeasTopListUnitScb, mMeasAlarmLevelChangeModeScb, mMeasAlarmLevelChangeUnitScb);
-        FxHelper.bindWidthForChildrens(movementBox, alarmBox, miscBox);
-        FxHelper.bindWidthForRegions(movementBox, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasNumOfSis, mMeasAlarmLevelAgeSis, mMeasOperatorSccb);
+        BindingHelper.bindWidthForChildrens(movementBox, alarmBox, miscBox);
+        BindingHelper.bindWidthForRegions(movementBox, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasNumOfSis, mMeasAlarmLevelAgeSis, mMeasOperatorSccb);
         FxHelper.autoSizeColumn(mRoot, 2);
         mRoot.setMaxWidth(getMaxWidth());
     }

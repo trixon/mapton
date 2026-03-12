@@ -36,7 +36,7 @@ import org.mapton.butterfly_topo.api.TopoManager;
 public class TopoAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes[] mBearingAttributes;
-    private BasicShapeAttributes[][] mComponentCircle1dAttributes;
+    private BasicShapeAttributes[] mComponentCircle1dAttributes;
     private BasicShapeAttributes[] mComponentVector12dAttributes;
     private BasicShapeAttributes[] mComponentVector3dAttributes;
     private BasicShapeAttributes[] mComponentVectorCurrentAttributes;
@@ -73,35 +73,23 @@ public class TopoAttributeManager extends BaseAttributeManager {
         return mBearingAttributes[first ? 0 : 1];
     }
 
-    public BasicShapeAttributes getComponentCircle1dAttributes(BTopoControlPoint p, int alarmLevel, boolean rise, boolean maximus) {
+    public BasicShapeAttributes getComponentCircle1dAttributes(BTopoControlPoint p, int alarmLevel, boolean maximus) {
         if (mComponentCircle1dAttributes == null) {
-            mComponentCircle1dAttributes = new BasicShapeAttributes[5][2];
+            mComponentCircle1dAttributes = new BasicShapeAttributes[5];
 
             for (int i = 0; i < 5; i++) {
-                for (int j = 0; j < 2; j++) {
-                    var attrs = new BasicShapeAttributes();
-                    attrs.setDrawOutline(false);
-                    Material material;
-                    if (i < 4) {
-                        material = ButterflyHelper.getAlarmMaterial(i - 1);
-                    } else {
-                        material = new Material(Color.decode("#800080"));
-                    }
-                    attrs.setInteriorMaterial(material);
-                    attrs.setEnableLighting(true);
-                    attrs.setInteriorOpacity(0.85);
-
-                    if (j == 1) {
-                        attrs.setDrawOutline(true);
-                        if (i < 4) {
-                            attrs.setOutlineMaterial(Material.LIGHT_GRAY);
-                        } else {
-                            attrs.setOutlineMaterial(Material.YELLOW);
-                        }
-                    }
-
-                    mComponentCircle1dAttributes[i][j] = attrs;
+                var attrs = new BasicShapeAttributes();
+                attrs.setDrawOutline(false);
+                Material material;
+                if (i < 4) {
+                    material = ButterflyHelper.getAlarmMaterial(i - 1);
+                } else {
+                    material = new Material(Color.decode("#800080"));
                 }
+                attrs.setInteriorMaterial(material);
+                attrs.setEnableLighting(true);
+
+                mComponentCircle1dAttributes[i] = attrs;
             }
         }
 
@@ -110,9 +98,8 @@ public class TopoAttributeManager extends BaseAttributeManager {
             offset++;
         }
         var i = alarmLevel + offset;
-        var j = rise ? 1 : 0;
 
-        return mComponentCircle1dAttributes[i][j];
+        return mComponentCircle1dAttributes[i];
     }
 
     public BasicShapeAttributes getComponentMeasurementsAttributes(BTopoControlPoint p) {

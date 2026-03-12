@@ -19,8 +19,10 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.AbstractSurfaceShape;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Box;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.RigidShape;
 import gov.nasa.worldwind.render.SurfaceCircle;
 import gov.nasa.worldwind.render.SurfacePolygon;
 import java.time.temporal.ChronoUnit;
@@ -71,7 +73,7 @@ public class GraphicRendererCircle extends GraphicRendererBase {
         var height = 0.4;
         var pos = WWHelper.positionFromPosition(position, height * 0.5 * 2);
         var maxRadius = 10.0;
-        BTopoControlPointObservation o = p.ext().getObservationFilteredLast();
+        var o = p.ext().getObservationFilteredLast();
 
         var dZ = o.ext().getDeltaZ();
         if (dZ == null) {
@@ -79,19 +81,19 @@ public class GraphicRendererCircle extends GraphicRendererBase {
         }
         var radius = Math.min(maxRadius, Math.abs(dZ) * 250 + 0.05);
         var maximus = radius == maxRadius;
-        var rise = Math.signum(dZ) > 0;
 
-        var cylinder = new Cylinder(pos, height, radius);
+        RigidShape shape;
+        if (dZ > 0) {
+            shape = new Box(pos, radius, height * .5, radius);
+        } else {
+            shape = new Cylinder(pos, height, radius);
+        }
+
         var alarmLevel = p.ext().getAlarmLevelHeight(o);
-        var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, rise, maximus);
-//        if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
-//            attrs = new BasicShapeAttributes(attrs);
-//            attrs.setInteriorOpacity(0.25);
-//            attrs.setOutlineOpacity(0.20);
-//        }
+        var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, maximus);
 
-        cylinder.setAttributes(attrs);
-        addRenderable(cylinder, true, GraphicItem.CIRCLE_1D, sMapObjects);
+        shape.setAttributes(attrs);
+        addRenderable(shape, true, GraphicItem.CIRCLE_1D, sMapObjects);
     }
 
     private void plot2dCircle(BTopoControlPoint p, Position position) {
@@ -113,7 +115,7 @@ public class GraphicRendererCircle extends GraphicRendererBase {
 
         var cylinder = new Cylinder(pos, height, radius);
         var alarmLevel = p.ext().getAlarmLevel(o);
-        var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, false, maximus);
+        var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, maximus);
 
         cylinder.setAttributes(attrs);
         addRenderable(cylinder, true, GraphicItem.CIRCLE_2D, sMapObjects);
@@ -133,13 +135,12 @@ public class GraphicRendererCircle extends GraphicRendererBase {
         if (delta3d == null) {
             return;
         }
+
         var radius = Math.min(maxRadius, Math.abs(delta3d) * 250 + 0.05);
         var maximus = radius == maxRadius;
-        var rise = Math.signum(delta3d) > 0;
-
         var cylinder = new Cylinder(pos, height, radius);
         var alarmLevel = p.ext().getAlarmLevel(o);
-        var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, rise, maximus);
+        var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, maximus);
 
         cylinder.setAttributes(attrs);
         addRenderable(cylinder, true, GraphicItem.CIRCLE_3D, sMapObjects);

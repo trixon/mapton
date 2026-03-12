@@ -34,6 +34,10 @@ public class ChartBuilderDeltaSplit {
     }
 
     public synchronized Callable<JPanel> build(BTopoControlPoint p) {
+        return build(p, true);
+    }
+
+    public synchronized Callable<JPanel> build(BTopoControlPoint p, boolean standardLayout) {
         if (p == null) {
             return null;
         }

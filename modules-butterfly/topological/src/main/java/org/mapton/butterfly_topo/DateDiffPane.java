@@ -25,6 +25,7 @@ import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeMode;
+import se.trixon.almond.util.fx.BindingHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
@@ -132,8 +133,8 @@ public class DateDiffPane {
         var spinners = new Spinner[]{mMeters1dSds, mMeters2dSds, mPercent1dSis, mPercent2dSis};
         FxHelper.setEditable(true, spinners);
         FxHelper.autoCommitSpinners(spinners);
-        FxHelper.bindWidthForChildrens(mRoot);
-        FxHelper.bindWidthForRegions(mRoot);
+        BindingHelper.bindWidthForChildrens(mRoot);
+        BindingHelper.bindWidthForRegions(mRoot);
         FxHelper.autoSizeColumn(mRoot, 2);
     }
 }

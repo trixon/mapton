@@ -132,7 +132,7 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
             label = "mm";
         }
         plot.getRangeAxis().setLabel(label);
-        plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
+        plotOverlays(plot, p, p.getCommonObservations().firstKey());
         p.getCommonObservations().entrySet().forEach(entry -> {
             var date = entry.getKey();
             var p2 = entry.getValue();

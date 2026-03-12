@@ -30,6 +30,7 @@ public class ChartAggregate {
 
     private final ChartBuilderDelta mBuilderDeltaAvg = new ChartBuilderDelta(true, null);
     private final ChartBuilderDeltaSplit mBuilderDeltaSplit = new ChartBuilderDeltaSplit();
+    private final ChartBuilderAzimuth mBuilderDeltaAzimuth = new ChartBuilderAzimuth(true, null);
     private final ChartBuilderTrend mBuilderTrend1d;
     private final ChartBuilderTrend mBuilderTrend2d;
     private final JTabbedPane mTabbedPane;
@@ -54,6 +55,7 @@ public class ChartAggregate {
                 mTabbedPane.removeAll();
                 if (p.ext().getObservationsTimeFiltered().size() > 1) {
                     mTabbedPane.add("Delta", mBuilderDeltaSplit.build(p).call());
+//                    mTabbedPane.add("Delta (bär)", mBuilderDeltaAzimuth.build(p).call());
                     mTabbedPane.add("Delta (avg)", mBuilderDeltaAvg.build(p).call());
                     if (p.getDimension() != BDimension._2d) {
                         mTabbedPane.add("Trend 1d", mBuilderTrend1d.build(p).call());
