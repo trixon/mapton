@@ -34,6 +34,7 @@ import org.mapton.butterfly_rock_blast.BlastChartSOSB;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.DateHelper;
+import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -43,6 +44,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 @ServiceProvider(service = MChartOverlay.class)
 public class BlastChartOverlay extends BChartOverlay {
 
+    public static final Color COLOR = Color.decode("#C86400");
     public static final double DEFAULT_DISTANCE_LIMIT = 40.0;
 
     public BlastChartOverlay() {
@@ -50,7 +52,7 @@ public class BlastChartOverlay extends BChartOverlay {
 
     @Override
     public synchronized void plot(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
-        if (!mObjectStorageManager.getBoolean(BlastChartSOSB.class, false)) {
+        if (!mObjectStorageManager.getBoolean(BlastChartSOSB.class, BlastChartSOSB.DEFAULT_VALUE)) {
             return;
         }
 
@@ -89,7 +91,7 @@ public class BlastChartOverlay extends BChartOverlay {
                             marker.setStroke(otherStroke);
                             distanceQuota = Math.min(1, distanceQuota);
                             int alpha = (int) (Math.max(distanceQuota, 0.25) * 255d);
-                            color = new Color(200, 100, 0, alpha);
+                            color = GraphicsHelper.colorAddAlpha(COLOR, alpha);
 
                             var value = p.getValue("PLOT_BLAST_LABEL");
                             if (value != Boolean.FALSE) {

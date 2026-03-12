@@ -19,6 +19,7 @@ import org.mapton.api.MChartSOSB;
 import org.mapton.api.MSimpleObjectStorageBoolean;
 import org.mapton.butterfly_rock_blast.chart.BlastChartOverlay;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -27,11 +28,10 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = MSimpleObjectStorageBoolean.Misc.class)
 public class BlastChartSOSB extends MChartSOSB {
 
-    public static final boolean DEFAULT = true;
-
     public BlastChartSOSB() {
         setName(Bundle.CTL_BlastAction());
-        setTooltipText("Sprängsalvor inom %.0f m.".formatted(BlastChartOverlay.DEFAULT_DISTANCE_LIMIT));
+        setColor(FxHelper.colorToFxColor(BlastChartOverlay.COLOR));
+        setTooltipText("De inom %.0f m.".formatted(BlastChartOverlay.DEFAULT_DISTANCE_LIMIT));
     }
 
 }
