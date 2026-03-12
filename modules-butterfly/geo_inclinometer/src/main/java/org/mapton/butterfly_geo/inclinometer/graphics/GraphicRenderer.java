@@ -111,7 +111,8 @@ public class GraphicRenderer extends GraphicRendererBase {
 
             return new ValueLimiter(cappedValue, value, percentI, percentD, percentD > 1.0);
         } else {
-            return new ValueLimiter(mScale3dP * originalValue, originalValue, 0, 0, false);
+            var value = MathHelper.convertDoubleToDouble(originalValue);
+            return new ValueLimiter(mScale3dP * value, value, 0, 0, false);
 
         }
     }
@@ -243,13 +244,14 @@ public class GraphicRenderer extends GraphicRendererBase {
             return;
         }
 
+        var r = 0.4;
         var positions = new ArrayList<Position>();
         positions.add(WWHelper.positionFromPosition(position, mHeightOffset));
         for (var item : p.ext().getObservationFilteredLast().getObservationItems()) {
             var value = item.getDistance();
             var valueLimiter = createValueLimiter(p, value);
             var scaledDistance = valueLimiter.cappedValue;
-            var azimuth = item.getAzimuth();
+            var azimuth = Double.isFinite(item.getAzimuth()) ? item.getAzimuth() : 0d;
             if (p.getAzimuth() != null) {
                 azimuth = Angle.normalizedDegrees(azimuth + p.getAzimuth());
             }
@@ -258,11 +260,8 @@ public class GraphicRenderer extends GraphicRendererBase {
             if (scaledDistance > 0) {
                 position2 = WWHelper.movePolar(position, azimuth, scaledDistance);
             }
-
             var visualPosition = WWHelper.positionFromPosition(position2, mHeightOffset + item.getDown());
             positions.add(visualPosition);
-
-            var r = 0.4;
             var ellipsoid = new Ellipsoid(visualPosition, r, r, r);
             ellipsoid.setAttributes(getAttrs(p, value, valueLimiter));
 

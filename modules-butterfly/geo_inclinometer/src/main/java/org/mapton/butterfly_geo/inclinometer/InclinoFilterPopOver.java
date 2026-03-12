@@ -131,11 +131,6 @@ public class InclinoFilterPopOver extends BaseTabbedFilterPopOver {
         );
 
         setContentNode(root);
-
-        mFilterSectionPoint.disable(
-                BFilterSectionPoint.PointElement.ALARM,
-                BFilterSectionPoint.PointElement.MEAS_NEXT
-        );
     }
 
     private void initListeners() {
