@@ -49,6 +49,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.fx.BindingHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.RangeSliderPane;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
@@ -484,6 +485,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         var nset2 = true;
         var diffset = true;
         var diffnset = true;
+        var level2nset = true;
+        var level3set = true;
 
         var a1 = p.extOrNull().getAlarm(BComponent.HEIGHT);
         var a2 = p.extOrNull().getAlarm(BComponent.PLANE);
@@ -512,12 +515,28 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             diffnset = a1 == null || a1.getRatio1() == null;
         }
 
+        if (checkModel.isChecked(AlarmFlags.NOT_SET_LEVEL_2)) {
+            var hNotSet = a1 != null && StringUtils.isBlank(a1.getLimit2());
+            var pNotSet = a2 != null && StringUtils.isBlank(a2.getLimit2());
+
+            level3set = hNotSet || pNotSet;
+        }
+
+        if (checkModel.isChecked(AlarmFlags.SET_LEVEL_3)) {
+            var hSet = a1 != null && StringUtils.isNotBlank(a1.getLimit3());
+            var pSet = a2 != null && StringUtils.isNotBlank(a2.getLimit3());
+
+            level3set = hSet || pSet;
+        }
+
         return set1
                 && nset1
                 && set2
                 && nset2
                 && diffset
-                && diffnset;
+                && diffnset
+                && level2nset
+                && level3set;
     }
 
     private boolean validateAltitude(BXyzPoint p) {
@@ -557,7 +576,9 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         NOT_SET_1("Saknar larm 1"),
         NOT_SET_2("Saknar larm 2"),
         SET_DIFF("Har diff"),
-        NOT_SET_DIFF("Saknar diff");
+        NOT_SET_DIFF("Saknar diff"),
+        NOT_SET_LEVEL_2("Saknar nivå 2"),
+        SET_LEVEL_3("Har nivå 3");
         private final String mTitle;
 
         private AlarmFlags(String title) {
@@ -822,7 +843,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             mBaseBox.addRow(row++, leftBox, rightBox);
 
             FxHelper.autoSizeColumn(mBaseBox, 2);
-            FxHelper.bindWidthForChildrens(leftBox, rightBox);
+            BindingHelper.bindWidthForChildrens(leftBox, rightBox);
         }
     }
 }

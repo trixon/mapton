@@ -34,6 +34,7 @@ import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.openide.util.NbBundle;
+import se.trixon.almond.util.fx.BindingHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
@@ -188,7 +189,7 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
             var rightBox = new VBox(rowGap,
                     mDisruptorHighFrequencyModeScb
             );
-            FxHelper.bindWidthForChildrens(leftBox, rightBox);
+            BindingHelper.bindWidthForChildrens(leftBox, rightBox);
             mRoot.addRow(0, leftBox, rightBox);
             mRoot.add(hbox, 0, 1, 2, 1);
             FxHelper.autoSizeColumn(mRoot, 2);
