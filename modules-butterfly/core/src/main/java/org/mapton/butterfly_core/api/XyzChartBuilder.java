@@ -61,6 +61,7 @@ import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MinMaxCollection;
@@ -109,19 +110,6 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         }
     }
 
-    public static void plotOverlays(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
-//    public static void plotOverlays(XYPlot plot, BBasePoint p, LocalDate aStartDate, Class<? extends BChartOverlay>... excludedOverlays) {
-//        var excludedOverlaysSet = new HashSet();
-//        if (excludedOverlays != null) {
-//            Collections.addAll(excludedOverlaysSet, excludedOverlays);
-//        }
-
-        Lookup.getDefault().lookupAll(BChartOverlay.class).stream()
-                //                .filter(o -> !excludedOverlaysSet.contains(o.getClass()))
-                .sorted(Comparator.comparingInt(MChartOverlay::getPosition))
-                .forEach(chartOverlay -> chartOverlay.plot(plot, p, aStartDate));
-    }
-
     public static void plotMeasNeed(XYPlot plot, BBaseControlPoint p, long days) {
         if (p.getFrequency() > 0 && days < 0) {
             var ldt = LocalDateTime.now().plusDays(days);
@@ -139,6 +127,25 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
 
             plot.addDomainMarker(marker);
         }
+    }
+
+    public static void plotOverlays(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
+//    public static void plotOverlays(XYPlot plot, BBasePoint p, LocalDate aStartDate, Class<? extends BChartOverlay>... excludedOverlays) {
+//        var excludedOverlaysSet = new HashSet();
+//        if (excludedOverlays != null) {
+//            Collections.addAll(excludedOverlaysSet, excludedOverlays);
+//        }
+
+        Lookup.getDefault().lookupAll(BChartOverlay.class).stream()
+                //                .filter(o -> !excludedOverlaysSet.contains(o.getClass()))
+                .sorted(Comparator.comparingInt(MChartOverlay::getPosition))
+                .forEach(chartOverlay -> {
+                    try {
+                        chartOverlay.plot(plot, p, aStartDate);
+                    } catch (Exception e) {
+                        Exceptions.printStackTrace(e);
+                    }
+                });
     }
 
     public void addNEMarkers(XYPlot plot, BBaseControlPointObservation o, boolean doPlot) {
