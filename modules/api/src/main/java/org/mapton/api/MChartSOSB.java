@@ -15,16 +15,29 @@
  */
 package org.mapton.api;
 
+import javafx.scene.paint.Color;
+
 /**
  *
  * @author Patrik Karlström
  */
 public abstract class MChartSOSB extends MSimpleObjectStorageBoolean.Misc {
 
+    public static final boolean DEFAULT_VALUE = true;
+    private Color mColor = Color.YELLOW;
+
     public MChartSOSB() {
         setCategory("chart");
         setGroup(MDict.OVERLAYS.toString());
-        setDefaultValue(true);
+        setDefaultValue(DEFAULT_VALUE);
+    }
+
+    public Color getColor() {
+        return mColor;
+    }
+
+    public void setColor(Color color) {
+        mColor = color;
     }
 
 }
