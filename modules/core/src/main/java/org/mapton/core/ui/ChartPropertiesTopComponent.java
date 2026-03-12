@@ -17,15 +17,19 @@ package org.mapton.core.ui;
 
 import java.util.Comparator;
 import java.util.HashSet;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.ToggleSwitch;
+import org.mapton.api.MChartSOSB;
 import org.mapton.api.MKey;
 import org.mapton.api.MSimpleObjectStorageBoolean;
 import org.mapton.api.MSimpleObjectStorageManager;
@@ -37,6 +41,7 @@ import org.openide.util.Lookup;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.Spacer;
 
 /**
  * Generic Property TopComponent
@@ -111,11 +116,20 @@ public final class ChartPropertiesTopComponent extends MTopComponent {
                 Lookup.getDefault().lookupAll(mClass).stream()
                         .filter(p -> Strings.CI.equals(p.getCategory(), "chart"))
                         .sorted(c1.thenComparing(c2))
+                        .map(simpleStorage -> (MChartSOSB) simpleStorage)
                         .forEachOrdered(simpleStorage -> {
                             VBox box;
                             var toggleSwitch = new ToggleSwitch(simpleStorage.getName());
+//                            toggleSwitch.setPadding(FxHelper.getUIScaledInsets(10));
                             toggleSwitch.prefWidthProperty().bind(mItemBox.widthProperty());
-                            box = new VBox(toggleSwitch);
+                            var coloredBorderPane = new BorderPane(toggleSwitch);
+                            var colorPanel = new Pane();
+//                            colorPanel.setPadding(FxHelper.getUIScaledInsets(10));
+                            colorPanel.setPrefWidth(FxHelper.getUIScaled(8.0));
+                            var spacer = new Spacer(Orientation.HORIZONTAL, FxHelper.getUIScaled(8.0));
+                            coloredBorderPane.setLeft(new HBox(colorPanel, spacer));
+                            colorPanel.setBackground(FxHelper.createBackground(simpleStorage.getColor()));
+                            box = new VBox(coloredBorderPane);
                             if (StringUtils.isNotBlank(simpleStorage.getTooltipText())) {
                                 toggleSwitch.setTooltip(new Tooltip(simpleStorage.getTooltipText()));
                             }
