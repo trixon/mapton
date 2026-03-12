@@ -78,6 +78,7 @@ import org.mapton.butterfly_format.types.structural.BStructuralTiltPointObservat
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import org.mapton.butterfly_format.types.tmo.BGrundvattenObservation;
 import org.mapton.butterfly_format.types.tmo.BInfiltration;
+import org.mapton.butterfly_format.types.tmo.BInfiltrationObservation;
 import org.mapton.butterfly_format.types.tmo.BRorelse;
 import org.mapton.butterfly_format.types.tmo.BRorelseObservation;
 import org.mapton.butterfly_format.types.tmo.BTunnelvatten;
@@ -335,6 +336,9 @@ public class Butterfly {
 //        }.load(sourceDir, "tmoVaderstation.csv", mTmo.getVaderstation());
         new ImportFromCsv<BGrundvattenObservation>(BGrundvattenObservation.class) {
         }.load(sourceDir, "tmoGrundvattenObservations.csv", mTmo.getGrundvattenObservations());
+
+        new ImportFromCsv<BInfiltrationObservation>(BInfiltrationObservation.class) {
+        }.load(sourceDir, "tmoInfiltrationObservations.csv", mTmo.getInfiltrationObservations());
 
         new ImportFromCsv<BRorelseObservation>(BRorelseObservation.class) {
         }.load(sourceDir, "tmoRorelseObservations.csv", mTmo.getRorelseObservations());
@@ -842,6 +846,7 @@ public class Butterfly {
 
         private final ArrayList<BGrundvatten> mGrundvatten = new ArrayList<>();
         private final ArrayList<BGrundvattenObservation> mGrundvattenObservations = new ArrayList<>();
+        private final ArrayList<BInfiltrationObservation> mInfiltrationObservations = new ArrayList<>();
         private final ArrayList<BInfiltration> mInfiltration = new ArrayList<>();
         private final ArrayList<BRorelse> mRorelse = new ArrayList<>();
         private final ArrayList<BRorelseObservation> mRorelseObservations = new ArrayList<>();
@@ -859,6 +864,10 @@ public class Butterfly {
 
         public ArrayList<BInfiltration> getInfiltration() {
             return mInfiltration;
+        }
+
+        public ArrayList<BInfiltrationObservation> getInfiltrationObservations() {
+            return mInfiltrationObservations;
         }
 
         public ArrayList<BRorelse> getRorelse() {

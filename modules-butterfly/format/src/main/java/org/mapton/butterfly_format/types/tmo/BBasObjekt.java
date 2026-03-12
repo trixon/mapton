@@ -25,34 +25,34 @@ import org.mapton.butterfly_format.types.BBasePoint;
  */
 public abstract class BBasObjekt extends BBasePoint {
 
-    private String mAnmärkning;
-    private String mBenämning;
-    private String mDubbnamn;
-    private String mGammalt_id;
-    private String mHöjd;
-    private String mInformationskällor;
-    private LocalDate mInstallationsdatum;
-    private LocalDate mInventeringsdatum;
-    private String mKontrollprogram;
-    private String mKoordinatkvalitet;
-    private String mLägesbeskrivning;
-    private String mMätningstyper;
-    private String mMätpunktstyp;
-    private String mPlan;
-    private String mStatus;
-    private LocalDate mVersionsdatum;
-    private Double mX;
-    private Double mY;
+    private String anmärkning;
+    private String benämning;
+    private String dubbnamn;
+    private String gammalt_id;
+    private String höjd;
+    private String informationskällor;
+    private LocalDate installationsdatum;
+    private LocalDate inventeringsdatum;
+    private String kontrollprogram;
+    private String koordinatkvalitet;
+    private String lägesbeskrivning;
+    private String mätningstyper;
+    private String mätpunktstyp;
+    private String plan;
+    private String status;
+    private LocalDate versionsdatum;
+    private Double x;
+    private Double y;
 
     public BBasObjekt() {
     }
 
     public String getAnmärkning() {
-        return mAnmärkning;
+        return anmärkning;
     }
 
     public String getBenämning() {
-        return mBenämning;
+        return benämning;
     }
 
     @Override
@@ -61,39 +61,39 @@ public abstract class BBasObjekt extends BBasePoint {
     }
 
     public String getDubbnamn() {
-        return mDubbnamn;
+        return dubbnamn;
     }
 
     public String getGammalt_id() {
-        return mGammalt_id;
+        return gammalt_id;
     }
 
     public String getHöjd() {
-        return mHöjd;
+        return höjd;
     }
 
     public String getInformationskällor() {
-        return mInformationskällor;
+        return informationskällor;
     }
 
     public LocalDate getInstallationsdatum() {
-        return mInstallationsdatum;
+        return installationsdatum;
     }
 
     public LocalDate getInventeringsdatum() {
-        return mInventeringsdatum;
+        return inventeringsdatum;
     }
 
     public String getKontrollprogram() {
-        return mKontrollprogram;
+        return kontrollprogram;
     }
 
     public String getKoordinatkvalitet() {
-        return mKoordinatkvalitet;
+        return koordinatkvalitet;
     }
 
     public String getLägesbeskrivning() {
-        return mLägesbeskrivning;
+        return lägesbeskrivning;
     }
 
     @JsonIgnore
@@ -103,11 +103,11 @@ public abstract class BBasObjekt extends BBasePoint {
     }
 
     public String getMätningstyper() {
-        return mMätningstyper;
+        return mätningstyper;
     }
 
     public String getMätpunktstyp() {
-        return mMätpunktstyp;
+        return mätpunktstyp;
     }
 
     @Override
@@ -116,94 +116,94 @@ public abstract class BBasObjekt extends BBasePoint {
     }
 
     public String getPlan() {
-        return mPlan;
+        return plan;
     }
 
     public String getStatus() {
-        return mStatus;
+        return status;
     }
 
     public LocalDate getVersionsdatum() {
-        return mVersionsdatum;
+        return versionsdatum;
     }
 
     public Double getX() {
-        return mX;
+        return x;
     }
 
     public Double getY() {
-        return mY;
+        return y;
     }
 
     public void setAnmärkning(String anmärkning) {
-        this.mAnmärkning = anmärkning;
+        this.anmärkning = anmärkning;
     }
 
     public void setBenämning(String benämning) {
-        this.mBenämning = benämning;
+        this.benämning = benämning;
     }
 
     public void setDubbnamn(String dubbnamn) {
-        this.mDubbnamn = dubbnamn;
+        this.dubbnamn = dubbnamn;
     }
 
     public void setGammalt_id(String gammalt_id) {
-        this.mGammalt_id = gammalt_id;
+        this.gammalt_id = gammalt_id;
     }
 
     public void setHöjd(String höjd) {
-        this.mHöjd = höjd;
+        this.höjd = höjd;
     }
 
     public void setInformationskällor(String informationskällor) {
-        this.mInformationskällor = informationskällor;
+        this.informationskällor = informationskällor;
     }
 
     public void setInstallationsdatum(LocalDate installationsdatum) {
-        this.mInstallationsdatum = installationsdatum;
+        this.installationsdatum = installationsdatum;
     }
 
     public void setInventeringsdatum(LocalDate inventeringsdatum) {
-        this.mInventeringsdatum = inventeringsdatum;
+        this.inventeringsdatum = inventeringsdatum;
     }
 
     public void setKontrollprogram(String kontrollprogram) {
-        this.mKontrollprogram = kontrollprogram;
+        this.kontrollprogram = kontrollprogram;
     }
 
     public void setKoordinatkvalitet(String koordinatkvalitet) {
-        this.mKoordinatkvalitet = koordinatkvalitet;
+        this.koordinatkvalitet = koordinatkvalitet;
     }
 
     public void setLägesbeskrivning(String lägesbeskrivning) {
-        this.mLägesbeskrivning = lägesbeskrivning;
+        this.lägesbeskrivning = lägesbeskrivning;
     }
 
     public void setMätningstyper(String mätningstyper) {
-        this.mMätningstyper = mätningstyper;
+        this.mätningstyper = mätningstyper;
     }
 
     public void setMätpunktstyp(String mätpunktstyp) {
-        this.mMätpunktstyp = mätpunktstyp;
+        this.mätpunktstyp = mätpunktstyp;
     }
 
     public void setPlan(String plan) {
-        this.mPlan = plan;
+        this.plan = plan;
     }
 
     public void setStatus(String status) {
-        this.mStatus = status;
+        this.status = status;
     }
 
     public void setVersionsdatum(LocalDate versionsdatum) {
-        this.mVersionsdatum = versionsdatum;
+        this.versionsdatum = versionsdatum;
     }
 
     public void setX(Double x) {
-        this.mX = x;
+        this.x = x;
     }
 
     public void setY(Double y) {
-        this.mY = y;
+        this.y = y;
     }
 }

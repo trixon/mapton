@@ -15,58 +15,81 @@
  */
 package org.mapton.butterfly_format.types.tmo;
 
+import java.util.Comparator;
+import org.mapton.butterfly_format.types.BBasePoint;
+
 /**
  *
  * @author Patrik Karlström
  */
 public class BInfiltration extends BBasVatten {
 
-    private String mInfiltrationstyp;
-    private Double mKapacitet;
-    private Double mStyrnivå_nedre;
-    private Double mStyrnivå_övre;
-    private Double mTryckgivarnivå;
+    private String infiltrationstyp;
+    private Double kapacitet;
+    private Double styrnivå_nedre;
+    private Double styrnivå_övre;
+    private Double tryckgivarnivå;
+    private transient Ext mExt;
 
     public BInfiltration() {
     }
 
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
+    }
+
     public String getInfiltrationstyp() {
-        return mInfiltrationstyp;
+        return infiltrationstyp;
     }
 
     public Double getKapacitet() {
-        return mKapacitet;
+        return kapacitet;
     }
 
     public Double getStyrnivå_nedre() {
-        return mStyrnivå_nedre;
+        return styrnivå_nedre;
     }
 
     public Double getStyrnivå_övre() {
-        return mStyrnivå_övre;
+        return styrnivå_övre;
     }
 
     public Double getTryckgivarnivå() {
-        return mTryckgivarnivå;
+        return tryckgivarnivå;
     }
 
     public void setInfiltrationstyp(String infiltrationstyp) {
-        this.mInfiltrationstyp = infiltrationstyp;
+        this.infiltrationstyp = infiltrationstyp;
     }
 
     public void setKapacitet(Double kapacitet) {
-        this.mKapacitet = kapacitet;
+        this.kapacitet = kapacitet;
     }
 
     public void setStyrnivå_nedre(Double styrnivå_nedre) {
-        this.mStyrnivå_nedre = styrnivå_nedre;
+        this.styrnivå_nedre = styrnivå_nedre;
     }
 
     public void setStyrnivå_övre(Double styrnivå_övre) {
-        this.mStyrnivå_övre = styrnivå_övre;
+        this.styrnivå_övre = styrnivå_övre;
     }
 
     public void setTryckgivarnivå(Double tryckgivarnivå) {
-        this.mTryckgivarnivå = tryckgivarnivå;
+        this.tryckgivarnivå = tryckgivarnivå;
+    }
+
+    public class Ext extends BBasePoint.Ext<BInfiltrationObservation> {
+
+        public BInfiltrationObservation getMaxObservation() {
+            return getObservationsAllRaw().stream().max(Comparator.comparing(BInfiltrationObservation::getValue)).orElse(null);
+        }
+
+        public BInfiltrationObservation getMinObservation() {
+            return getObservationsAllRaw().stream().min(Comparator.comparing(BInfiltrationObservation::getValue)).orElse(null);
+        }
     }
 }

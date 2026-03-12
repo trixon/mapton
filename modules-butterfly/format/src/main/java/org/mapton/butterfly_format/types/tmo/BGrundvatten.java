@@ -25,10 +25,10 @@ import org.mapton.butterfly_format.types.BBasePoint;
 public class BGrundvatten extends BBasVatten {
 
     private transient Ext mExt;
-    private String mFiltertyp;
-    private Integer mGradning;
-    private Double mReferensnivå;
-    private String mSpetstyp;
+    private String filtertyp;
+    private Integer gradning;
+    private Double referensnivå;
+    private String spetstyp;
 
     public BGrundvatten() {
     }
@@ -42,35 +42,35 @@ public class BGrundvatten extends BBasVatten {
     }
 
     public String getFiltertyp() {
-        return mFiltertyp;
+        return filtertyp;
     }
 
     public Integer getGradning() {
-        return mGradning;
+        return gradning;
     }
 
     public Double getReferensnivå() {
-        return mReferensnivå;
+        return referensnivå;
     }
 
     public String getSpetstyp() {
-        return mSpetstyp;
+        return spetstyp;
     }
 
     public void setFiltertyp(String filtertyp) {
-        this.mFiltertyp = filtertyp;
+        this.filtertyp = filtertyp;
     }
 
     public void setGradning(Integer gradning) {
-        this.mGradning = gradning;
+        this.gradning = gradning;
     }
 
     public void setReferensnivå(Double referensnivå) {
-        this.mReferensnivå = referensnivå;
+        this.referensnivå = referensnivå;
     }
 
     public void setSpetstyp(String spetstyp) {
-        this.mSpetstyp = spetstyp;
+        this.spetstyp = spetstyp;
     }
 
     public class Ext extends BBasePoint.Ext<BGrundvattenObservation> {

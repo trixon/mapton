@@ -25,9 +25,9 @@ import java.util.ArrayList;
 public class BRorelse extends BBasObjekt {
 
     private transient Ext mExt;
-    private String mFixpunkt;
-    private String mPlacering;
-    private String mPlacering_kommentar;
+    private String fixpunkt;
+    private String placering;
+    private String placering_kommentar;
 
     public BRorelse() {
     }
@@ -41,27 +41,27 @@ public class BRorelse extends BBasObjekt {
     }
 
     public String getFixpunkt() {
-        return mFixpunkt;
+        return fixpunkt;
     }
 
     public String getPlacering() {
-        return mPlacering;
+        return placering;
     }
 
     public String getPlacering_kommentar() {
-        return mPlacering_kommentar;
+        return placering_kommentar;
     }
 
     public void setFixpunkt(String fixpunkt) {
-        this.mFixpunkt = fixpunkt;
+        this.fixpunkt = fixpunkt;
     }
 
     public void setPlacering(String placering) {
-        this.mPlacering = placering;
+        this.placering = placering;
     }
 
     public void setPlacering_kommentar(String placering_kommentar) {
-        this.mPlacering_kommentar = placering_kommentar;
+        this.placering_kommentar = placering_kommentar;
     }
 
     public class Ext {

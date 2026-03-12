@@ -21,98 +21,98 @@ package org.mapton.butterfly_format.types.tmo;
  */
 public class BBasVatten extends BBasObjekt {
 
-    private Double mFilterlängd;
-    private String mGrundvattenmagasin;
-    private Boolean mIgengjuten;
-    private Double mInstallationsdjup;
-    private Double mMarknivå;
-    private Double mMaxPejlbartDjup;
-    private String mRördimension;
-    private Integer mRörlutningsriktning;
-    private String mRörtyp;
-    private Double mSpetsnivå;
+    private Double filterlängd;
+    private String grundvattenmagasin;
+    private Boolean igengjuten;
+    private Double installationsdjup;
+    private Double marknivå;
+    private Double maxPejlbartDjup;
+    private String rördimension;
+    private Integer rörlutningsriktning;
+    private String rörtyp;
+    private Double spetsnivå;
 
     public BBasVatten() {
     }
 
     public Double getFilterlängd() {
-        return mFilterlängd;
+        return filterlängd;
     }
 
     public String getGrundvattenmagasin() {
-        return mGrundvattenmagasin;
+        return grundvattenmagasin;
     }
 
     public Boolean getIgengjuten() {
-        return mIgengjuten;
+        return igengjuten;
     }
 
     public Double getInstallationsdjup() {
-        return mInstallationsdjup;
+        return installationsdjup;
     }
 
     public Double getMarknivå() {
-        return mMarknivå;
+        return marknivå;
     }
 
     public Double getMaxPejlbartDjup() {
-        return mMaxPejlbartDjup;
+        return maxPejlbartDjup;
     }
 
     public String getRördimension() {
-        return mRördimension;
+        return rördimension;
     }
 
     public Integer getRörlutningsriktning() {
-        return mRörlutningsriktning;
+        return rörlutningsriktning;
     }
 
     public String getRörtyp() {
-        return mRörtyp;
+        return rörtyp;
     }
 
     public Double getSpetsnivå() {
-        return mSpetsnivå;
+        return spetsnivå;
     }
 
     public void setFilterlängd(Double filterlängd) {
-        this.mFilterlängd = filterlängd;
+        this.filterlängd = filterlängd;
     }
 
     public void setGrundvattenmagasin(String grundvattenmagasin) {
-        this.mGrundvattenmagasin = grundvattenmagasin;
+        this.grundvattenmagasin = grundvattenmagasin;
     }
 
     public void setIgengjuten(Boolean igengjuten) {
-        this.mIgengjuten = igengjuten;
+        this.igengjuten = igengjuten;
     }
 
     public void setInstallationsdjup(Double installationsdjup) {
-        this.mInstallationsdjup = installationsdjup;
+        this.installationsdjup = installationsdjup;
     }
 
     public void setMarknivå(Double marknivå) {
-        this.mMarknivå = marknivå;
+        this.marknivå = marknivå;
     }
 
     public void setMaxPejlbartDjup(Double maxPejlbartDjup) {
-        this.mMaxPejlbartDjup = maxPejlbartDjup;
+        this.maxPejlbartDjup = maxPejlbartDjup;
     }
 
     public void setRördimension(String rördimension) {
-        this.mRördimension = rördimension;
+        this.rördimension = rördimension;
     }
 
     public void setRörlutningsriktning(Integer rörlutningsriktning) {
-        this.mRörlutningsriktning = rörlutningsriktning;
+        this.rörlutningsriktning = rörlutningsriktning;
     }
 
     public void setRörtyp(String rörtyp) {
-        this.mRörtyp = rörtyp;
+        this.rörtyp = rörtyp;
     }
 
     public void setSpetsnivå(Double spetsnivå) {
-        this.mSpetsnivå = spetsnivå;
+        this.spetsnivå = spetsnivå;
     }
 
 }

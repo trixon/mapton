@@ -21,61 +21,61 @@ package org.mapton.butterfly_format.types.tmo;
  */
 public class BTunnelvatten extends BBasObjekt {
 
-    private String mAnläggningstyp;
-    private Integer mBredd;
-    private String mDelsträcka;
-    private Integer mLängd;
-    private String mPumpgropstyp;
-    private String mTätningstyp;
+    private String anläggningstyp;
+    private Integer bredd;
+    private String delsträcka;
+    private Integer längd;
+    private String pumpgropstyp;
+    private String tätningstyp;
 
     public BTunnelvatten() {
     }
 
     public String getAnläggningstyp() {
-        return mAnläggningstyp;
+        return anläggningstyp;
     }
 
     public Integer getBredd() {
-        return mBredd;
+        return bredd;
     }
 
     public String getDelsträcka() {
-        return mDelsträcka;
+        return delsträcka;
     }
 
     public Integer getLängd() {
-        return mLängd;
+        return längd;
     }
 
     public String getPumpgropstyp() {
-        return mPumpgropstyp;
+        return pumpgropstyp;
     }
 
     public String getTätningstyp() {
-        return mTätningstyp;
+        return tätningstyp;
     }
 
     public void setAnläggningstyp(String anläggningstyp) {
-        this.mAnläggningstyp = anläggningstyp;
+        this.anläggningstyp = anläggningstyp;
     }
 
     public void setBredd(Integer bredd) {
-        this.mBredd = bredd;
+        this.bredd = bredd;
     }
 
     public void setDelsträcka(String delsträcka) {
-        this.mDelsträcka = delsträcka;
+        this.delsträcka = delsträcka;
     }
 
     public void setLängd(Integer längd) {
-        this.mLängd = längd;
+        this.längd = längd;
     }
 
     public void setPumpgropstyp(String pumpgropstyp) {
-        this.mPumpgropstyp = pumpgropstyp;
+        this.pumpgropstyp = pumpgropstyp;
     }
 
     public void setTätningstyp(String tätningstyp) {
-        this.mTätningstyp = tätningstyp;
+        this.tätningstyp = tätningstyp;
     }
 }
