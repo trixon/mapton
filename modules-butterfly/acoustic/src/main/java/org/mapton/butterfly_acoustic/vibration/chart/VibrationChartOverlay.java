@@ -61,7 +61,7 @@ public class VibrationChartOverlay extends BChartOverlay {
         }
 
         var startDate = aStartDate == null ? LocalDate.now() : aStartDate;
-        var vibrationPoints = ButterflyHelper.getVibrationPoints(p, MAX_DISTANCE, MAX_COUNT, startDate);
+        var vibrationPoints = ButterflyHelper.getLimitedPoints(p, p.getButterfly().noise().getVibrationPoints(), MAX_DISTANCE, MAX_COUNT, startDate);
         var renderer = new XYLineAndShapeRenderer(true, false);
         var dataset = new TimeSeriesCollection();
 
