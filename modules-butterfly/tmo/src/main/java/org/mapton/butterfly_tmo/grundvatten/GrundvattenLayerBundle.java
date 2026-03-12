@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
+import org.mapton.butterfly_tmo.TmoAttributeManager;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -41,7 +42,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 @ServiceProvider(service = LayerBundle.class)
 public class GrundvattenLayerBundle extends BfLayerBundle {
 
-    private final GrundvattenAttributeManager mAttributeManager = GrundvattenAttributeManager.getInstance();
+    private final TmoAttributeManager mAttributeManager = TmoAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
     private final GrundvattenManager mManager = GrundvattenManager.getInstance();
     private final GrundvattenOptionsView mOptionsView;

@@ -18,6 +18,7 @@ package org.mapton.butterfly_tmo.grundvatten;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import org.mapton.api.ui.forms.PropertiesBuilder;
+import org.mapton.butterfly_format.types.tmo.BBasVatten;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
@@ -26,10 +27,10 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-public class GrundvattenPropertiesBuilder extends PropertiesBuilder<BGrundvatten> {
+public class GrundvattenPropertiesBuilder extends PropertiesBuilder<BBasVatten> {
 
     @Override
-    public Object build(BGrundvatten p) {
+    public Object build(BBasVatten p) {
         if (p == null) {
             return p;
         }
@@ -51,29 +52,32 @@ public class GrundvattenPropertiesBuilder extends PropertiesBuilder<BGrundvatten
         propertyMap.put(getCatKey(cat1, "Höjd"), p.getHöjd());
         propertyMap.put(getCatKey(cat1, "Status"), p.getStatus());
         propertyMap.put(getCatKey(cat1, "Grundvattenmagasin"), p.getGrundvattenmagasin());
-        propertyMap.put(getCatKey(cat1, "Referensnivå"), MathHelper.convertDoubleToStringWithSign(p.getReferensnivå(), 2));
         propertyMap.put(getCatKey(cat1, "Spetsnivå"), MathHelper.convertDoubleToStringWithSign(p.getSpetsnivå(), 2));
         propertyMap.put(getCatKey(cat1, "Marknivå"), MathHelper.convertDoubleToStringWithSign(p.getMarknivå(), 2));
-        propertyMap.put(getCatKey(cat1, "Gradning"), p.getGradning());
         propertyMap.put(getCatKey(cat1, "Rörlutningsriktning"), p.getRörlutningsriktning());
         propertyMap.put(getCatKey(cat1, "Rördimension"), p.getRördimension());
         propertyMap.put(getCatKey(cat1, "Rörtyp"), p.getRörtyp());
         propertyMap.put(getCatKey(cat1, "Filterlängd"), p.getFilterlängd());
         propertyMap.put(getCatKey(cat1, "Max pejlbart djup"), p.getMaxPejlbartDjup());
-        propertyMap.put(getCatKey(cat1, "Filtertyp"), p.getFiltertyp());
-        propertyMap.put(getCatKey(cat1, "Spetstyp"), p.getSpetstyp());
         propertyMap.put(getCatKey(cat1, "Igengjuten"), p.getIgengjuten());
         propertyMap.put(getCatKey(cat1, "Informationskällor"), p.getInformationskällor());
         propertyMap.put(getCatKey(cat1, "Kontrollprogram"), p.getKontrollprogram());
 //        propertyMap.put(getCatKey(cat1, ""), p.get);
 //        propertyMap.put(getCatKey(cat1, ""), p.get);
-        propertyMap.put(getCatKey(cat1, "Mätvärden"), p.ext().getNumOfObservations());
-        if (!p.ext().getObservationsAllRaw().isEmpty()) {
-            propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
-            propertyMap.put(getCatKey(cat1, "Senaste"), GrundvattenHelper.getLevelAndDate(p.ext().getObservationRawLast()));
-            propertyMap.put(getCatKey(cat1, "Första"), GrundvattenHelper.getLevelAndDate(p.ext().getObservationRawFirst()));
+        if (p instanceof BGrundvatten g) {
+            propertyMap.put(getCatKey(cat1, "Referensnivå"), MathHelper.convertDoubleToStringWithSign(g.getReferensnivå(), 2));
+            propertyMap.put(getCatKey(cat1, "Gradning"), g.getGradning());
+            propertyMap.put(getCatKey(cat1, "Filtertyp"), g.getFiltertyp());
+            propertyMap.put(getCatKey(cat1, "Spetstyp"), g.getSpetstyp());
+            propertyMap.put(getCatKey(cat1, "Mätvärden"), g.ext().getNumOfObservations());
+            if (!g.ext().getObservationsAllRaw().isEmpty()) {
+                propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), g.ext().getMeasurementAge(ChronoUnit.DAYS));
+                propertyMap.put(getCatKey(cat1, "Senaste"), GrundvattenHelper.getLevelAndDate(g.ext().getObservationRawLast()));
+                propertyMap.put(getCatKey(cat1, "Första"), GrundvattenHelper.getLevelAndDate(g.ext().getObservationRawFirst()));
 //            propertyMap.put(getCatKey(cat1, "Min"), GrundvattenHelper.getLevelAndDate(p.ext().getMinObservation()));
 //            propertyMap.put(getCatKey(cat1, "Max"), GrundvattenHelper.getLevelAndDate(p.ext().getMaxObservation()));
+            }
+
         }
 
         return propertyMap;

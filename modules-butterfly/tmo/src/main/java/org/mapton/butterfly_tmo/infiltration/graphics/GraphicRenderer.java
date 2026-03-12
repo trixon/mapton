@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_tmo.grundvatten.graphics;
+package org.mapton.butterfly_tmo.infiltration.graphics;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Path;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.butterfly_format.types.tmo.BGrundvatten;
-import org.mapton.butterfly_format.types.tmo.BGrundvattenObservation;
+import org.mapton.butterfly_format.types.tmo.BInfiltration;
+import org.mapton.butterfly_format.types.tmo.BInfiltrationObservation;
 import org.mapton.butterfly_tmo.TmoAttributeManager;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -51,10 +52,10 @@ public class GraphicRenderer extends GraphicRendererBase {
         sPlotLimiter.addToAllowList(name);
     }
 
-    public void plot(BGrundvatten p, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BInfiltration p, Position position, ArrayList<AVListImpl> mapObjects) {
         GraphicRendererBase.sMapObjects = mapObjects;
 
-        plotTrace(p, position);
+        plotFlow(p, position);
 
     }
 
@@ -62,12 +63,12 @@ public class GraphicRenderer extends GraphicRendererBase {
         sPlotLimiter.reset();
     }
 
-    private Double getMedian(BGrundvatten p) {
+    private Double getMedian(BInfiltration p) {
         if (p.ext().getObservationsTimeFiltered().isEmpty()) {
             return 0.0;
         }
         var list = p.ext().getObservationsTimeFiltered();
-        var nivåer = list.stream().mapToDouble(BGrundvattenObservation::getNivå).sorted();
+        var nivåer = list.stream().mapToDouble(BInfiltrationObservation::getValue).sorted();
         var median = list.size() % 2 == 0
                 ? nivåer.skip(list.size() / 2 - 1).limit(2).average().getAsDouble()
                 : nivåer.skip(list.size() / 2).findFirst().getAsDouble();
@@ -75,9 +76,47 @@ public class GraphicRenderer extends GraphicRendererBase {
         return median;
     }
 
-    private void plotTrace(BGrundvatten p, Position position) {
-        if (!sCheckModel.isChecked(GraphicItem.LEVEL)
-                || isPlotLimitReached(p, GraphicItem.LEVEL, position)) {
+    private void plotFlow(BInfiltration p, Position position) {
+        if (!sCheckModel.isChecked(GraphicItem.FLOW)
+                || isPlotLimitReached(p, GraphicItem.FLOW, position)) {
+            return;
+        }
+
+        var first = true;
+        for (var o : p.ext().getObservationsTimeFiltered()) {
+            if (o.getDate() == null) {
+                continue;
+            }
+            var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), LocalDateTime.now());
+            var altitude = timeSpan / 24000.0;
+            var pos = WWHelper.positionFromPosition(position, altitude);
+            var maxRadius = 100.0;
+
+            var dZ = o.getValue();
+            if (dZ == 0) {
+                continue;
+            }
+            var scale = 1.0;
+            var radius = Math.min(maxRadius, dZ * scale);
+            var cylinder = new Cylinder(pos, 0.1, radius);
+            var attrs = mAttributeManager.getTimeSeriesAttributes(p);
+
+            cylinder.setAttributes(attrs);
+            addRenderable(cylinder, true);
+            sPlotLimiter.incPlotCounter(GraphicItem.FLOW);
+
+            if (first) {
+                var path = new Path(pos, position);
+                path.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+                addRenderable(path, true);
+                first = false;
+            }
+        }
+    }
+
+    private void plotTrace(BInfiltration p, Position position) {
+        if (!sCheckModel.isChecked(GraphicItem.FLOW)
+                || isPlotLimitReached(p, GraphicItem.FLOW, position)) {
             return;
         }
 
@@ -112,7 +151,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             var maxRadius = 100.0;
 
 //            var dZ = o.getNivå() - p.ext().getMaxObservation().getNivå();
-            var dZ = o.getNivå() - median;
+            var dZ = o.getValue() - median;
 //            dZ = dZ * dZ;
             var scale = 1.0;
             var radius = Math.min(maxRadius, Math.abs(dZ) * scale + 0.1);
@@ -130,9 +169,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
             cylinder.setAttributes(attrs);
             addRenderable(cylinder, true);
-            sPlotLimiter.incPlotCounter(GraphicItem.LEVEL);
+            sPlotLimiter.incPlotCounter(GraphicItem.FLOW);
         }
-
     }
-
 }

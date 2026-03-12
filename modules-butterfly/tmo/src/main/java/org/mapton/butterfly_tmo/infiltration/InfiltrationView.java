@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_tmo.infiltration;
 
+import org.mapton.butterfly_tmo.api.InfiltrationManager;
 import java.util.Arrays;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;

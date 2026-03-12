@@ -27,6 +27,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.tmo.BInfiltration;
+import org.mapton.butterfly_tmo.TmoAttributeManager;
+import org.mapton.butterfly_tmo.api.InfiltrationManager;
+import org.mapton.butterfly_tmo.infiltration.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -39,16 +42,17 @@ import se.trixon.almond.nbp.Almond;
 @ServiceProvider(service = LayerBundle.class)
 public class InfiltrationLayerBundle extends BfLayerBundle {
 
-    private final InfiltrationAttributeManager mAttributeManager = InfiltrationAttributeManager.getInstance();
-    private final ComponentRenderer mComponentRenderer;
+    private final TmoAttributeManager mAttributeManager = TmoAttributeManager.getInstance();
     private final InfiltrationManager mManager = InfiltrationManager.getInstance();
     private final InfiltrationOptionsView mOptionsView;
+    private final GraphicRenderer mGraphicRenderer;
+    private final InfiltrationOptions mOptions = InfiltrationOptions.getInstance();
 
     public InfiltrationLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new InfiltrationOptionsView(this);
-        mComponentRenderer = new ComponentRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -91,36 +95,36 @@ public class InfiltrationLayerBundle extends BfLayerBundle {
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
-            mComponentRenderer.reset();
+            mGraphicRenderer.reset();
             if (!mLayer.isEnabled()) {
                 return;
             }
-            var pointBy = mOptionsView.getPointBy();
-//            switch (pointBy) {
-//                case NONE -> {
-//                    mPinLayer.setEnabled(false);
-//                    mSymbolLayer.setEnabled(false);
-//                }
-//                case PIN -> {
-//                    mSymbolLayer.setEnabled(false);
-//                    mPinLayer.setEnabled(true);
-//                }
-//                default ->
-//                    throw new AssertionError();
-//            }
+            var pointBy = mOptions.getPointBy();
+            switch (pointBy) {
+                case NONE -> {
+                    mPinLayer.setEnabled(false);
+                    mSymbolLayer.setEnabled(false);
+                }
+                case PIN -> {
+                    mSymbolLayer.setEnabled(false);
+                    mPinLayer.setEnabled(true);
+                }
+                default ->
+                    throw new AssertionError();
+            }
 
             synchronized (mManager.getTimeFilteredItems()) {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
 
-                        var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(position, labelPlacemark));
 
-//                    mComponentRenderer.plot(p, position, mapObjects);
+                        mGraphicRenderer.plot(p, position, mapObjects);
                         addClickArea(position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {
@@ -129,6 +133,10 @@ public class InfiltrationLayerBundle extends BfLayerBundle {
 
                         var leftDoubleClickRunnable = (Runnable) () -> {
                             Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                            if (!p.ext().getObservationsTimeFiltered().isEmpty()) {
+                                mGraphicRenderer.addToAllowList(p.getName());
+                                repaint();
+                            }
                         };
 
                         mapObjects.stream().filter(r -> r != null).forEach(r -> {

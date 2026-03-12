@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.tmo.BGrundvatten;
-import org.mapton.butterfly_format.types.tmo.BGrundvattenObservation;
-import org.mapton.butterfly_tmo.grundvatten.GrundvattenPropertiesBuilder;
-import org.mapton.butterfly_tmo.grundvatten.chart.GrundvattenChartBuilder;
+import org.mapton.butterfly_format.types.tmo.BInfiltration;
+import org.mapton.butterfly_format.types.tmo.BInfiltrationObservation;
+import org.mapton.butterfly_tmo.infiltration.InfiltrationPropertiesBuilder;
+import org.mapton.butterfly_tmo.infiltration.chart.InfiltrationChartBuilder;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -34,48 +34,52 @@ import se.trixon.almond.util.CollectionHelper;
  *
  * @author Patrik Karlström
  */
-public class GrundvattenManager extends BaseManager<BGrundvatten> {
+public class InfiltrationManager extends BaseManager<BInfiltration> {
 
-    private final GrundvattenPropertiesBuilder mPropertiesBuilder = new GrundvattenPropertiesBuilder();
-    private final GrundvattenChartBuilder mChartBuilder = new GrundvattenChartBuilder();
+    private final InfiltrationChartBuilder mChartBuilder = new InfiltrationChartBuilder();
+    private final InfiltrationPropertiesBuilder mPropertiesBuilder = new InfiltrationPropertiesBuilder();
 
-    public static GrundvattenManager getInstance() {
+    public static InfiltrationManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private GrundvattenManager() {
-        super(BGrundvatten.class);
+    private InfiltrationManager() {
+        super(BInfiltration.class);
     }
 
     @Override
-    public Object getObjectChart(BGrundvatten selectedObject) {
+    public Object getObjectChart(BInfiltration selectedObject) {
         return mChartBuilder.build(selectedObject);
     }
 
     @Override
-    public Object getObjectProperties(BGrundvatten selectedObject) {
+    public Object getObjectProperties(BInfiltration selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
+    }
+
+    @Override
+    public void initObjectToItemMap() {
     }
 
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.tmo().getGrundvatten());
+            initAllItems(butterfly.tmo().getInfiltration());
             initObjectToItemMap();
 
-            var nameToObservations = new LinkedHashMap<String, ArrayList<BGrundvattenObservation>>();
-            for (var o : butterfly.tmo().getGrundvattenObservations()) {
+            var nameToObservations = new LinkedHashMap<String, ArrayList<BInfiltrationObservation>>();
+            for (var o : butterfly.tmo().getInfiltrationObservations()) {
                 nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
             }
 
-            for (var p : butterfly.tmo().getGrundvatten()) {
+            for (var p : butterfly.tmo().getInfiltration()) {
                 p.ext().setObservationsAllRaw(nameToObservations.get(p.getName()));
                 p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
 
-                var grundvattenObservations = p.ext().getObservationsAllRaw();
-                if (!grundvattenObservations.isEmpty()) {
-                    p.ext().setDateFirst(grundvattenObservations.getFirst().getDate());
-                    p.ext().setDateLatest(grundvattenObservations.getLast().getDate());
+                var observations = p.ext().getObservationsAllRaw();
+                if (!observations.isEmpty()) {
+                    p.ext().setDateFirst(observations.getFirst().getDate());
+                    p.ext().setDateLatest(observations.getLast().getDate());
                 }
             }
 
@@ -102,7 +106,7 @@ public class GrundvattenManager extends BaseManager<BGrundvatten> {
     @Override
     protected void applyTemporalFilter() {
         var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
-        var timeFilteredItems = new ArrayList<BGrundvatten>();
+        var timeFilteredItems = new ArrayList<BInfiltration>();
 
         p:
         for (var p : getFilteredItems()) {
@@ -136,12 +140,12 @@ public class GrundvattenManager extends BaseManager<BGrundvatten> {
     }
 
     @Override
-    protected void load(ArrayList<BGrundvatten> items) {
+    protected void load(ArrayList<BInfiltration> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private static class Holder {
 
-        private static final GrundvattenManager INSTANCE = new GrundvattenManager();
+        private static final InfiltrationManager INSTANCE = new InfiltrationManager();
     }
 }

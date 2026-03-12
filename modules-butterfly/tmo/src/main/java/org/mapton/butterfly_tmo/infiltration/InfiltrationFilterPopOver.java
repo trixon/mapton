@@ -56,11 +56,11 @@ public class InfiltrationFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var grundvatten = butterfly.tmo().getInfiltration();
+        var infiltration = butterfly.tmo().getInfiltration();
 
         var groupCheckModel = mGroupCheckComboBox.getCheckModel();
         var checkedGroup = groupCheckModel.getCheckedItems();
-        var allGroupss = new TreeSet<>(grundvatten.stream().map(o -> o.getGroup()).collect(Collectors.toSet()));
+        var allGroupss = new TreeSet<>(infiltration.stream().map(o -> o.getGroup()).collect(Collectors.toSet()));
 
         mGroupCheckComboBox.getItems().setAll(allGroupss);
         checkedGroup.stream().forEach(d -> groupCheckModel.check(d));

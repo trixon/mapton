@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_tmo.grundvatten;
+package org.mapton.butterfly_tmo;
 
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
@@ -24,13 +24,14 @@ import java.awt.Color;
 import java.util.HashMap;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
+import org.mapton.butterfly_format.types.tmo.BBasVatten;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GrundvattenAttributeManager extends BaseAttributeManager {
+public class TmoAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentGroundPathAttributes;
     private final HashMap<String, BasicShapeAttributes> mMagasinToAttributes = new HashMap<>();
@@ -38,11 +39,11 @@ public class GrundvattenAttributeManager extends BaseAttributeManager {
     private BasicShapeAttributes mSurfaceAttributes;
     private BasicShapeAttributes mTimeSeriesAttributes;
 
-    public static GrundvattenAttributeManager getInstance() {
+    public static TmoAttributeManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private GrundvattenAttributeManager() {
+    private TmoAttributeManager() {
     }
 
 //    public BasicShapeAttributes getComponentGroundPathAttributes() {
@@ -83,7 +84,7 @@ public class GrundvattenAttributeManager extends BaseAttributeManager {
         return mSurfaceAttributes;
     }
 
-    public BasicShapeAttributes getTimeSeriesAttributes(BGrundvatten grundvatten) {
+    public BasicShapeAttributes getTimeSeriesAttributes(BBasVatten vatten) {
         if (mTimeSeriesAttributes == null) {
             mTimeSeriesAttributes = new BasicShapeAttributes();
             mTimeSeriesAttributes.setDrawOutline(false);
@@ -91,9 +92,9 @@ public class GrundvattenAttributeManager extends BaseAttributeManager {
             mTimeSeriesAttributes.setEnableLighting(true);
         }
 
-        BasicShapeAttributes attrs = mMagasinToAttributes.computeIfAbsent(grundvatten.getGrundvattenmagasin(), k -> {
+        var attrs = mMagasinToAttributes.computeIfAbsent(vatten.getGrundvattenmagasin(), k -> {
             var a = new BasicShapeAttributes(mTimeSeriesAttributes);
-            a.setInteriorMaterial(new Material(getColor(grundvatten)));
+            a.setInteriorMaterial(new Material(getColor(vatten)));
 
             return a;
         });
@@ -101,8 +102,8 @@ public class GrundvattenAttributeManager extends BaseAttributeManager {
         return attrs;
     }
 
-    private Color getColor(BGrundvatten grundvatten) {
-        switch (grundvatten.getGrundvattenmagasin()) {
+    private Color getColor(BBasVatten vatten) {
+        switch (vatten.getGrundvattenmagasin()) {
             case "Övre" -> {
                 return Color.BLUE;
             }
@@ -137,6 +138,6 @@ public class GrundvattenAttributeManager extends BaseAttributeManager {
 
     private static class Holder {
 
-        private static final GrundvattenAttributeManager INSTANCE = new GrundvattenAttributeManager();
+        private static final TmoAttributeManager INSTANCE = new TmoAttributeManager();
     }
 }
