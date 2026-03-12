@@ -41,14 +41,15 @@ import se.trixon.almond.util.swing.SwingHelper;
 @ServiceProvider(service = MChartOverlay.class)
 public class QuakeChartOverlay extends BChartOverlay {
 
-    public static final double DEFAULT_DISTANCE_LIMIT = 30_000.0;
+    public static final Color COLOR = Color.ORANGE;
+    public static final int MAX_COUNT = 10;
 
     public QuakeChartOverlay() {
     }
 
     @Override
     public synchronized void plot(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
-        if (!mObjectStorageManager.getBoolean(QuakeChartSOSB.class, false)) {
+        if (!mObjectStorageManager.getBoolean(QuakeChartSOSB.class, QuakeChartSOSB.DEFAULT_VALUE)) {
             return;
         }
 
@@ -72,13 +73,13 @@ public class QuakeChartOverlay extends BChartOverlay {
 
                     return Double.compare(Math.pow(10, q2.getMag()) / q2Distance, Math.pow(10, q1.getMag()) / q1Distance);
                 })
-                .limit(10)
+                .limit(MAX_COUNT)
                 .forEachOrdered(q -> {
                     var blastLatLon = new MLatLon(q.getLat(), q.getLon());
                     var distance = blastLatLon.distance(pointLatLon);
                     var minute = ChartHelper.convertToMinute(q.getDateLatest());
                     var marker = new ValueMarker(minute.getFirstMillisecond());
-                    var color = Color.ORANGE;
+                    var color = COLOR;
 
                     if (q == p) {
                         color = Color.RED;
