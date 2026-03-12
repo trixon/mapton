@@ -40,6 +40,7 @@ import se.trixon.almond.util.GraphicsHelper;
 @ServiceProvider(service = MChartOverlay.class)
 public class VibrationChartOverlay extends BChartOverlay {
 
+    public static final Color COLOR = GraphicsHelper.colorAddAlpha(Color.ORANGE, 80);
     public static final int MAX_COUNT = 5;
     public static final int MAX_DISTANCE = 3000;
     private final NumberAxis mAxis = new NumberAxis("Vibration Z");
@@ -52,7 +53,7 @@ public class VibrationChartOverlay extends BChartOverlay {
 
     @Override
     public synchronized void plot(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
-        if (!mObjectStorageManager.getBoolean(VibrationChartSOSB.class, false)) {
+        if (!mObjectStorageManager.getBoolean(VibrationChartSOSB.class, VibrationChartSOSB.DEFAULT_VALUE)) {
             plot.setDataset(mIndex, null);
             plot.setRangeAxis(mIndex, null);
 
@@ -70,7 +71,7 @@ public class VibrationChartOverlay extends BChartOverlay {
         plot.setRangeAxisLocation(mIndex, AxisLocation.BOTTOM_OR_RIGHT);
         plot.setRenderer(mIndex, renderer);
 
-        var color = GraphicsHelper.colorAddAlpha(Color.ORANGE, 80);
+        var color = COLOR;
 
         for (int i = 0; i < vibrationPoints.size(); i++) {
             if (i > 0) {
