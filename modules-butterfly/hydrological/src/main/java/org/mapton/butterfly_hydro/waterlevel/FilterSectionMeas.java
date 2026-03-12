@@ -40,6 +40,7 @@ import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.fx.BindingHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionComboBox;
 import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
@@ -247,7 +248,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
             FxHelper.autoSizeRegionHorizontal(mLevelPeriodDirectionScb);
 
             FxHelper.autoSizeColumn(mRoot, 2);
-            FxHelper.bindWidthForChildrens(leftBox, rightBox);
+            BindingHelper.bindWidthForChildrens(leftBox, rightBox);
 
             mLevelPeriodDirectionScb.disableProperty().bind(mLevelPeriodCheckbox.selectedProperty().not().or(mLevelPeriodAllSds.valueProperty().isEqualTo(0.0)));
             wrappedDateBox.disableProperty().bind(mLevelPeriodCheckbox.selectedProperty().not());

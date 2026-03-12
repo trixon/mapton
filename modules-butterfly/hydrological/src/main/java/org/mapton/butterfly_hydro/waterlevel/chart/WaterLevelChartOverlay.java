@@ -40,6 +40,7 @@ import se.trixon.almond.util.GraphicsHelper;
 @ServiceProvider(service = MChartOverlay.class)
 public class WaterLevelChartOverlay extends BChartOverlay {
 
+    public static final Color COLOR = Color.decode("#4B0082");
     public static final int MAX_COUNT = 5;
     public static final int MAX_DISTANCE = 3000;
     private final NumberAxis mAxis = new NumberAxis("Vattenstånd");
@@ -52,7 +53,7 @@ public class WaterLevelChartOverlay extends BChartOverlay {
 
     @Override
     public synchronized void plot(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
-        if (!mObjectStorageManager.getBoolean(WaterLevelChartSOSB.class, false)) {
+        if (!mObjectStorageManager.getBoolean(WaterLevelChartSOSB.class, WaterLevelChartSOSB.DEFAULT_VALUE)) {
             plot.setDataset(mIndex, null);
             plot.setRangeAxis(mIndex, null);
 
@@ -60,7 +61,7 @@ public class WaterLevelChartOverlay extends BChartOverlay {
         }
 
         var startDate = aStartDate == null ? LocalDate.now() : aStartDate;
-        var waterLevelPoints = ButterflyHelper.getWaterLevelPoints(p, MAX_DISTANCE, MAX_COUNT, startDate);
+        var waterLevelPoints = ButterflyHelper.getLimitedPoints(p, p.getButterfly().hydro().getWaterLevelPoints(), MAX_DISTANCE, MAX_COUNT, startDate);
         var renderer = new XYLineAndShapeRenderer(true, false);
         var dataset = new TimeSeriesCollection();
 
@@ -70,7 +71,7 @@ public class WaterLevelChartOverlay extends BChartOverlay {
         plot.setRangeAxisLocation(mIndex, AxisLocation.BOTTOM_OR_RIGHT);
         plot.setRenderer(mIndex, renderer);
 
-        var color = GraphicsHelper.colorAddAlpha(Color.decode("#4B0082"), 80);
+        var color = GraphicsHelper.colorAddAlpha(COLOR, 80);
 
         for (int i = 0; i < waterLevelPoints.size(); i++) {
             if (i > 0) {

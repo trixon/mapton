@@ -17,7 +17,9 @@ package org.mapton.butterfly_hydro.groundwater;
 
 import org.mapton.api.MChartSOSB;
 import org.mapton.api.MSimpleObjectStorageBoolean;
+import org.mapton.butterfly_hydro.groundwater.chart.GroundwaterChartOverlay;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -28,7 +30,8 @@ public class GroundwaterChartSOSB extends MChartSOSB {
 
     public GroundwaterChartSOSB() {
         setName(Bundle.CTL_GroundwaterAction());
-        setTooltipText("De fem närmaste grundvattenrören inom 100 m.");
+        setColor(FxHelper.colorToFxColor(GroundwaterChartOverlay.COLOR));
+        setTooltipText("De %d närmaste inom %d m.".formatted(GroundwaterChartOverlay.MAX_COUNT, GroundwaterChartOverlay.MAX_DISTANCE));
     }
 
 }

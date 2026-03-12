@@ -41,6 +41,7 @@ import se.trixon.almond.util.SDict;
 @ServiceProvider(service = MChartOverlay.class)
 public class GroundwaterChartOverlay extends BChartOverlay {
 
+    public static final Color COLOR = Color.BLUE;
     public static final int MAX_COUNT = 5;
     public static final int MAX_DISTANCE = 100;
     private final NumberAxis mAxis = new NumberAxis(SDict.GROUNDWATER.toString());
@@ -53,7 +54,7 @@ public class GroundwaterChartOverlay extends BChartOverlay {
 
     @Override
     public synchronized void plot(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
-        if (!mObjectStorageManager.getBoolean(GroundwaterChartSOSB.class, false)) {
+        if (!mObjectStorageManager.getBoolean(GroundwaterChartSOSB.class, GroundwaterChartSOSB.DEFAULT_VALUE)) {
             plot.setDataset(mIndex, null);
             plot.setRangeAxis(mIndex, null);
 
@@ -61,7 +62,7 @@ public class GroundwaterChartOverlay extends BChartOverlay {
         }
 
         var startDate = aStartDate == null ? LocalDate.now() : aStartDate;
-        var groundwaterPoints = ButterflyHelper.getGroundwaterPoints(p, MAX_DISTANCE, MAX_COUNT, startDate);
+        var groundwaterPoints = ButterflyHelper.getLimitedPoints(p, p.getButterfly().hydro().getGroundwaterPoints(), MAX_DISTANCE, MAX_COUNT, startDate);
         var renderer = new XYLineAndShapeRenderer(true, false);
         var dataset = new TimeSeriesCollection();
 
@@ -71,7 +72,7 @@ public class GroundwaterChartOverlay extends BChartOverlay {
         plot.setRangeAxisLocation(mIndex, AxisLocation.BOTTOM_OR_RIGHT);
         plot.setRenderer(mIndex, renderer);
 
-        var color = GraphicsHelper.colorAddAlpha(Color.BLUE, 80);
+        var color = GraphicsHelper.colorAddAlpha(COLOR, 80);
 
         for (int i = 0; i < groundwaterPoints.size(); i++) {
             if (i > 0) {
