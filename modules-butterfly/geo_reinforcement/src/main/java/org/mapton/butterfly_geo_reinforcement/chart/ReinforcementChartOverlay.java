@@ -33,6 +33,7 @@ import org.mapton.butterfly_geo_reinforcement.ReinforcementChartSOSB;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.DateHelper;
+import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -42,6 +43,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 @ServiceProvider(service = MChartOverlay.class)
 public class ReinforcementChartOverlay extends BChartOverlay {
 
+    public static final Color COLOR = Color.decode("#C86400");
     public static final double DEFAULT_DISTANCE_LIMIT = 20.0;
 
     public ReinforcementChartOverlay() {
@@ -49,12 +51,11 @@ public class ReinforcementChartOverlay extends BChartOverlay {
 
     @Override
     public synchronized void plot(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
-        if (!mObjectStorageManager.getBoolean(ReinforcementChartSOSB.class, false)) {
+        if (!mObjectStorageManager.getBoolean(ReinforcementChartSOSB.class, ReinforcementChartSOSB.DEFAULT_VALUE)) {
             return;
         }
 
         var lastDate = LocalDate.now().plusDays(1);
-
         var currentStroke = new BasicStroke(4f);
         var otherStroke = new BasicStroke(1.2f);
         var pointLatLon = new MLatLon(p.getLat(), p.getLon());
@@ -85,7 +86,7 @@ public class ReinforcementChartOverlay extends BChartOverlay {
                             marker.setStroke(otherStroke);
                             distanceQuota = Math.min(1, distanceQuota);
                             int alpha = (int) (Math.max(distanceQuota, 0.25) * 255d);
-                            color = new Color(200, 100, 0, alpha);
+                            color = GraphicsHelper.colorAddAlpha(COLOR, alpha);
 
                             var value = p.getValue("PLOT_REINFORCEMENT_LABEL");
                             if (value != Boolean.FALSE) {
