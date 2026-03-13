@@ -19,6 +19,7 @@ import org.mapton.api.MChartSOSB;
 import org.mapton.api.MSimpleObjectStorageBoolean;
 import org.mapton.butterfly_hydro.groundwater.chart.GroundwaterChartOverlay;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -32,6 +33,7 @@ public class GroundwaterChartSOSB extends MChartSOSB {
         setName(Bundle.CTL_GroundwaterAction());
         setColor(FxHelper.colorToFxColor(GroundwaterChartOverlay.COLOR));
         setTooltipText("De %d närmaste inom %d m.".formatted(GroundwaterChartOverlay.MAX_COUNT, GroundwaterChartOverlay.MAX_DISTANCE));
+        setGroup(SDict.HYDROGEOLOGY.toString());
     }
 
 }

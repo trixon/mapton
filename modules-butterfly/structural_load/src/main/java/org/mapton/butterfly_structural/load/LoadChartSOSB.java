@@ -33,6 +33,7 @@ public class LoadChartSOSB extends MChartSOSB {
         setName(SDict.LOAD_CELLS.toString());
         setColor(FxHelper.colorToFxColor(LoadChartOverlay.COLOR));
         setTooltipText("De %d närmaste inom %d m.".formatted(LoadChartOverlay.MAX_COUNT, LoadChartOverlay.MAX_DISTANCE));
+        setGroup(SDict.STRUCTURAL.toString());
     }
 
 }

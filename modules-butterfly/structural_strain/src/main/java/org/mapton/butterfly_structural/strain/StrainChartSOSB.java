@@ -33,6 +33,7 @@ public class StrainChartSOSB extends MChartSOSB {
         setName(SDict.STRAIN_GAUGES.toString());
         setColor(FxHelper.colorToFxColor(StrainChartOverlay.COLOR));
         setTooltipText("De %d närmaste inom %d m.".formatted(StrainChartOverlay.MAX_COUNT, StrainChartOverlay.MAX_DISTANCE));
+        setGroup(SDict.STRUCTURAL.toString());
     }
 
 }

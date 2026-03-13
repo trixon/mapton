@@ -19,6 +19,7 @@ import org.mapton.api.MChartSOSB;
 import org.mapton.api.MSimpleObjectStorageBoolean;
 import org.mapton.butterfly_rock_blast.chart.BlastChartOverlay;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -32,6 +33,7 @@ public class BlastChartSOSB extends MChartSOSB {
         setName(Bundle.CTL_BlastAction());
         setColor(FxHelper.colorToFxColor(BlastChartOverlay.COLOR));
         setTooltipText("De inom %.0f m.".formatted(BlastChartOverlay.DEFAULT_DISTANCE_LIMIT));
+        setGroup(SDict.ROCK_MECHANICS.toString());
     }
 
 }
