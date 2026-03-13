@@ -1,0 +1,151 @@
+/*
+ * Copyright 2023 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.mapton.butterfly_tmo.api;
+
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import org.mapton.api.MTemporalRange;
+import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.tmo.BTunnelvatten;
+import org.mapton.butterfly_format.types.tmo.BTunnelvattenObservation;
+import org.mapton.butterfly_tmo.tunnelvatten.TunnelvattenPropertiesBuilder;
+import org.mapton.butterfly_tmo.tunnelvatten.chart.TunnelvattenChartBuilder;
+import org.openide.util.Exceptions;
+import se.trixon.almond.util.CollectionHelper;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+public class TunnelvattenManager extends BaseManager<BTunnelvatten> {
+
+    private final TunnelvattenChartBuilder mChartBuilder = new TunnelvattenChartBuilder();
+    private final TunnelvattenPropertiesBuilder mPropertiesBuilder = new TunnelvattenPropertiesBuilder();
+
+    public static TunnelvattenManager getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    private TunnelvattenManager() {
+        super(BTunnelvatten.class);
+    }
+
+    @Override
+    public Object getObjectChart(BTunnelvatten selectedObject) {
+        return mChartBuilder.build(selectedObject);
+    }
+
+    @Override
+    public Object getObjectProperties(BTunnelvatten selectedObject) {
+        return mPropertiesBuilder.build(selectedObject);
+    }
+
+    @Override
+    public void initObjectToItemMap() {
+    }
+
+    @Override
+    public void load(Butterfly butterfly) {
+        try {
+            initAllItems(butterfly.tmo().getTunnelvatten());
+            initObjectToItemMap();
+
+            var nameToObservations = new LinkedHashMap<String, ArrayList<BTunnelvattenObservation>>();
+            for (var o : butterfly.tmo().getTunnelvattenObservations()) {
+                nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
+            }
+
+            for (var p : butterfly.tmo().getTunnelvatten()) {
+                p.ext().setObservationsAllRaw(nameToObservations.get(p.getName()));
+                p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
+
+                var observations = p.ext().getObservationsAllRaw();
+                if (!observations.isEmpty()) {
+                    p.ext().setDateFirst(observations.getFirst().getDate());
+                    p.ext().setDateLatest(observations.getLast().getDate());
+                }
+            }
+
+            var dates = new TreeSet<>(getAllItems().stream()
+                    .map(p -> p.ext().getDateLatest())
+                    .filter(d -> d != null)
+                    .collect(Collectors.toSet()));
+
+            if (!dates.isEmpty()) {
+                setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
+            }
+
+            getAllItems().stream().forEach(p -> {
+                var calculatedObservations = new ArrayList<>(p.ext().getObservationsAllRaw());
+                p.ext().setObservationsAllCalculated(calculatedObservations);
+                //TODO or not TODO? p.ext().calculateObservations(calculatedObservations);
+            });
+
+        } catch (Exception e) {
+            Exceptions.printStackTrace(e);
+        }
+    }
+
+    @Override
+    protected void applyTemporalFilter() {
+        var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        var timeFilteredItems = new ArrayList<BTunnelvatten>();
+
+        p:
+        for (var p : getFilteredItems()) {
+            if (p.ext().getDateLatest() == null) {
+                timeFilteredItems.add(p);
+            } else {
+                for (var o : p.ext().getObservationsAllCalculated()) {
+                    if (getTemporalManager().isValid(o.getDate())) {
+                        timeFilteredItems.add(p);
+                        continue p;
+                    }
+                }
+            }
+        }
+
+        timeFilteredItems.stream().forEach(p -> {
+            var timefilteredObservations = p.ext().getObservationsAllRaw().stream()
+                    .filter(o -> getTemporalManager().isValid(o.getDate()))
+                    .toList();
+            p.ext().setObservationsTimeFiltered(new ArrayList<>(timefilteredObservations));
+
+            var measCountStats = new LinkedHashMap<String, Integer>();
+            p.ext().setMeasurementCountStats(measCountStats);
+            //p.ext().calculateObservations(timefilteredObservations);
+            timefilteredObservations.forEach(o -> {
+                CollectionHelper.incInteger(measCountStats, o.getDate().format(measCountStatsDateTimeFormatter));
+            });
+        });
+
+        setItemsTimeFiltered(timeFilteredItems);
+    }
+
+    @Override
+    protected void load(ArrayList<BTunnelvatten> items) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private static class Holder {
+
+        private static final TunnelvattenManager INSTANCE = new TunnelvattenManager();
+    }
+}

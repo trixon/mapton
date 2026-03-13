@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,9 @@
  */
 package org.mapton.butterfly_format.types.tmo;
 
+import java.util.Comparator;
+import org.mapton.butterfly_format.types.BBasePoint;
+
 /**
  *
  * @author Patrik Karlström
@@ -27,6 +30,15 @@ public class BTunnelvatten extends BBasObjekt {
     private Integer längd;
     private String pumpgropstyp;
     private String tätningstyp;
+    private transient Ext mExt;
+
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
+    }
 
     public BTunnelvatten() {
     }
@@ -78,4 +90,16 @@ public class BTunnelvatten extends BBasObjekt {
     public void setTätningstyp(String tätningstyp) {
         this.tätningstyp = tätningstyp;
     }
+
+    public class Ext extends BBasePoint.Ext<BTunnelvattenObservation> {
+
+        public BTunnelvattenObservation getMaxObservation() {
+            return getObservationsAllRaw().stream().max(Comparator.comparing(BTunnelvattenObservation::getValue)).orElse(null);
+        }
+
+        public BTunnelvattenObservation getMinObservation() {
+            return getObservationsAllRaw().stream().min(Comparator.comparing(BTunnelvattenObservation::getValue)).orElse(null);
+        }
+    }
+
 }

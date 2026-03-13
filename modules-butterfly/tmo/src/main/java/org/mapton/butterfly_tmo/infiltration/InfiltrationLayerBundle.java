@@ -34,6 +34,7 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -74,6 +75,12 @@ public class InfiltrationLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+            SwingHelper.runLaterDelayed(50, () -> {
+                resetPaintDelayedResetRunner();
+            });
+        });
+
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BInfiltration> c) -> {
             repaint();
         });
@@ -85,10 +92,6 @@ public class InfiltrationLayerBundle extends BfLayerBundle {
             if (enabled) {
                 repaint();
             }
-        });
-
-        mOptionsView.labelByProperty().addListener((p, o, n) -> {
-            repaint();
         });
     }
 

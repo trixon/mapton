@@ -21,12 +21,11 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public enum PointBy {
-    PIN(Dict.PIN.toString()),
-    NONE(Dict.NONE.toString());
+public enum TunnelvattenColorBy {
+    DEFAULT(Dict.DEFAULT.toString());
     private final String mName;
 
-    private PointBy(String name) {
+    private TunnelvattenColorBy(String name) {
         mName = name;
     }
 

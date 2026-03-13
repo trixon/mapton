@@ -19,6 +19,8 @@ import j2html.tags.ContainerTag;
 import java.util.LinkedHashMap;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
+import org.mapton.butterfly_tmo.api.TunnelvattenManager;
+import org.mapton.butterfly_tmo.api.TunnelvattenManager;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -44,7 +46,7 @@ public class TunnelvattenFilter extends FormFilter<TunnelvattenManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(b -> validateFreeText(b.getBenämning(), b.getName(), b.getGroup(), b.getComment()))
+                .filter(b -> validateFreeText(b.getName(), b.getGroup(), b.getComment()))
                 .filter(b -> validateCoordinateCircle(b.getLat(), b.getLon()))
                 .filter(b -> validateCoordinateArea(b.getLat(), b.getLon()))
                 .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))

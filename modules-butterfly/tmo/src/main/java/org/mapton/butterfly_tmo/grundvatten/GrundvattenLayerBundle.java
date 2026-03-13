@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
-import org.mapton.butterfly_tmo.TmoAttributeManager;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -27,6 +26,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
+import org.mapton.butterfly_tmo.TmoAttributeManager;
 import org.mapton.butterfly_tmo.api.GrundvattenManager;
 import org.mapton.butterfly_tmo.grundvatten.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
@@ -92,13 +92,6 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
                 repaint();
             }
         });
-
-//        mOptionsView.labelByProperty().addListener((p, o, n) -> {
-//            repaint();
-//        });
-//        mOptionsView..addListener((p, o, n) -> {
-//            repaint();
-//        });
     }
 
     private void initRepaint() {

@@ -17,6 +17,7 @@ package org.mapton.butterfly_tmo.tunnelvatten;
 
 import org.mapton.api.MLatLon;
 import org.mapton.api.Mapton;
+import org.mapton.butterfly_tmo.api.TunnelvattenManager;
 import org.netbeans.spi.quicksearch.SearchProvider;
 import org.netbeans.spi.quicksearch.SearchRequest;
 import org.netbeans.spi.quicksearch.SearchResponse;

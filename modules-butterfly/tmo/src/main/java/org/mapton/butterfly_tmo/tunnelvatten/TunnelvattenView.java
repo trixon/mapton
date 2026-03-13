@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_tmo.tunnelvatten;
 
+import org.mapton.butterfly_tmo.api.TunnelvattenManager;
 import java.util.Arrays;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;

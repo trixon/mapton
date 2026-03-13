@@ -36,7 +36,7 @@ public class InfiltrationOptionsView extends BOptionsView {
 
     private static final InfiltrationLabelBy DEFAULT_LABEL_BY = InfiltrationLabelBy.NAME;
 
-    private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();
+    private final ComboBox<InfiltrationPointBy> mPointComboBox = new ComboBox<>();
     private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
     private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SessionComboBox<InfiltrationPointBy> mPointScb = new SessionComboBox<>();

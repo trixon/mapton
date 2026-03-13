@@ -26,6 +26,7 @@ import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_format.types.tmo.BBasVatten;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
+import org.mapton.butterfly_format.types.tmo.BTunnelvatten;
 
 /**
  *
@@ -38,6 +39,7 @@ public class TmoAttributeManager extends BaseAttributeManager {
     private PointPlacemarkAttributes mPinAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
     private BasicShapeAttributes mTimeSeriesAttributes;
+    private BasicShapeAttributes mTunnelTimeSeriesAttributes;
 
     public static TmoAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -100,6 +102,23 @@ public class TmoAttributeManager extends BaseAttributeManager {
         });
 
         return attrs;
+    }
+
+    public BasicShapeAttributes getTimeSeriesAttributes(BTunnelvatten vatten) {
+        if (mTunnelTimeSeriesAttributes == null) {
+            mTunnelTimeSeriesAttributes = new BasicShapeAttributes();
+            mTunnelTimeSeriesAttributes.setDrawOutline(false);
+            mTunnelTimeSeriesAttributes.setInteriorMaterial(Material.BLUE);
+            mTunnelTimeSeriesAttributes.setEnableLighting(true);
+        }
+
+//        var attrs = mMagasinToAttributes.computeIfAbsent(vatten.getGrundvattenmagasin(), k -> {
+//            var a = new BasicShapeAttributes(mTunnelTimeSeriesAttributes);
+//            a.setInteriorMaterial(new Material(getColor(vatten)));
+//
+//            return a;
+//        });
+        return mTunnelTimeSeriesAttributes;
     }
 
     private Color getColor(BBasVatten vatten) {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_tmo.infiltration;
+package org.mapton.butterfly_tmo.tunnelvatten;
 
 import se.trixon.almond.util.Dict;
 
@@ -21,12 +21,12 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public enum PointBy {
+public enum TunnelvattenPointBy {
     PIN(Dict.PIN.toString()),
     NONE(Dict.NONE.toString());
     private final String mName;
 
-    private PointBy(String name) {
+    private TunnelvattenPointBy(String name) {
         mName = name;
     }
 
