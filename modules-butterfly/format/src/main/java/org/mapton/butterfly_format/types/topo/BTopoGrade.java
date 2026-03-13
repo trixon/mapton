@@ -78,6 +78,7 @@ public class BTopoGrade extends BXyzPoint {
 
         recalc1(mP1);
         recalc2(mP2);
+        setButterfly(mP1.getButterfly());
     }
 
     @Override
@@ -147,11 +148,19 @@ public class BTopoGrade extends BXyzPoint {
         var beforeZero1 = true;
         var beforeZero3 = true;
         if (p.getDimension() == BDimension._1d) {
+            var hasZero = false;
+            for (var o : p.ext().getObservationsTimeFiltered()) {
+                if (o.isZeroMeasurement()) {
+                    hasZero = true;
+                    break;
+                }
+            }
+
             for (var o : p.ext().getObservationsTimeFiltered()) {
                 if (o.isZeroMeasurement()) {
                     beforeZero1 = false;
                 }
-                if (beforeZero1 || ObjectUtils.anyNull(o.ext().getDeltaZ())) {
+                if (hasZero && beforeZero1 || ObjectUtils.anyNull(o.ext().getDeltaZ())) {
                     continue;
                 }
                 var yyyyww = o.getDate().toLocalDate().format(mWeeklyAvgFormatterTo);
@@ -159,11 +168,19 @@ public class BTopoGrade extends BXyzPoint {
                 weekToObservations.computeIfAbsent(yyyyww, k -> new ArrayList<>()).add(point3D);
             }
         } else if (p.getDimension() == BDimension._3d) {
+            var hasZero = false;
+            for (var o : p.ext().getObservationsTimeFiltered()) {
+                if (o.isZeroMeasurement()) {
+                    hasZero = true;
+                    break;
+                }
+            }
+
             for (var o : p.ext().getObservationsTimeFiltered()) {
                 if (o.isZeroMeasurement()) {
                     beforeZero3 = false;
                 }
-                if (beforeZero3 || ObjectUtils.anyNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ())) {
+                if (hasZero && beforeZero3 || ObjectUtils.anyNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ())) {
                     continue;
                 }
                 var key = o.getDate().toLocalDate().format(mWeeklyAvgFormatterTo);
