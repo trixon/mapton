@@ -36,17 +36,17 @@ public class QuakeView {
     private final QuakeFilterPopOver mFilterPopOver = new QuakeFilterPopOver(mFilter);
     private final SingleListForm<QuakeManager, BRockEarthquake> mListForm;
     private final QuakeManager mManager = QuakeManager.getInstance();
-    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "earthquakes");
+    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "earthquakes");
 
     public QuakeView() {
-        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new ExportAction("Earthquakes"),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                MPresetPopOver.getAction(),
+                mPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

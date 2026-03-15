@@ -35,19 +35,19 @@ public class StrainView {
 
     private final StrainFilter mFilter = new StrainFilter();
     private final StrainFilterPopOver mFilterPopOver = new StrainFilterPopOver(mFilter);
-    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "strain");
+    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "strain");
     private final SingleListForm<StrainManager, BStructuralStrainGaugePoint> mListForm;
     private final StrainManager mManager = StrainManager.getInstance();
 
     public StrainView() {
-        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                MPresetPopOver.getAction(),
+                mPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

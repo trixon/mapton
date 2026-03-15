@@ -35,19 +35,19 @@ public class CrackView {
 
     private final CrackFilter mFilter = new CrackFilter();
     private final CrackFilterPopOver mFilterPopOver = new CrackFilterPopOver(mFilter);
-    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "crack");
+    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "crack");
     private final SingleListForm<CrackManager, BStructuralCrackPoint> mListForm;
     private final CrackManager mManager = CrackManager.getInstance();
 
     public CrackView() {
-        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                MPresetPopOver.getAction(),
+                mPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

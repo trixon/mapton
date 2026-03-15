@@ -35,19 +35,19 @@ public class InclinoView {
 
     private final InclinoFilter mFilter = new InclinoFilter();
     private final InclinoFilterPopOver mFilterPopOver = new InclinoFilterPopOver(mFilter);
-    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "inclinometer");
+    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "inclinometer");
     private final SingleListForm<InclinoManager, BGeoInclinometerPoint> mListForm;
     private final InclinoManager mManager = InclinoManager.getInstance();
 
     public InclinoView() {
-        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                MPresetPopOver.getAction(),
+                mPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

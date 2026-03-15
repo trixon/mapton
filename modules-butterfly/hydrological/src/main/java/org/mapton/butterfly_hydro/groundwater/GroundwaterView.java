@@ -37,17 +37,17 @@ public class GroundwaterView {
     private final GroundwaterFilterPopOver mFilterPopOver = new GroundwaterFilterPopOver(mFilter);
     private final SingleListForm<GroundwaterManager, BHydroGroundwaterPoint> mListForm;
     private final GroundwaterManager mManager = GroundwaterManager.getInstance();
-    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "hydro.groundwater");
+    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "hydro.groundwater");
 
     public GroundwaterView() {
-        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                MPresetPopOver.getAction(),
+                mPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

@@ -36,17 +36,17 @@ public class ReinforcementView {
     private final ReinforcementFilterPopOver mFilterPopOver = new ReinforcementFilterPopOver(mFilter);
     private final SingleListForm<ReinforcementManager, BGeoReinforcementPoint> mListForm;
     private final ReinforcementManager mManager = ReinforcementManager.getInstance();
-    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "reinforcement");
+    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "reinforcement");
 
     public ReinforcementView() {
-        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new ExportAction("Reinforcement"),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                MPresetPopOver.getAction(),
+                mPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

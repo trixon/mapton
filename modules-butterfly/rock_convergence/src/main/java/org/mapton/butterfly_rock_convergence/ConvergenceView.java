@@ -35,19 +35,19 @@ public class ConvergenceView {
 
     private final ConvergenceFilter mFilter = new ConvergenceFilter();
     private final ConvergenceFilterPopOver mFilterPopOver = new ConvergenceFilterPopOver(mFilter);
-    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "topo.convergence");
+    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "topo.convergence");
     private final SingleListForm<ConvergenceManager, BRockConvergence> mListForm;
     private final ConvergenceManager mManager = ConvergenceManager.getInstance();
 
     public ConvergenceView() {
-        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                MPresetPopOver.getAction(),
+                mPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

@@ -46,14 +46,14 @@ public class GradeVView extends GradeView {
         config.setAxis(BAxis.VERTICAL);
 
         mFilterPopOver = new GradeFilterPopOver(getClass(), mFilter, config);
-        MPresetPopOver = new MPresetPopOver(mFilterPopOver, "gradeV");
-        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
+        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "gradeV");
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
 
         var actions = Arrays.asList(
                 mRefreshAction,
                 ActionUtils.ACTION_SPAN,
                 mFilter.getInfoPopOver().getAction(),
-                MPresetPopOver.getAction(),
+                mPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
         mListForm = new SingleListForm<>(mManager, mBundle.getString("grade_v"));

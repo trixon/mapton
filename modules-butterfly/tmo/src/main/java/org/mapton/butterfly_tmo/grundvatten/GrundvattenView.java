@@ -34,18 +34,18 @@ public class GrundvattenView {
 
     private final GrundvattenFilter mFilter = new GrundvattenFilter();
     private final GrundvattenFilterPopOver mFilterPopOver = new GrundvattenFilterPopOver(mFilter);
-    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "grundvatten");
+    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "grundvatten");
     private final SingleListForm<GrundvattenManager, BGrundvatten> mListForm;
     private final GrundvattenManager mManager = GrundvattenManager.getInstance();
 
     public GrundvattenView() {
-        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         var actions = Arrays.asList(
                 new ExportAction("TMO-Grundvatten"),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                MPresetPopOver.getAction(),
+                mPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

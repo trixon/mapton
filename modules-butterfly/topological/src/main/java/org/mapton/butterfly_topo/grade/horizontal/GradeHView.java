@@ -45,14 +45,14 @@ public class GradeHView extends GradeView {
         config.setAxis(BAxis.HORIZONTAL);
 
         mFilterPopOver = new GradeFilterPopOver(getClass(), mFilter, config);
-        MPresetPopOver = new MPresetPopOver(mFilterPopOver, "gradeH");
-        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
+        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "gradeH");
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
 
         var actions = Arrays.asList(
                 mRefreshAction,
                 ActionUtils.ACTION_SPAN,
                 mFilter.getInfoPopOver().getAction(),
-                MPresetPopOver.getAction(),
+                mPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
         mListForm = new SingleListForm<>(mManager, mBundle.getString("grade_h"));

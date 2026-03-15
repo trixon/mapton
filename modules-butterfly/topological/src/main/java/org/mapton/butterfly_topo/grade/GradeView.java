@@ -36,7 +36,7 @@ public class GradeView {
     protected ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
     protected GradeFilter mFilter;
     protected GradeFilterPopOver mFilterPopOver;
-    protected MPresetPopOver MPresetPopOver;
+    protected MPresetPopOver mPresetPopOver;
     protected SingleListForm mListForm;
     protected GradeManagerBase mManager;
     protected Action mRefreshAction;

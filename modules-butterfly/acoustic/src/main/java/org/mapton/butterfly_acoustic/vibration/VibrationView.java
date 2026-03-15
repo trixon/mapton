@@ -35,12 +35,12 @@ public class VibrationView {
 
     private final VibrationFilter mFilter = new VibrationFilter();
     private final VibrationFilterPopOver mFilterPopOver = new VibrationFilterPopOver(mFilter);
-    private final MPresetPopOver MPresetPopOver = new MPresetPopOver(mFilterPopOver, "aco.vibration");
+    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "aco.vibration");
     private final SingleListForm<VibrationManager, BAcousticVibrationPoint> mListForm;
     private final VibrationManager mManager = VibrationManager.getInstance();
 
     public VibrationView() {
-        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 new ExportAction("Vibrationer"),
@@ -48,7 +48,7 @@ public class VibrationView {
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                MPresetPopOver.getAction(),
+                mPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 
