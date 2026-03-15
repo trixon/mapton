@@ -166,11 +166,6 @@ public abstract class MFilterPopOver extends MPopOver implements MPresetActions 
         return mPasteNameButton;
     }
 
-    @Deprecated(forRemoval = true)
-    public CheckBox getPolygonFilterCheckBox() {
-        return mPolygonFilterCheckBox;
-    }
-
     public SessionManager getSessionManager() {
         if (mSessionManager == null) {
             mSessionManager = new SessionManager(NbPreferences.forModule(getClass()));
@@ -181,11 +176,6 @@ public abstract class MFilterPopOver extends MPopOver implements MPresetActions 
 
     public ToolBar getToolBar() {
         return mToolBar;
-    }
-
-    @Deprecated(forRemoval = true)
-    public boolean isPolygonFilters() {
-        return mUsePolygonFilterProperty.get();
     }
 
     public abstract void onPolygonFilterChange();

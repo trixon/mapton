@@ -203,24 +203,6 @@ public abstract class MKmlCreator {
         }
     }
 
-    @Deprecated
-    public ArrayList<Point3D> createCircle(double lat, double lon, double radius, int quality) {
-        if (quality < 3) {
-            throw new IllegalArgumentException("Quality must be greater than 2");
-        }
-
-        var list = new ArrayList<Point3D>();
-        for (double phi = 0; phi < 2 * Math.PI; phi += 2 * Math.PI / quality) {
-            double lat2 = Math.sin(phi);
-            double lon2 = Math.cos(phi);
-            list.add(new Point3D(lon + lon2 * radius, lat + lat2 * radius, 0));
-        }
-
-        list.add(list.get(0));
-
-        return list;
-    }
-
     public Placemark createLine(String name, ArrayList<Point3D> coordinates, double width, String color, AltitudeMode altitudeMode) {
         var placemark = KmlFactory.createPlacemark().withName(name);
         var style = placemark.createAndAddStyle();

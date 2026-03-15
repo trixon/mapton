@@ -47,7 +47,6 @@ import org.mapton.api.MArea;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MCircleFilterManager;
-import org.mapton.api.MDisruptorManager;
 import org.mapton.api.MPolygonFilterManager;
 import org.mapton.api.ui.MInfoPopOver;
 import org.openide.util.NbBundle;
@@ -63,8 +62,6 @@ import se.trixon.almond.util.fx.DelayedResetRunner;
 public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
     protected ChangeListener<Object> mChangeListenerObject;
-    @Deprecated
-    protected final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
     protected IndexedCheckModel<Integer> mFrequencyCheckModel;
     protected ListChangeListener<Object> mListChangeListener;
     private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();

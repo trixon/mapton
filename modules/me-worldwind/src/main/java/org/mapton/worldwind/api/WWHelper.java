@@ -49,8 +49,6 @@ public class WWHelper {
     public static final String KEY_HOOVER_TEXT = "mapton.hoover.text";
     public static final String KEY_LAYER_CATEGORY = "mapton.layer.category";
     public static final String KEY_LAYER_HIDE_FROM_MANAGER = "mapton.layer.hide_from_manager";
-    @Deprecated
-    public static final String KEY_RUNNABLE_HOOVER = "mapton.runnable.hoover";
     public static final String KEY_RUNNABLE_HOOVER_OFF = "mapton.runnable.hoover_off";
     public static final String KEY_RUNNABLE_HOOVER_ON = "mapton.runnable.hoover";
     public static final String KEY_RUNNABLE_LEFT_CLICK = "mapton.runnable.left_click";

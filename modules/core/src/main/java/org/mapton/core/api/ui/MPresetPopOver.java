@@ -65,11 +65,6 @@ public class MPresetPopOver extends MPopOver {
     private final Preferences mPreferences;
     private final MPresetActions mPresetActions;
 
-    @Deprecated(forRemoval = true)
-    public MPresetPopOver(MPresetActions filterPopOver, String path) {
-        this(filterPopOver, PARENT_NODE_FILTER, path);
-    }
-
     public MPresetPopOver(MPresetActions presetActions, String parent, String path) {
         mPreferences = NbPreferences.forModule(presetActions.getClass()).node(parent).node(path);
         mPresetActions = presetActions;

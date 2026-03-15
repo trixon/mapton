@@ -155,7 +155,7 @@ public class PhotosLayerBundle extends LayerBundle {
                             userFacingIcon.setSize(new Dimension(photo.getWidth() / downSample, photo.getHeight() / downSample));
                             userFacingIcon.setHighlightScale(downSample);
 
-                            userFacingIcon.setValue(WWHelper.KEY_RUNNABLE_HOOVER, (Runnable) () -> {
+                            userFacingIcon.setValue(WWHelper.KEY_RUNNABLE_HOOVER_ON, (Runnable) () -> {
                                 var propertyMap = new LinkedHashMap<String, Object>();
                                 propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.NAME.toString()), FilenameUtils.getBaseName(photo.getPath()));
                                 propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.DATE.toString()), mDateFormat.format(photo.getDate()));
