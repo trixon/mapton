@@ -289,6 +289,11 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-meteo</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-hydro</artifactId>
                     <version>${project.version}</version>
                 </dependency>

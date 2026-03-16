@@ -39,6 +39,7 @@ limitations under the License.
         <module>alarm</module>
         <module>projektnav</module>
         <module>tmo</module>
+        <module>meteo</module>
         <module>geo</module>
         <module>geo_inclinometer</module>
         <module>geo_reinforcement</module>
