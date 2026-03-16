@@ -28,8 +28,6 @@ import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BChartOverlay;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_format.types.BBasePoint;
-import org.mapton.butterfly_format.types.BXyzPoint;
-import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_rock_blast.BlastChartSOSB;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -57,15 +55,10 @@ public class BlastChartOverlay extends BChartOverlay {
         }
 
         var lastDate = LocalDate.now().plusDays(1);
-        Double customBufferDistance = null;
-        if (p instanceof BXyzPoint xyz && xyz.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext && ext.getFrequenceHighBuffer() != null) {
-            customBufferDistance = ext.getFrequenceHighBuffer();
-        }
-
-        var distanceLimit = customBufferDistance != null ? customBufferDistance : DEFAULT_DISTANCE_LIMIT;
         var currentStroke = new BasicStroke(4f);
         var otherStroke = new BasicStroke(1.2f);
         var pointLatLon = new MLatLon(p.getLat(), p.getLon());
+        var distanceLimit = DEFAULT_DISTANCE_LIMIT;
 
         ButterflyManager.getInstance().getButterfly().rock().getBlasts().stream()
                 .filter(b -> {

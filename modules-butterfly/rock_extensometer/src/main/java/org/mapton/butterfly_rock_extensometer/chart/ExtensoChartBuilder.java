@@ -145,7 +145,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BRockExtensometer> {
             renderer.setSeriesShapesVisible(seriesIndex, true);
 
             for (var o : p.ext().getObservationsTimeFiltered()) {
-                XyzChartBuilder.addNEMarkers2(plot, o, true);
+                XyzChartBuilder.addNEMarkers2(subplot, o, true);
             }
 
             plot.add(subplot, 1);
@@ -229,7 +229,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BRockExtensometer> {
             XyzChartBuilder.plotMeasNeed(subplot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
             for (var o : p.ext().getObservationsTimeFiltered()) {
-                XyzChartBuilder.addNEMarkers2(plot, o, true);
+                XyzChartBuilder.addNEMarkers2(subplot, o, true);
             }
 
             plot.add(subplot, 1);
