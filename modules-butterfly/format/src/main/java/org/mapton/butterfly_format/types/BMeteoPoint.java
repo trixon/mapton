@@ -28,6 +28,10 @@ public class BMeteoPoint extends BXyzPoint {
 
     @Override
     public Ext ext() {
+        if (mExt == null) {
+            mExt = new BMeteoPoint.Ext();
+        }
+
         return mExt;
     }
 

@@ -38,6 +38,8 @@ import org.mapton.butterfly_format.types.BCoordinate;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BHistory;
 import org.mapton.butterfly_format.types.BMeasurementMode;
+import org.mapton.butterfly_format.types.BMeteoPoint;
+import org.mapton.butterfly_format.types.BMeteoPointObservation;
 import org.mapton.butterfly_format.types.BRoi;
 import org.mapton.butterfly_format.types.BSystemKeyVal;
 import org.mapton.butterfly_format.types.BSystemSearchProvider;
@@ -113,6 +115,8 @@ public class Butterfly {
     private final Remote mRemote = new Remote();
     private final ArrayList<BRemoteInsarPoint> mRemoteInsarPoints = new ArrayList<>();
     private final ArrayList<BRemoteInsarPointObservation> mRemoteInsarPointsObservations = new ArrayList<>();
+    private final ArrayList<BMeteoPoint> mMeteoPoints = new ArrayList<>();
+    private final ArrayList<BMeteoPointObservation> mMeteoPointsObservations = new ArrayList<>();
     private final Rock mRock = new Rock();
     private final ArrayList<BRockBlast> mRockBlasts = new ArrayList<>();
     private final ArrayList<BRockConvergence> mRockConvergence = new ArrayList<>();
@@ -177,6 +181,14 @@ public class Butterfly {
 
     public ButterflyManipulator getManipulator() {
         return mManipulator;
+    }
+
+    public ArrayList<BMeteoPoint> getMeteoPoints() {
+        return mMeteoPoints;
+    }
+
+    public ArrayList<BMeteoPointObservation> getMeteoPointsObservations() {
+        return mMeteoPointsObservations;
     }
 
     public ArrayList<BMonmon> getMonmons() {
@@ -363,6 +375,12 @@ public class Butterfly {
 
         new ImportFromCsv<BSystemSearchProvider>(BSystemSearchProvider.class) {
         }.load(sourceDir, "systemSearchProviders.csv", mSystemSearchProviders);
+
+        new ImportFromCsv<BMeteoPoint>(BMeteoPoint.class) {
+        }.load(sourceDir, "meteoPoints.csv", mMeteoPoints);
+
+//        new ImportFromCsv<BMeteoPointObservation>(BMeteoPointObservation.class) {
+//        }.load(sourceDir, "meteoPointsObservations.csv", mMeteoPointsObservations);
     }
 
     void postLoad() {
@@ -371,6 +389,7 @@ public class Butterfly {
                 mAlarmsHistory,
                 mGeoInclinometerPoints,
                 mGeoReinforcementPoints,
+                mMeteoPoints,
                 mRockConvergence,
                 mRockEarthquakes,
                 mRockExtensometers,
