@@ -1,0 +1,168 @@
+/*
+ * Copyright 2023 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.mapton.butterfly_meteo;
+
+import com.dlsc.gemsfx.util.SessionManager;
+import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
+import javafx.scene.layout.BorderPane;
+import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionMisc;
+import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_format.Butterfly;
+import org.openide.util.NbBundle;
+import org.openide.util.NbPreferences;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+public class MeteoFilterPopOver extends BaseTabbedFilterPopOver {
+
+    private final ResourceBundle mBundle = NbBundle.getBundle(MeteoFilterPopOver.class);
+    private final MeteoFilter mFilter;
+    private final BFilterSectionDate mFilterSectionDate;
+    private final FilterSectionMeas mFilterSectionMeas;
+//    private final BFilterSectionDisruptor mFilterSectionDisruptor;
+    private final BFilterSectionMisc mFilterSectionMisc;
+    private final BFilterSectionPoint mFilterSectionPoint;
+    private final MeteoManager mManager = MeteoManager.getInstance();
+
+    public MeteoFilterPopOver(MeteoFilter filter) {
+        mFilterSectionPoint = new BFilterSectionPoint();
+        mFilterSectionDate = new BFilterSectionDate();
+//        mFilterSectionDisruptor = new BFilterSectionDisruptor();
+        mFilterSectionMisc = new BFilterSectionMisc(filter);
+        mFilterSectionMeas = new FilterSectionMeas();
+
+        mFilter = filter;
+        mFilter.setFilterSection(mFilterSectionPoint);
+        mFilter.setFilterSection(mFilterSectionDate);
+//        mFilter.setFilterSection(mFilterSectionDisruptor);
+        mFilter.setFilterSection(mFilterSectionMeas);
+
+        setFilter(filter);
+        createUI();
+        initListeners();
+        initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
+
+        populate();
+    }
+
+    @Override
+    public void clear() {
+        setUsePolygonFilter(false);
+        mFilter.freeTextProperty().set("");
+
+        mFilterSectionPoint.clear();
+        mFilterSectionDate.clear();
+//        mFilterSectionDisruptor.clear();
+        mFilterSectionMisc.clear();
+        mFilterSectionMeas.clear();
+
+        resetTabs();
+    }
+
+    @Override
+    public void load(Butterfly butterfly) {
+        var items = butterfly.getMeteoPoints();
+
+        mFilterSectionPoint.load(items);
+//        mFilterSectionDisruptor.load();
+        mFilterSectionDate.load(mManager.getTemporalRange());
+        mFilterSectionMisc.load();
+        mFilterSectionMeas.load(items, mManager.getTemporalRange());
+    }
+
+    @Override
+    public void onPolygonFilterChange() {
+        mFilter.update();
+    }
+
+    @Override
+    public void onShownFirstTime() {
+        mFilterSectionPoint.onShownFirstTime();
+    }
+
+    @Override
+    public void presetRestore(Preferences preferences) {
+        clear();
+        presetStore(preferences);
+        //mDateRangePane.reset();
+    }
+
+    @Override
+    public void presetStore(Preferences preferences) {
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
+    }
+
+    @Override
+    public void reset() {
+        clear();
+
+        if (getFilterPresetPopOver().restoreDefaultIfExists()) {
+            //
+        } else {
+            mFilterSectionPoint.reset(null);
+            mFilterSectionMisc.reset(null);
+        }
+    }
+
+    private void createUI() {
+        var root = new BorderPane(getTabPane());
+        root.setTop(getToolBar());
+        populateToolBar(mFilterSectionMisc.getInvertCheckboxToolBarItem(), mFilterSectionMisc.getInvisibleCheckboxToolBarItem());
+
+        getTabPane().getTabs().addAll(
+                mFilterSectionPoint.getTab(),
+                mFilterSectionDate.getTab(),
+                mFilterSectionMeas.getTab()
+        //                mFilterSectionDisruptor.getTab()
+        );
+
+        setContentNode(root);
+
+        mFilterSectionPoint.disable(
+                BFilterSectionPoint.PointElement.ALARM,
+                BFilterSectionPoint.PointElement.MEAS_NEXT
+        );
+    }
+
+    private void initListeners() {
+        activatePasteName(actionEvent -> {
+            mFilter.freeTextProperty().set(mManager.getSelectedItem().getName());
+        });
+
+        mFilterSectionMisc.initListeners(mFilter);
+
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
+        mFilter.initCheckModelListeners();
+    }
+
+    private SessionManager initSession(Preferences preferences) {
+        var sessionManager = new SessionManager(preferences);
+        mFilterSectionPoint.initSession(sessionManager);
+        mFilterSectionDate.initSession(sessionManager);
+//        mFilterSectionDisruptor.initSession(sessionManager);
+        mFilterSectionMisc.initSession(sessionManager);
+        mFilterSectionMeas.initSession(sessionManager);
+
+        return sessionManager;
+    }
+
+}
