@@ -22,6 +22,7 @@ import org.mapton.butterfly_core.api.BOptionsView;
 import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_meteo.graphics.GraphicItem;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
@@ -38,7 +39,7 @@ public class MeteoOptionsView extends BOptionsView {
     private final SessionComboBox<MeteoPointBy> mPointScb = new SessionComboBox<>();
 
     public MeteoOptionsView(MeteoLayerBundle layerBundle) {
-        super(layerBundle, Bundle.CTL_MeteoAction(), MeteoOptions.getInstance(), "meteo");
+        super(layerBundle, SDict.METEOROLOGY.toString(), MeteoOptions.getInstance(), "meteo");
         createUI();
 
         initListerners();

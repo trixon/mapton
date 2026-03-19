@@ -23,6 +23,7 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
+import se.trixon.almond.util.SDict;
 
 /**
  * Top component which displays something.
@@ -51,7 +52,7 @@ import org.openide.windows.TopComponent;
 public final class MeteoTopComponent extends MTopComponent {
 
     public MeteoTopComponent() {
-        setName(Bundle.CTL_MeteoAction());
+        setName(SDict.METEOROLOGY.toString());
     }
 
     @Override

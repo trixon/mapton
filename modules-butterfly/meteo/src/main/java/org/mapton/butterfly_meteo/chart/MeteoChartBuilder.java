@@ -46,9 +46,9 @@ public class MeteoChartBuilder extends XyzChartBuilder<BMeteoPoint> {
     private final TimeSeries mTimeSeriesZ = new TimeSeries("Mark Z");
 
     public MeteoChartBuilder() {
-        initChart("mm/s", "0.00");
+        initChart("°C", "0.0");
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot(false);
         plot.setRangeAxis(2, mFreqAxis);
         plot.setDataset(2, mFreqDataset);
         plot.mapDatasetToRangeAxis(2, 2);
@@ -65,7 +65,7 @@ public class MeteoChartBuilder extends XyzChartBuilder<BMeteoPoint> {
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
             updateDataset(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot(false);
             var dateAxis = (DateAxis) plot.getDomainAxis();
             //dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
             dateAxis.setAutoRange(true);
@@ -83,7 +83,7 @@ public class MeteoChartBuilder extends XyzChartBuilder<BMeteoPoint> {
 
     @Override
     public void setTitle(BMeteoPoint p) {
-        setTitle(p, Color.BLUE);
+        setTitle(p, Color.BLACK);
 //        setTitle(p, StrainHelper.getAlarmColorAwt(p));
 
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
@@ -104,18 +104,18 @@ public class MeteoChartBuilder extends XyzChartBuilder<BMeteoPoint> {
                 mTimeSeriesFreqZ
         );
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot(false);
         resetPlot(plot);
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = ChartHelper.convertToMinute(o.getDate());
 
             if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
-                mTimeSeriesZ.add(minute, o.getMeasuredZ());
+                mTimeSeriesZ.add(minute, o.getAirTemperature());
             }
 
 //            mTimeSeriesLimit.add(minute, o.getLimit());
-//            mTimeSeriesFreqZ.add(minute, o.getFrequencyZ());
+            mTimeSeriesFreqZ.add(minute, o.getAirPressure());
         });
         plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
 

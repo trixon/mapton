@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_meteo;
+package org.mapton.butterfly_meteo.chart.overlay;
 
-import org.mapton.api.MChartSOSB;
 import org.mapton.api.MSimpleObjectStorageBoolean;
-import org.mapton.butterfly_meteo.chart.MeteoChartOverlay;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -26,12 +24,11 @@ import se.trixon.almond.util.fx.FxHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MSimpleObjectStorageBoolean.Misc.class)
-public class MeteoChartSOSB extends MChartSOSB {
+public class MeteoPrecipitationChartSOSB extends BaseMeteoChartSOSB {
 
-    public MeteoChartSOSB() {
-        setName(Bundle.CTL_MeteoAction());
-        setColor(FxHelper.colorToFxColor(MeteoChartOverlay.COLOR));
-        setTooltipText("De %d närmaste inom %d m.".formatted(MeteoChartOverlay.MAX_COUNT, MeteoChartOverlay.MAX_DISTANCE));
+    public MeteoPrecipitationChartSOSB() {
+        setName("Nederbörd");
+        setColor(FxHelper.colorToFxColor(MeteoPrecipitationChartOverlay.COLOR));
     }
 
 }

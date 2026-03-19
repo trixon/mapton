@@ -26,6 +26,7 @@ import org.mapton.butterfly_format.types.BMeteoPoint;
 import org.mapton.core.api.ui.ExportAction;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 
 /**
  *
@@ -52,7 +53,7 @@ public class MeteoView {
                 mFilterPopOver.getAction()
         );
 
-        mListForm = new SingleListForm<>(mManager, Bundle.CTL_MeteoAction());
+        mListForm = new SingleListForm<>(mManager, SDict.METEOROLOGY.toString());
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
                 .setToolbarActions(actions);

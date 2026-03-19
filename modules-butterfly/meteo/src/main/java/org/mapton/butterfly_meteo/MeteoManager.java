@@ -22,15 +22,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import org.mapton.api.MDisruptorProvider;
-import org.mapton.api.MLatLon;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BMeteoPoint;
+import org.mapton.butterfly_format.types.BMeteoPointObservation;
 import org.mapton.butterfly_meteo.chart.MeteoChartBuilder;
 import org.openide.util.Exceptions;
-import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.CollectionHelper;
 
 /**
@@ -38,8 +36,6 @@ import se.trixon.almond.util.CollectionHelper;
  * @author Patrik Karlström
  */
 public class MeteoManager extends BaseManager<BMeteoPoint> {
-
-    private final static String DISRUPTOR_NAME = Bundle.CTL_MeteoAction();
 
     private final MeteoChartBuilder mChartBuilder = new MeteoChartBuilder();
     private final MeteoOptions mOptions = MeteoOptions.getInstance();
@@ -81,36 +77,37 @@ public class MeteoManager extends BaseManager<BMeteoPoint> {
         try {
             initAllItems(butterfly.getMeteoPoints());
             initObjectToItemMap();
+            var nameToObservations = new LinkedHashMap<String, ArrayList<BMeteoPointObservation>>();
+            for (var o : butterfly.getMeteoPointsObservations()) {
+                nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
+            }
 
-            butterfly.getMeteoPointsObservations().forEach(p -> {
-//                var channels = butterfly.noise().getVibrationChannels().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getExternalId())).toList();
-//                p.ext().setChannels(new ArrayList<>(channels));
-//                var limits = butterfly.noise().getVibrationLimits().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getExternalId())).toList();
-//                p.ext().setLimits(new ArrayList<>(limits));
-//
-//                var status = "S5";
-//                for (var channel : channels) {
-//                    if (DateHelper.isBetween(channel.getFrom(), channel.getUntil(), LocalDate.now())) {
-//                        status = "S1";
-//                        break;
-//                    }
-//                }
-//                p.setStatus(status);
+            for (var p : butterfly.getMeteoPoints()) {
+                var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
+                if (!observations.isEmpty()) {
+                    p.ext().setDateFirst(observations.getFirst().getDate());
+                    p.setDateLatest(observations.getLast().getDate());
+                } else {
+                    p.ext().setDateFirst(LocalDateTime.MIN);
+                }
 
-                var observations = butterfly.noise().getVibrationObservations().stream()
-                        .filter(o -> o.getName().equalsIgnoreCase(p.getName()))
-                        .collect(Collectors.toCollection(ArrayList::new));
+                p.ext().setDateLatest(p.getDateLatest());
+                p.ext().setObservationsAllRaw(observations);
+                p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
+                for (var o : p.ext().getObservationsAllRaw()) {
+                    if (o.isZeroMeasurement()) {
+                        p.ext().setStoredZeroDateTime(o.getDate());
+                        break;
+                    }
+                }
+            }
 
-//                if (!observations.isEmpty()) {
-//                    p.ext().setDateFirst(observations.getFirst().getDate());
-//                    p.setDateLatest(observations.getLast().getDate());
-//                } else {
-//                    p.ext().setDateFirst(LocalDateTime.MIN);
-//                }
-//                p.ext().setDateLatest(p.getDateLatest());
-//                p.ext().setObservationsAllRaw(observations);
-//                p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
-            });
+            var origins = getAllItems()
+                    .stream().map(p -> p.getOrigin())
+                    .collect(Collectors.toCollection(TreeSet::new))
+                    .stream()
+                    .collect(Collectors.toCollection(ArrayList<String>::new));
+            setValue("origins", origins);
 
             var dates = new TreeSet<LocalDateTime>();
             getAllItems().stream().forEachOrdered(p -> {
@@ -155,7 +152,7 @@ public class MeteoManager extends BaseManager<BMeteoPoint> {
                     .collect(Collectors.toCollection(ArrayList::new));
 
             p.ext().setObservationsTimeFiltered(timeFilteredObservations);
-            p.ext().calculateObservations(timeFilteredObservations);
+            //p.ext().calculateObservations(timeFilteredObservations);
 
             var measCountStats = new LinkedHashMap<String, Integer>();
             p.ext().setMeasurementCountStats(measCountStats);
@@ -164,23 +161,12 @@ public class MeteoManager extends BaseManager<BMeteoPoint> {
             });
         });
 
-        var latLonDisruptors = timeFilteredItems.stream().map(p -> new MLatLon(p.getLat(), p.getLon())).toList();
-        mDisruptorManager.putLatLons(DISRUPTOR_NAME, latLonDisruptors);
         setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override
     protected void load(ArrayList<BMeteoPoint> items) {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @ServiceProvider(service = MDisruptorProvider.class)
-    public static class BlastDisruptorProvider implements MDisruptorProvider {
-
-        @Override
-        public String getName() {
-            return DISRUPTOR_NAME;
-        }
     }
 
     private static class Holder {
