@@ -24,7 +24,7 @@ import se.trixon.almond.util.Dict;
  */
 public abstract class MChartSOSB extends MSimpleObjectStorageBoolean.Misc {
 
-    public static final boolean DEFAULT_VALUE = true;
+    public static final boolean DEFAULT_VALUE = false;
     private Color mColor = Color.YELLOW;
 
     public MChartSOSB() {

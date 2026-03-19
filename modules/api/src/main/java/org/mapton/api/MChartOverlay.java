@@ -21,7 +21,12 @@ package org.mapton.api;
  */
 public abstract class MChartOverlay {
 
+    private static int sIndex = 500;
     protected final MSimpleObjectStorageManager mObjectStorageManager = MSimpleObjectStorageManager.getInstance();
+
+    public static int getNextIndex() {
+        return sIndex++;
+    }
 
     public MChartOverlay() {
     }
