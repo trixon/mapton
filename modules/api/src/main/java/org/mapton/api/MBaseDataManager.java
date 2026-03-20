@@ -457,6 +457,8 @@ public abstract class MBaseDataManager<T> {
                 Mapton.getGlobalState().put(MKey.OBJECT_TRENDS, objectTrends);
             }
 
+//            var s = java.time.LocalTime.now().toString() + " CALL CHART " + getClass().getSimpleName() + "\n";
+//            System.out.println(s.repeat(10));
             var objectChart = getObjectChart(n);
             if (objectChart != Boolean.FALSE) {
                 Mapton.getGlobalState().put(MKey.CHART, objectChart);
