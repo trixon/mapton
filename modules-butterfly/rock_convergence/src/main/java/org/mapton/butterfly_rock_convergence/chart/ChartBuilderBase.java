@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Minute;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BDimension;
@@ -63,7 +62,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BRockConvergence>
             }
 
             setTitle(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             updateDataset(p);
             var date = isCompleteView() ? mDateNull : Date.from(Instant.now().minus(getRecentDays(), ChronoUnit.DAYS));
             setDateRangeNullNow(plot, p, date);

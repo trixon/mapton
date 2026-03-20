@@ -21,7 +21,6 @@ import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MTemporalManager;
@@ -57,7 +56,7 @@ public class AnchorChartBuilder extends XyzChartBuilder<BRockConvergencePair> {
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
             updateDataset(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
             //dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
             dateAxis.setAutoRange(true);
@@ -95,7 +94,7 @@ public class AnchorChartBuilder extends XyzChartBuilder<BRockConvergencePair> {
         mTimeSeriesPoint.clear();
         mTimeSeriesDeltaZ.clear();
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         resetPlot(plot);
 
         if (p.ext().getObservationsTimeFiltered().isEmpty()) {
@@ -115,7 +114,7 @@ public class AnchorChartBuilder extends XyzChartBuilder<BRockConvergencePair> {
     }
 
     private void plotZ(BRockConvergencePair pair, BTopoControlPoint p) {
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         var firstDate = pair.ext().getObservationsAllRaw().getFirst().getDate().toLocalDate();
         var lastDate = pair.ext().getObservationsAllRaw().getLast().getDate().toLocalDate();
         var series = pair.getConvergence().ext().getAnchorPoint() == p ? mTimeSeriesAnchor : mTimeSeriesPoint;

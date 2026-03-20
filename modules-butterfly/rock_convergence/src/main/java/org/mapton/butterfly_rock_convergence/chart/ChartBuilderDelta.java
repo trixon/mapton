@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.TreeMap;
 import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
@@ -67,7 +66,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
     @Override
     public void updateDataset(BRockConvergence p) {
         mLastWeekDeltaToPair.clear();
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         var rangeAxis = plot.getRangeAxis();
         resetPlot(plot);
         plotMarkers(p);
@@ -98,7 +97,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
     }
 
     private void plotMarkers(BRockConvergence p) {
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 

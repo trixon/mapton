@@ -19,7 +19,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
@@ -48,7 +47,7 @@ public class ConvergenceChartBuilder extends XyzChartBuilder<BRockConvergence> {
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
             updateDataset(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             if (mDateNull != null) {
                 setDateRangeNullNow(plot, p, mDateNull);
             }
@@ -72,7 +71,7 @@ public class ConvergenceChartBuilder extends XyzChartBuilder<BRockConvergence> {
 
     @Override
     public synchronized void updateDataset(BRockConvergence p) {
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         resetPlot(plot);
         plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
@@ -86,7 +85,7 @@ public class ConvergenceChartBuilder extends XyzChartBuilder<BRockConvergence> {
     private void updateDataset(BRockConvergencePair pair) {
         var timeSeries = new TimeSeries(pair.getSimpleName());
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
 
         pair.ext().getObservationsTimeFiltered().forEach(o -> {
             addNEMarkers(plot, o, true);
