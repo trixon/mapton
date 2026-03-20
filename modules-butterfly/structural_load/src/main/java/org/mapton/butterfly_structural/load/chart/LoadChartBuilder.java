@@ -20,7 +20,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
@@ -50,7 +49,7 @@ public class LoadChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint> 
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
             updateDataset(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             setDateRangeNullNow(plot, p, mDateNull);
 
             plot.clearRangeMarkers();
@@ -78,7 +77,7 @@ public class LoadChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint> 
     @Override
     public synchronized void updateDataset(BStructuralLoadCellPoint p) {
         clear(mTimeSeriesZ);
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         resetPlot(plot);
 
         plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
