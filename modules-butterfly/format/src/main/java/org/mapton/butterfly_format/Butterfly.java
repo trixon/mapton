@@ -379,8 +379,8 @@ public class Butterfly {
         new ImportFromCsv<BMeteoPoint>(BMeteoPoint.class) {
         }.load(sourceDir, "meteoPoints.csv", mMeteoPoints);
 
-//        new ImportFromCsv<BMeteoPointObservation>(BMeteoPointObservation.class) {
-//        }.load(sourceDir, "meteoPointsObservations.csv", mMeteoPointsObservations);
+        new ImportFromCsv<BMeteoPointObservation>(BMeteoPointObservation.class) {
+        }.load(sourceDir, "meteoPointsObservations.csv", mMeteoPointsObservations);
     }
 
     void postLoad() {
@@ -397,7 +397,8 @@ public class Butterfly {
                 mStructuralLoadPoints,
                 mStructuralStrainPoints,
                 mStructuralTiltPoints,
-                mTopoControlPoints
+                mTopoControlPoints,
+                mVibrationPoints
         ).forEach(items -> items.forEach(item -> item.setButterfly(this)));
 
         for (var a : mAlarms) {

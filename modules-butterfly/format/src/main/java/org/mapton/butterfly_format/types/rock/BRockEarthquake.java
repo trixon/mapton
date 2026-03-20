@@ -40,6 +40,7 @@ public class BRockEarthquake extends BXyzPoint {
     public BRockEarthquake() {
     }
 
+    @Override
     public Ext ext() {
         if (mExt == null) {
             mExt = new Ext();
@@ -72,7 +73,7 @@ public class BRockEarthquake extends BXyzPoint {
         this.mSig = sig;
     }
 
-    public class Ext extends BXyzPoint.Ext<BRockBlastObservation> {
+    public class Ext extends BXyzPoint.Ext<BRockEarthquakeObservation> {
 
     }
 

@@ -20,7 +20,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import se.trixon.almond.util.DateHelper;
@@ -59,6 +58,7 @@ public class BHydroGroundwaterPoint extends BXyzPoint {
     public BHydroGroundwaterPoint() {
     }
 
+    @Override
     public Ext ext() {
         if (mExt == null) {
             mExt = new Ext();
@@ -67,7 +67,7 @@ public class BHydroGroundwaterPoint extends BXyzPoint {
         return mExt;
     }
 
-    public class Ext extends BBasePoint.Ext<BHydroGroundwaterPointObservation> {
+    public class Ext extends BXyzPoint.Ext<BHydroGroundwaterPointObservation> {
 
         public Double getGroundwaterLevelDiff(int daysBeforeNow) {
             var now = LocalDate.now();

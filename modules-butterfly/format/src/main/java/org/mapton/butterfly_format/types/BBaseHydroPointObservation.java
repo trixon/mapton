@@ -19,19 +19,9 @@ package org.mapton.butterfly_format.types;
  *
  * @author Patrik Karlström
  */
-public class BBaseHydroPointObservation extends BBaseControlPointObservation {
-
-    private transient Ext mExt;
+public class BBaseHydroPointObservation extends BXyzPointObservation {
 
     public BBaseHydroPointObservation() {
-    }
-
-    public Ext ext() {
-        if (mExt == null) {
-            mExt = new Ext();
-        }
-
-        return mExt;
     }
 
     public class Ext<T> {
