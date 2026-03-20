@@ -48,7 +48,7 @@ public class VibrationChartBuilder extends XyzChartBuilder<BAcousticVibrationPoi
     public VibrationChartBuilder() {
         initChart("mm/s", "0.00");
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         plot.setRangeAxis(2, mFreqAxis);
         plot.setDataset(2, mFreqDataset);
         plot.mapDatasetToRangeAxis(2, 2);
@@ -65,7 +65,7 @@ public class VibrationChartBuilder extends XyzChartBuilder<BAcousticVibrationPoi
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
             updateDataset(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
             //dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
             dateAxis.setAutoRange(true);
@@ -104,7 +104,7 @@ public class VibrationChartBuilder extends XyzChartBuilder<BAcousticVibrationPoi
                 mTimeSeriesFreqZ
         );
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         resetPlot(plot);
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
