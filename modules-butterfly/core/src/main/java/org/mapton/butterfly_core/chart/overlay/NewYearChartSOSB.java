@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_core;
+package org.mapton.butterfly_core.chart.overlay;
 
 import org.mapton.api.MChartSOSB;
 import org.mapton.api.MSimpleObjectStorageBoolean;
@@ -30,7 +30,7 @@ public class NewYearChartSOSB extends MChartSOSB {
     public NewYearChartSOSB() {
         setName("Årsskiften");
         setColor(FxHelper.colorToFxColor(NewYearChartOverlay.COLOR));
-        setDefaultValue(false);
+        setDefaultValue(true);
     }
 
 }

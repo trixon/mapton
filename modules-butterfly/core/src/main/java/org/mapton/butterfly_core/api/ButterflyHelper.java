@@ -187,13 +187,19 @@ public class ButterflyHelper {
         return index;
     }
 
-    public static <T extends BXyzPoint> List<T> getLimitedPoints(BBasePoint p, ArrayList<T> items, double maxDistance, int limit, LocalDate aStartDate) {
+    public static synchronized <T extends BXyzPoint> List<T> getLimitedPoints(BBasePoint p, ArrayList<T> items, boolean requireObservations, double maxDistance, int limit, LocalDate aStartDate) {
         var startDate = aStartDate == null ? LocalDate.now().minusYears(5) : aStartDate;
         var lastDate = LocalDate.now().plusDays(1);
         var pointLatLon = new MLatLon(p.getLat(), p.getLon());
         var filteredPoints = items.stream()
                 .filter(g -> g != p)
-                .filter(q -> q.extOrNull().getObservationsTimeFiltered().size() > 1)
+                .filter(q -> {
+                    if (requireObservations) {
+                        return q.extOrNull().getObservationsTimeFiltered().size() > 1;
+                    } else {
+                        return true;
+                    }
+                })
                 .filter(q -> {
                     return q.getDateLatest() != null && DateHelper.isBetween(
                             startDate,

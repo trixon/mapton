@@ -129,13 +129,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         }
     }
 
-    public static void plotOverlays(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
-//    public static void plotOverlays(XYPlot plot, BBasePoint p, LocalDate aStartDate, Class<? extends BChartOverlay>... excludedOverlays) {
-//        var excludedOverlaysSet = new HashSet();
-//        if (excludedOverlays != null) {
-//            Collections.addAll(excludedOverlaysSet, excludedOverlays);
-//        }
-
+    public static synchronized void plotOverlays(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
         Lookup.getDefault().lookupAll(BChartOverlay.class).stream()
                 //                .filter(o -> !excludedOverlaysSet.contains(o.getClass()))
                 .sorted(Comparator.comparingInt(MChartOverlay::getPosition))
@@ -144,8 +138,10 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                         chartOverlay.plot(plot, p, aStartDate);
                     } catch (Exception e) {
                         Exceptions.printStackTrace(e);
+                        System.out.println("ERROR IN plotOverlays: " + chartOverlay.mAxis.getLabel());
                     }
                 });
+        //plot.setNotify(true);
     }
 
     public void addNEMarkers(XYPlot plot, BBaseControlPointObservation o, boolean doPlot) {
@@ -189,6 +185,13 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         return mLeftSubTextTitle;
     }
 
+    public XYPlot getPlot() {
+        var plot = (XYPlot) mChart.getPlot();
+//        plot.setNotify(notify);
+
+        return plot;
+    }
+
     public Integer getRecentDays() {
         return mRecentDays;
     }
@@ -219,7 +222,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
         marker.setPaint(color);
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         plot.addRangeMarker(marker);
     }
 
@@ -282,7 +285,15 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     }
 
     public void resetPlot(XYPlot plot) {
-        getDataset().removeAllSeries();
+        try {
+            plot.getDatasets().values().forEach(dataset -> {
+                if (dataset instanceof TimeSeriesCollection ds) {
+                    ds.removeAllSeries();
+                }
+            });
+        } catch (Exception e) {
+            System.out.println("ERROR IN RESET");
+        }
         plot.clearDomainMarkers();
         plot.clearAnnotations();
         mMinMaxCollection.reset();
@@ -315,7 +326,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     public void setRange(double margin, double alarmFactor, BAlarm... alarms) {
         var alarmMinMax = AlarmHelper.getInstance().getMinMax(alarms);
         mMinMaxCollection.add(alarmMinMax.getX() * alarmFactor, alarmMinMax.getY() * alarmFactor);
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         var rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setAutoRange(false);
         rangeAxis.setRange(getMinMaxMin() * margin, getMinMaxMax() * margin);
@@ -326,7 +337,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     }
 
     public void setRange(double margin) {
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         var rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setAutoRange(false);
         rangeAxis.setRange(mMinMaxCollection.getMin() * margin, mMinMaxCollection.getMax() * margin);
@@ -372,7 +383,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         mChart.getTitle().setBackgroundPaint(Color.LIGHT_GRAY);
         mChart.getTitle().setExpandToFitSpace(true);
         mChart.getTitle().setFont(mChart.getTitle().getFont().deriveFont((float) SwingHelper.getUIScaled(13.0)));
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         plot.setBackgroundPaint(Color.lightGray);
         plot.setDomainGridlinePaint(Color.white);
         plot.setRangeGridlinePaint(Color.white);

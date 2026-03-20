@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_core;
+package org.mapton.butterfly_core.chart.overlay;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -39,24 +39,23 @@ public class NewYearChartOverlay extends BChartOverlay {
     public static final Color COLOR = Color.GREEN.brighter();
 
     public NewYearChartOverlay() {
+        super("");
     }
 
     @Override
     public synchronized void plot(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
-        if (!mObjectStorageManager.getBoolean(NewYearChartSOSB.class, false)) {
-            return;
-        }
+        if (mObjectStorageManager.getBoolean(NewYearChartSOSB.class, true)) {
+            var lastDate = LocalDate.now().plusDays(1);
+            var stroke = new BasicStroke(10.0f);
+            var color = GraphicsHelper.colorAddAlpha(COLOR, 60);
 
-        var lastDate = LocalDate.now().plusDays(1);
-        var stroke = new BasicStroke(10.0f);
-        var color = GraphicsHelper.colorAddAlpha(COLOR, 30);
-
-        for (int year = aStartDate.getYear(); year <= lastDate.getYear(); year++) {
-            var januaryFirst = LocalDate.of(year, Month.JANUARY, 1);
-            if (DateHelper.isBetween(aStartDate, lastDate, januaryFirst)) {
-                var minute = ChartHelper.convertToMinute(januaryFirst.atStartOfDay());
-                var marker = new ValueMarker(minute.getFirstMillisecond(), color, stroke);
-                plot.addDomainMarker(marker);
+            for (int year = aStartDate.getYear(); year <= lastDate.getYear(); year++) {
+                var januaryFirst = LocalDate.of(year, Month.JANUARY, 1);
+                if (DateHelper.isBetween(aStartDate, lastDate, januaryFirst)) {
+                    var minute = ChartHelper.convertToMinute(januaryFirst.atStartOfDay());
+                    var marker = new ValueMarker(minute.getFirstMillisecond(), color, stroke);
+                    plot.addDomainMarker(marker);
+                }
             }
         }
     }
