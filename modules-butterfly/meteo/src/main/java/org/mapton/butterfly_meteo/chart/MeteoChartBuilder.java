@@ -22,7 +22,6 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -48,7 +47,7 @@ public class MeteoChartBuilder extends XyzChartBuilder<BMeteoPoint> {
     public MeteoChartBuilder() {
         initChart("°C", "0.0");
 
-        var plot = getPlot(false);
+        var plot = getPlot();
         plot.setRangeAxis(2, mFreqAxis);
         plot.setDataset(2, mFreqDataset);
         plot.mapDatasetToRangeAxis(2, 2);
@@ -65,7 +64,7 @@ public class MeteoChartBuilder extends XyzChartBuilder<BMeteoPoint> {
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
             updateDataset(p);
-            var plot = getPlot(false);
+            var plot = getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
             //dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
             dateAxis.setAutoRange(true);
@@ -104,7 +103,7 @@ public class MeteoChartBuilder extends XyzChartBuilder<BMeteoPoint> {
                 mTimeSeriesFreqZ
         );
 
-        var plot = getPlot(false);
+        var plot = getPlot();
         resetPlot(plot);
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {

@@ -25,7 +25,6 @@ public abstract class BaseMeteoChartOverlay extends BChartOverlay {
 
     public static final int MAX_COUNT = 5;
     public static final int MAX_DISTANCE = 30_000;
-    protected final int mIndex = getNextIndex();
 
     public BaseMeteoChartOverlay(String title) {
         super(title);

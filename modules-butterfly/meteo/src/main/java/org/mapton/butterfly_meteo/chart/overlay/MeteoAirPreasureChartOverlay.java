@@ -18,7 +18,6 @@ package org.mapton.butterfly_meteo.chart.overlay;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.time.LocalDate;
-import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
@@ -54,12 +53,7 @@ public class MeteoAirPreasureChartOverlay extends BaseMeteoChartOverlay {
             if (!points.isEmpty()) {
                 var renderer = new XYLineAndShapeRenderer(true, false);
                 var dataset = new TimeSeriesCollection();
-
-                plot.setRangeAxis(mIndex, mAxis);
-                plot.setDataset(mIndex, dataset);
-                plot.mapDatasetToRangeAxis(mIndex, mIndex);
-                plot.setRangeAxisLocation(mIndex, AxisLocation.BOTTOM_OR_RIGHT);
-                plot.setRenderer(mIndex, renderer);
+                init(plot, dataset, renderer);
 
                 var color = COLOR;
 
@@ -91,4 +85,5 @@ public class MeteoAirPreasureChartOverlay extends BaseMeteoChartOverlay {
             }
         }
     }
+
 }
