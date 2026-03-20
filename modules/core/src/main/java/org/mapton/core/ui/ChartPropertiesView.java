@@ -39,6 +39,7 @@ import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.Mapton;
 import org.mapton.core.ui.simple_object_storage.BaseTab;
 import org.openide.util.Lookup;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.Spacer;
 
@@ -107,8 +108,10 @@ class ChartPropertiesView extends BorderPane {
                         }
                         toggleSwitch.setSelected(mManager.getBoolean(simpleStorage.getClass(), simpleStorage.getDefaultValue()));
                         toggleSwitch.selectedProperty().addListener((p, o, n) -> {
-                            mManager.putBoolean(simpleStorage.getClass(), toggleSwitch.isSelected());
-                            Mapton.getGlobalState().put(MKey.OBJECT_RESELECT, System.currentTimeMillis());
+                            SystemHelper.runLaterDelayed(250, () -> {
+                                mManager.putBoolean(simpleStorage.getClass(), toggleSwitch.isSelected());
+                                Mapton.getGlobalState().put(MKey.OBJECT_RESELECT, System.currentTimeMillis());
+                            });
                         });
                         var group = simpleStorage.getGroup();
                         if (!groups.contains(group)) {
