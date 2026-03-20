@@ -28,7 +28,6 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.entity.LegendItemEntity;
 import org.jfree.chart.entity.XYItemEntity;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BMultiChartPart;
@@ -65,7 +64,7 @@ public class QuakeMultiChartBuilder extends XyzChartBuilder<BRockEarthquake> {
             mDateLast = p.ext().getDateFirst().toLocalDate().plusMonths(2);
             setTitle(p);
             updateDataset(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
             dateAxis.setRange(DateHelper.convertToDate(mDateFirst), DateHelper.convertToDate(mDateLast));
             plot.clearRangeMarkers();
@@ -130,7 +129,7 @@ public class QuakeMultiChartBuilder extends XyzChartBuilder<BRockEarthquake> {
 
     @Override
     public void updateDataset(BRockEarthquake b) {
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         resetPlot(plot);
 
         var latLon = new MLatLon(b.getLat(), b.getLon());

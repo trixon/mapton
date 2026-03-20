@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_rock_earthquake;
+package org.mapton.butterfly_rock_earthquake.chart.overlay;
 
 import org.mapton.api.MChartSOSB;
 import org.mapton.api.MSimpleObjectStorageBoolean;
-import org.mapton.butterfly_rock_earthquake.chart.QuakeChartOverlay;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -30,7 +29,7 @@ import se.trixon.almond.util.fx.FxHelper;
 public class QuakeChartSOSB extends MChartSOSB {
 
     public QuakeChartSOSB() {
-        setName(Bundle.CTL_EarthquakeAction());
+        setName("Jordbävningar");
         setColor(FxHelper.colorToFxColor(QuakeChartOverlay.COLOR));
         setTooltipText("De %d kraftigaste/km.".formatted(QuakeChartOverlay.MAX_COUNT));
         setGroup(SDict.ROCK_MECHANICS.toString());

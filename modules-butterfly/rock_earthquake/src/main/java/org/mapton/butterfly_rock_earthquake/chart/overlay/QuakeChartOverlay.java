@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_rock_earthquake.chart;
+package org.mapton.butterfly_rock_earthquake.chart.overlay;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -26,12 +26,10 @@ import org.jfree.chart.ui.TextAnchor;
 import org.mapton.api.MChartOverlay;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BChartOverlay;
-import org.mapton.butterfly_core.api.ButterflyManager;
+import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BBasePoint;
-import org.mapton.butterfly_rock_earthquake.QuakeChartSOSB;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -45,6 +43,8 @@ public class QuakeChartOverlay extends BChartOverlay {
     public static final int MAX_COUNT = 10;
 
     public QuakeChartOverlay() {
+        super("");
+
     }
 
     @Override
@@ -53,18 +53,10 @@ public class QuakeChartOverlay extends BChartOverlay {
             return;
         }
 
-        var lastDate = LocalDate.now().plusDays(1);
-        var currentStroke = new BasicStroke(4f);
-        var otherStroke = new BasicStroke(1.2f);
         var pointLatLon = new MLatLon(p.getLat(), p.getLon());
 
-        ButterflyManager.getInstance().getButterfly().rock().getEarthquakes().stream()
-                .filter(b -> {
-                    return DateHelper.isBetween(
-                            aStartDate,
-                            lastDate,
-                            b.getDateLatest().toLocalDate());
-                })
+        var mPoints = ButterflyHelper.getLimitedPoints(p, p.getButterfly().rock().getEarthquakes(), false, Integer.MAX_VALUE, Integer.MAX_VALUE, aStartDate)
+                .stream()
                 .sorted((q1, q2) -> {
                     var q1LatLon = new MLatLon(q1.getLat(), q1.getLon());
                     var q1Distance = q1LatLon.distance(pointLatLon);
@@ -74,28 +66,33 @@ public class QuakeChartOverlay extends BChartOverlay {
                     return Double.compare(Math.pow(10, q2.getMag()) / q2Distance, Math.pow(10, q1.getMag()) / q1Distance);
                 })
                 .limit(MAX_COUNT)
-                .forEachOrdered(q -> {
-                    var blastLatLon = new MLatLon(q.getLat(), q.getLon());
-                    var distance = blastLatLon.distance(pointLatLon);
-                    var minute = ChartHelper.convertToMinute(q.getDateLatest());
-                    var marker = new ValueMarker(minute.getFirstMillisecond());
-                    var color = COLOR;
+                .toList();
 
-                    if (q == p) {
-                        color = Color.RED;
-                        marker.setStroke(currentStroke);
-                    } else {
-                        marker.setStroke(otherStroke);
-                        var value = p.getValue("PLOT_BLAST_LABEL");
-                        if (value != Boolean.FALSE) {
-                            marker.setLabel("%.1f%s @ %.0f km".formatted(q.getMag(), q.getMagType(), distance / 1000.0));
-                            marker.setLabelFont(new Font("Dialog", Font.PLAIN, SwingHelper.getUIScaled(10)));
-                            marker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
-                            marker.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
-                        }
-                    }
-                    marker.setPaint(color);
-                    plot.addDomainMarker(marker);
-                });
+        var currentStroke = new BasicStroke(4f);
+        var otherStroke = new BasicStroke(1.2f);
+
+        mPoints.forEach(q -> {
+            var blastLatLon = new MLatLon(q.getLat(), q.getLon());
+            var distance = blastLatLon.distance(pointLatLon);
+            var minute = ChartHelper.convertToMinute(q.getDateLatest());
+            var marker = new ValueMarker(minute.getFirstMillisecond());
+            var color = COLOR;
+
+            if (q == p) {
+                color = Color.RED;
+                marker.setStroke(currentStroke);
+            } else {
+                marker.setStroke(otherStroke);
+                var value = p.getValue("PLOT_BLAST_LABEL");
+                if (value != Boolean.FALSE) {
+                    marker.setLabel("%.1f%s @ %.0f km".formatted(q.getMag(), q.getMagType(), distance / 1000.0));
+                    marker.setLabelFont(new Font("Dialog", Font.PLAIN, SwingHelper.getUIScaled(10)));
+                    marker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
+                    marker.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+                }
+            }
+            marker.setPaint(color);
+            plot.addDomainMarker(marker);
+        });
     }
 }
