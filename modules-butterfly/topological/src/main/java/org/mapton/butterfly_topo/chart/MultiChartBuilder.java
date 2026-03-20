@@ -27,7 +27,6 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.entity.LegendItemEntity;
 import org.jfree.chart.entity.XYItemEntity;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BMultiChartPart;
@@ -65,7 +64,7 @@ public class MultiChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
             mDateLast = LocalDate.now();
             updateDataset(p);
             setTitle(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
             dateAxis.setRange(DateHelper.convertToDate(mDateFirst), DateHelper.convertToDate(mDateLast));
             plot.clearRangeMarkers();
@@ -98,6 +97,7 @@ public class MultiChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
                 }
             });
 
+//            plot.setNotify(true);
             return getChartPanel();
         };
 
@@ -126,7 +126,7 @@ public class MultiChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
 
     @Override
     public void updateDataset(BTopoControlPoint p) {
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         resetPlot(plot);
 
         var points = mMultiChartComponent.getPoints(BCoordinatrix.toLatLon(p), mDateFirst, p.ext().getDateFirst().toLocalDate(), mDateLast);

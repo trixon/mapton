@@ -23,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MTemporalManager;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
@@ -59,7 +58,7 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
             updateDataset(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
             dateAxis.setAutoRange(true);
 
@@ -125,7 +124,7 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
         mTimeSeriesV.clear();
         mTimeSeriesD.clear();
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         resetPlot(plot);
         var label = "mm/m";
         if (p.getAxis() == BAxis.RESULTANT) {
