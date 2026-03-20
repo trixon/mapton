@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_rock_blast;
+package org.mapton.butterfly_rock_blast.chart.overlay;
 
 import org.mapton.api.MChartSOSB;
 import org.mapton.api.MSimpleObjectStorageBoolean;
-import org.mapton.butterfly_rock_blast.chart.BlastChartOverlay;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -30,9 +29,9 @@ import se.trixon.almond.util.fx.FxHelper;
 public class BlastChartSOSB extends MChartSOSB {
 
     public BlastChartSOSB() {
-        setName(Bundle.CTL_BlastAction());
+        setName("Sprängsalvor");
         setColor(FxHelper.colorToFxColor(BlastChartOverlay.COLOR));
-        setTooltipText("De inom %.0f m.".formatted(BlastChartOverlay.DEFAULT_DISTANCE_LIMIT));
+        setTooltipText("De inom %.0f m.".formatted(BlastChartOverlay.MAX_DISTANCE));
         setGroup(SDict.ROCK_MECHANICS.toString());
     }
 

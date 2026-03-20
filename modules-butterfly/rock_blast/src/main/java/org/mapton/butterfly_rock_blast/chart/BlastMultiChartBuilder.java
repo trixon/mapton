@@ -65,7 +65,7 @@ public class BlastMultiChartBuilder extends XyzChartBuilder<BRockBlast> {
             mDateLast = p.ext().getDateFirst().toLocalDate().plusMonths(2);
             setTitle(p);
             updateDataset(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
             dateAxis.setRange(DateHelper.convertToDate(mDateFirst), DateHelper.convertToDate(mDateLast));
             plot.clearRangeMarkers();
@@ -130,7 +130,7 @@ public class BlastMultiChartBuilder extends XyzChartBuilder<BRockBlast> {
 
     @Override
     public void updateDataset(BRockBlast b) {
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         resetPlot(plot);
 
         var latLon = new MLatLon(b.getLat(), b.getLon());
