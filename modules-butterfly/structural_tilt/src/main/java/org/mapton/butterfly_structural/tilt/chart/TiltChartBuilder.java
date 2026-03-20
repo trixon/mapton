@@ -23,7 +23,6 @@ import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.MovingAverage;
 import org.jfree.data.time.TimeSeries;
@@ -51,7 +50,7 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
     public TiltChartBuilder() {
         initChart("mm/m", "0.0");
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         plot.setRangeAxis(2, mTemperatureAxis);
         plot.setDataset(2, mTemperatureDataset);
         plot.mapDatasetToRangeAxis(2, 2);
@@ -68,7 +67,7 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
             updateDataset(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             setDateRangeNullNow(plot, p, mDateNull);
 
             plot.clearRangeMarkers();
@@ -78,6 +77,7 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
             rangeAxis.setAutoRange(true);
 //            rangeAxis.setRange(-0.050, +0.050);
 
+            plot.setNotify(true);
             return getChartPanel();
         };
 
@@ -111,7 +111,7 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
         mTemperatureDataset.removeAllSeries();
         mTimeSeriesTemperature.clear();
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         resetPlot(plot);
 
         plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
@@ -185,7 +185,7 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
 //        marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
 //        marker.setPaint(color);
 //
-//        var plot = (XYPlot) mChart.getPlot();
+//        var plot = getPlot();
 //        plot.addRangeMarker(marker);
 //    }
 //
