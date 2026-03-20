@@ -20,7 +20,6 @@ import java.awt.Color;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Function;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.general.DatasetUtils;
 import org.jfree.data.time.TimeSeries;
@@ -54,7 +53,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
     public void updateDataset(BRemoteInsarPoint p) {
         mTimeSeries.clear();
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         resetPlot(plot);
 
         for (var entry : plot.getDatasets().entrySet()) {
@@ -135,7 +134,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
                 100,
                 title);
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         plot.setDataset(index, dataset);
 
         var renderer = new XYLineAndShapeRenderer(true, false);
