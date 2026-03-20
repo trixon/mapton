@@ -22,7 +22,6 @@ import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -52,7 +51,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
     public StrainChartBuilder() {
         initChart("Δ µε", "0");
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         plot.setRangeAxis(2, mTemperatureAxis);
         plot.setDataset(2, mTemperatureDataset);
         plot.mapDatasetToRangeAxis(2, 2);
@@ -69,7 +68,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
             updateDataset(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             setDateRangeNullNow(plot, p, mDateNull);
 
             plot.clearRangeMarkers();
@@ -101,7 +100,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
         mTemperatureDataset.removeAllSeries();
         mTimeSeriesTemperature.clear();
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         resetPlot(plot);
 
         plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
@@ -139,7 +138,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
     }
 
     private void updateDataset(BStructuralStrainGaugePoint p, Color color, boolean plotZeroAndReplacement) {
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         var timeSeries = new TimeSeries(p.getName());
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {

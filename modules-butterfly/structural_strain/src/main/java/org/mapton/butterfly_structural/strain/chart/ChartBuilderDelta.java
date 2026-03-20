@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Function;
 import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_format.types.BComponent;
@@ -52,7 +51,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
     public void updateDataset(BStructuralStrainGaugePoint p) {
         mTimeSeries1d.clear();
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         var rangeAxis = plot.getRangeAxis();
         resetPlot(plot);
         plotMarkers(p);
@@ -80,7 +79,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
     }
 
     private double plot(BStructuralStrainGaugePoint p, TimeSeries timeSeries, Color color, Function<BXyzPointObservation, Double> function) {
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         var renderer = plot.getRenderer();
         var startDate = isCompleteView() ? LocalDateTime.MIN : LocalDateTime.now().minusDays(getRecentDays());
         Double firstDelta = null;
@@ -113,7 +112,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         if (!mPlotAvg) {
             return;
         }
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         int avdDays = 90 * 60 * 24;
         int avgSkipMeasurements = 0;
         var mavg = createSubSetMovingAverage(timeSeries, mSubSetZeroMinute, mSubSetLastMinute, "%s (avg)".formatted(timeSeries.getKey()), avdDays, avgSkipMeasurements);
@@ -135,7 +134,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
     }
 
     private void plotMarkers(BStructuralStrainGaugePoint p) {
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
