@@ -20,7 +20,6 @@ import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MTemporalManager;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
@@ -49,7 +48,7 @@ public class GroundwaterChartBuilder extends XyzChartBuilder<BHydroGroundwaterPo
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
             updateDataset(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
             dateAxis.setAutoRange(true);
 
@@ -74,7 +73,7 @@ public class GroundwaterChartBuilder extends XyzChartBuilder<BHydroGroundwaterPo
     public void updateDataset(BHydroGroundwaterPoint p) {
         mTimeSeriesH.clear();
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         resetPlot(plot);
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {

@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
@@ -59,7 +58,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BHydroGroundwater
             }
 
             setTitle(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             updateDataset(p);
             var date = isCompleteView() ? mDateNull : Date.from(Instant.now().minus(getRecentDays(), ChronoUnit.DAYS));
             setDateRangeNullNow(plot, p, date);

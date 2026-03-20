@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Patrik Karlström.
+ * Copyright 2026 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro.groundwater;
+package org.mapton.butterfly_hydro.waterlevel.chart.overlay;
 
 import org.mapton.api.MChartSOSB;
 import org.mapton.api.MSimpleObjectStorageBoolean;
-import org.mapton.butterfly_hydro.groundwater.chart.GroundwaterChartOverlay;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -27,12 +26,12 @@ import se.trixon.almond.util.fx.FxHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MSimpleObjectStorageBoolean.Misc.class)
-public class GroundwaterChartSOSB extends MChartSOSB {
+public class WaterLevelChartSOSB extends MChartSOSB {
 
-    public GroundwaterChartSOSB() {
-        setName(Bundle.CTL_GroundwaterAction());
-        setColor(FxHelper.colorToFxColor(GroundwaterChartOverlay.COLOR));
-        setTooltipText("De %d närmaste inom %d m.".formatted(GroundwaterChartOverlay.MAX_COUNT, GroundwaterChartOverlay.MAX_DISTANCE));
+    public WaterLevelChartSOSB() {
+        setName("Vattenstånd");
+        setColor(FxHelper.colorToFxColor(WaterLevelChartOverlay.COLOR));
+        setTooltipText("De %d närmaste inom %d m.".formatted(WaterLevelChartOverlay.MAX_COUNT, WaterLevelChartOverlay.MAX_DISTANCE));
         setGroup(SDict.HYDROGEOLOGY.toString());
     }
 
