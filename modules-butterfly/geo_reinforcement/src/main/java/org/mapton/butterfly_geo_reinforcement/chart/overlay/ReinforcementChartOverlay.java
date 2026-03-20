@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_geo_reinforcement.chart;
+package org.mapton.butterfly_geo_reinforcement.chart.overlay;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -29,7 +29,6 @@ import org.mapton.butterfly_core.api.BChartOverlay;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BStatusStep;
-import org.mapton.butterfly_geo_reinforcement.ReinforcementChartSOSB;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.DateHelper;
@@ -47,6 +46,7 @@ public class ReinforcementChartOverlay extends BChartOverlay {
     public static final double DEFAULT_DISTANCE_LIMIT = 20.0;
 
     public ReinforcementChartOverlay() {
+        super("");
     }
 
     @Override
