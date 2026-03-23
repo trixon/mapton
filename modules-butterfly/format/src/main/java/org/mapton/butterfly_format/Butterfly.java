@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +38,7 @@ import org.mapton.butterfly_format.types.BBasePointObservation;
 import org.mapton.butterfly_format.types.BCoordinate;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BHistory;
+import org.mapton.butterfly_format.types.BKeyVal;
 import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.BMeteoPoint;
 import org.mapton.butterfly_format.types.BMeteoPointObservation;
@@ -96,7 +98,6 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
  */
 public class Butterfly {
 
-    private final ArrayList<BRoi> mRois = new ArrayList<>();
     private final ArrayList<BAlarm> mAlarms = new ArrayList<>();
     private final ArrayList<BHistory> mAlarmsHistory = new ArrayList<>();
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
@@ -104,19 +105,20 @@ public class Butterfly {
     private final ArrayList<BCoordinate> mCoordinates = new ArrayList<>();
     private final Dev mDev = new Dev();
     private final ArrayList<BGeoInclinometerPoint> mGeoInclinometerPoints = new ArrayList<>();
-    private final ArrayList<BGeoReinforcementPoint> mGeoReinforcementPoints = new ArrayList<>();
     private final ArrayList<BGeoInclinometerPointObservation> mGeoInclinometerPointsObservations = new ArrayList<>();
     private final ArrayList<BGeoInclinometerPointObservationPre> mGeoInclinometerPointsObservationsPre = new ArrayList<>();
+    private final ArrayList<BGeoReinforcementPoint> mGeoReinforcementPoints = new ArrayList<>();
     private final Geotechnical mGeotechnical = new Geotechnical();
     private final Hydro mHydro = new Hydro();
     private final ButterflyManipulator mManipulator = new ButterflyManipulator();
+    private final Meteo mMeteo = new Meteo();
+    private final ArrayList<BMeteoPoint> mMeteoPoints = new ArrayList<>();
+    private final ArrayList<BMeteoPointObservation> mMeteoPointsObservations = new ArrayList<>();
     private final ArrayList<BMonmon> mMonmons = new ArrayList<>();
     private final Noise mNoise = new Noise();
     private final Remote mRemote = new Remote();
     private final ArrayList<BRemoteInsarPoint> mRemoteInsarPoints = new ArrayList<>();
     private final ArrayList<BRemoteInsarPointObservation> mRemoteInsarPointsObservations = new ArrayList<>();
-    private final ArrayList<BMeteoPoint> mMeteoPoints = new ArrayList<>();
-    private final ArrayList<BMeteoPointObservation> mMeteoPointsObservations = new ArrayList<>();
     private final Rock mRock = new Rock();
     private final ArrayList<BRockBlast> mRockBlasts = new ArrayList<>();
     private final ArrayList<BRockConvergence> mRockConvergence = new ArrayList<>();
@@ -125,6 +127,7 @@ public class Butterfly {
     private final ArrayList<BRockExtensometer> mRockExtensometers = new ArrayList<>();
     private final ArrayList<BRockExtensometerPoint> mRockExtensometersPoints = new ArrayList<>();
     private final ArrayList<BRockExtensometerPointObservation> mRockExtensometersPointsObservations = new ArrayList<>();
+    private final ArrayList<BRoi> mRois = new ArrayList<>();
     private File mSourceDir;
     private final Structural mStructural = new Structural();
     private final ArrayList<BStructuralCrackPoint> mStructuralCrackPoints = new ArrayList<>();
@@ -183,14 +186,6 @@ public class Butterfly {
         return mManipulator;
     }
 
-    public ArrayList<BMeteoPoint> getMeteoPoints() {
-        return mMeteoPoints;
-    }
-
-    public ArrayList<BMeteoPointObservation> getMeteoPointsObservations() {
-        return mMeteoPointsObservations;
-    }
-
     public ArrayList<BMonmon> getMonmons() {
         return mMonmons;
     }
@@ -212,6 +207,10 @@ public class Butterfly {
         }.load(mSourceDir, "remoteInsarPointsObservations.csv", mRemoteInsarPointsObservations);
 
         postLoadManual();
+    }
+
+    public Meteo meteo() {
+        return mMeteo;
     }
 
     public Noise noise() {
@@ -376,11 +375,7 @@ public class Butterfly {
         new ImportFromCsv<BSystemSearchProvider>(BSystemSearchProvider.class) {
         }.load(sourceDir, "systemSearchProviders.csv", mSystemSearchProviders);
 
-        new ImportFromCsv<BMeteoPoint>(BMeteoPoint.class) {
-        }.load(sourceDir, "meteoPoints.csv", mMeteoPoints);
-
-        new ImportFromCsv<BMeteoPointObservation>(BMeteoPointObservation.class) {
-        }.load(sourceDir, "meteoPointsObservations.csv", mMeteoPointsObservations);
+        meteo().load();
     }
 
     void postLoad() {
@@ -605,6 +600,40 @@ public class Butterfly {
                 p.setDimension(BDimension._1d);
             }
         }
+    }
+
+    public class Meteo {
+
+        private TreeMap<String, String> mMeteoCodes = new TreeMap<>();
+
+        public TreeMap<String, String> getMeteoCodes() {
+            return mMeteoCodes;
+        }
+
+        public ArrayList<BMeteoPoint> getMeteoPoints() {
+            return mMeteoPoints;
+        }
+
+        public ArrayList<BMeteoPointObservation> getMeteoPointsObservations() {
+            return mMeteoPointsObservations;
+        }
+
+        private void load() {
+            var meteoCodes = new ArrayList<BKeyVal>();
+            new ImportFromCsv<BKeyVal>(BKeyVal.class) {
+            }.load(mSourceDir, "meteoCodes.csv", meteoCodes);
+            Map<String, String> map = meteoCodes.stream()
+                    .collect(Collectors.toMap(BKeyVal::getKey, BKeyVal::getValue));
+            mMeteoCodes.clear();
+            mMeteoCodes.putAll(map);
+
+            new ImportFromCsv<BMeteoPoint>(BMeteoPoint.class) {
+            }.load(mSourceDir, "meteoPoints.csv", mMeteoPoints);
+
+            new ImportFromCsv<BMeteoPointObservation>(BMeteoPointObservation.class) {
+            }.load(mSourceDir, "meteoPointsObservations.csv", mMeteoPointsObservations);
+        }
+
     }
 
     public class Noise {

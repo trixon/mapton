@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Patrik Karlström.
+ * Copyright 2026 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,26 +19,27 @@ package org.mapton.butterfly_format.types;
  *
  * @author Patrik Karlström
  */
-public class BMeteoPoint extends BXyzPoint {
+public class BKeyVal {
 
-    private transient Ext mExt;
+    private String key;
+    private String value;
 
-    public BMeteoPoint() {
+    public BKeyVal() {
     }
 
-    @Override
-    public Ext ext() {
-        if (mExt == null) {
-            mExt = new Ext();
-        }
-
-        return mExt;
+    public String getKey() {
+        return key;
     }
 
-    public class Ext extends BXyzPoint.Ext<BMeteoPointObservation> {
+    public String getValue() {
+        return value;
+    }
 
-        public Ext() {
-        }
+    public void setKey(String key) {
+        this.key = key;
+    }
 
+    public void setValue(String value) {
+        this.value = value;
     }
 }
