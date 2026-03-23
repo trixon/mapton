@@ -130,8 +130,8 @@ public class MeteoFilterPopOver extends BaseTabbedFilterPopOver {
 
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),
-                mFilterSectionDate.getTab(),
-                mFilterSectionMeas.getTab()
+                mFilterSectionDate.getTab()
+        //                mFilterSectionMeas.getTab()
         //                mFilterSectionDisruptor.getTab()
         );
 
@@ -139,7 +139,7 @@ public class MeteoFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilterSectionPoint.disable(
                 BFilterSectionPoint.PointElement.ALARM,
-                BFilterSectionPoint.PointElement.MEAS_NEXT
+                BFilterSectionPoint.PointElement.ALARM_STAT
         );
     }
 

@@ -17,11 +17,11 @@ package org.mapton.butterfly_meteo;
 
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
+import org.mapton.butterfly_core.api.BListCell;
 import org.mapton.butterfly_format.types.BMeteoPoint;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -29,63 +29,43 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-class MeteoListCell extends ListCell<BMeteoPoint> {
+class MeteoListCell extends BListCell<BMeteoPoint> {
 
     private final Label mDesc1Label = new Label();
     private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
-    private final Label mDesc4Label = new Label();
-    private final Label mHeaderLabel = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
     private final Tooltip mTooltip = new Tooltip();
-    private VBox mVBox;
 
     public MeteoListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BMeteoPoint point, boolean empty) {
-        super.updateItem(point, empty);
-        if (point == null || empty) {
-            clearContent();
-        } else {
-            addContent(point);
-        }
-    }
-
-    private void addContent(BMeteoPoint p) {
+    protected void addContent(BMeteoPoint p) {
         setText(null);
         var header = p.getName();
         if (StringUtils.isNotBlank(p.getStatus())) {
             header = "%s [%s]".formatted(header, p.getStatus());
         }
 
-        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getGroup(), "NOVALUE"), StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"));
         mHeaderLabel.setText(header);
-        mDesc1Label.setText(desc1);
-        mDesc2Label.setText(StringUtils.replace(p.ext().getDateLatestAsString(), "T", " "));
-        mDesc3Label.setText(StringUtils.replace(p.ext().getDateFirstAsString(), "T", " "));
-        mDesc4Label.setText(p.getComment());
+        mDesc1Label.setText(Strings.CI.replace(p.ext().getDateLatestAsString(), "T", " "));
+        mDesc2Label.setText("%s, %.0f m ö.h.".formatted(p.getDateValidFrom().toString(), p.getZeroZ()));
+        var operatorOrigin = "%s :: %s".formatted(StringUtils.defaultIfBlank(p.getOrigin(), "-"), StringUtils.defaultIfBlank(p.getOperator(), "-"));
+        mDesc3Label.setText(operatorOrigin);
 
         mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
         mTooltip.setText("TODO");
         setGraphic(mVBox);
     }
 
-    private void clearContent() {
-        setText(null);
-        setGraphic(null);
-    }
-
     private void createUI() {
         mHeaderLabel.setStyle(mStyleBold);
-        mVBox = new VBox(
+        mVBox.getChildren().setAll(
                 mHeaderLabel,
                 mDesc1Label,
                 mDesc2Label,
-                mDesc3Label,
-                mDesc4Label
+                mDesc3Label
         );
 
 //        mHeaderLabel.setGraphic(mAlarmIndicator);
