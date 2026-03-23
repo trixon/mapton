@@ -23,11 +23,14 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
+import org.mapton.butterfly_core.api.BMeasurementReport;
+import org.mapton.butterfly_core.api.BMeasurementTab;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BMeteoPoint;
 import org.mapton.butterfly_format.types.BMeteoPointObservation;
 import org.mapton.butterfly_meteo.chart.MeteoChartBuilder;
+import org.mapton.butterfly_meteo.table.StandardMeasurementPopulator;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -40,6 +43,7 @@ public class MeteoManager extends BaseManager<BMeteoPoint> {
     private final MeteoChartBuilder mChartBuilder = new MeteoChartBuilder();
     private final MeteoOptions mOptions = MeteoOptions.getInstance();
     private final MeteoPropertiesBuilder mPropertiesBuilder = new MeteoPropertiesBuilder();
+    private final StandardMeasurementPopulator mStandardMeasurementPopulator = new StandardMeasurementPopulator();
 
     public static MeteoManager getInstance() {
         return Holder.INSTANCE;
@@ -64,7 +68,20 @@ public class MeteoManager extends BaseManager<BMeteoPoint> {
 
     @Override
     public Object getObjectChart(BMeteoPoint selectedObject) {
-        return mChartBuilder.build(selectedObject);
+        return Boolean.FALSE;
+//        return mChartBuilder.build(selectedObject);
+    }
+
+    @Override
+    public Object getObjectMeasurements(BMeteoPoint p) {
+        if (p == null) {
+            return null;
+        } else {
+            mStandardMeasurementPopulator.populate(p);
+            var tabs = List.of(new BMeasurementTab("Standard", mStandardMeasurementPopulator.getTableView()));
+            var measurementReport = new BMeasurementReport(p, tabs);
+            return measurementReport;
+        }
     }
 
     @Override
@@ -75,14 +92,14 @@ public class MeteoManager extends BaseManager<BMeteoPoint> {
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.getMeteoPoints());
+            initAllItems(butterfly.meteo().getMeteoPoints());
             initObjectToItemMap();
             var nameToObservations = new LinkedHashMap<String, ArrayList<BMeteoPointObservation>>();
-            for (var o : butterfly.getMeteoPointsObservations()) {
+            for (var o : butterfly.meteo().getMeteoPointsObservations()) {
                 nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
             }
 
-            for (var p : butterfly.getMeteoPoints()) {
+            for (var p : butterfly.meteo().getMeteoPoints()) {
                 var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
                 if (!observations.isEmpty()) {
                     p.ext().setDateFirst(observations.getFirst().getDate());

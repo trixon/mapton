@@ -49,7 +49,7 @@ public class MeteoTempChartOverlay extends BaseMeteoChartOverlay {
 
         if (mObjectStorageManager.getBoolean(MeteoTempChartSOSB.class, MeteoTempChartSOSB.DEFAULT_VALUE)) {
             var startDate = aStartDate == null ? LocalDate.now() : aStartDate;
-            var points = ButterflyHelper.getLimitedPoints(p, p.getButterfly().getMeteoPoints(), true, MAX_DISTANCE, MAX_COUNT, startDate);
+            var points = ButterflyHelper.getLimitedPoints(p, p.getButterfly().meteo().getMeteoPoints(), true, MAX_DISTANCE, MAX_COUNT, startDate);
             if (!points.isEmpty()) {
                 var renderer = new XYLineAndShapeRenderer(true, false);
                 var dataset = new TimeSeriesCollection();

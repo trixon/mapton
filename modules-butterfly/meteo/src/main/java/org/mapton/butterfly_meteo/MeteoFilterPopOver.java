@@ -79,7 +79,7 @@ public class MeteoFilterPopOver extends BaseTabbedFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var items = butterfly.getMeteoPoints();
+        var items = butterfly.meteo().getMeteoPoints();
 
         mFilterSectionPoint.load(items);
 //        mFilterSectionDisruptor.load();
