@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_meteo;
 
+import com.sun.jna.platform.KeyboardUtils;
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BMeteoPoint;
 import org.mapton.butterfly_format.types.BMeteoPointObservation;
+import org.mapton.butterfly_meteo.chart.ChartAggregate;
 import org.mapton.butterfly_meteo.chart.MeteoChartBuilder;
 import org.mapton.butterfly_meteo.table.StandardMeasurementPopulator;
 import org.openide.util.Exceptions;
@@ -44,6 +47,8 @@ public class MeteoManager extends BaseManager<BMeteoPoint> {
     private final MeteoOptions mOptions = MeteoOptions.getInstance();
     private final MeteoPropertiesBuilder mPropertiesBuilder = new MeteoPropertiesBuilder();
     private final StandardMeasurementPopulator mStandardMeasurementPopulator = new StandardMeasurementPopulator();
+//    private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
+    private final ChartAggregate mChartAggregate = new ChartAggregate();
 
     public static MeteoManager getInstance() {
         return Holder.INSTANCE;
@@ -68,8 +73,11 @@ public class MeteoManager extends BaseManager<BMeteoPoint> {
 
     @Override
     public Object getObjectChart(BMeteoPoint selectedObject) {
-        return Boolean.FALSE;
-//        return mChartBuilder.build(selectedObject);
+        if (KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
+            return mChartBuilder.build(selectedObject);
+        } else {
+            return mChartAggregate.build(selectedObject);
+        }
     }
 
     @Override

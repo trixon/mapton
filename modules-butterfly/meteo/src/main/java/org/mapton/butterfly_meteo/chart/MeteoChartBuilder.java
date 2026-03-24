@@ -16,20 +16,16 @@
 package org.mapton.butterfly_meteo.chart;
 
 import java.awt.Color;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
+import org.mapton.api.MTemporalManager;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import org.mapton.butterfly_format.types.BDimension;
+import static org.mapton.butterfly_core.api.XyzChartBuilder.plotOverlays;
 import org.mapton.butterfly_format.types.BMeteoPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
-import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -37,22 +33,11 @@ import se.trixon.almond.util.DateHelper;
  */
 public class MeteoChartBuilder extends XyzChartBuilder<BMeteoPoint> {
 
-    private final NumberAxis mFreqAxis = new NumberAxis("Hz");
-    private final TimeSeriesCollection mFreqDataset = new TimeSeriesCollection();
-    private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
-    private final TimeSeries mTimeSeriesFreqZ = new TimeSeries("Frekvens");
-    private final TimeSeries mTimeSeriesLimit = new TimeSeries("Riktvärde");
-    private final TimeSeries mTimeSeriesZ = new TimeSeries("Mark Z");
+    private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
+    private final TimeSeries mTimeSeriesH = new TimeSeries("Temperatur");
 
     public MeteoChartBuilder() {
         initChart("°C", "0.0");
-
-        var plot = getPlot();
-        plot.setRangeAxis(2, mFreqAxis);
-        plot.setDataset(2, mFreqDataset);
-        plot.mapDatasetToRangeAxis(2, 2);
-        plot.setRangeAxisLocation(2, AxisLocation.BOTTOM_OR_RIGHT);
-        plot.setRenderer(2, mSecondaryRenderer);
     }
 
     @Override
@@ -66,13 +51,13 @@ public class MeteoChartBuilder extends XyzChartBuilder<BMeteoPoint> {
             updateDataset(p);
             var plot = getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
-            //dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
             dateAxis.setAutoRange(true);
+
             plot.clearRangeMarkers();
+            //plotAlarmIndicators(p);
 
             var rangeAxis = (NumberAxis) plot.getRangeAxis();
             rangeAxis.setAutoRange(true);
-//            rangeAxis.setRange(-0.050, +0.050);
 
             return getChartPanel();
         };
@@ -82,26 +67,12 @@ public class MeteoChartBuilder extends XyzChartBuilder<BMeteoPoint> {
 
     @Override
     public void setTitle(BMeteoPoint p) {
-        setTitle(p, Color.BLACK);
-//        setTitle(p, StrainHelper.getAlarmColorAwt(p));
-
-        var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
-        var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
-        var date = "(%s) → %s".formatted(dateFirst, dateLast);
-        getLeftSubTextTitle().setText(date);
-
-//        var rightTitle = "%s: %s".formatted(p.getAlarm1Id(), p.ext().getDeltaZero());
-//        getRightSubTextTitle().setText(rightTitle);
+        setTitle(p, Color.BLUE);
     }
 
     @Override
     public void updateDataset(BMeteoPoint p) {
-        mFreqDataset.removeAllSeries();
-        clear(
-                mTimeSeriesZ,
-                mTimeSeriesLimit,
-                mTimeSeriesFreqZ
-        );
+        mTimeSeriesH.clear();
 
         var plot = getPlot();
         resetPlot(plot);
@@ -109,24 +80,10 @@ public class MeteoChartBuilder extends XyzChartBuilder<BMeteoPoint> {
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = ChartHelper.convertToMinute(o.getDate());
 
-            if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
-                mTimeSeriesZ.add(minute, o.getAirTemperature());
-            }
-
-//            mTimeSeriesLimit.add(minute, o.getLimit());
-            mTimeSeriesFreqZ.add(minute, o.getAirPressure());
+            mTimeSeriesH.addOrUpdate(minute, o.getAirTemperature());
         });
+        getDataset().addSeries(mTimeSeriesH);
         plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
-
-        mFreqDataset.addSeries(mTimeSeriesFreqZ);
-
-        mSecondaryRenderer.setSeriesPaint(mFreqDataset.getSeriesIndex(mTimeSeriesFreqZ.getKey()), Color.PINK);
-
-        var renderer = plot.getRenderer();
-
-        getDataset().addSeries(mTimeSeriesZ);
-        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesZ.getKey()), Color.RED);
-        getDataset().addSeries(mTimeSeriesLimit);
-        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesLimit.getKey()), Color.GREEN);
     }
+
 }
