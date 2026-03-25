@@ -21,7 +21,14 @@
             </plugin>
         </plugins>
     </build>
-
+    <dependencies>
+        <dependency>
+            <groupId>se.trixon.almond</groupId>
+            <artifactId>almond-util</artifactId>
+            <version>25.0.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>
     </properties>
