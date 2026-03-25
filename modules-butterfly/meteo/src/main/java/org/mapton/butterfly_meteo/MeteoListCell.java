@@ -50,7 +50,11 @@ class MeteoListCell extends BListCell<BMeteoPoint> {
 
         mHeaderLabel.setText(header);
         mDesc1Label.setText(Strings.CI.replace(p.ext().getDateLatestAsString(), "T", " "));
-        mDesc2Label.setText("%s, %.0f m ö.h.".formatted(p.getDateValidFrom().toString(), p.getZeroZ()));
+        try {
+            mDesc2Label.setText("%s, %.0f m ö.h.".formatted(p.getDateValidFrom().toString(), p.getZeroZ()));
+        } catch (Exception e) {
+            mDesc2Label.setText("-");
+        }
         var operatorOrigin = "%s :: %s".formatted(StringUtils.defaultIfBlank(p.getOrigin(), "-"), StringUtils.defaultIfBlank(p.getOperator(), "-"));
         mDesc3Label.setText(operatorOrigin);
 

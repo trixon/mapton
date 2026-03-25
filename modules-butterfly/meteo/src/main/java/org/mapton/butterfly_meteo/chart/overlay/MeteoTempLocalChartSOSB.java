@@ -25,13 +25,14 @@ import se.trixon.almond.util.fx.FxHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MSimpleObjectStorageBoolean.Misc.class)
-public class MeteoTempChartSOSB extends BaseMeteoChartSOSB {
+public class MeteoTempLocalChartSOSB extends BaseMeteoChartSOSB {
 
-    public static final String NAME = SDict.TEMPERATURE.toString();
+    public static final String NAME = "%s, lokal".formatted(SDict.TEMPERATURE.toString());
 
-    public MeteoTempChartSOSB() {
+    public MeteoTempLocalChartSOSB() {
         setName(NAME);
-        setColor(FxHelper.colorToFxColor(MeteoTempChartOverlay.COLOR));
+        setColor(FxHelper.colorToFxColor(MeteoTempLocalChartOverlay.COLOR));
+        setTooltipText("De %d närmaste inom %d m.".formatted(BaseMeteoChartOverlay.MAX_COUNT, MeteoTempLocalChartOverlay.MAX_DISTANCE));
     }
 
 }

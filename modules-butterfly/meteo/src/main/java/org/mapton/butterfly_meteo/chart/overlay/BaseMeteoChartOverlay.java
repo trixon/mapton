@@ -15,7 +15,13 @@
  */
 package org.mapton.butterfly_meteo.chart.overlay;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.mapton.butterfly_core.api.BChartOverlay;
+import org.mapton.butterfly_core.api.ButterflyHelper;
+import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.BMeteoPoint;
+import org.mapton.butterfly_format.types.BScope;
 
 /**
  *
@@ -28,6 +34,13 @@ public abstract class BaseMeteoChartOverlay extends BChartOverlay {
 
     public BaseMeteoChartOverlay(String title) {
         super(title);
+    }
+
+    protected List<BMeteoPoint> getGlobalPoints(BBasePoint p, LocalDate startDate) {
+        var points = p.getButterfly().meteo().getMeteoPoints().stream().filter(p2 -> p2.getScope() == BScope.GLOBAL).toList();
+        points = ButterflyHelper.getLimitedPoints(p, points, true, MAX_DISTANCE, MAX_COUNT, startDate, true);
+
+        return points;
     }
 
 }

@@ -25,7 +25,7 @@ import se.trixon.almond.util.SDict;
 public class BaseMeteoChartSOSB extends MChartSOSB {
 
     public BaseMeteoChartSOSB() {
-        setTooltipText("De %d närmaste inom %d m.".formatted(BaseMeteoChartOverlay.MAX_COUNT, BaseMeteoChartOverlay.MAX_DISTANCE));
+        setTooltipText("Den närmaste");
         setGroup(SDict.METEOROLOGY.toString());
     }
 

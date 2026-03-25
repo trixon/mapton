@@ -25,6 +25,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.MChartOverlay;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.GraphicsHelper;
@@ -34,26 +35,25 @@ import se.trixon.almond.util.GraphicsHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MChartOverlay.class)
-public class MeteoVisibilityChartOverlay extends BaseMeteoChartOverlay {
+public class MeteoHumidityChartOverlay extends BaseMeteoChartOverlay {
 
-    public static final Color COLOR = GraphicsHelper.colorAddAlpha(Color.ORANGE.darker(), 80);
+    public static final Color COLOR = Color.GREEN.brighter();
 
-    public MeteoVisibilityChartOverlay() {
-        super("Sikt");
+    public MeteoHumidityChartOverlay() {
+        super(MeteoHumidityChartSOSB.NAME);
     }
 
     @Override
     public synchronized void plot(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
         resetDatasetIfExisting(plot, mIndex);
 
-        if (mObjectStorageManager.getBoolean(MeteoVisibilityChartSOSB.class, MeteoVisibilityChartSOSB.DEFAULT_VALUE)) {
+        if (mObjectStorageManager.getBoolean(MeteoHumidityChartSOSB.class, MeteoHumidityChartSOSB.DEFAULT_VALUE)) {
             var startDate = aStartDate == null ? LocalDate.now() : aStartDate;
             var points = getGlobalPoints(p, startDate);
             if (!points.isEmpty()) {
                 var renderer = new XYLineAndShapeRenderer(true, false);
                 var dataset = new TimeSeriesCollection();
                 init(plot, dataset, renderer);
-
                 var color = COLOR;
 
                 for (int i = 0; i < points.size(); i++) {
@@ -65,8 +65,12 @@ public class MeteoVisibilityChartOverlay extends BaseMeteoChartOverlay {
                     var timeSeries = new TimeSeries("%s (%.1f km)".formatted(point.getName(), distance / 1000.0));
 
                     for (var o : point.ext().getObservationsTimeFiltered()) {
-                        if (o.getDate().isAfter(startDate.atStartOfDay()) && o.getVisibility() != null && o.getVisibility() != 50000) {
-                            timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), o.getVisibility());
+                        if (o.getDate().isAfter(startDate.atStartOfDay())) {
+                            timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), o.getHumidity());
+                            if (p instanceof BXyzPoint pp) {
+                                if (o.getDate().isBefore(pp.getDateLatest())) {
+                                }
+                            }
                         }
                     }
 
@@ -84,4 +88,5 @@ public class MeteoVisibilityChartOverlay extends BaseMeteoChartOverlay {
             }
         }
     }
+
 }

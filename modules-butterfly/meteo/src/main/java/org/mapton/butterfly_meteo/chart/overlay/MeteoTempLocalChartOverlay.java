@@ -25,6 +25,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.MChartOverlay;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.BScope;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.GraphicsHelper;
@@ -34,21 +35,23 @@ import se.trixon.almond.util.GraphicsHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MChartOverlay.class)
-public class MeteoVisibilityChartOverlay extends BaseMeteoChartOverlay {
+public class MeteoTempLocalChartOverlay extends BaseMeteoChartOverlay {
 
-    public static final Color COLOR = GraphicsHelper.colorAddAlpha(Color.ORANGE.darker(), 80);
+    public static final Color COLOR = GraphicsHelper.colorAddAlpha(Color.RED.darker(), 80);
+    public static final int MAX_DISTANCE = 40;
 
-    public MeteoVisibilityChartOverlay() {
-        super("Sikt");
+    public MeteoTempLocalChartOverlay() {
+        super(MeteoTempLocalChartSOSB.NAME);
     }
 
     @Override
     public synchronized void plot(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
         resetDatasetIfExisting(plot, mIndex);
 
-        if (mObjectStorageManager.getBoolean(MeteoVisibilityChartSOSB.class, MeteoVisibilityChartSOSB.DEFAULT_VALUE)) {
+        if (mObjectStorageManager.getBoolean(MeteoTempLocalChartSOSB.class, MeteoTempLocalChartSOSB.DEFAULT_VALUE)) {
             var startDate = aStartDate == null ? LocalDate.now() : aStartDate;
-            var points = getGlobalPoints(p, startDate);
+            var points = p.getButterfly().meteo().getMeteoPoints().stream().filter(p2 -> p2.getScope() == BScope.LOCAL).toList();
+            points = ButterflyHelper.getLimitedPoints(p, points, true, MAX_DISTANCE, MAX_COUNT, startDate);
             if (!points.isEmpty()) {
                 var renderer = new XYLineAndShapeRenderer(true, false);
                 var dataset = new TimeSeriesCollection();
@@ -62,11 +65,12 @@ public class MeteoVisibilityChartOverlay extends BaseMeteoChartOverlay {
                     }
                     var point = points.get(i);
                     var distance = point.<Double>getValue(ButterflyHelper.KEY_DISTANCE);
-                    var timeSeries = new TimeSeries("%s (%.1f km)".formatted(point.getName(), distance / 1000.0));
+//                    var timeSeries = new TimeSeries("%c.%.0f".formatted('A' + i, distance));
+                    var timeSeries = new TimeSeries("%s (%.1f m)".formatted(point.getName(), distance));
 
                     for (var o : point.ext().getObservationsTimeFiltered()) {
-                        if (o.getDate().isAfter(startDate.atStartOfDay()) && o.getVisibility() != null && o.getVisibility() != 50000) {
-                            timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), o.getVisibility());
+                        if (o.getDate().isAfter(startDate.atStartOfDay())) {
+                            timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), o.getAirTemperature());
                         }
                     }
 

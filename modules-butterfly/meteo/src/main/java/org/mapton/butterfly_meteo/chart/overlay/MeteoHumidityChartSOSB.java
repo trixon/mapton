@@ -17,7 +17,6 @@ package org.mapton.butterfly_meteo.chart.overlay;
 
 import org.mapton.api.MSimpleObjectStorageBoolean;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -25,13 +24,13 @@ import se.trixon.almond.util.fx.FxHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MSimpleObjectStorageBoolean.Misc.class)
-public class MeteoTempChartSOSB extends BaseMeteoChartSOSB {
+public class MeteoHumidityChartSOSB extends BaseMeteoChartSOSB {
 
-    public static final String NAME = SDict.TEMPERATURE.toString();
+    public static final String NAME = "Luftfuktighet";
 
-    public MeteoTempChartSOSB() {
+    public MeteoHumidityChartSOSB() {
         setName(NAME);
-        setColor(FxHelper.colorToFxColor(MeteoTempChartOverlay.COLOR));
+        setColor(FxHelper.colorToFxColor(MeteoHumidityChartOverlay.COLOR));
     }
 
 }

@@ -28,7 +28,6 @@ import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.GraphicsHelper;
-import se.trixon.almond.util.SDict;
 
 /**
  *
@@ -40,7 +39,7 @@ public class MeteoTempChartOverlay extends BaseMeteoChartOverlay {
     public static final Color COLOR = GraphicsHelper.colorAddAlpha(Color.ORANGE.darker(), 80);
 
     public MeteoTempChartOverlay() {
-        super(SDict.TEMPERATURE.toString());
+        super(MeteoTempChartSOSB.NAME);
     }
 
     @Override
@@ -49,7 +48,7 @@ public class MeteoTempChartOverlay extends BaseMeteoChartOverlay {
 
         if (mObjectStorageManager.getBoolean(MeteoTempChartSOSB.class, MeteoTempChartSOSB.DEFAULT_VALUE)) {
             var startDate = aStartDate == null ? LocalDate.now() : aStartDate;
-            var points = ButterflyHelper.getLimitedPoints(p, p.getButterfly().meteo().getMeteoPoints(), true, MAX_DISTANCE, MAX_COUNT, startDate);
+            var points = getGlobalPoints(p, startDate);
             if (!points.isEmpty()) {
                 var renderer = new XYLineAndShapeRenderer(true, false);
                 var dataset = new TimeSeriesCollection();
@@ -61,11 +60,11 @@ public class MeteoTempChartOverlay extends BaseMeteoChartOverlay {
                     if (i > 0) {
                         color = GraphicsHelper.brighten(color, 0.25);
                     }
-                    var groundwaterPoint = points.get(i);
-                    var distance = groundwaterPoint.<Double>getValue(ButterflyHelper.KEY_DISTANCE);
-                    var timeSeries = new TimeSeries("%c.%.0f".formatted('A' + i, distance));
+                    var point = points.get(i);
+                    var distance = point.<Double>getValue(ButterflyHelper.KEY_DISTANCE);
+                    var timeSeries = new TimeSeries("%s (%.1f km)".formatted(point.getName(), distance / 1000.0));
 
-                    for (var o : groundwaterPoint.ext().getObservationsTimeFiltered()) {
+                    for (var o : point.ext().getObservationsTimeFiltered()) {
                         if (o.getDate().isAfter(startDate.atStartOfDay())) {
                             timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), o.getAirTemperature());
                         }
@@ -74,7 +73,7 @@ public class MeteoTempChartOverlay extends BaseMeteoChartOverlay {
                     dataset.addSeries(timeSeries);
                     var seriesIndex = dataset.getSeriesIndex(timeSeries.getKey());
                     renderer.setSeriesToolTipGenerator(seriesIndex, (xyDataset, series, item) -> {
-                        return "%.0fm  %s".formatted(distance, groundwaterPoint.getName());
+                        return "%.0fm  %s".formatted(distance, point.getName());
                     });
 
                     renderer.setSeriesVisibleInLegend(seriesIndex, true);

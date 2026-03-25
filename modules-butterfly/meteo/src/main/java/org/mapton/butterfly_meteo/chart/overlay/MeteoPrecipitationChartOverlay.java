@@ -18,6 +18,7 @@ package org.mapton.butterfly_meteo.chart.overlay;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
@@ -25,6 +26,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.MChartOverlay;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.BMeteoPointObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.GraphicsHelper;
@@ -50,7 +52,7 @@ public class MeteoPrecipitationChartOverlay extends BaseMeteoChartOverlay {
 
         if (mObjectStorageManager.getBoolean(MeteoPrecipitationChartSOSB.class, MeteoPrecipitationChartSOSB.DEFAULT_VALUE)) {
             var startDate = aStartDate == null ? LocalDate.now() : aStartDate;
-            var points = ButterflyHelper.getLimitedPoints(p, p.getButterfly().meteo().getMeteoPoints(), true, MAX_DISTANCE, MAX_COUNT, startDate, true);
+            var points = getGlobalPoints(p, startDate);
             if (!points.isEmpty()) {
                 var renderer = new XYLineAndShapeRenderer(true, false);
                 var dataset = new TimeSeriesCollection();
@@ -62,20 +64,37 @@ public class MeteoPrecipitationChartOverlay extends BaseMeteoChartOverlay {
                     if (i > 0) {
                         color = GraphicsHelper.brighten(color, 0.25);
                     }
-                    var meteoPoint = points.get(i);
-                    var distance = meteoPoint.<Double>getValue(ButterflyHelper.KEY_DISTANCE);
-                    var timeSeries = new TimeSeries("%c.%.0f".formatted('A' + i, distance));
+                    var point = points.get(i);
+                    var distance = point.<Double>getValue(ButterflyHelper.KEY_DISTANCE);
+                    var timeSeries = new TimeSeries("%s (%.1f km)".formatted(point.getName(), distance / 1000.0));
 
-                    for (var o : meteoPoint.ext().getObservationsTimeFiltered()) {
-                        if (o.getDate().isAfter(startDate.atStartOfDay())) {
-                            timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), o.getPrecipitation());
-                        }
-                    }
+                    point.ext().getObservationsTimeFiltered().stream()
+                            .filter(o -> o.getPrecipitation() != null)
+                            .collect(
+                                    Collectors.groupingBy(
+                                            dp -> dp.getDate().toLocalDate(),
+                                            Collectors.summingDouble(BMeteoPointObservation::getPrecipitation)
+                                    ))
+                            .entrySet()
+                            .forEach(oo -> {
+                                var date = oo.getKey().plusDays(1).atStartOfDay().minusSeconds(1);
+                                if (date.isAfter(startDate.atStartOfDay())) {
+                                    timeSeries.addOrUpdate(ChartHelper.convertToMinute(date), oo.getValue());
+                                }
+                            });
 
+//                    for (var oo : dailySummaries) {
+//
+//                    }
+//                    for (var o : point.ext().getObservationsTimeFiltered()) {
+//                        if (o.getDate().isAfter(startDate.atStartOfDay())) {
+//                            timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), o.getPrecipitation());
+//                        }
+//                    }
                     dataset.addSeries(timeSeries);
                     var seriesIndex = dataset.getSeriesIndex(timeSeries.getKey());
                     renderer.setSeriesToolTipGenerator(seriesIndex, (xyDataset, series, item) -> {
-                        return "%.0fm  %s".formatted(distance, meteoPoint.getName());
+                        return "%.0fm  %s".formatted(distance, point.getName());
                     });
 
                     renderer.setSeriesVisibleInLegend(seriesIndex, true);
