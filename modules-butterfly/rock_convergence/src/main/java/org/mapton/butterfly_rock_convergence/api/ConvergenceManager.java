@@ -17,6 +17,7 @@ package org.mapton.butterfly_rock_convergence.api;
 
 import com.sun.jna.platform.KeyboardUtils;
 import java.awt.event.KeyEvent;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -122,6 +123,13 @@ public class ConvergenceManager extends BaseManager<BRockConvergence> {
                         .map(s -> butterfly.topo().getControlPointByName(s))
                         .filter(p -> p != null)
                         .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                        .filter(p -> {
+                            var validDate = true;
+                            if (p.getDateValidTo() != null) {
+                                validDate = p.getDateValidTo().isAfter(LocalDate.now());
+                            }
+                            return validDate;
+                        })
                         .collect(Collectors.toCollection(ArrayList::new));
 
                 g.ext().setControlPoints(controlPoints);
