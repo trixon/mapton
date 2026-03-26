@@ -385,6 +385,7 @@ public class Butterfly {
                 mGeoInclinometerPoints,
                 mGeoReinforcementPoints,
                 mMeteoPoints,
+                mRockBlasts,
                 mRockConvergence,
                 mRockEarthquakes,
                 mRockExtensometers,
