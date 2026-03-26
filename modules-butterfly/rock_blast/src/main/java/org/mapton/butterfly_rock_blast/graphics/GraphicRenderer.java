@@ -29,100 +29,114 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.butterfly_core.api.BaseGraphicRenderer;
-import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.rock.BRockBlast;
-import org.mapton.butterfly_rock_blast.BlastAttributeManager;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockBlast> {
+public class GraphicRenderer extends GraphicRendererBase {
 
-    protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
-
-    private final BlastAttributeManager mAttributeManager = BlastAttributeManager.getInstance();
-    private final IndexedCheckModel<GraphicItem> mCheckModel;
+    private final GraphicRendererGroundwater mGroundwaterRenderer;
     private ArrayList<AVListImpl> mMapObjects;
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
-        super(layer, passiveLayer, sPlotLimiter);
+        super(layer, passiveLayer);
+        mGroundwaterRenderer = new GraphicRendererGroundwater(layer, passiveLayer);
 
-        mCheckModel = checkModel;
+        sCheckModel = checkModel;
     }
 
+    @Override
     public void plot(BRockBlast blast, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
 
-        if (mCheckModel.isChecked(GraphicItem.ALTUTID)) {
-            var timeSpan = ChronoUnit.MINUTES.between(blast.getDateLatest(), LocalDateTime.now());
-            var altitude = timeSpan / 24000.0;
-            var startPosition = WWHelper.positionFromPosition(position, 0.0);
-            var endPosition = WWHelper.positionFromPosition(position, altitude);
-            var radius = 1.2;
-            var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
-            endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            addRenderable(endEllipsoid, true, GraphicItem.ALTUTID, mMapObjects);
-
-            var groundPath = new Path(startPosition, endPosition);
-            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            addRenderable(groundPath, true, GraphicItem.ALTUTID, mMapObjects);
+        if (sCheckModel.isChecked(GraphicItem.ALTUTID)) {
+            plotAltutid(blast, position);
         }
 
-        if (mCheckModel.isChecked(GraphicItem.BALLS_Z) && blast.getZeroZ() != null) {
-            var altitude = blast.getZeroZ();
-            var startPosition = WWHelper.positionFromPosition(position, 0.0);
-            var endPosition = WWHelper.positionFromPosition(position, altitude);
-            var radius = 1.2;
-            var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
-            endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            addRenderable(endEllipsoid, true, GraphicItem.BALLS_Z, mMapObjects);
-
-            var groundPath = new Path(startPosition, endPosition);
-            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            addRenderable(groundPath, true, GraphicItem.BALLS_Z, mMapObjects);
+        if (sCheckModel.isChecked(GraphicItem.BALLS_Z) && blast.getZeroZ() != null) {
+            plotBallsZ(blast, position);
         }
 
-        if (mCheckModel.isChecked(GraphicItem.RADIUS_40)) {
-            var map = Map.of(40.0, Material.RED, 50.0, Material.ORANGE);
-            List.of(40.0, 50.0, 100.0).forEach(r -> {
-                var circle = new SurfaceCircle(position, r);
-                var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
-                attrs.setDrawInterior(false);
-                attrs.setDrawOutline(true);
-                attrs.setOutlineMaterial(map.getOrDefault(r, Material.GREEN));
-                attrs.setOutlineWidth(1.0);
-                attrs.setOutlineOpacity(0.25);
-                circle.setAttributes(attrs);
-
-                addRenderable(circle, false, GraphicItem.RADIUS_40, null);
-            });
-
+        if (sCheckModel.isChecked(GraphicItem.RADIUS_40)) {
+            plotRadius(blast, position);
         }
 
-        if (mCheckModel.isChecked(GraphicItem.RECENT)) {
-            var age = blast.ext().getMeasurementAge(ChronoUnit.DAYS);
-            var maxAge = 30.0;
-
-            if (age < maxAge) {
-                var circle = new SurfaceCircle(position, 40.0);
-                var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
-                var reducer = age / maxAge;//  1/30   15/30 30/30
-                var maxOpacity = 0.2;
-                var opacity = maxOpacity - reducer * maxOpacity;
-                attrs.setInteriorOpacity(opacity);
-                circle.setAttributes(attrs);
-
-                addRenderable(circle, false, GraphicItem.RECENT, null);
-            }
+        if (sCheckModel.isChecked(GraphicItem.RECENT)) {
+            plotRecent(blast, position);
         }
+
+        mGroundwaterRenderer.plot(blast, position);
     }
 
     @Override
     public void reset() {
         super.reset();
+    }
+
+    private void plotAltutid(BRockBlast blast, Position position) {
+        var timeSpan = ChronoUnit.MINUTES.between(blast.getDateLatest(), LocalDateTime.now());
+        var altitude = timeSpan / 24000.0;
+        var startPosition = WWHelper.positionFromPosition(position, 0.0);
+        var endPosition = WWHelper.positionFromPosition(position, altitude);
+        var radius = 1.2;
+        var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
+        endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+        addRenderable(endEllipsoid, true, GraphicItem.ALTUTID, mMapObjects);
+
+        var groundPath = new Path(startPosition, endPosition);
+        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        addRenderable(groundPath, true, GraphicItem.ALTUTID, mMapObjects);
+    }
+
+    private void plotBallsZ(BRockBlast blast, Position position) {
+        var altitude = blast.getZeroZ();
+        var startPosition = WWHelper.positionFromPosition(position, 0.0);
+        var endPosition = WWHelper.positionFromPosition(position, altitude);
+        var radius = 1.2;
+        var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
+        endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+        addRenderable(endEllipsoid, true, GraphicItem.BALLS_Z, mMapObjects);
+
+        var groundPath = new Path(startPosition, endPosition);
+        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        addRenderable(groundPath, true, GraphicItem.BALLS_Z, mMapObjects);
+    }
+
+    private void plotRadius(BRockBlast blast, Position position) {
+        var map = Map.of(40.0, Material.RED, 50.0, Material.ORANGE);
+        List.of(40.0, 50.0, 100.0).forEach(r -> {
+            var circle = new SurfaceCircle(position, r);
+            var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
+            attrs.setDrawInterior(false);
+            attrs.setDrawOutline(true);
+            attrs.setOutlineMaterial(map.getOrDefault(r, Material.GREEN));
+            attrs.setOutlineWidth(1.0);
+            attrs.setOutlineOpacity(0.25);
+            circle.setAttributes(attrs);
+
+            addRenderable(circle, false, GraphicItem.RADIUS_40, null);
+        });
+
+    }
+
+    private void plotRecent(BRockBlast blast, Position position) {
+        var age = blast.ext().getMeasurementAge(ChronoUnit.DAYS);
+        var maxAge = 30.0;
+
+        if (age < maxAge) {
+            var circle = new SurfaceCircle(position, 40.0);
+            var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
+            var reducer = age / maxAge;//  1/30   15/30 30/30
+            var maxOpacity = 0.2;
+            var opacity = maxOpacity - reducer * maxOpacity;
+            attrs.setInteriorOpacity(opacity);
+            circle.setAttributes(attrs);
+
+            addRenderable(circle, false, GraphicItem.RECENT, null);
+        }
     }
 
 }

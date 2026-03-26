@@ -22,6 +22,7 @@ import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
  * @author Patrik Karlström
  */
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
+    CLUSTER_GROUNDWATER_GRAPH("Kluster, grundvattengraf", Integer.MAX_VALUE),
     ALTUTID("Altutid", Integer.MAX_VALUE),
     BALLS_Z("Klot z", Integer.MAX_VALUE),
     RADIUS_40("Radie 40m", Integer.MAX_VALUE),
