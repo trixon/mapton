@@ -69,6 +69,17 @@ public enum VibrationLabelBy implements LabelBy.Operations {
     MEAS_AGE(LabelBy.CAT_MEAS, Dict.AGE.toString(), p -> {
         return LabelBy.measAge(p);
     }),
+    VALUE_OVER(LabelBy.CAT_VALUE, "Antal överskridna", p -> {
+        return String.valueOf(p.ext().getNumOfExceedings());
+    }),
+    VALUE_LATEST_PERCENTAGE(LabelBy.CAT_VALUE, "Riktförbrukning", p -> {
+        try {
+            var o = p.ext().getObservationFilteredLast();
+            return "%.0f%%".formatted(100 * (o.getMeasuredZ() / o.getLimit()));
+        } catch (Exception e) {
+            return "";
+        }
+    }),
     VALUE_Z(LabelBy.CAT_VALUE, "Z", p -> {
         return LabelBy.valueZeroZ(p);
     });

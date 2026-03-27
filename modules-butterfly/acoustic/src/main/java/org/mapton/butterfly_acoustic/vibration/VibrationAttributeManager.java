@@ -15,9 +15,14 @@
  */
 package org.mapton.butterfly_acoustic.vibration;
 
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Offset;
+import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
 
 /**
@@ -28,6 +33,7 @@ public class VibrationAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
+    private PointPlacemarkAttributes mSinglePinAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
 
     public static VibrationAttributeManager getInstance() {
@@ -68,6 +74,20 @@ public class VibrationAttributeManager extends BaseAttributeManager {
         attrs.setEnableLighting(true);
 
         return attrs;
+    }
+
+    @Override
+    public PointPlacemarkAttributes getPinAttributes(Color color) {
+        if (mSinglePinAttributes == null) {
+            mSinglePinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
+            mSinglePinAttributes.setImageAddress("http://maps.google.com/mapfiles/kml/shapes/target.png");
+            mSinglePinAttributes.setImageColor(color);
+            mSinglePinAttributes.setScale(Mapton.getScalePinImage() * 1.2);
+            mSinglePinAttributes.setLabelScale(Mapton.getScalePinLabel());
+            mSinglePinAttributes.setImageOffset(Offset.CENTER);
+        }
+
+        return mSinglePinAttributes;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {

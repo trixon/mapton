@@ -15,47 +15,34 @@
  */
 package org.mapton.butterfly_acoustic.vibration;
 
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.VBox;
-import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
+import org.mapton.butterfly_core.api.BListCell;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class VibrationListCell extends ListCell<BAcousticVibrationPoint> {
+class VibrationListCell extends BListCell<BAcousticVibrationPoint> {
 
     private final Label mDesc1Label = new Label();
     private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
     private final Label mDesc4Label = new Label();
-    private final Label mHeaderLabel = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
-    private final Tooltip mTooltip = new Tooltip();
-    private VBox mVBox;
+    private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
 
     public VibrationListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BAcousticVibrationPoint point, boolean empty) {
-        super.updateItem(point, empty);
-        if (point == null || empty) {
-            clearContent();
-        } else {
-            addContent(point);
-        }
-    }
-
-    private void addContent(BAcousticVibrationPoint p) {
+    protected void addContent(BAcousticVibrationPoint p) {
         setText(null);
+        setGraphic(mVBox);
+        loadTooltip(p);
+        mAlarmIndicator.update(p);
         var header = p.getName();
         if (StringUtils.isNotBlank(p.getStatus())) {
             header = "%s [%s]".formatted(header, p.getStatus());
@@ -64,23 +51,16 @@ class VibrationListCell extends ListCell<BAcousticVibrationPoint> {
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getGroup(), "NOVALUE"), StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"));
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
-        mDesc2Label.setText(StringUtils.replace(p.ext().getDateLatestAsString(), "T", " "));
-        mDesc3Label.setText(StringUtils.replace(p.ext().getDateFirstAsString(), "T", " "));
+        mDesc2Label.setText(Strings.CI.replace(p.ext().getDateLatestAsString(), "T", " "));
+        mDesc3Label.setText(Strings.CI.replace(p.ext().getDateFirstAsString(), "T", " "));
         mDesc4Label.setText(p.getComment());
 
-        mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
-        mTooltip.setText("TODO");
         setGraphic(mVBox);
-    }
-
-    private void clearContent() {
-        setText(null);
-        setGraphic(null);
     }
 
     private void createUI() {
         mHeaderLabel.setStyle(mStyleBold);
-        mVBox = new VBox(
+        mVBox.getChildren().addAll(
                 mHeaderLabel,
                 mDesc1Label,
                 mDesc2Label,
@@ -88,15 +68,21 @@ class VibrationListCell extends ListCell<BAcousticVibrationPoint> {
                 mDesc4Label
         );
 
-//        mHeaderLabel.setGraphic(mAlarmIndicator);
-        mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
+        mHeaderLabel.setGraphic(mAlarmIndicator);
+//        mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
+        activateTooltip();
+    }
 
-        mVBox.getChildren().stream()
-                .filter(c -> c instanceof Control)
-                .map(c -> (Control) c)
-                .forEach(o -> o.setTooltip(mTooltip));
+    private class AlarmIndicator extends BAlarmIndicator<BAcousticVibrationPoint> {
 
-        mTooltip.setShowDelay(Duration.seconds(2));
+        public AlarmIndicator() {
+            addNodes(m1dShape);
+        }
+
+        @Override
+        public void update(BAcousticVibrationPoint p) {
+            m1dShape.setFill(VibrationHelper.getAlarmColorFx(p));
+        }
     }
 
 }

@@ -22,7 +22,8 @@ import se.trixon.almond.util.Dict;
  * @author Patrik Karlström
  */
 public enum VibrationColorBy {
-    DEFAULT(Dict.DEFAULT.toString());
+    DEFAULT(Dict.DEFAULT.toString()),
+    EXCEEDING("Överskridande");
     private final String mName;
 
     private VibrationColorBy(String name) {

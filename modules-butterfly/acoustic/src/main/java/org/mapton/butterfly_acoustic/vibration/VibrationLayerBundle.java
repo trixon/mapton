@@ -19,6 +19,7 @@ import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.util.ArrayList;
 import javafx.scene.Node;
@@ -43,8 +44,8 @@ public class VibrationLayerBundle extends BfLayerBundle {
     private final VibrationAttributeManager mAttributeManager = VibrationAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
     private final VibrationManager mManager = VibrationManager.getInstance();
-    private final VibrationOptionsView mOptionsView;
     private final VibrationOptions mOptions = VibrationOptions.getInstance();
+    private final VibrationOptionsView mOptionsView;
 
     public VibrationLayerBundle() {
         init();
@@ -111,7 +112,7 @@ public class VibrationLayerBundle extends BfLayerBundle {
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
-                        mapObjects.add(plotPin(position, labelPlacemark));
+                        mapObjects.add(plotPin(p, position, labelPlacemark));
 
                         mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
                         addClickArea(position, mapObjects);
@@ -153,8 +154,20 @@ public class VibrationLayerBundle extends BfLayerBundle {
         }
     }
 
-    private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes(Color.PINK);
+    private PointPlacemark plotPin(BAcousticVibrationPoint p, Position position, PointPlacemark labelPlacemark) {
+        var color = Color.WHITE;
+        switch (mOptions.getColorBy()) {
+            case DEFAULT:
+                color = Color.PINK;
+                break;
+            case EXCEEDING:
+                color = VibrationHelper.getAlarmColorAwt(p);
+                break;
+            default:
+                throw new AssertionError();
+        }
+        var attrs = new PointPlacemarkAttributes(mAttributeManager.getPinAttributes(color));
+        attrs.setImageColor(color);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

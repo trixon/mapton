@@ -52,7 +52,6 @@ public class VibrationOptionsView extends BOptionsView {
     private void createUI() {
         mPointScb.getItems().setAll(VibrationPointBy.values());
         mColorScb.getItems().setAll(VibrationColorBy.values());
-        mColorScb.setDisable(true);
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);

@@ -24,10 +24,10 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.ui.forms.DateRangePane;
@@ -46,9 +46,16 @@ import se.trixon.almond.util.fx.control.SliderPane;
  */
 public class FilterSectionMeas extends MBaseFilterSection {
 
-    public static final int DEFAULT_COUNT = 10;
-    public static final int DEFAULT_SPEED = 10;
+    public static final int DEFAULT_RELATIVE_COUNT = 1;
+    public static final int DEFAULT_RELATIVE_VALUE = 100;
+    public static final int DEFAULT_SPEED_COUNT = 10;
+    public static final int DEFAULT_SPEED_VALUE = 10;
     private final MeasFilterUI mMeasFilterUI;
+    private final SliderPane mRelativeCountSliderPane = new SliderPane("Min. antal i perioden", 1, 50, true, false, 1d);
+    private final CheckBox mRelativePeriodCheckbox = new CheckBox();
+    private final DateRangePane mRelativePeriodDateRangePane = new DateRangePane();
+    private final SliderPane mRelativeValueSliderPane = new SliderPane("Min. förbrukning i procent", 0, 150, true, false, 1d);
+    private final GridPane mRoot = new GridPane(GAP_H, GAP_V * 4);
     private final SliderPane mSpeedCountSliderPane = new SliderPane("Min. antal i perioden", 1, 50, true, false, 1d);
     private final CheckBox mSpeedPeriodCheckbox = new CheckBox();
     private final DateRangePane mSpeedPeriodDateRangePane = new DateRangePane();
@@ -57,16 +64,24 @@ public class FilterSectionMeas extends MBaseFilterSection {
     public FilterSectionMeas() {
         super(SDict.MEASUREMENTS.toString());
         mMeasFilterUI = new MeasFilterUI();
-        setContent(mMeasFilterUI.getRoot());
+        setContent(mRoot);
     }
 
     @Override
     public void clear() {
         super.clear();
-        mSpeedValueSliderPane.setValue(DEFAULT_SPEED);
-        mSpeedCountSliderPane.setValue(DEFAULT_COUNT);
+        mSpeedValueSliderPane.setValue(DEFAULT_SPEED_VALUE);
+        mSpeedCountSliderPane.setValue(DEFAULT_SPEED_COUNT);
         mSpeedPeriodDateRangePane.reset();
-        FxHelper.setSelected(false, mSpeedPeriodCheckbox);
+
+        mRelativeValueSliderPane.setValue(DEFAULT_RELATIVE_VALUE);
+        mRelativeCountSliderPane.setValue(DEFAULT_RELATIVE_COUNT);
+        mRelativePeriodDateRangePane.reset();
+
+        FxHelper.setSelected(false,
+                mSpeedPeriodCheckbox,
+                mRelativePeriodCheckbox
+        );
     }
 
     @Override
@@ -76,8 +91,10 @@ public class FilterSectionMeas extends MBaseFilterSection {
         }
 
         map.put(SDict.MEASUREMENTS.toString(), ".");
-        map.put("Period " + Dict.FROM.toString(), speedPeriodDateLowProperty().get() != null ? speedPeriodDateLowProperty().get().toString() : "");
-        map.put("Period " + Dict.TO.toString(), speedPeriodDateHighProperty().get() != null ? speedPeriodDateHighProperty().get().toString() : "");
+        map.put("H Period " + Dict.FROM.toString(), speedPeriodDateLowProperty().get() != null ? speedPeriodDateLowProperty().get().toString() : "");
+        map.put("H Period " + Dict.TO.toString(), speedPeriodDateHighProperty().get() != null ? speedPeriodDateHighProperty().get().toString() : "");
+        map.put("R Period " + Dict.FROM.toString(), relativePeriodDateLowProperty().get() != null ? relativePeriodDateLowProperty().get().toString() : "");
+        map.put("R Period " + Dict.TO.toString(), relativePeriodDateHighProperty().get() != null ? relativePeriodDateHighProperty().get().toString() : "");
     }
 
     @Override
@@ -89,6 +106,11 @@ public class FilterSectionMeas extends MBaseFilterSection {
         sessionManager.register(getKeyFilter("speed.Count"), mSpeedCountSliderPane.valueProperty());
         sessionManager.register(getKeyFilter("speed.DateLow"), mSpeedPeriodDateRangePane.lowStringProperty());
         sessionManager.register(getKeyFilter("speed.DateHigh"), mSpeedPeriodDateRangePane.highStringProperty());
+        sessionManager.register(getKeyFilter("relativePeriod"), mRelativePeriodCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("relative.Value"), mRelativeValueSliderPane.valueProperty());
+        sessionManager.register(getKeyFilter("relative.Count"), mRelativeCountSliderPane.valueProperty());
+        sessionManager.register(getKeyFilter("relative.DateLow"), mRelativePeriodDateRangePane.lowStringProperty());
+        sessionManager.register(getKeyFilter("relative.DateHigh"), mRelativePeriodDateRangePane.highStringProperty());
     }
 
     @Override
@@ -102,7 +124,8 @@ public class FilterSectionMeas extends MBaseFilterSection {
 
     boolean filter(BAcousticVibrationPoint p) {
         if (isSelected()) {
-            return validatePeriodChanges(p)
+            return validateSpeedPeriodChanges(p)
+                    && validateRelativePeriodChanges(p)
                     && true;
         } else {
             return true;
@@ -117,18 +140,35 @@ public class FilterSectionMeas extends MBaseFilterSection {
                 speedPeriodDateHighProperty(),
                 speedPeriodDateLowProperty(),
                 mSpeedValueSliderPane.valueProperty(),
-                mSpeedCountSliderPane.valueProperty()
+                mSpeedCountSliderPane.valueProperty(),
+                //
+                mRelativePeriodCheckbox.selectedProperty(),
+                relativePeriodDateHighProperty(),
+                relativePeriodDateLowProperty(),
+                mRelativeValueSliderPane.valueProperty(),
+                mRelativeCountSliderPane.valueProperty()
         ).forEach(propertyBase -> propertyBase.addListener(changeListenerObject));
     }
 
     void load(ArrayList<BAcousticVibrationPoint> items, MTemporalRange temporalRange) {
         if (temporalRange != null) {
             mSpeedPeriodDateRangePane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
+            mRelativePeriodDateRangePane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
         }
 
         var sessionManager = getSessionManager();
         sessionManager.register(getKeyFilter("dateSpeedPeriodLow"), mSpeedPeriodDateRangePane.lowStringProperty());
         sessionManager.register(getKeyFilter("dateSpeedPeriodHigh"), mSpeedPeriodDateRangePane.highStringProperty());
+        sessionManager.register(getKeyFilter("dateRelativePeriodLow"), mRelativePeriodDateRangePane.lowStringProperty());
+        sessionManager.register(getKeyFilter("dateRelativePeriodHigh"), mRelativePeriodDateRangePane.highStringProperty());
+    }
+
+    private SimpleObjectProperty<LocalDate> relativePeriodDateHighProperty() {
+        return mRelativePeriodDateRangePane.highDateProperty();
+    }
+
+    private SimpleObjectProperty<LocalDate> relativePeriodDateLowProperty() {
+        return mRelativePeriodDateRangePane.lowDateProperty();
     }
 
     private SimpleObjectProperty<LocalDate> speedPeriodDateHighProperty() {
@@ -139,7 +179,19 @@ public class FilterSectionMeas extends MBaseFilterSection {
         return mSpeedPeriodDateRangePane.lowDateProperty();
     }
 
-    private boolean validatePeriodChanges(BAcousticVibrationPoint p) {
+    private boolean validateRelativePeriodChanges(BAcousticVibrationPoint p) {
+        if (!mRelativePeriodCheckbox.isSelected()) {
+            return true;
+        }
+
+        return mRelativeCountSliderPane.getValue() <= p.ext().getObservationsTimeFiltered().stream()
+                .filter(o -> DateHelper.isBetween(speedPeriodDateLowProperty().get(), speedPeriodDateHighProperty().get(), o.getDate().toLocalDate()))
+                .filter(o -> ObjectUtils.allNotNull(o.getLimit(), o.getMeasuredZ()))
+                .filter(o -> (o.getMeasuredZ() / o.getLimit()) >= mRelativeValueSliderPane.getValue() / 100.0)
+                .count();
+    }
+
+    private boolean validateSpeedPeriodChanges(BAcousticVibrationPoint p) {
         if (!mSpeedPeriodCheckbox.isSelected()) {
             return true;
         }
@@ -151,14 +203,8 @@ public class FilterSectionMeas extends MBaseFilterSection {
 
     public class MeasFilterUI {
 
-        private GridPane mRoot;
-
         public MeasFilterUI() {
             createUI();
-        }
-
-        public GridPane getRoot() {
-            return mRoot;
         }
 
         public void onShownFirstTime() {
@@ -166,10 +212,11 @@ public class FilterSectionMeas extends MBaseFilterSection {
 
         private void createUI() {
             mSpeedPeriodCheckbox.setText("Svängningshastighetsförändring");
+            mRelativePeriodCheckbox.setText("Relativ riktvärdesförbruktning");
             double borderInnerPadding = FxHelper.getUIScaled(8.0);
             double topBorderInnerPadding = FxHelper.getUIScaled(16.0);
 
-            var wrappedDateBox = Borders.wrap(mSpeedPeriodDateRangePane.getRoot())
+            var wrappedSpeedDateBox = Borders.wrap(mSpeedPeriodDateRangePane.getRoot())
                     .etchedBorder()
                     .title("Tidsperiod")
                     .innerPadding(topBorderInnerPadding, borderInnerPadding, borderInnerPadding, borderInnerPadding)
@@ -178,27 +225,55 @@ public class FilterSectionMeas extends MBaseFilterSection {
                     .build()
                     .build();
 
-            var leftBox = new VBox(rowGap,
+            var wrappedRelativeDateBox = Borders.wrap(mRelativePeriodDateRangePane.getRoot())
+                    .etchedBorder()
+                    .title("Tidsperiod")
+                    .innerPadding(topBorderInnerPadding, borderInnerPadding, borderInnerPadding, borderInnerPadding)
+                    .outerPadding(0)
+                    .raised()
+                    .build()
+                    .build();
+
+            var absoluteBox = new VBox(rowGap,
                     mSpeedPeriodCheckbox,
                     mSpeedValueSliderPane,
                     mSpeedCountSliderPane,
-                    wrappedDateBox
+                    wrappedSpeedDateBox
+            );
+
+            var leftBox = new VBox(rowGap,
+                    absoluteBox
+            );
+
+            var relativeBox = new VBox(rowGap,
+                    mRelativePeriodCheckbox,
+                    mRelativeValueSliderPane,
+                    mRelativeCountSliderPane,
+                    wrappedRelativeDateBox
             );
 
             var rightBox = new VBox(rowGap,
-                    new Label("")
+                    relativeBox
             );
 
-            var row = 1;
-            mRoot = new GridPane();
-            mRoot.addRow(row++, leftBox, rightBox);
+            var row = 0;
+            mRoot.addRow(row++,
+                    wrapInTitleBorder("Absolut", leftBox),
+                    wrapInTitleBorder("Relativ", rightBox)
+            );
 
-            FxHelper.autoSizeColumn(mRoot, 2);
             BindingHelper.bindWidthForChildrens(leftBox, rightBox);
 
             mSpeedCountSliderPane.disableProperty().bind(mSpeedPeriodCheckbox.selectedProperty().not());
             mSpeedValueSliderPane.disableProperty().bind(mSpeedPeriodCheckbox.selectedProperty().not());
-            wrappedDateBox.disableProperty().bind(mSpeedPeriodCheckbox.selectedProperty().not());
+            wrappedSpeedDateBox.disableProperty().bind(mSpeedPeriodCheckbox.selectedProperty().not());
+
+            mRelativeCountSliderPane.disableProperty().bind(mRelativePeriodCheckbox.selectedProperty().not());
+            mRelativeValueSliderPane.disableProperty().bind(mRelativePeriodCheckbox.selectedProperty().not());
+            wrappedRelativeDateBox.disableProperty().bind(mRelativePeriodCheckbox.selectedProperty().not());
+
+            FxHelper.autoSizeColumn(mRoot, 2);
+            mRoot.setMaxWidth(getMaxWidth());
         }
     }
 }
