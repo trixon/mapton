@@ -19,7 +19,6 @@ import gov.nasa.worldwind.render.Material;
 import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MLatLon;
@@ -187,12 +186,22 @@ public class ButterflyHelper {
         return index;
     }
 
-    public static synchronized <T extends BXyzPoint> List<T> getLimitedPoints(BBasePoint p, ArrayList<T> items, boolean requireObservations, double maxDistance, int limit, LocalDate aStartDate) {
+    public static synchronized <T extends BXyzPoint> List<T> getLimitedPoints(BBasePoint p, List<T> items, boolean requireObservations, double maxDistance, int limit, LocalDate aStartDate) {
+        return getLimitedPoints(p, items, requireObservations, maxDistance, limit, aStartDate, false);
+    }
+
+    public static synchronized <T extends BXyzPoint> List<T> getLimitedPoints(BBasePoint p, List<T> items, boolean requireObservations, double maxDistance, int limit, LocalDate aStartDate, boolean includeSelf) {
         var startDate = aStartDate == null ? LocalDate.now().minusYears(5) : aStartDate;
         var lastDate = LocalDate.now().plusDays(1);
         var pointLatLon = new MLatLon(p.getLat(), p.getLon());
         var filteredPoints = items.stream()
-                .filter(g -> g != p)
+                .filter(g -> {
+                    if (includeSelf) {
+                        return true;
+                    } else {
+                        return g != p;
+                    }
+                })
                 .filter(q -> {
                     if (requireObservations) {
                         return q.extOrNull().getObservationsTimeFiltered().size() > 1;

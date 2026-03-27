@@ -135,7 +135,9 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                 .sorted(Comparator.comparingInt(MChartOverlay::getPosition))
                 .forEach(chartOverlay -> {
                     try {
-                        chartOverlay.plot(plot, p, aStartDate);
+                        if (aStartDate != null) {
+                            chartOverlay.plot(plot, p, aStartDate);
+                        }
                     } catch (Exception e) {
                         Exceptions.printStackTrace(e);
                         System.out.println("ERROR IN plotOverlays: " + chartOverlay.mAxis.getLabel());

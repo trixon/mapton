@@ -441,7 +441,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         }
         var latest = p.getDateLatest() != null ? p.getDateLatest().toLocalDate() : LocalDate.MIN;
         var today = LocalDate.now();
-        var nextMeas = latest.plusDays(frequency);
+        var nextMeas = latest.isEqual(LocalDate.MAX) ? LocalDate.MAX : latest.plusDays(frequency);
 //        var remainingDays = ;
 
         if (checkModel.isEmpty()) {
