@@ -35,6 +35,7 @@ import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_core.api.sos.ScalePlot1dHSosi;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoAttributeManager;
@@ -143,6 +144,42 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         }
 
         return new Position[]{startPosition, currentPosition};
+    }
+
+    public void plotBearing(BTopoControlPoint p, Position position, double zOffset) {
+        int size = p.ext().getObservationsTimeFiltered().size();
+        if (!sCheckModel.isChecked(GraphicItem.BEARING)
+                || p.getDimension() == BDimension._1d
+                || p.ext().getNumOfObservationsFiltered() == 0) {
+            return;
+        }
+
+        int maxNumberOfItemsToPlot = Math.min(10, p.ext().getNumOfObservationsFiltered());
+
+        boolean first = true;
+        for (int i = size - 1; i >= size - maxNumberOfItemsToPlot + 1; i--) {
+            var o = p.ext().getObservationsTimeFiltered().get(i);
+
+            try {
+                var bearing = o.ext().getBearing();
+                if (bearing == null || bearing.isNaN()) {
+                    continue;
+                }
+
+                var length = 10.0;
+                var p2 = WWHelper.movePolar(position, bearing, length);
+                var z = zOffset + (first ? 0.2 : 0.1);
+                position = WWHelper.positionFromPosition(position, z);
+                p2 = WWHelper.positionFromPosition(p2, z);
+                var path = new Path(position, p2);
+                path.setAttributes(mAttributeManager.getBearingAttribute(first));
+                first = false;
+
+                addRenderable(path, true, null, null);
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+        }
     }
 
     public void plotLabel(BTopoControlPoint p, Position position) {

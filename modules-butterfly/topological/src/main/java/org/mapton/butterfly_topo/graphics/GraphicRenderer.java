@@ -18,12 +18,9 @@ package org.mapton.butterfly_topo.graphics;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.Path;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.worldwind.api.WWHelper;
 
 /**
  *
@@ -58,7 +55,10 @@ public class GraphicRenderer extends GraphicRendererBase {
     public void plot(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
 
-        plotBearing(p, position);
+        if (sCheckModel.isChecked(GraphicItem.BEARING) && !sCheckModel.isChecked(GraphicItem.PIN)) {
+            plotBearing(p, position, 0.0);
+        }
+
         if (sCheckModel.isChecked(GraphicItem.MEASUREMENT_MODE)) {
             plotMeasMode(p, position);
         }
@@ -88,42 +88,6 @@ public class GraphicRenderer extends GraphicRendererBase {
         mGroupRenderer.reset();
         clearLabeledPoints(BTopoControlPoint.class);
         mVectorRenderer.reset();
-    }
-
-    private void plotBearing(BTopoControlPoint p, Position position) {
-        int size = p.ext().getObservationsTimeFiltered().size();
-        if (!sCheckModel.isChecked(GraphicItem.BEARING)
-                || p.getDimension() == BDimension._1d
-                || p.ext().getNumOfObservationsFiltered() == 0) {
-            return;
-        }
-
-        int maxNumberOfItemsToPlot = Math.min(10, p.ext().getNumOfObservationsFiltered());
-
-        boolean first = true;
-        for (int i = size - 1; i >= size - maxNumberOfItemsToPlot + 1; i--) {
-            var o = p.ext().getObservationsTimeFiltered().get(i);
-
-            try {
-                var bearing = o.ext().getBearing();
-                if (bearing == null || bearing.isNaN()) {
-                    continue;
-                }
-
-                var length = 10.0;
-                var p2 = WWHelper.movePolar(position, bearing, length);
-                var z = first ? 0.2 : 0.1;
-                position = WWHelper.positionFromPosition(position, z);
-                p2 = WWHelper.positionFromPosition(p2, z);
-                var path = new Path(position, p2);
-                path.setAttributes(mAttributeManager.getBearingAttribute(first));
-                first = false;
-
-                addRenderable(path, true, null, null);
-            } catch (Exception e) {
-                System.err.println(e);
-            }
-        }
     }
 
 }

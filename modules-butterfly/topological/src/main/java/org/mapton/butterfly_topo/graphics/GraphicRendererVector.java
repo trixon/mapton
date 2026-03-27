@@ -342,5 +342,10 @@ public class GraphicRendererVector extends GraphicRendererBase {
 
         var positions = plot3dOffsetPole(p, position, true, 0.75, false);
         plotLabel(p, positions[0]);
+
+        if (sCheckModel.isChecked(GraphicItem.BEARING)) {
+            plotBearing(p, position, positions[0].getAltitude());
+
+        }
     }
 }
