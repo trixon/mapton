@@ -25,14 +25,16 @@ import se.trixon.almond.util.fx.FxHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MSimpleObjectStorageBoolean.Misc.class)
-public class VibrationChartSOSB extends MChartSOSB {
+public class VibrationPeakChartSOSB extends MChartSOSB {
 
-    public static final String NAME = "Vibrationer";
+    public static final String NAME = "Vibrationstoppar";
 
-    public VibrationChartSOSB() {
+    public VibrationPeakChartSOSB() {
         setName(NAME);
-        setColor(FxHelper.colorToFxColor(VibrationChartOverlay.COLOR));
-        setTooltipText("De %d närmaste inom %d m.".formatted(VibrationChartOverlay.MAX_COUNT, VibrationChartOverlay.MAX_DISTANCE));
+        setColor(FxHelper.colorToFxColor(VibrationPeakChartOverlay.COLOR));
+        setTooltipText("De inom %d m\rvars riktförbrukning är mer än %d%%.".formatted(
+                VibrationPeakChartOverlay.MAX_DISTANCE,
+                VibrationPeakChartOverlay.LIMIT));
     }
 
 }
