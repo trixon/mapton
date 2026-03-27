@@ -636,7 +636,11 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
         public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
             var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
-            var nextMeas = latest.plusDays(getFrequency());
+
+            var nextMeas = latest;
+            if (!latest.isEqual(LocalDate.MIN) && !latest.isEqual(LocalDate.MAX)) {
+                nextMeas = latest.plusDays(getFrequency());
+            }
 
             return chronoUnit.between(LocalDate.now(), nextMeas);
         }
