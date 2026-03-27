@@ -26,6 +26,7 @@ import net.lingala.zip4j.model.enums.EncryptionMethod;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly.bcc.helper.BccHelper;
 
 /**
@@ -93,7 +94,7 @@ public class Executor {
 
             System.out.println("Load: " + className);
             System.out.println("Args: " + arg);
-            if (StringUtils.startsWithIgnoreCase(arg, "disabled")) {
+            if (Strings.CI.startsWith(arg, "disabled")) {
                 System.out.println("continue");
                 continue;
             }

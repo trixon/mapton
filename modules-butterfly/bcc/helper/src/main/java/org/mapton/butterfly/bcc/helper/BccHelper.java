@@ -16,6 +16,7 @@
 package org.mapton.butterfly.bcc.helper;
 
 import java.io.File;
+import se.trixon.almond.util.GlobalState;
 
 /**
  *
@@ -24,9 +25,14 @@ import java.io.File;
 public class BccHelper {
 
     public static final String WORKING_DIRECTORY_PATH = "bcc.workingDirectory";
+    private static final GlobalState sGlobalState = new GlobalState();
 
     public static String get(String className) {
         return System.getProperty(className);
+    }
+
+    public static GlobalState getGlobalState() {
+        return sGlobalState;
     }
 
     public static File getWorkingDirectory() {
