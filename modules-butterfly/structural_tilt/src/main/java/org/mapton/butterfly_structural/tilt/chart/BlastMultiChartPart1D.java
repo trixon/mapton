@@ -15,16 +15,14 @@
  */
 package org.mapton.butterfly_structural.tilt.chart;
 
-import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = BMultiChartPart.class)
+//@ServiceProvider(service = BMultiChartPart.class)
 public class BlastMultiChartPart1D extends BlastMultiChartPart {
 
     public BlastMultiChartPart1D() {
@@ -35,7 +33,7 @@ public class BlastMultiChartPart1D extends BlastMultiChartPart {
 
     @Override
     public String getName() {
-        return "Lutningsgivare";
+        return "Lutningsgivare 1D";
     }
 
 }

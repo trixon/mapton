@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeMap;
 import org.mapton.api.MLatLon;
+import org.mapton.api.MPolygonFilterManager;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -33,6 +34,7 @@ import se.trixon.almond.util.fx.FxHelper;
 public abstract class BMultiChartPart {
 
     public static final double LIMIT_DISTANCE_BLAST = 40.0;
+    public final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
 
     public String getAxisLabel() {
         return "m";
@@ -49,6 +51,14 @@ public abstract class BMultiChartPart {
     public abstract String getName();
 
     public abstract ArrayList<? extends BXyzPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate);
+
+    public boolean hasValidGeometry(MLatLon refLatLon, MLatLon latLon, double buffer) {
+        if (mPolygonFilterManager.hasItems()) {
+            return mPolygonFilterManager.contains(latLon);
+        } else {
+            return refLatLon.distance(latLon) <= buffer;
+        }
+    }
 
     public void panTo(String pointName) {
         var p = getManager().getItemForKey(pointName);

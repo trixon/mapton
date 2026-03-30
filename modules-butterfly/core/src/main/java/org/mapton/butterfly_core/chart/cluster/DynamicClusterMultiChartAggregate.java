@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_rock_blast.chart;
+package org.mapton.butterfly_core.chart.cluster;
 
 import java.util.Comparator;
 import java.util.concurrent.Callable;
@@ -28,11 +28,11 @@ import org.openide.util.Lookup;
  *
  * @author Patrik Karlström
  */
-public class BlastMultiChartAggregate {
+public class DynamicClusterMultiChartAggregate {
 
     private final JTabbedPane mTabbedPane;
 
-    public BlastMultiChartAggregate() {
+    public DynamicClusterMultiChartAggregate() {
         mTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
     }
 
@@ -50,7 +50,7 @@ public class BlastMultiChartAggregate {
                         .sorted(Comparator.comparing(BMultiChartPart::getName))
                         .forEachOrdered(multiChartComponent -> {
                             try {
-                                var chartBuilder = new BlastMultiChartBuilder(
+                                var chartBuilder = new DynamicClusterMultiChartBuilder(
                                         multiChartComponent.getName(),
                                         multiChartComponent.getAxisLabel(),
                                         multiChartComponent.getDecimalPattern()

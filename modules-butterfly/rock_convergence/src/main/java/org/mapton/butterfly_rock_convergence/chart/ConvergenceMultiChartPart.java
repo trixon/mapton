@@ -23,6 +23,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BMultiChartPart;
+import static org.mapton.butterfly_core.api.BMultiChartPart.LIMIT_DISTANCE_BLAST;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -54,6 +55,11 @@ public class ConvergenceMultiChartPart extends BMultiChartPart {
     }
 
     @Override
+    public String getDecimalPattern() {
+        return "0";
+    }
+
+    @Override
     public BaseManager getManager() {
         return ConvergenceManager.getInstance();
     }
@@ -61,11 +67,6 @@ public class ConvergenceMultiChartPart extends BMultiChartPart {
     @Override
     public String getName() {
         return "Konvergensgrupper";
-    }
-
-    @Override
-    public String getDecimalPattern() {
-        return "0";
     }
 
     @Override
@@ -83,7 +84,7 @@ public class ConvergenceMultiChartPart extends BMultiChartPart {
                     return true;
                 })
                 .filter(p -> {
-                    return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= LIMIT_DISTANCE_BLAST;
+                    return hasValidGeometry(latLon, new MLatLon(p.getLat(), p.getLon()), LIMIT_DISTANCE_BLAST);
                 }).collect(Collectors.toCollection(ArrayList::new));
 
         var pointsToExclude = new ArrayList<BXyzPoint>();

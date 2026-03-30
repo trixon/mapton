@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_rock_blast.chart;
+package org.mapton.butterfly_core.chart.cluster;
 
 import com.sun.jna.platform.KeyboardUtils;
 import java.awt.event.KeyEvent;
@@ -40,15 +40,15 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-public class BlastMultiChartBuilder extends XyzChartBuilder<BRockBlast> {
+public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BRockBlast> {
 
     private LocalDate mDateFirst;
     private LocalDate mDateLast;
     private BMultiChartPart mMultiChartComponent;
-    private final String mTitlePrefix;
     private int mPointSize;
+    private final String mTitlePrefix;
 
-    public BlastMultiChartBuilder(String titlePrefix, String axisLabel, String decimalPattern) {
+    public DynamicClusterMultiChartBuilder(String titlePrefix, String axisLabel, String decimalPattern) {
         mTitlePrefix = titlePrefix;
         initChart(axisLabel, decimalPattern);
     }
@@ -60,8 +60,8 @@ public class BlastMultiChartBuilder extends XyzChartBuilder<BRockBlast> {
 
         mMultiChartComponent = multiChartComponent;
         var callable = (Callable<ChartPanel>) () -> {
-            mDateFirst = p.ext().getDateFirst().toLocalDate().minusMonths(2);
-            mDateLast = p.ext().getDateFirst().toLocalDate().plusMonths(2);
+            mDateFirst = p.ext().getDateFirst().toLocalDate().minusMonths(6);
+            mDateLast = p.ext().getDateFirst().toLocalDate().plusMonths(0);
             setTitle(p);
             updateDataset(p);
             var plot = getPlot();

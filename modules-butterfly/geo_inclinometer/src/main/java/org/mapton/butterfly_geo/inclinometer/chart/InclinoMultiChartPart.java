@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
-import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation;
+import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.butterfly_geo.inclinometer.InclinoManager;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.DateHelper;
@@ -69,7 +69,7 @@ public class InclinoMultiChartPart extends BMultiChartPart {
     public ArrayList<BGeoInclinometerPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = InclinoManager.getInstance().getTimeFilteredItems().stream()
                 .filter(p -> {
-                    return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= LIMIT_DISTANCE_BLAST;
+                    return hasValidGeometry(latLon, new MLatLon(p.getLat(), p.getLon()), LIMIT_DISTANCE_BLAST);
                 })
                 .filter(p -> {
                     try {

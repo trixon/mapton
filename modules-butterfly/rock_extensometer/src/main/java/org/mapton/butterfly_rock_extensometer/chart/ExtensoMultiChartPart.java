@@ -70,7 +70,7 @@ public class ExtensoMultiChartPart extends BMultiChartPart {
     public ArrayList<BRockExtensometerPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = ExtensoManager.getInstance().getTimeFilteredItems().stream()
                 .filter(p -> {
-                    return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= LIMIT_DISTANCE_BLAST;
+                    return hasValidGeometry(latLon, new MLatLon(p.getLat(), p.getLon()), LIMIT_DISTANCE_BLAST);
                 })
                 .flatMap(extensometer -> extensometer.getPoints().stream())
                 .filter(p -> {

@@ -80,7 +80,7 @@ public abstract class BlastMultiChartPart extends BMultiChartPart {
                     return true;
                 })
                 .filter(p -> {
-                    return latLon.distance(BCoordinatrix.toLatLon(p)) <= LIMIT_DISTANCE_BLAST;
+                    return hasValidGeometry(latLon, BCoordinatrix.toLatLon(p), LIMIT_DISTANCE_BLAST);
                 }).collect(Collectors.toCollection(ArrayList::new));
 
         var pointsToExclude = new ArrayList<BStructuralStrainGaugePoint>();

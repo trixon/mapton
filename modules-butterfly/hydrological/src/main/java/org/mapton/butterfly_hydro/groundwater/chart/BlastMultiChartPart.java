@@ -25,9 +25,9 @@ import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
-import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
+import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.butterfly_hydro.groundwater.GroundwaterManager;
 import se.trixon.almond.util.DateHelper;
 
@@ -79,7 +79,7 @@ public abstract class BlastMultiChartPart extends BMultiChartPart {
                     return true;
                 })
                 .filter(p -> {
-                    return latLon.distance(BCoordinatrix.toLatLon(p)) <= LIMIT_DISTANCE_BLAST;
+                    return hasValidGeometry(latLon, BCoordinatrix.toLatLon(p), LIMIT_DISTANCE_BLAST);
                 }).collect(Collectors.toCollection(ArrayList::new));
 
         var pointsToExclude = new ArrayList<BHydroGroundwaterPoint>();
