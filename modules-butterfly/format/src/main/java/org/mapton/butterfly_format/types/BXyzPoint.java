@@ -16,9 +16,12 @@
 package org.mapton.butterfly_format.types;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
+import java.util.TreeMap;
+import javafx.geometry.Point3D;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +30,7 @@ import org.apache.commons.math3.ml.clustering.Clusterable;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.StringHelper;
 
@@ -249,8 +253,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         private transient final DeltaRolling deltaRolling = new DeltaRolling();
         private transient final DeltaZero deltaZero = new DeltaZero();
         private transient Double mFrequenceHighBuffer;
+        private TreeMap<LocalDateTime, Point3D> mReplacements = new TreeMap<>();
 
         public void calculateObservations(List<T> observations) {
+            mReplacements.clear();
             if (observations.isEmpty()) {
                 return;
             }
@@ -324,23 +330,29 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                     var prevY = prev.getMeasuredY();
                     var prevZ = prev.getMeasuredZ();
 
+                    var replacementX = 0d;
+                    var replacementY = 0d;
+                    var replacementZ = 0d;
+
                     if (ObjectUtils.allNotNull(measuredX, prevX, o.ext().getDeltaX())) {
-                        var replacementX = measuredX - prevX;
+                        replacementX = measuredX - prevX;
                         o.ext().setDeltaX(o.ext().getDeltaX() - replacementX);
                         accumulatedReplacementsX = accumulatedReplacementsX + replacementX;
                     }
 
                     if (ObjectUtils.allNotNull(measuredY, prevY, o.ext().getDeltaY())) {
-                        var replacementY = measuredY - prevY;
+                        replacementY = measuredY - prevY;
                         o.ext().setDeltaY(o.ext().getDeltaY() - replacementY);
                         accumulatedReplacementsY = accumulatedReplacementsY + replacementY;
                     }
 
                     if (ObjectUtils.allNotNull(measuredZ, prevZ, o.ext().getDeltaZ())) {
-                        var replacementZ = measuredZ - prevZ;
+                        replacementZ = measuredZ - prevZ;
                         o.ext().setDeltaZ(o.ext().getDeltaZ() - replacementZ);
                         accumulatedReplacementsZ = accumulatedReplacementsZ + replacementZ;
                     }
+
+                    mReplacements.put(o.getDate(), new Point3D(replacementX, replacementY, replacementZ));
                 }
 
                 if (offsetZ != null && offsetZ != 0d) {
@@ -846,8 +858,13 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                 var firstMeasured = observations.getFirst().getMeasuredX();
                 var lastMeasured = observations.getLast().getMeasuredX();
 
+                var replacement = mReplacements.entrySet().stream()
+                        .filter(entry -> DateHelper.isBetween(observations.getFirst().getDate(), observations.getLast().getDate(), entry.getKey()))
+                        .mapToDouble(entry -> entry.getValue().getX())
+                        .sum();
+
                 if (ObjectUtils.allNotNull(firstMeasured, lastMeasured)) {
-                    return lastMeasured - firstMeasured;
+                    return lastMeasured - firstMeasured - replacement;
                 } else {
                     return null;
                 }
@@ -862,9 +879,13 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
                 var firstMeasured = observations.getFirst().getMeasuredY();
                 var lastMeasured = observations.getLast().getMeasuredY();
+                var replacement = mReplacements.entrySet().stream()
+                        .filter(entry -> DateHelper.isBetween(observations.getFirst().getDate(), observations.getLast().getDate(), entry.getKey()))
+                        .mapToDouble(entry -> entry.getValue().getY())
+                        .sum();
 
                 if (ObjectUtils.allNotNull(firstMeasured, lastMeasured)) {
-                    return lastMeasured - firstMeasured;
+                    return lastMeasured - firstMeasured - replacement;
                 } else {
                     return null;
                 }
@@ -879,9 +900,13 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
                 var firstMeasured = observations.getFirst().getMeasuredZ();
                 var lastMeasured = observations.getLast().getMeasuredZ();
+                var replacement = mReplacements.entrySet().stream()
+                        .filter(entry -> DateHelper.isBetween(observations.getFirst().getDate(), observations.getLast().getDate(), entry.getKey()))
+                        .mapToDouble(entry -> entry.getValue().getZ())
+                        .sum();
 
                 if (ObjectUtils.allNotNull(firstMeasured, lastMeasured)) {
-                    return lastMeasured - firstMeasured;
+                    return lastMeasured - firstMeasured - replacement;
                 } else {
                     return null;
                 }
