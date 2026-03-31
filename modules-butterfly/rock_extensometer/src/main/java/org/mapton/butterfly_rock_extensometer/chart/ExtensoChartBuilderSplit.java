@@ -15,17 +15,16 @@
  */
 package org.mapton.butterfly_rock_extensometer.chart;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.util.concurrent.Callable;
 import javax.swing.JPanel;
+import org.mapton.butterfly_core.api.BChartSplit;
 import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ExtensoChartBuilderSplit {
+public class ExtensoChartBuilderSplit extends BChartSplit {
 
     private final ExtensoChartBuilder mCompleteChartBuilder = new ExtensoChartBuilder(null);
     private final ExtensoChartBuilder mLatestChartBuilder = new ExtensoChartBuilder(7);
@@ -39,22 +38,10 @@ public class ExtensoChartBuilderSplit {
         }
 
         var callable = (Callable<JPanel>) () -> {
-            mLatestChartBuilder.build(p);
-            var panel = new JPanel(new GridBagLayout());
-            var gbc = new GridBagConstraints();
-
-            gbc.fill = GridBagConstraints.BOTH;
-            gbc.weightx = 0.6;
-            gbc.weighty = 1.0;
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            panel.add(mCompleteChartBuilder.build(p).call(), gbc);
-
-            gbc.weightx = 0.4;
-            gbc.gridx = 1;
-            panel.add(mLatestChartBuilder.build(p).call(), gbc);
-
-            return panel;
+            return createSplitPanel(
+                    mLatestChartBuilder.build(p).call(),
+                    mCompleteChartBuilder.build(p).call()
+            );
         };
 
         return callable;

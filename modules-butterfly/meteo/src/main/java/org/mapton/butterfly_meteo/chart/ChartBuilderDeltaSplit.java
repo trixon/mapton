@@ -15,17 +15,16 @@
  */
 package org.mapton.butterfly_meteo.chart;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.util.concurrent.Callable;
 import javax.swing.JPanel;
+import org.mapton.butterfly_core.api.BChartSplit;
 import org.mapton.butterfly_format.types.BMeteoPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ChartBuilderDeltaSplit {
+public class ChartBuilderDeltaSplit extends BChartSplit {
 
     private final ChartBuilderDelta mCompleteChartBuilder = new ChartBuilderDelta(false, null);
     private final ChartBuilderDelta mLatestChartBuilder = new ChartBuilderDelta(false, 7);
@@ -39,25 +38,10 @@ public class ChartBuilderDeltaSplit {
         }
 
         var callable = (Callable<JPanel>) () -> {
-            mLatestChartBuilder.build(p);
-            var panel = new JPanel(new GridBagLayout());
-            var gbc = new GridBagConstraints();
-            var latestChartPanel = mLatestChartBuilder.build(p).call();
-            var completeChartPanel = mCompleteChartBuilder.build(p).call();
-
-            gbc.fill = GridBagConstraints.BOTH;
-            gbc.weighty = 1.0;
-            gbc.gridy = 0;
-
-            gbc.weightx = 0.7;
-            gbc.gridx = 0;
-            panel.add(completeChartPanel, gbc);
-
-            gbc.weightx = 0.3;
-            gbc.gridx = 1;
-            panel.add(latestChartPanel, gbc);
-
-            return panel;
+            return createSplitPanel(
+                    mLatestChartBuilder.build(p).call(),
+                    mCompleteChartBuilder.build(p).call()
+            );
         };
 
         return callable;
