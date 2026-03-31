@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Function;
 import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_format.types.BComponent;
@@ -42,21 +41,26 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class ChartBuilderDelta extends ChartBuilderBase {
 
+    private final Integer mAvgDays;
     private boolean mPlotAvg = true;
 
-    public ChartBuilderDelta(boolean plotAvg, Integer recentDaysDefault) {
+    public ChartBuilderDelta(Integer avgDays, Integer recentDaysDefault) {
         setRecentDaysDefault(recentDaysDefault);
         setRecentDays(recentDaysDefault);
-        mPlotAvg = plotAvg;
+        mPlotAvg = avgDays != null;
+        mAvgDays = avgDays;
         initChart("mm", "0");
+    }
+
+    public Integer getAvgDays() {
+        return mAvgDays;
     }
 
     @Override
     public void updateDataset(BTopoControlPoint p) {
+        var plot = getPlot();
         mTimeSeries1d.clear();
         mTimeSeries2d.clear();
-
-        var plot = (XYPlot) mChart.getPlot();
         var rangeAxis = plot.getRangeAxis();
         resetPlot(plot);
         plotMarkers(p);
@@ -93,8 +97,8 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         }
     }
 
-    private double plot(BTopoControlPoint p, TimeSeries timeSeries, Color color, Function<BXyzPointObservation, Double> function) {
-        var plot = (XYPlot) mChart.getPlot();
+    private synchronized double plot(BTopoControlPoint p, TimeSeries timeSeries, Color color, Function<BXyzPointObservation, Double> function) {
+        var plot = getPlot();
         var renderer = plot.getRenderer();
         var startDate = isCompleteView() ? LocalDateTime.MIN : LocalDateTime.now().minusDays(getRecentDays());
         Double firstDelta = null;
@@ -117,10 +121,13 @@ public class ChartBuilderDelta extends ChartBuilderBase {
                 }
             }
         }
+        if (mPlotAvg) {
+            plotAvg(timeSeries, color);
+        } else {
+            getDataset().addSeries(timeSeries);
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
+        }
 
-        getDataset().addSeries(timeSeries);
-        renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
-        plotAvg(timeSeries, color);
         try {
             return lastDelta - firstDelta;
         } catch (Exception e) {
@@ -132,17 +139,17 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         if (!mPlotAvg) {
             return;
         }
-        var plot = (XYPlot) mChart.getPlot();
-        int avdDays = 90 * 60 * 24;
+        var plot = getPlot();
+        int avdDaysInMinutes = mAvgDays * 24 * 60;
         int avgSkipMeasurements = 0;
-        var mavg = createSubSetMovingAverage(timeSeries, mSubSetZeroMinute, mSubSetLastMinute, "%s (avg)".formatted(timeSeries.getKey()), avdDays, avgSkipMeasurements);
+        var mavg = createSubSetMovingAverage(timeSeries, mSubSetFirstMinute, mSubSetLastMinute, "%s (avg)".formatted(timeSeries.getKey()), avdDaysInMinutes, avgSkipMeasurements);
         if (mavg != null) {
             try {
                 getDataset().addSeries(mavg);
                 var renderer = (XYLineAndShapeRenderer) plot.getRenderer();
                 var avgStroke = new BasicStroke(2.0f);
                 int index = getDataset().getSeriesIndex(mavg.getKey());
-                renderer.setSeriesPaint(index, color.brighter().brighter());
+                renderer.setSeriesPaint(index, color);
                 renderer.setSeriesStroke(index, avgStroke);
 //                renderer.setDefaultShapesVisible(false);
                 renderer.setSeriesShapesVisible(index, false);
@@ -155,9 +162,15 @@ public class ChartBuilderDelta extends ChartBuilderBase {
 
     private void plotMarkers(BTopoControlPoint p) {
         SwingHelper.runLater(() -> {
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = getPlot();
             plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
             plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
+
+            try {
+                var firstDate = p.ext().getObservationsTimeFiltered().getFirst().getDate();
+                mSubSetFirstMinute = ChartHelper.convertToMinute(firstDate);
+            } catch (Exception e) {
+            }
 
             p.ext().getObservationsTimeFiltered().forEach(o -> {
                 addNEMarkers(plot, o, true);

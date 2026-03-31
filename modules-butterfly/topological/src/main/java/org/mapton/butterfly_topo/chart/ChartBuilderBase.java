@@ -35,6 +35,7 @@ import se.trixon.almond.util.Dict;
  */
 public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoControlPoint> {
 
+    protected Minute mSubSetFirstMinute;
     protected Minute mSubSetLastMinute;
     protected Minute mSubSetZeroMinute;
     protected final TimeSeries mTimeSeries1d = new TimeSeries(Dict.Geometry.HEIGHT);

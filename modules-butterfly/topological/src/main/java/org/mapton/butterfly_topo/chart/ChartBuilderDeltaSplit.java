@@ -26,8 +26,8 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
  */
 public class ChartBuilderDeltaSplit extends BChartSplit {
 
-    private final ChartBuilderDelta mCompleteChartBuilder = new ChartBuilderDelta(false, null);
-    private final ChartBuilderDelta mLatestChartBuilder = new ChartBuilderDelta(false, 7);
+    private final ChartBuilderDelta mCompleteChartBuilder = new ChartBuilderDelta(null, null);
+    private final ChartBuilderDelta mLatestChartBuilder = new ChartBuilderDelta(null, 7);
 
     public ChartBuilderDeltaSplit() {
     }
