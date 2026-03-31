@@ -18,6 +18,7 @@ package org.mapton.butterfly_acoustic.vibration.chart.overlay;
 import org.mapton.api.MChartSOSB;
 import org.mapton.api.MSimpleObjectStorageBoolean;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -33,6 +34,7 @@ public class VibrationChartSOSB extends MChartSOSB {
         setName(NAME);
         setColor(FxHelper.colorToFxColor(VibrationChartOverlay.COLOR));
         setTooltipText("De %d närmaste inom %d m.".formatted(VibrationChartOverlay.MAX_COUNT, VibrationChartOverlay.MAX_DISTANCE));
+        setGroup(SDict.STRUCTURAL.toString());
     }
 
 }

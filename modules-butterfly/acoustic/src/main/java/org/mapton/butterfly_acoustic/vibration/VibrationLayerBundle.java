@@ -69,7 +69,7 @@ public class VibrationLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_VibrationAction(), SDict.ACOUSTIC.toString(), "VibrationTopComponent");
+        initCommons(Bundle.CTL_VibrationAction(), SDict.STRUCTURAL.toString(), "VibrationTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
