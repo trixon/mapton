@@ -55,8 +55,8 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
     private static BBase sPrevItem;
     private static BaseManager< BBase> sPrevManager;
     protected boolean mFirstLoad = true;
-    protected int mTrendLoadCounter = 0;
     protected OffsetManager mOffsetManager = OffsetManager.getInstance();
+    protected int mTrendLoadCounter = 0;
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
     private final BooleanProperty mDisabledSearchProperty = new SimpleBooleanProperty(true);
@@ -219,6 +219,10 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
                 getAllItemsMap().put(item.getName(), item);
             }
         }
+    }
+
+    public void keepLoadingProgressAlive() {
+        ButterflyManager.getInstance().keepLoadingProgressAlive();
     }
 
     public abstract void load(Butterfly butterfly);

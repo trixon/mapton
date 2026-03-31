@@ -73,6 +73,7 @@ import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.swing.DelayedResetRunner;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.CredentialsPanel;
 
@@ -95,10 +96,16 @@ public class ButterflyManager {
     private final ButterflyMonitor mButterflyMonitor = new ButterflyMonitor();
     private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
     private LogoLoader mLogoLoader;
+    private ProgressHandle mProgressHandle;
     private File mSource;
     private final Util mUtil = new Util();
     private final WKTReader mWktReader = new WKTReader();
     private final ZipHelper mZipHelper = ZipHelper.getInstance();
+    private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(3_000, () -> {
+        if (mProgressHandle != null) {
+            mProgressHandle.finish();
+        }
+    });
 
     public static ButterflyManager getInstance() {
         return Holder.INSTANCE;
@@ -190,10 +197,14 @@ public class ButterflyManager {
         return mSource;
     }
 
+    public void keepLoadingProgressAlive() {
+        mDelayedResetRunner.reset();
+    }
+
     public synchronized void load(File file) {
         mButterflyMonitor.stop();
         var taskName = Dict.OPENING_S.toString().formatted("Butterfly");
-        var mProgressHandle = ProgressHandle.createHandle(taskName, null);
+        mProgressHandle = ProgressHandle.createHandle(taskName, null);
         mProgressHandle.start();
         mProgressHandle.switchToIndeterminate();
 
@@ -296,8 +307,7 @@ public class ButterflyManager {
                 mButterflyMonitor.start();
                 refreshTitle();
             }
-
-            mProgressHandle.finish();
+            keepLoadingProgressAlive();
         });
 
         thread.start();

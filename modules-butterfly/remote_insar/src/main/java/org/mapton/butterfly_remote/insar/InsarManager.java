@@ -179,6 +179,7 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
         if (mTrendLoadCounter++ < 3) {
             SystemHelper.runLaterDelayed(10, () -> {
                 for (var p : timeFilteredItems) {
+                    keepLoadingProgressAlive();
                     try {
                         populateTrends(p);
                     } catch (Exception e) {

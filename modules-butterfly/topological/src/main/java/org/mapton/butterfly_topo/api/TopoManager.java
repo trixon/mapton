@@ -126,10 +126,12 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
             var nameToObservations = new LinkedHashMap<String, ArrayList<BTopoControlPointObservation>>();
             for (var o : butterfly.topo().getControlPointsObservations()) {
+                keepLoadingProgressAlive();
                 nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
             }
 
             for (var p : butterfly.topo().getControlPoints()) {
+                keepLoadingProgressAlive();
                 var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
                 if (!observations.isEmpty()) {
                     p.ext().setDateFirst(observations.getFirst().getDate());
@@ -197,6 +199,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
         p:
         for (var p : getFilteredItems()) {
+            keepLoadingProgressAlive();
             if (p.getDateLatest() == null || p.ext().getObservationsAllRaw().isEmpty()) {
                 timeFilteredItems.add(p);
             } else {
@@ -254,6 +257,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
         if (mTrendLoadCounter++ < 3) {
             for (var p : timeFilteredItems) {
+                keepLoadingProgressAlive();
                 try {
                     populateTrends(p);
                 } catch (Exception e) {
