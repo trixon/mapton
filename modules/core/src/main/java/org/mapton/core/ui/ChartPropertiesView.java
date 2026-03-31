@@ -17,6 +17,7 @@ package org.mapton.core.ui;
 
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.prefs.Preferences;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.control.ScrollPane;
@@ -39,6 +40,8 @@ import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.Mapton;
 import org.mapton.core.ui.simple_object_storage.BaseTab;
 import org.openide.util.Lookup;
+import org.openide.util.NbPreferences;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.Spacer;
@@ -52,11 +55,12 @@ class ChartPropertiesView extends BorderPane {
     private final Class<MSimpleObjectStorageBoolean.Misc> mClass = MSimpleObjectStorageBoolean.Misc.class;
     private final VBox mOverlayItemBox = new VBox(FxHelper.getUIScaled(8));
     private final MSimpleObjectStorageManager mManager = MSimpleObjectStorageManager.getInstance();
+    private final Preferences mPreferences = NbPreferences.forModule(ChartPropertiesView.class).node("chartProperties");
 
     public ChartPropertiesView() {
         createUI();
         initListeners();
-        populateItems();
+        populateOverlayItems();
     }
 
     private void createUI() {
@@ -68,21 +72,29 @@ class ChartPropertiesView extends BorderPane {
         mOverlayItemBox.setPadding(FxHelper.getUIScaledInsets(8));
 
         var overlayTab = new Tab(MDict.OVERLAYS.toString(), overlayScrollPane);
-        var rootTabPane = new TabPane(overlayTab);
+        var dateTab = new Tab(Dict.DATE.toString(), null);
+        var rootTabPane = new TabPane(overlayTab, dateTab);
         rootTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         rootTabPane.setSide(Side.LEFT);
         setCenter(rootTabPane);
         //            setTop(new Label("TODO? Toolbar with presets"));
+
+        int activeTab = mPreferences.getInt("activeTab", 0);
+        rootTabPane.getSelectionModel().select(activeTab);
+        rootTabPane.getSelectionModel().selectedIndexProperty().addListener((p, o, n) -> {
+            mPreferences.putInt("activeTab", n.intValue());
+        });
     }
 
     private void initListeners() {
         Lookup.getDefault().lookupResult(mClass).addLookupListener(lookupEvent -> {
-            populateItems();
+            populateOverlayItems();
         });
     }
 
-    private void populateItems() {
+    private void populateOverlayItems() {
         FxHelper.runLater(() -> {
+            mOverlayItemBox.getChildren().clear();
             HashSet<String> groups = new HashSet<>();
             Comparator<MSimpleObjectStorageBoolean.Misc> c1 = (o1, o2) -> StringUtils.defaultString(o1.getGroup()).compareToIgnoreCase(StringUtils.defaultString(o2.getGroup()));
             Comparator<MSimpleObjectStorageBoolean.Misc> c2 = (o1, o2) -> StringUtils.defaultString(o1.getName()).compareToIgnoreCase(StringUtils.defaultString(o2.getName()));
