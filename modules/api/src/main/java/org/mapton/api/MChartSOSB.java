@@ -16,7 +16,6 @@
 package org.mapton.api;
 
 import javafx.scene.paint.Color;
-import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -29,7 +28,7 @@ public abstract class MChartSOSB extends MSimpleObjectStorageBoolean.Misc {
 
     public MChartSOSB() {
         setCategory("chart");
-        setGroup(Dict.OTHER.toString());
+        setGroup("Övriga tidpunkter");
         setDefaultValue(DEFAULT_VALUE);
     }
 

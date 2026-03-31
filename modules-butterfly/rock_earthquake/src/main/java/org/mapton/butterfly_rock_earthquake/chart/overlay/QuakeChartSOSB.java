@@ -18,7 +18,6 @@ package org.mapton.butterfly_rock_earthquake.chart.overlay;
 import org.mapton.api.MChartSOSB;
 import org.mapton.api.MSimpleObjectStorageBoolean;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -32,7 +31,6 @@ public class QuakeChartSOSB extends MChartSOSB {
         setName("Jordbävningar");
         setColor(FxHelper.colorToFxColor(QuakeChartOverlay.COLOR));
         setTooltipText("De %d kraftigaste/km.".formatted(QuakeChartOverlay.MAX_COUNT));
-        setGroup(SDict.ROCK_MECHANICS.toString());
     }
 
 }
