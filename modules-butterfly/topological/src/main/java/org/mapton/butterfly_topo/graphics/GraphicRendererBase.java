@@ -101,7 +101,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
 
     public Position[] plot3dOffsetPoleNoCache(BTopoControlPoint p, Position position, boolean plotEnabled, double scaleZero, boolean plotCurrent) {
         var CURRENT_SIZE = 0.500;
-        var ZERO_SIZE = CURRENT_SIZE * 1.2;
+        var ZERO_SIZE = CURRENT_SIZE * scaleZero;
         var zeroZ = p.getZeroZ();
 
         var startPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.getZOffset());

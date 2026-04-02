@@ -50,7 +50,7 @@ import se.trixon.almond.util.MathHelper;
  */
 public class GraphicRendererVector extends GraphicRendererBase {
 
-    private HashSet<BTopoControlPoint> mPlottedStations = new HashSet<>();
+    private final HashSet<BTopoControlPoint> mPlottedStations = new HashSet<>();
 
     public GraphicRendererVector(RenderableLayer layer, RenderableLayer passiveLayer) {
         super(layer, passiveLayer);
@@ -271,7 +271,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
             return;
         }
 
-        var positions = plot3dOffsetPole(p, position, true, 1.0, true);
+        var positions = plot3dOffsetPole(p, position, true, 0.5, true);
         var startPosition = positions[0];
         var endPosition = positions[1];
 
@@ -340,7 +340,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
             return;
         }
 
-        var positions = plot3dOffsetPole(p, position, true, 0.75, false);
+        var positions = plot3dOffsetPole(p, position, true, 0.5, false);
         plotLabel(p, positions[0]);
 
         if (sCheckModel.isChecked(GraphicItem.BEARING)) {

@@ -118,21 +118,23 @@ public class GraphicRendererTrace extends GraphicRendererBase {
             return;
         }
 
-        var positions = plot3dOffsetPole(p, position, true, 1.0, true);
+        var positions = plot3dOffsetPole(p, position, true, 0.5, true);
         if (ObjectUtils.anyNull(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
             return;
         }
         var o1 = p.ext().getReferenceObservation();
-        mGotZeroMeas = false;
-        var collectedNodes = p.ext().getObservationsTimeFiltered().stream()
+        var observations = p.ext().getObservationsTimeFiltered().stream()
                 .filter(o -> ObjectUtils.allNotNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ(), o1.getMeasuredX(), o1.getMeasuredY(), o1.getMeasuredZ()))
-                .dropWhile(o -> {
-                    if (o.isZeroMeasurement()) {
-                        mGotZeroMeas = true;
-                    }
+                .toList();
+        mGotZeroMeas = observations.stream().filter(o -> o.isZeroMeasurement()).findAny().isPresent();
+        var mainStream = observations.stream();
+        if (mGotZeroMeas) {
+            mainStream = mainStream.dropWhile(o -> {
+                return !o.isZeroMeasurement();
+            });
+        }
 
-                    return !mGotZeroMeas;
-                })
+        var collectedNodes = mainStream
                 .map(o -> {
                     var x = o1.getMeasuredX() + MathHelper.convertDoubleToDouble(o.ext().getDeltaX()) * mScale3dP;
                     var y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o.ext().getDeltaY()) * mScale3dP;
