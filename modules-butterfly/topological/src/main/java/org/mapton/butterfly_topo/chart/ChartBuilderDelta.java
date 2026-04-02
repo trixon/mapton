@@ -103,6 +103,8 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         var startDate = isCompleteView() ? LocalDateTime.MIN : LocalDateTime.now().minusDays(getRecentDays());
         Double firstDelta = null;
         Double lastDelta = null;
+        var originalTimeSeries = new TimeSeries("original");
+
         for (var o : p.ext().getObservationsTimeFiltered()) {
             if (o.getDate().isAfter(startDate)) {
                 var delta = function.apply(o) * 1000;
@@ -116,13 +118,15 @@ public class ChartBuilderDelta extends ChartBuilderBase {
                 }
                 lastDelta = delta;
                 timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), delta);
+                originalTimeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), delta);
                 if (DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), p.getDateZero())) {
                     mMinMaxCollection.add(delta);
                 }
             }
         }
+
         if (mPlotAvg) {
-            plotAvg(timeSeries, color);
+            plotAvg(originalTimeSeries, color);
         } else {
             getDataset().addSeries(timeSeries);
             renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);

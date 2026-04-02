@@ -91,12 +91,13 @@ public enum TopoLabelBy implements LabelBy.Operations {
         return LabelBy.dateValidity(p);
     }),
     DATE_ALARM_LEVEL_CHANGED(LabelBy.CAT_DATE, SDict.ALARM_LEVEL.toString(), p -> {
-
         return LabelBy.dateAlarmLevelChange(p);
     }),
     DATE_ALARM_LEVEL_CHANGED_DAYS(LabelBy.CAT_DATE, SDict.ALARM_LEVEL.toString() + " (dagar)", p -> {
-
         return LabelBy.dateAlarmLevelChangeDays(p);
+    }),
+    DATE_DAYS_FIRST_LAST(LabelBy.CAT_DATE, "Antal dagar mellan första & sista", p -> {
+        return LabelBy.daysBetweenFirstLast(p);
     }),
     MISC_GROUP(LabelBy.CAT_MISC, Dict.GROUP.toString(), p -> {
         return LabelBy.miscGroup(p);
