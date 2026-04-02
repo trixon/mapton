@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_meteo;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.LabelBy;
@@ -68,6 +70,24 @@ public enum MeteoLabelBy implements LabelBy.Operations {
     }),
     MEAS_AGE(LabelBy.CAT_MEAS, Dict.AGE.toString(), p -> {
         return LabelBy.measAge(p);
+    }),
+    VALUE_TEMPERATURE(LabelBy.CAT_VALUE, "Temperatur", p -> {
+        try {
+            var o = p.ext().getObservationFilteredLast();
+            var value = "%+.0f °C @".formatted(o.getAirTemperature());
+            var pattern = "yyyy-MM-dd";
+            if (o.getDate().toLocalDate().isEqual(LocalDate.now())) {
+                pattern = "HH.mm";
+            } else {
+
+            }
+
+            return value + o.getDate().format(DateTimeFormatter.ofPattern(pattern));
+        } catch (Exception e) {
+            //nvm
+        }
+
+        return "";
     }),
     VALUE_Z(LabelBy.CAT_VALUE, "Z", p -> {
         return LabelBy.valueZeroZ(p);
