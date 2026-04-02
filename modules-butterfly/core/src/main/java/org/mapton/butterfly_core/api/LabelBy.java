@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -209,6 +210,19 @@ public class LabelBy {
 
     public static String dateZero(BXyzPoint p) {
         return Objects.toString(p.getDateZero(), DEFAULT_DATE_IF_NULL);
+    }
+
+    public static String daysBetweenFirstLast(BXyzPoint p) {
+        var observations = p.extOrNull().getObservationsTimeFiltered();
+        if (observations.isEmpty()) {
+            return "-";
+        } else {
+            var first = observations.getFirst();
+            var last = observations.getLast();
+            var days = Duration.between(first.getDate(), last.getDate()).toDays();
+
+            return "%d".formatted(days);
+        }
     }
 
     public static String measAge(BXyzPoint p) {
