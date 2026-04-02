@@ -22,6 +22,7 @@ import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_format.types.BRoi;
@@ -34,8 +35,6 @@ public class RoiAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
-    private BasicShapeAttributes mShapeAttributes;
-    private BasicShapeAttributes mShapeHighlightAttributes;
     private PointPlacemarkAttributes mSinglePinAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
 
@@ -75,7 +74,7 @@ public class RoiAttributeManager extends BaseAttributeManager {
             mSinglePinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
             mSinglePinAttributes.setImageAddress("https://maps.google.com/mapfiles/kml/pal2/icon17.png");
             mSinglePinAttributes.setImageColor(color);
-            mSinglePinAttributes.setScale(Mapton.getScalePinImage() * 2.5);
+            mSinglePinAttributes.setScale(Mapton.getScalePinImage() * 2.0);
             mSinglePinAttributes.setLabelScale(Mapton.getScalePinLabel());
             mSinglePinAttributes.setImageOffset(Offset.BOTTOM_CENTER);
         }
@@ -84,17 +83,17 @@ public class RoiAttributeManager extends BaseAttributeManager {
     }
 
     public BasicShapeAttributes getSurfaceAttributes(BRoi roi) {
-        if (mShapeAttributes == null) {
-            mShapeAttributes = new BasicShapeAttributes();
-            mShapeAttributes.setOutlineWidth(3.0);
-            mShapeAttributes.setDrawInterior(true);
-            mShapeAttributes.setDrawOutline(true);
-            mShapeAttributes.setInteriorOpacity(0.1);
-            mShapeAttributes.setInteriorMaterial(Material.ORANGE);
-            mShapeAttributes.setOutlineMaterial(Material.YELLOW);
-        }
+        var attrs = new BasicShapeAttributes();
+        attrs.setOutlineWidth(3.0);
+        attrs.setDrawInterior(true);
+        attrs.setDrawOutline(true);
+        attrs.setInteriorOpacity(0.1);
+        var color = Color.decode(Strings.CI.prependIfMissing(roi.getColor(), "#"));
+        var material = new Material(color);
+        attrs.setInteriorMaterial(material);
+        attrs.setOutlineMaterial(material);
 
-        return mShapeAttributes;
+        return attrs;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {
@@ -109,15 +108,11 @@ public class RoiAttributeManager extends BaseAttributeManager {
         return mSurfaceAttributes;
     }
 
-    public BasicShapeAttributes getSurfaceHighlightAttributes(BRoi a) {
-        if (mShapeHighlightAttributes == null) {
-            mShapeHighlightAttributes = new BasicShapeAttributes(getSurfaceAttributes(a));
-            mShapeHighlightAttributes.setInteriorOpacity(0.20);
-            mShapeHighlightAttributes.setOutlineOpacity(0.20);
-
-        }
-
-        return mShapeHighlightAttributes;
+    public BasicShapeAttributes getSurfaceHighlightAttributes(BRoi roi) {
+        var attrs = getSurfaceAttributes(roi);
+        attrs.setOutlineOpacity(1.0);
+        attrs.setOutlineWidth(attrs.getOutlineWidth() * 3);
+        return attrs;
     }
 
     private static class Holder {

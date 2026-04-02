@@ -32,15 +32,16 @@ import org.locationtech.jts.geom.Geometry;
 public class BRoi extends BXyzPoint {
 
     private double buffer;
+    private String color;
     private LocalDateTime dat;
     private LocalDateTime datFrom;
     private LocalDateTime datTo;
     private String description;
+    private transient Geometry geometry;
+    private transient Geometry targetGeometry;
     private String text1;
     private String text2;
     private String text3;
-    private transient Geometry geometry;
-    private transient Geometry targetGeometry;
     private String wkt;
 
     public BRoi() {
@@ -48,6 +49,10 @@ public class BRoi extends BXyzPoint {
 
     public double getBuffer() {
         return buffer;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public LocalDateTime getDat() {
@@ -92,6 +97,10 @@ public class BRoi extends BXyzPoint {
 
     public void setBuffer(double buffer) {
         this.buffer = buffer;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public void setDat(LocalDateTime dat) {
