@@ -28,6 +28,10 @@ public class CmdConfig {
     private String[] mClassArgs;
     private String[] mClasses = new String[]{};
     private String mDestFile;
+    private String mFtpPassword;
+    private String mFtpPath;
+    private String mFtpServer;
+    private String mFtpUser;
     private char[] mPassword;
     private String mResourceDir;
     private String mWorkingDir;
@@ -49,6 +53,22 @@ public class CmdConfig {
 
     public String getDestFile() {
         return mDestFile;
+    }
+
+    public String getFtpPassword() {
+        return mFtpPassword;
+    }
+
+    public String getFtpPath() {
+        return mFtpPath;
+    }
+
+    public String getFtpServer() {
+        return mFtpServer;
+    }
+
+    public String getFtpUser() {
+        return mFtpUser;
     }
 
     public char[] getPassword() {
@@ -86,6 +106,22 @@ public class CmdConfig {
 
     public void setDestFile(String destFile) {
         mDestFile = destFile;
+    }
+
+    public void setFtpPassword(String ftpPassword) {
+        mFtpPassword = ftpPassword;
+    }
+
+    public void setFtpPath(String ftpPath) {
+        mFtpPath = ftpPath;
+    }
+
+    public void setFtpServer(String ftpServer) {
+        mFtpServer = ftpServer;
+    }
+
+    public void setFtpUser(String ftpUser) {
+        mFtpUser = ftpUser;
     }
 
     public void setPassword(char[] password) {

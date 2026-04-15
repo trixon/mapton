@@ -53,6 +53,22 @@ public class DoArgsProcessing implements ArgsProcessor {
     @Description(shortDescription = "#opt_classes")
     @Messages({"opt_classes=classes to be launched"})
     public String[] mClasses;
+    @Arg(longName = "ftp-server", shortName = 's')
+    @Description(shortDescription = "#opt_ftpserver")
+    @Messages({"opt_ftpserver=ftp server (optional)"})
+    public String mFtpServer;
+    @Arg(longName = "ftp-user", shortName = 'u')
+    @Description(shortDescription = "#opt_ftpuser")
+    @Messages({"opt_ftpuser=ftp user (optional)"})
+    public String mFtpUser;
+    @Arg(longName = "ftp-password", shortName = 'w')
+    @Description(shortDescription = "#opt_ftppassword")
+    @Messages({"opt_ftppassword=ftp password (optional)"})
+    public String mFtpPassword;
+    @Arg(longName = "ftp-path", shortName = 'a')
+    @Description(shortDescription = "#opt_ftppath")
+    @Messages({"opt_ftppath=ftp path (optional)"})
+    public String mFtpPath;
 
     private final CmdConfig mConfig = CmdConfig.getInstance();
 
@@ -68,6 +84,11 @@ public class DoArgsProcessing implements ArgsProcessor {
         mConfig.setClasses(mClasses);
         mConfig.setResourceDir(mResourceDir);
         mConfig.setWorkingDir(mWorkingDir);
+        mConfig.setFtpPassword(mFtpPassword);
+        mConfig.setFtpPath(mFtpPath);
+        mConfig.setFtpServer(mFtpServer);
+        mConfig.setFtpUser(mFtpUser);
+        mConfig.setFtpPassword(mFtpPassword);
 
         new Thread(() -> {
             try {
