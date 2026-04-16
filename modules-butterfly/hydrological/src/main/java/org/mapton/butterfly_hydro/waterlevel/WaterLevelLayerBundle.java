@@ -69,7 +69,7 @@ public class WaterLevelLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_WaterLevelAction(), SDict.HYDROGEOLOGY.toString(), "WaterLevelTopComponent");
+        initCommons(Bundle.CTL_WaterLevelAction(), SDict.HYDRO_METEO.toString(), "WaterLevelTopComponent");
     }
 
     private void initListeners() {

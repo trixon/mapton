@@ -31,7 +31,6 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
 /**
@@ -69,7 +68,7 @@ public class MeteoLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(SDict.METEOROLOGY.toString(), Dict.MISCELLANEOUS.toString(), "MeteoTopComponent");
+        initCommons(SDict.METEOROLOGY.toString(), SDict.HYDRO_METEO.toString(), "MeteoTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);

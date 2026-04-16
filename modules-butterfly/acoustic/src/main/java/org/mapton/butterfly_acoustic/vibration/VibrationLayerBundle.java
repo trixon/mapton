@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_acoustic.vibration.graphics.GraphicRenderer;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
@@ -69,7 +70,7 @@ public class VibrationLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_VibrationAction(), SDict.STRUCTURAL.toString(), "VibrationTopComponent");
+        initCommons(Mapton.addWarning(Bundle.CTL_VibrationAction(), 2), SDict.STRUCTURAL.toString(), "VibrationTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);

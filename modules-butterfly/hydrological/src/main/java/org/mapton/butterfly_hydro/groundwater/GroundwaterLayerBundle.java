@@ -69,7 +69,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_GroundwaterAction(), SDict.HYDROGEOLOGY.toString(), "GroundwaterTopComponent");
+        initCommons(Bundle.CTL_GroundwaterAction(), SDict.HYDRO_METEO.toString(), "GroundwaterTopComponent");
     }
 
     private void initListeners() {
