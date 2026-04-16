@@ -17,6 +17,7 @@ package org.mapton.butterfly_topo.graphics;
 
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.AbstractShape;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Material;
@@ -26,14 +27,18 @@ import gov.nasa.worldwind.render.Polygon;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.mapton.api.MOptions;
+import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoLayerBundle;
@@ -74,8 +79,12 @@ public class GraphicRendererGroup extends GraphicRendererBase {
 
     @Override
     public void postPlot() {
-        if (sCheckModel.isChecked(GraphicItem.CLUSTER_DEFORMATION) && mPoints.size() > 2) {
+        if (sCheckModel.isChecked(GraphicItem.CLUSTER_DEFORMATION_HULL) && mPoints.size() > 2) {
             plotDeformation();
+        }
+
+        if ((sCheckModel.isChecked(GraphicItem.CLUSTER_DEFORMATION_LINE) || sCheckModel.isChecked(GraphicItem.CLUSTER_DEFORMATION_SURFACE)) && mPoints.size() > 2) {
+            plotDeformationLineSurface();
         }
 
         if (sCheckModel.isChecked(GraphicItem.CLUSTER_DEFORMATION_PLANE_ALTITUDES) && mPoints.size() > 1) {
@@ -138,6 +147,86 @@ public class GraphicRendererGroup extends GraphicRendererBase {
 
         addRenderable(polygon1, false, null, null);
         addRenderable(polygon2, false, null, null);
+    }
+
+    private void plotDeformationLineSurface(String line) {
+        var items = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, ":");
+        var closedGeometry = Strings.CI.equals(items[0], "P");
+        var pointNames = StringUtils.splitByWholeSeparatorPreserveAllTokens(items[1], ",");
+        var points = Arrays.stream(pointNames)
+                .map(name -> mManager.getItemForKey(StringUtils.trim(name)))
+                .filter(p -> mPoints.contains(p))
+                .toList();
+
+        var startPositions = new ArrayList<Position>();
+        var endPositions = new ArrayList<Position>();
+
+        for (var p : points) {
+            var positions = plot3dOffsetPoleNoCache(p, p.getValue("position"), true, 0.5, true);
+            startPositions.add(positions[0]);
+            endPositions.add(positions[1]);
+        }
+
+        if (startPositions.size() < 2) {
+            return;
+        }
+
+        var allPositions = new ArrayList<Position>(startPositions);
+        allPositions.addAll(endPositions.reversed());
+
+        AbstractShape shape1;
+        AbstractShape shape2;
+
+        if (closedGeometry) {
+            shape1 = new Polygon(startPositions);
+            shape2 = new Polygon(endPositions);
+        } else {
+            shape1 = new Path(startPositions);
+            endPositions.add(0, startPositions.getFirst());
+            endPositions.add(startPositions.getLast());
+            shape2 = new Path(endPositions);
+        }
+
+        var shape3 = new Polygon(allPositions);
+
+        var attr1 = new BasicShapeAttributes();
+        attr1.setDrawInterior(false);
+        attr1.setDrawOutline(true);
+        attr1.setOutlineWidth(2.0);
+        attr1.setOutlineMaterial(Material.CYAN);
+
+        var attr2 = new BasicShapeAttributes(attr1);
+        attr2.setInteriorMaterial(Material.BLUE);
+        attr2.setOutlineMaterial(Material.BLUE);
+        attr2.setOutlineWidth(4.0);
+
+        var attr3 = new BasicShapeAttributes(attr1);
+        attr3.setInteriorMaterial(Material.BLACK);
+        attr3.setDrawInterior(true);
+        attr3.setDrawOutline(false);
+//        attr2.setOutlineMaterial(Material.BLUE);
+        attr3.setInteriorOpacity(0.5);
+
+        shape1.setAttributes(attr1);
+        shape2.setAttributes(attr2);
+        shape3.setAttributes(attr3);
+
+        if (sCheckModel.isChecked(GraphicItem.CLUSTER_DEFORMATION_LINE)) {
+            addRenderable(shape1, false, null, null);
+            addRenderable(shape2, false, null, null);
+        }
+        if (sCheckModel.isChecked(GraphicItem.CLUSTER_DEFORMATION_SURFACE)) {
+            addRenderable(shape3, false, null, null);
+        }
+    }
+
+    private void plotDeformationLineSurface() {
+        var lines = ButterflyManager.getInstance().getButterfly().sys().getValAsList("system.deformation.boundaries");
+        for (var line : lines) {
+            if (!Strings.CI.startsWith(line, "#")) {
+                plotDeformationLineSurface(line);
+            }
+        }
     }
 
     private void plotDeformationPlaneAltitudes() {

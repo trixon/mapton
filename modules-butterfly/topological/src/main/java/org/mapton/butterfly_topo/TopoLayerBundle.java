@@ -153,7 +153,6 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                 mManager.getTimeFilteredItems().stream()
                         .sorted((o1, o2) -> Double.compare(o1.ext().getAlarmLevel(), o2.ext().getAlarmLevel()))
                         .forEachOrdered(p -> {
-//                for (var p : mManager.getTimeFilteredItems()) {
                             if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                                 var position = BCoordinatrix.toPositionWW2d(p);
                                 var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
@@ -181,7 +180,6 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                                     r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
                                 });
                             }
-//                }
                         });
 
                 mGraphicRenderer.postPlot();

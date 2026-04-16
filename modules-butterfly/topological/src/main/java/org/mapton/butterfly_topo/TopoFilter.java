@@ -324,6 +324,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
                 .filter(p -> mFilterSectionTrend.filter(p))
+                .filter(p -> mFilterSectionMisc.filter(p))
                 .filter(p -> {
                     if (mSectionMeasProperty.get()) {
                         return validateAlarm(p)

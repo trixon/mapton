@@ -126,7 +126,10 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         if (plotCurrent) {
             var o1 = p.ext().getReferenceObservation();
             var o2 = p.ext().getObservationsTimeFiltered().getLast();
+            if (ObjectUtils.anyNull(o1.getMeasuredX(), o1.getMeasuredY(), o1.getMeasuredZ(),
+                    o2.getMeasuredX(), o2.getMeasuredY(), o2.getMeasuredZ())) {
 
+            }
             var x = o1.getMeasuredX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * mScale3dP;
             var y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * mScale3dP;
             var z = o1.getMeasuredZ()

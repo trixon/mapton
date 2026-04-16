@@ -153,7 +153,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             return null;
         }
         var position = Position.fromDegrees(p.getLat(), p.getLon());
-        var positions = plot3dOffsetPole(p, position, plotBalls, 1.0, plotBalls);
+        var positions = plot3dOffsetPole(p, position, plotBalls, 0.5, plotBalls);
         var startPosition = positions[0];
         var endPosition = positions[1];
 

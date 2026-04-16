@@ -189,6 +189,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 //                //System.err.println(e);
 //            }
 //        }
+        butterfly.topo().initDeformationPoints();
         Mapton.getGlobalState().put(KEY_TOPO_POINTS_LOADED, ButterflyManager.getInstance().getButterfly());
     }
 
