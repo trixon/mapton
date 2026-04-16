@@ -54,17 +54,11 @@ public abstract class CoordinateFileRendererWW {
         getLayerBundle().getLayers().add(layer);
         getLayerBundle().addAllChildLayers(layer);
         mCoordinateFileToLayer.put(coordinateFile, layer);
+        layer.setPickEnabled(false);
 
         messageStop(coordinateFile);
     }
 
-    //    public String getDigest() {
-//        try {
-//            return mDigestUtils.digestAsHex(mCoordinateFile.getFile());
-//        } catch (IOException ex) {
-//            return "-";
-//        }
-//    }
     public LayerBundle getLayerBundle() {
         return mLayerBundle;
     }

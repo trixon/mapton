@@ -49,6 +49,8 @@ public class ShpRenderer extends CoordinateFileRendererWW {
     @Override
     protected void load(MCoordinateFile coordinateFile) {
         mRandomShapeAttributes.nextAttributes();
+        mRandomShapeAttributes.asShapeAttributes().setDrawOutline(false);
+        mRandomShapeAttributes.asAirspaceAttributes().setDrawOutline(false);
 
         var shapefileLayerFactory = (ShapefileLayerFactory) WorldWind.createConfigurationComponent(AVKey.SHAPEFILE_LAYER_FACTORY);
         shapefileLayerFactory.setNormalPointAttributes(mRandomShapeAttributes.asPointAttributes());
@@ -71,7 +73,7 @@ public class ShpRenderer extends CoordinateFileRendererWW {
 
     @Override
     protected void render() {
-        for (var coordinateFile : mCoordinateFileManager.getSublistBySupportedOpeners(getSupportedFileOpeners())) {            
+        for (var coordinateFile : mCoordinateFileManager.getSublistBySupportedOpeners(getSupportedFileOpeners())) {
             render(coordinateFile);
         }
     }

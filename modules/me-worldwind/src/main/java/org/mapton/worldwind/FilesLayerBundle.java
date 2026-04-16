@@ -54,7 +54,7 @@ public class FilesLayerBundle extends LayerBundle {
         mLayer.setName(Dict.FILES.toString());
         setCategorySystem(mLayer);
         setName(Dict.FILES.toString());
-        mLayer.setPickEnabled(true);
+        mLayer.setPickEnabled(false);
         attachTopComponentToLayer("FilesTopComponent", mLayer);
     }
 
