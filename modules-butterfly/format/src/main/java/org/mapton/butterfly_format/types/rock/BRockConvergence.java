@@ -140,6 +140,7 @@ public class BRockConvergence extends BXyzPoint {
             }
 
             return getPairs().stream()
+                    .filter(p -> p.ext().getDelta(function) != null)
                     .sorted((p1, p2) -> Double.compare(
                     Math.abs(p2.ext().getDelta(function)),
                     Math.abs(p1.ext().getDelta(function))))

@@ -19,9 +19,11 @@ import internal.org.mapton.butterfly_format.monmon.MonmonConfig;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -98,6 +100,10 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
  */
 public class Butterfly {
 
+    public static final int FORMAT = 1;
+    public static final String KEY_FORMAT = "FORMAT";
+    public static final String KEY_TIMESTAMP = "TIMESTAMP";
+    public static final String VERSION_FILE = "version.properties";
     private final ArrayList<BAlarm> mAlarms = new ArrayList<>();
     private final ArrayList<BHistory> mAlarmsHistory = new ArrayList<>();
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
@@ -838,6 +844,7 @@ public class Butterfly {
          */
         private Map<String, String> mKeyValMap = Map.of();
         private Set<String> mKeyValSet = Set.of();
+        private Set<String> mOrigins;
 
         public Map<String, String> getKeyValMap() {
             return mKeyValMap;
@@ -875,6 +882,12 @@ public class Butterfly {
             }
         }
 
+        public List<String> getValAsList(String key) {
+            return mOrigins.stream()
+                    .flatMap(origin -> getValAsList(origin, key).stream())
+                    .toList();
+        }
+
         public Map<String, String> getValAsMap(String origin, String key) {
             return getValAsList(origin, key).stream()
                     .map(item -> item.split("=", 2))
@@ -893,6 +906,7 @@ public class Butterfly {
         private void postLoad() {
             mKeyValMap = getKeyVals().stream()
                     .collect(Collectors.toMap(kv -> kv.getOrigin() + kv.getName(), BSystemKeyVal::getMeta));
+            mOrigins = getKeyVals().stream().map(kv -> kv.getOrigin()).collect(Collectors.toSet());
         }
     }
 
@@ -953,6 +967,7 @@ public class Butterfly {
 
     public class Topo {
 
+        private final HashSet<String> mDeformationPoints = new HashSet();
         private final HashMap<String, BTopoControlPoint> mNameToControlPoint = new HashMap<>();
 
         public BTopoControlPoint getControlPointByName(String name) {
@@ -965,6 +980,22 @@ public class Butterfly {
 
         public ArrayList<BTopoControlPointObservation> getControlPointsObservations() {
             return mTopoControlPointsObservations;
+        }
+
+        public HashSet<String> getDeformationPoints() {
+            return mDeformationPoints;
+        }
+
+        public void initDeformationPoints() {
+            mDeformationPoints.clear();
+            var lines = sys().getValAsList("system.deformation.boundaries");
+            for (var line : lines) {
+                if (!Strings.CI.startsWith(line, "#")) {
+                    var items = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, ":");
+                    var pointNames = StringUtils.splitByWholeSeparatorPreserveAllTokens(items[1], ",");
+                    mDeformationPoints.addAll(Arrays.asList(pointNames));
+                }
+            }
         }
 
         private void postLoad() {
