@@ -47,17 +47,19 @@ public class ButterflyLoader {
         return mSource;
     }
 
-    public void load(BundleMode bundleMode, File source) {
+    public void open(BundleMode bundleMode, File source) {
         mBundleMode = bundleMode;
         mSource = source;
-        var dir = mBundleMode == BundleMode.DIR ? source.getParentFile() : null;
 
         if (mBundleMode == BundleMode.DIR) {
             //
         } else {
             mZipHelper.init(source);
         }
+    }
 
+    public void process(BundleMode bundleMode, File source) {
+        var dir = mBundleMode == BundleMode.DIR ? source.getParentFile() : null;
         mButterfly = new Butterfly();
         mButterfly.load(dir);
         mButterfly.postLoad();
