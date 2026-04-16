@@ -23,6 +23,7 @@ import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.openide.util.Utilities;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -31,15 +32,40 @@ import org.openide.util.Utilities;
 public class LogoLoader {
 
     private static final int SWAP_DELAY = 2 * 60 * 1000;
-    private static final int SWAP_INITIAL_DELAY = 2 * 60 * 1000;
+    private static final int SWAP_INITIAL_DELAY = 10 * 1000;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
     private final URL mDefaultUrl = getClass().getResource("scior-logo.png");
     private Timer mTimer;
-    private boolean mUsingBundledLogo = true;
+    private boolean mUsingExtraLogo = true;
+
+    public LogoLoader() {
+        loadLogo(mDefaultUrl);
+    }
 
     public void load() {
-        loadLogo(mDefaultUrl);
-        initSwap();
+        if (mTimer != null) {
+            mTimer.stop();
+            mUsingExtraLogo = true;
+        }
+
+        var extraLogo = mButterflyManager.getFile("logo.png");
+        var extraLogoNoSwap = mButterflyManager.getFile("logo_NoSwap.png");
+        var hasLogo = extraLogo != null && extraLogo.isFile();
+        var hasLogoNoSwap = extraLogoNoSwap != null && extraLogoNoSwap.isFile();
+
+        if (hasLogoNoSwap) {
+            SwingHelper.runLaterDelayed(SWAP_INITIAL_DELAY, () -> loadLogo(fileToUrl(extraLogoNoSwap)));
+        } else if (hasLogo) {
+            mTimer = new Timer(SWAP_INITIAL_DELAY, actionEvent -> {
+                loadLogo(mUsingExtraLogo ? fileToUrl(extraLogo) : mDefaultUrl);
+                mUsingExtraLogo = !mUsingExtraLogo;
+            });
+
+            mTimer.setRepeats(true);
+            mTimer.setInitialDelay(SWAP_INITIAL_DELAY);
+            mTimer.setDelay(SWAP_DELAY);
+            mTimer.start();
+        }
     }
 
     private URL fileToUrl(File file) {
@@ -47,27 +73,6 @@ public class LogoLoader {
             return Utilities.toURI(file).toURL();
         } catch (MalformedURLException ex) {
             return null;
-        }
-    }
-
-    private void initSwap() {
-        var extraLogo = mButterflyManager.getFile("logo.png");
-        var extraLogoNoSwap = mButterflyManager.getFile("logo_NoSwap.png");
-
-        if (mTimer != null) {
-            mTimer.stop();
-        }
-
-        if (extraLogo != null && extraLogo.isFile()) {
-            mTimer = new Timer(SWAP_DELAY, actionEvent -> {
-                loadLogo(mUsingBundledLogo ? fileToUrl(extraLogo) : mDefaultUrl);
-                mUsingBundledLogo = !mUsingBundledLogo;
-            });
-
-            mTimer.setDelay(SWAP_INITIAL_DELAY);
-            mTimer.start();
-        } else if (extraLogoNoSwap != null && extraLogoNoSwap.isFile()) {
-            loadLogo(fileToUrl(extraLogoNoSwap));
         }
     }
 
