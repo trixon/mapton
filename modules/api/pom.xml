@@ -284,7 +284,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>jdktools</artifactId>
-            <version>21.0.35</version>
+            <version>21.0.37</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -295,7 +295,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolbox</artifactId>
-            <version>21.0.29</version>
+            <version>21.0.31</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
