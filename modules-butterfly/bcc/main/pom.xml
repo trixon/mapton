@@ -77,6 +77,11 @@
             <artifactId>helper</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>butterfly-format</artifactId>
+            <version>26.03x</version>
+        </dependency>
     </dependencies>
 
     <properties>

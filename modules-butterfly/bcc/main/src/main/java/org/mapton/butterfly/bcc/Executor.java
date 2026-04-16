@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import net.lingala.zip4j.ZipFile;
@@ -28,6 +29,9 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.CompressionLevel;
 import net.lingala.zip4j.model.enums.EncryptionMethod;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.io.FileHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -36,6 +40,7 @@ import org.apache.commons.lang3.Strings;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.mapton.butterfly.bcc.helper.BccHelper;
+import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.Exceptions;
 
 /**
@@ -81,6 +86,7 @@ public class Executor {
             copyResources(workingDir);
         }
 
+        addMetaData(workingDir);
         zip(workingDir);
 
         System.out.println("Created " + mConfig.getDestFile());
@@ -98,6 +104,19 @@ public class Executor {
         System.out.println("BEG: " + startTime);
         System.out.println("END: " + endTime);
         System.out.println("TOT: " + Duration.between(startTime, endTime).abs());
+    }
+
+    private void addMetaData(File dir) {
+        try {
+            var config = new PropertiesConfiguration();
+            config.setProperty(Butterfly.KEY_TIMESTAMP, LocalDateTime.now());
+            config.setProperty(Butterfly.KEY_FORMAT, Butterfly.FORMAT);
+            var fileHandler = new FileHandler(config);
+            fileHandler.setFile(new File(dir, Butterfly.VERSION_FILE));
+            fileHandler.save();
+        } catch (ConfigurationException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     private void copyResources(File destDir) throws IOException {
