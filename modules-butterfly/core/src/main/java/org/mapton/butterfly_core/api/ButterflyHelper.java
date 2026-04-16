@@ -17,17 +17,12 @@ package org.mapton.butterfly_core.api;
 
 import gov.nasa.worldwind.render.Material;
 import java.awt.Color;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BXyzPoint;
-import org.openide.modules.Modules;
-import org.openide.windows.WindowManager;
 import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -248,26 +243,4 @@ public class ButterflyHelper {
         }
     }
 
-    public static void refreshTitle() {
-        var moduleInfo = Modules.getDefault().ownerOf(ButterflyHelper.class);
-        var buildVersion = moduleInfo.getBuildVersion();
-
-        var buildDate = "%s.%s.%s".formatted(
-                StringUtils.mid(buildVersion, 0, 4),
-                StringUtils.mid(buildVersion, 4, 2),
-                StringUtils.mid(buildVersion, 6, 2)
-        );
-
-        var title = "Mapton Butterfly v%s".formatted(buildDate);
-
-        try {
-            var fileDate = ButterflyManager.getInstance().getFileDate();
-            title = title + new SimpleDateFormat(" (yyyy-MM-dd HH.mm.ss)").format(fileDate);
-        } catch (Exception e) {
-            //nvm
-        }
-
-        var finalTitle = title;
-        SwingHelper.runLater(() -> WindowManager.getDefault().getMainWindow().setTitle(finalTitle));
-    }
 }

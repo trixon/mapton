@@ -15,14 +15,14 @@
  */
 package org.mapton.butterfly_core.api;
 
+import internal.org.mapton.butterfly_format.VersionConfig;
 import internal.org.mapton.butterfly_format.monmon.MonmonConfig;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.prefs.BackingStoreException;
@@ -37,7 +37,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
-import org.apache.commons.math3.util.FastMath;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.operation.TransformException;
 import org.locationtech.jts.geom.Geometry;
@@ -69,6 +68,7 @@ import org.openide.modules.Modules;
 import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 import org.openide.windows.WindowManager;
+import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
@@ -95,23 +95,25 @@ public class ButterflyManager {
     private final ButterflyLoader mButterflyLoader = ButterflyLoader.getInstance();
     private final ButterflyMonitor mButterflyMonitor = new ButterflyMonitor();
     private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
+    private LocalDateTime mDataTimestamp = LocalDateTime.now().minusYears(123);
+    private final DelayedResetRunner mDelayedResetRunner;
     private LogoLoader mLogoLoader;
     private ProgressHandle mProgressHandle;
     private File mSource;
     private final Util mUtil = new Util();
     private final WKTReader mWktReader = new WKTReader();
     private final ZipHelper mZipHelper = ZipHelper.getInstance();
-    private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(3_000, () -> {
-        if (mProgressHandle != null) {
-            mProgressHandle.finish();
-        }
-    });
 
     public static ButterflyManager getInstance() {
         return Holder.INSTANCE;
     }
 
     private ButterflyManager() {
+        mDelayedResetRunner = new DelayedResetRunner(3_000, () -> {
+            if (mProgressHandle != null) {
+                mProgressHandle.finish();
+            }
+        });
     }
 
     public ObjectProperty<Butterfly> butterflyProperty() {
@@ -179,20 +181,6 @@ public class ButterflyManager {
         }
     }
 
-    public Date getFileDate() {
-        if (mButterflyLoader.getBundleMode() == BundleMode.DIR) {
-            var lastModified = Long.MIN_VALUE;
-
-            for (var file : FileUtils.listFiles(mSource.getParentFile(), null, true)) {
-                lastModified = FastMath.max(lastModified, file.lastModified());
-            }
-
-            return new Date(lastModified);
-        } else {
-            return new Date(mSource.lastModified());
-        }
-    }
-
     public File getSource() {
         return mSource;
     }
@@ -209,6 +197,9 @@ public class ButterflyManager {
         mProgressHandle.switchToIndeterminate();
 
         var thread = new Thread(() -> {
+            if (mLogoLoader == null) {
+                mLogoLoader = new LogoLoader();
+            }
             mSource = file;
             var ext = FilenameUtils.getExtension(file.getName());
             BundleMode bundleMode;
@@ -222,10 +213,36 @@ public class ButterflyManager {
             }
 
             if (bundleMode == DIR || unlock(mSource)) {
-                mButterflyLoader.load(bundleMode, mSource);
-                if (mLogoLoader == null) {
-                    mLogoLoader = new LogoLoader();
+                mButterflyLoader.open(bundleMode, mSource);
+                {
+                    var p = VersionConfig.getInstance().getConfig();
+                    if (p.containsKey(Butterfly.KEY_FORMAT)) {
+                        var fileFormat = p.getInt(Butterfly.KEY_FORMAT);
+                        mDataTimestamp = LocalDateTime.parse(p.getString(Butterfly.KEY_TIMESTAMP));
+                        var codeFormat = Butterfly.FORMAT;
+                        if (fileFormat != codeFormat) {
+                            NbMessage.warning(Dict.Dialog.TITLE_IO_ERROR.toString(),
+                                    """
+                                File format version #%d not supported.
+                                This version of Mapton supports format version #%d.
+
+                                This is usually an indicator that you need to upgrade Mapton.
+
+                                It might continue to load, but probably not, act accordingly!
+                                """.formatted(fileFormat, codeFormat));
+                        }
+                    } else {
+                        NbMessage.warning(Dict.Dialog.TITLE_IO_ERROR.toString(),
+                                """
+                                The data file is missing 'version.properties'.
+
+                                This is usually an indicator that you are using an old data file.
+
+                                It might continue to load, but probably not, act accordingly!
+                                """);
+                    }
                 }
+                mButterflyLoader.process(bundleMode, mSource);
                 mLogoLoader.load();
 
                 if (bundleMode == BundleMode.ZIP) {
@@ -297,11 +314,11 @@ public class ButterflyManager {
                         } catch (MismatchedDimensionException | TransformException ex) {
                             Exceptions.printStackTrace(ex);
                         }
-                    } catch (ParseException | MismatchedDimensionException ex) {
+                    } catch (IllegalArgumentException | ParseException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-
                 }
+
                 butterfly.sys().getSearchProviders().forEach(p -> MSearchProviderManager.getInstance().getMap().put(p.getId(), p.getKey()));
                 setButterfly(butterfly);
                 mButterflyMonitor.start();
@@ -411,11 +428,10 @@ public class ButterflyManager {
         var ext = mButterflyLoader.getBundleMode() == DIR ? ".bfl" : ".bfz";
         var fileName = ButterflyProject.getInstance().getName().toUpperCase(Locale.ROOT) + ext;
 
-        var fileDate = getFileDate();
         var title = "Mapton v%s (%s %s)".formatted(
                 buildDate,
                 fileName,
-                new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(fileDate));
+                mDataTimestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm.ss")));
 
         SwingHelper.runLater(() -> WindowManager.getDefault().getMainWindow().setTitle(title));
     }

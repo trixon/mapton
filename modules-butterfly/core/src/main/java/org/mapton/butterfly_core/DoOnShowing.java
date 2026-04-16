@@ -15,11 +15,15 @@
  */
 package org.mapton.butterfly_core;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MOptions;
 import org.mapton.butterfly_core.api.AlarmHistoryManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
+import org.openide.modules.Modules;
 import org.openide.windows.OnShowing;
+import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -43,7 +47,18 @@ public class DoOnShowing implements Runnable {
             Almond.openTopComponent("TopoTopComponent");
         }
 
-        ButterflyHelper.refreshTitle();
+        var moduleInfo = Modules.getDefault().ownerOf(ButterflyHelper.class);
+        var buildVersion = moduleInfo.getBuildVersion();
+
+        var buildDate = "%s.%s.%s".formatted(
+                StringUtils.mid(buildVersion, 0, 4),
+                StringUtils.mid(buildVersion, 4, 2),
+                StringUtils.mid(buildVersion, 6, 2)
+        );
+
+        var title = "Mapton Butterfly v%s".formatted(buildDate);
+        SwingHelper.runLater(() -> WindowManager.getDefault().getMainWindow().setTitle(title));
+
         AlarmHistoryManager.getInstance();
     }
 
