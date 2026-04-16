@@ -51,6 +51,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
 
     private final ResourceBundle mBundle = NbBundle.getBundle(BFilterSectionMisc.class);
     private final CheckBox mClusterCheckbox = new CheckBox("Autokluster");
+    private final CheckBox mDeformationCheckbox = new CheckBox("Deformationsdefinitioner");
     private RangeSliderPane mDeltaHRangeSlider;
     private SliderPane mDeltaRSlider;
     private final DistanceMeasure mDistanceMeasure;
@@ -85,6 +86,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         mDeltaHRangeSlider.clear();
         mDeltaRSlider.clear();
         FxHelper.setSelected(false,
+                mDeformationCheckbox,
                 mInvertCheckbox,
                 mInvisibleCheckbox,
                 mClusterCheckbox
@@ -101,7 +103,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
 
     public boolean filter(BXyzPoint p) {
         if (isSelected()) {
-            var valid = true;
+            var valid = validateDeformation(p);
 
             return valid;
         } else {
@@ -157,11 +159,16 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         return internalBox;
     }
 
+    public CheckBox getdEFORMATIONCheckbox() {
+        return mDeformationCheckbox;
+    }
+
     public void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
         List.of(
                 selectedProperty(),
                 //
-                mClusterCheckbox.selectedProperty()
+                mClusterCheckbox.selectedProperty(),
+                mDeformationCheckbox.selectedProperty()
         ).forEach(propertyBase -> propertyBase.addListener(changeListener));
 
 //        List.of(
@@ -197,6 +204,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         mDeltaRSlider.initSession(getKeyFilter("distanceR"), sessionManager);
 
         sessionManager.register(getKeyFilter("autocluster"), mClusterCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("DEFORMATION"), mDeformationCheckbox.selectedProperty());
         sessionManager.register(getKeyFilter("invert"), invertSelectionProperty());
         sessionManager.register(getKeyFilter("invisible"), invisibleObjectsProperty());
     }
@@ -226,6 +234,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         mDeltaRSlider = new SliderPane("Plan, maxavstånd", 20);
 
         int row = 0;
+        mRoot.addRow(row++, mDeformationCheckbox);
         mRoot.addRow(row++, mClusterCheckbox);
         mRoot.addRow(row++, mDeltaRSlider);
 //        mRoot.addRow(row++, mDeltaRRangeSlider);
@@ -259,6 +268,14 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
                 .flatMap(cluster -> cluster.getPoints().stream())
                 .toList();
 
+    }
+
+    private boolean validateDeformation(BXyzPoint p) {
+        if (!mDeformationCheckbox.isSelected()) {
+            return true;
+        }
+
+        return p.getButterfly().topo().getDeformationPoints().contains(p.getName());
     }
 
 }
