@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Objects;
@@ -36,6 +37,7 @@ import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.SDict;
@@ -223,6 +225,26 @@ public class LabelBy {
 
             return "%d".formatted(days);
         }
+    }
+
+    public static ArrayList<BXyzPointObservation> getTwoLatestObservations(BXyzPoint p, int minDiffHours) {
+        var observations = new ArrayList<BXyzPointObservation>();
+        var observationsTimeFiltered = p.extOrNull().getObservationsTimeFiltered();
+
+        if (!observationsTimeFiltered.isEmpty()) {
+            for (var o : observationsTimeFiltered.reversed()) {
+                if (observations.isEmpty()) {
+                    observations.add(o);
+                } else {
+                    if (DateHelper.isBeforeOrEqual(o.getDate(), LocalDateTime.now().minusHours(minDiffHours))) {
+                        observations.add(0, o);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return observations;
     }
 
     public static String measAge(BXyzPoint p) {

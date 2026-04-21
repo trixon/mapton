@@ -47,9 +47,11 @@ import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
+import org.mapton.api.MPrint;
 import org.mapton.api.MSearchProviderManager;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.LogoLoader;
+import org.mapton.butterfly_core.loader.ButterflyOpener;
 import org.mapton.butterfly_format.BundleMode;
 import static org.mapton.butterfly_format.BundleMode.DIR;
 import static org.mapton.butterfly_format.BundleMode.ZIP;
@@ -215,6 +217,7 @@ public class ButterflyManager {
             if (bundleMode == DIR || unlock(mSource)) {
                 mButterflyLoader.open(bundleMode, mSource);
                 {
+                    VersionConfig.getInstance().init();
                     var p = VersionConfig.getInstance().getConfig();
                     if (p.containsKey(Butterfly.KEY_FORMAT)) {
                         var fileFormat = p.getInt(Butterfly.KEY_FORMAT);
@@ -328,6 +331,13 @@ public class ButterflyManager {
         });
 
         thread.start();
+    }
+
+    public void load(MPrint print, File file) {
+        if (!getSource().equals(file)) {
+            print.out("Läser in automathämtad fil");
+            ButterflyOpener.getInstance().open(file);
+        }
     }
 
     public void setButterfly(Butterfly butterfly) {
