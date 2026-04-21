@@ -167,7 +167,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-numbers-core</artifactId>
-            <version>1.2</version>
+            <version>1.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -284,7 +284,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>jdktools</artifactId>
-            <version>21.0.39</version>
+            <version>21.0.41</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
