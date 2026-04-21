@@ -221,6 +221,98 @@ public enum TopoLabelBy implements LabelBy.Operations {
     VALUE_DELTA_ROLLING_2D(LabelBy.CAT_VALUE, "@Rullande Δ2d", p -> {
         return p.ext().deltaRolling().getDelta2(3);
     }),
+    VALUE_DELTA_LATEST48_1D(LabelBy.CAT_VALUE, "@2 senaste {≥48h} Δ1d (dagar)", p -> {
+        if (p.getDimension() == BDimension._2d) {
+            return ":";
+        }
+        long daysSinceMeasurement;
+        var observations = LabelBy.getTwoLatestObservations(p, 48);
+        double delta;
+        if (observations.size() > 1) {
+            var secondLast = observations.getFirst();
+            var last = observations.getLast();
+            var lastDelta = last.ext().getDeltaZ();
+            var secondLastDelta = secondLast.ext().getDeltaZ();
+            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+                return "-";
+            }
+
+            delta = lastDelta - secondLastDelta;
+            daysSinceMeasurement = ChronoUnit.DAYS.between(secondLast.getDate(), last.getDate());
+        } else {
+            return "-";
+        }
+
+        return "%s (%d)".formatted(StringHelper.round(delta, 3), daysSinceMeasurement);
+    }),
+    VALUE_DELTA_LATEST48_1D_ZERO(LabelBy.CAT_VALUE, "@2 senaste {≥48h} Δ1d (Δ1d₀)", p -> {
+        if (p.getDimension() == BDimension._2d) {
+            return ":";
+        }
+        var observations = LabelBy.getTwoLatestObservations(p, 48);
+        double delta;
+        if (observations.size() > 1) {
+            var secondLast = observations.getFirst();
+            var last = observations.getLast();
+            var lastDelta = last.ext().getDeltaZ();
+            var secondLastDelta = secondLast.ext().getDeltaZ();
+            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+                return "-";
+            }
+
+            delta = lastDelta - secondLastDelta;
+        } else {
+            return "-";
+        }
+
+        return "%s (%.3f)".formatted(StringHelper.round(delta, 3), p.ext().deltaZero().getDelta1());
+    }),
+    VALUE_DELTA_LATEST48_2D(LabelBy.CAT_VALUE, "@2 senaste {≥48h} Δ2d (dagar)", p -> {
+        if (p.getDimension() == BDimension._1d) {
+            return ":";
+        }
+        long daysSinceMeasurement;
+        var observations = LabelBy.getTwoLatestObservations(p, 48);
+        double delta;
+        if (observations.size() > 1) {
+            var secondLast = observations.getFirst();
+            var last = observations.getLast();
+            var lastDelta = last.ext().getDelta2d();
+            var secondLastDelta = secondLast.ext().getDelta2d();
+            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+                return "-";
+            }
+
+            delta = lastDelta - secondLastDelta;
+            daysSinceMeasurement = ChronoUnit.DAYS.between(secondLast.getDate(), last.getDate());
+        } else {
+            return "-";
+        }
+
+        return "%s (%d)".formatted(StringHelper.round(delta, 3), daysSinceMeasurement);
+    }),
+    VALUE_DELTA_LATEST48_2D_ZERO(LabelBy.CAT_VALUE, "@2 senaste {≥48h} Δ2d (Δ2d₀)", p -> {
+        if (p.getDimension() == BDimension._1d) {
+            return ":";
+        }
+        var observations = LabelBy.getTwoLatestObservations(p, 48);
+        double delta;
+        if (observations.size() > 1) {
+            var secondLast = observations.getFirst();
+            var last = observations.getLast();
+            var lastDelta = last.ext().getDelta2d();
+            var secondLastDelta = secondLast.ext().getDelta2d();
+            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+                return "-";
+            }
+
+            delta = lastDelta - secondLastDelta;
+        } else {
+            return "-";
+        }
+
+        return "%s (%.3f)".formatted(StringHelper.round(delta, 3), p.ext().deltaZero().getDelta2());
+    }),
     VALUE_DELTA_LATEST_1D(LabelBy.CAT_VALUE, "@2 senaste Δ1d (dagar)", p -> {
         if (p.getDimension() == BDimension._2d) {
             return ":";
