@@ -26,6 +26,7 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     ALTUTID("Altutid", Integer.MAX_VALUE),
     BALLS_Z("Klot z", Integer.MAX_VALUE),
     RADIUS_40("Radie 40m", Integer.MAX_VALUE),
+    TRACE("Spår", Integer.MAX_VALUE),
     RECENT("Senaste cirklar", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;

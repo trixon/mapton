@@ -60,6 +60,9 @@ public class GraphicRenderer extends GraphicRendererBase {
             plotBallsZ(blast, position);
         }
 
+        if (sCheckModel.isChecked(GraphicItem.TRACE)) {
+            plotTrace(blast, position);
+        }
         if (sCheckModel.isChecked(GraphicItem.RADIUS_40)) {
             plotRadius(blast, position);
         }
@@ -137,6 +140,17 @@ public class GraphicRenderer extends GraphicRendererBase {
 
             addRenderable(circle, false, GraphicItem.RECENT, null);
         }
+    }
+
+    private void plotTrace(BRockBlast blast, Position position) {
+        var circle = new SurfaceCircle(position, 5.0);
+        var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
+        attrs.setDrawInterior(true);
+        attrs.setDrawOutline(false);
+        attrs.setInteriorMaterial(Material.ORANGE);
+        circle.setAttributes(attrs);
+
+        addRenderable(circle, false, GraphicItem.TRACE, null);
     }
 
 }
