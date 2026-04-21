@@ -37,6 +37,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.mapton.butterfly.bcc.helper.BccHelper;
@@ -170,6 +171,7 @@ public class Executor {
 
             if (ftp.login(mConfig.getFtpUser(), mConfig.getFtpPassword())) {
                 ftp.enterLocalPassiveMode();
+                ftp.setFileType(FTP.BINARY_FILE_TYPE);
                 ftp.changeWorkingDirectory(mConfig.getFtpPath());
 
                 var bfzFile = new File(mConfig.getDestFile());
