@@ -17,6 +17,8 @@ package org.mapton.api;
 
 import com.google.gson.annotations.SerializedName;
 import java.io.File;
+import org.apache.commons.lang3.Strings;
+import org.openide.util.Lookup;
 
 /**
  * This class holds a coordinate transformation and a file.
@@ -28,24 +30,15 @@ public class MCoordinateFile {
     private transient MCooTrans mCooTrans;
     @SerializedName("cooTrans")
     private String mCooTransString;
+    @SerializedName("coordinateFileOpener")
+    private String mCoordinateFileOpenerName;
     @SerializedName("file")
     private File mFile;
     @SerializedName("visible")
     private boolean mVisible = true;
-    @SerializedName("coordinateFileOpener")
-    private String mCoordinateFileOpenerName;
+
     public MCoordinateFile() {
     }
-
-    public String getCoordinateFileOpenerName() {
-        return mCoordinateFileOpenerName;
-    }
-
-    public void setCoordinateFileOpenerName(String coordinateFileOpenerName) {
-        mCoordinateFileOpenerName = coordinateFileOpenerName;
-    }
-
-
 
     public MCooTrans getCooTrans() {
         if (mCooTrans == null) {
@@ -56,6 +49,16 @@ public class MCoordinateFile {
             }
         }
         return mCooTrans;
+    }
+
+    public MCoordinateFileOpener getCoordinateFileOpener() {
+        return Lookup.getDefault().lookupAll(MCoordinateFileOpener.class).stream()
+                .filter(fo -> Strings.CI.equals(mCoordinateFileOpenerName, fo.getName()))
+                .findAny().orElse(null);
+    }
+
+    public String getCoordinateFileOpenerName() {
+        return mCoordinateFileOpenerName;
     }
 
     public File getFile() {
@@ -69,6 +72,10 @@ public class MCoordinateFile {
     public void setCooTrans(MCooTrans cooTrans) {
         mCooTransString = cooTrans.getName();
         mCooTrans = cooTrans;
+    }
+
+    public void setCoordinateFileOpenerName(String coordinateFileOpenerName) {
+        mCoordinateFileOpenerName = coordinateFileOpenerName;
     }
 
     public void setFile(File file) {

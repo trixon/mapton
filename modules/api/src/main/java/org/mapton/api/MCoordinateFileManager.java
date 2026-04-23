@@ -87,18 +87,6 @@ public class MCoordinateFileManager {
         return mItemsProperty.get();
     }
 
-//    public ArrayList<MCoordinateFile> getSublistByExtensions(String... extensions) {
-//        ArrayList<MCoordinateFile> coordinateFiles = new ArrayList<>();
-//
-//        for (var coordinateFile : mItemsProperty.get()) {
-//            String ext = FilenameUtils.getExtension(coordinateFile.getFile().getName()).toLowerCase(Locale.getDefault());
-//            if (StringUtils.equalsAnyIgnoreCase(ext, extensions)) {
-//                coordinateFiles.add(coordinateFile);
-//            }
-//        }
-//
-//        return coordinateFiles;
-//    }
     public ArrayList<MCoordinateFile> getSublistBySupportedOpeners(Set<String> coordinateFileOpeners) {
         ArrayList<MCoordinateFile> coordinateFiles = new ArrayList<>();
 
@@ -209,7 +197,7 @@ public class MCoordinateFileManager {
     }
 
     private void addWatcher(MCoordinateFile coordinateFile) {
-        mFileWatcher.addWatch(coordinateFile.getFile(), TimeUnit.SECONDS.toMillis(1), new MFileWatcherListener() {
+        mFileWatcher.addWatch(coordinateFile, TimeUnit.SECONDS.toMillis(1), new MFileWatcherListener() {
             @Override
             public void onFileChange(File file) {
                 FxHelper.runLater(() -> {

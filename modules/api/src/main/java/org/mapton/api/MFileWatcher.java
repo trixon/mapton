@@ -53,7 +53,8 @@ public class MFileWatcher {
     private MFileWatcher() {
     }
 
-    public void addWatch(File file, long interval, MFileWatcherListener fileWatcherListener) {
+    public void addWatch(MCoordinateFile coordinateFile, long interval, MFileWatcherListener fileWatcherListener) {
+        var file = coordinateFile.getFile();
         var directory = file.getParentFile();
 
         var directoryFilter = FileFilterUtils.and(
@@ -95,14 +96,16 @@ public class MFileWatcher {
             }
         };
 
-        new Thread(() -> {
-            observer.addListener(listener);
-            try {
-                monitor.start();
-            } catch (Exception ex) {
-                Exceptions.printStackTrace(ex);
-            }
-        }, "%s: %s".formatted(MFileWatcher.class.getName(), file.getName())).start();
+        Thread.ofVirtual()
+                .name("%s: %s".formatted(MFileWatcher.class.getName(), file.getName()))
+                .start(() -> {
+                    observer.addListener(listener);
+                    try {
+                        monitor.start();
+                    } catch (Exception ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                });
     }
 
     private static class Holder {
