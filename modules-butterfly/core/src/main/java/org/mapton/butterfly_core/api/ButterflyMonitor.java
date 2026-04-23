@@ -46,7 +46,7 @@ public class ButterflyMonitor {
     public ButterflyMonitor() {
         mFileAlterationListener = new FileAlterationListenerAdaptor() {
             private File mFile;
-            private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(10 * 1000, () -> {
+            private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(20 * 1000, () -> {
                 if (mRunning) {
                     System.out.format("%s ButterflyMonitor: Change detected in %s\n",
                             LocalTime.now(),

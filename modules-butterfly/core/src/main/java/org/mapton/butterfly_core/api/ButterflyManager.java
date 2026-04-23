@@ -334,7 +334,7 @@ public class ButterflyManager {
     }
 
     public void load(MPrint print, File file) {
-        if (!getSource().equals(file)) {
+        if (mSource != null && !mSource.equals(file)) {
             print.out("Läser in automathämtad fil");
             ButterflyOpener.getInstance().open(file);
         }
@@ -344,6 +344,7 @@ public class ButterflyManager {
         mButterflyProperty.set(butterfly);
     }
 
+    @Deprecated
     public Util util() {
         return mUtil;
     }
@@ -536,8 +537,10 @@ public class ButterflyManager {
         private static final ButterflyManager INSTANCE = new ButterflyManager();
     }
 
+    @Deprecated
     public class Util {
 
+        @Deprecated
         public List<BRockBlast> getBlasts(BBasePoint p, double maxDistance, LocalDateTime firstDate, LocalDateTime lastDate) {
             var pointLatLon = new MLatLon(p.getLat(), p.getLon());
 

@@ -67,8 +67,6 @@ public class ButterflyOpener {
                 NbMessage.error(Dict.Dialog.TITLE_FILE_NOT_FOUND.toString(), Dict.Dialog.MESSAGE_FILE_NOT_FOUND.toString().formatted(s));
                 mPreferences.remove(KEY_PROJECT_FILE);
             }
-        } else {
-            System.out.println("Nothing to RESTORE");
         }
     }
 
