@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.load.chart;
+package org.mapton.butterfly_rock_extensometer.chart;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.TreeMap;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
-import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BMultiChartPart;
-import org.mapton.butterfly_core.api.BMultiChartPartBlast;
 import org.mapton.butterfly_core.api.BaseManager;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPointObservation;
-import org.mapton.butterfly_structural.load.LoadManager;
+import org.mapton.butterfly_format.types.rock.BRockBlast;
+import org.mapton.butterfly_format.types.rock.BRockExtensometerPoint;
+import org.mapton.butterfly_format.types.rock.BRockExtensometerPointObservation;
+import org.mapton.butterfly_rock_extensometer.ExtensoManager;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -36,36 +35,48 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-public abstract class BlastMultiChartPart extends BMultiChartPartBlast {
+@ServiceProvider(service = BMultiChartPart.class)
+public class BlastMultiChartPart extends BMultiChartPart {
 
-    private final Predicate<BStructuralLoadCellPoint> mPredicate;
-
-    public BlastMultiChartPart(Predicate<BStructuralLoadCellPoint> predicate) {
-        mPredicate = predicate;
+    public BlastMultiChartPart() {
     }
 
     @Override
     public String getAxisLabel() {
-        return "kN";
+        return "mm";
+    }
+
+    @Override
+    public String getCategory() {
+        return BRockBlast.class.getName();
     }
 
     @Override
     public String getDecimalPattern() {
-        return "0";
+        return "0.0";
     }
 
     @Override
     public BaseManager getManager() {
-        return LoadManager.getInstance();
+        return ExtensoManager.getInstance();
     }
 
     @Override
-    public ArrayList<BStructuralLoadCellPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
-        var pointList = LoadManager.getInstance().getTimeFilteredItems().stream()
-                .filter(mPredicate)
+    public String getName() {
+        return "Extensometrar";
+    }
+
+    @Override
+    public ArrayList<BRockExtensometerPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
+        var pointList = ExtensoManager.getInstance().getTimeFilteredItems().stream()
+                .filter(p -> {
+                    return hasValidGeometry(latLon, new MLatLon(p.getLat(), p.getLon()), LIMIT_DISTANCE_BLAST);
+                })
+                .flatMap(extensometer -> extensometer.getPoints().stream())
                 .filter(p -> {
                     try {
-                        if (p.ext().getDateFirst().toLocalDate().isAfter(lastDate) || p.ext().getDateLatest().toLocalDate().isBefore(firstDate)) {
+                        if (p.ext().getDateFirst().toLocalDate().isAfter(lastDate)
+                                || p.ext().getDateLatest().toLocalDate().isBefore(firstDate)) {
                             return false;
                         }
                     } catch (Exception e) {
@@ -73,17 +84,15 @@ public abstract class BlastMultiChartPart extends BMultiChartPartBlast {
                     }
                     return true;
                 })
-                .filter(p -> {
-                    return hasValidGeometry(latLon, BCoordinatrix.toLatLon(p), LIMIT_DISTANCE_BLAST);
-                }).collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toCollection(ArrayList::new));
 
-        var pointsToExclude = new ArrayList<BStructuralLoadCellPoint>();
+        var pointsToExclude = new ArrayList<BRockExtensometerPoint>();
         for (var p : pointList) {
             var observations = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
                     .filter(o -> o.getMeasuredZ() != null)
                     .map(o -> {
-                        var oo = new BStructuralLoadCellPointObservation();
+                        var oo = new BRockExtensometerPointObservation();
                         oo.setDate(o.getDate());
                         oo.setMeasuredZ(o.getMeasuredZ());
                         oo.ext().setAccuZ(o.ext().getAccuZ());
@@ -96,15 +105,11 @@ public abstract class BlastMultiChartPart extends BMultiChartPartBlast {
                 var firstAccuZ = MathHelper.convertDoubleToDouble(observations.getFirst().ext().getAccuZ());
                 for (var o : observations) {
                     var accuZ = MathHelper.convertDoubleToDouble(o.ext().getAccuZ());
-                    var value = o.getMeasuredZ() - observations.getFirst().getMeasuredZ();
-                    value = value + firstAccuZ - accuZ;
-                    map.put(o.getDate(), value);
+                    var z = o.getMeasuredZ() - observations.getFirst().getMeasuredZ();
+                    z = z + firstAccuZ - accuZ;
+                    map.put(o.getDate(), z);
                 }
-                if (Math.abs(map.lastEntry().getValue()) > 0.002) {
-                    p.setValue(BMultiChartPart.class, map);
-                } else {
-                    pointsToExclude.add(p);
-                }
+                p.setValue(BMultiChartPart.class, map);
             } else {
                 pointsToExclude.add(p);
             }
@@ -115,4 +120,5 @@ public abstract class BlastMultiChartPart extends BMultiChartPartBlast {
 
         return pointList;
     }
+
 }

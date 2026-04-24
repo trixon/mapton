@@ -86,4 +86,21 @@ public abstract class BMultiChartPart {
             }
         });
     }
+
+//    public void sortPointList2(ArrayList<? extends BBase> pointList) {
+//        pointList.sort(new Comparator<BBase>() {
+//            @Override
+//            public int compare(BBase o1, BBase o2) {
+//                var v1 = getDeltaForPeriod(o1);
+//                var v2 = getDeltaForPeriod(o2);
+//
+//                return Double.compare(v2, v1);
+//            }
+//
+//            private double getDeltaForPeriod(BBase p) {
+//                TreeMap<LocalDateTime, Double> map = p.getValue(BMultiChartPart.class);
+//                return Math.abs(map.lastEntry().getValue());
+//            }
+//        });
+//    }
 }

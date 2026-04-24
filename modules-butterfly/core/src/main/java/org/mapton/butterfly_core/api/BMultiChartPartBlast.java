@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Patrik Karlström.
+ * Copyright 2026 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,19 @@
  */
 package org.mapton.butterfly_core.api;
 
+import org.mapton.butterfly_format.types.rock.BRockBlast;
+
 /**
  *
  * @author Patrik Karlström
  */
-public class BKey {
+public abstract class BMultiChartPartBlast extends BMultiChartPart {
 
-    public static final String CLUSTER_CHART = "cluster_chart";
-    public static final String CLUSTER_CHART_FUNCTION = "cluster_chart_function";
-    public static final String OBJECT_MEASUREMENTS = "object.measurements";
-    public static final String PIN_COLOR = "pin.color";
-    public static final String PIN_HOTSPOT = "pin.hotspot";
-    public static final String PIN_NAME = "pin.name";
-    public static final String PIN_URL = "pin.url";
-    public static final String TRENDS_H = "trendsH";
-    public static final String TRENDS_P = "trendsP";
+    public static final double LIMIT_DISTANCE_CLUSTER = 100.0;
+
+    @Override
+    public String getCategory() {
+        return BRockBlast.class.getName();
+    }
 
 }

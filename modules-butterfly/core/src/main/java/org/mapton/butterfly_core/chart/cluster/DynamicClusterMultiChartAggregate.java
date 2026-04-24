@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.concurrent.Callable;
 import javax.swing.JTabbedPane;
 import org.apache.commons.lang3.Strings;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.openide.util.Exceptions;
@@ -46,7 +47,7 @@ public class DynamicClusterMultiChartAggregate {
             synchronized (mTabbedPane) {
                 mTabbedPane.removeAll();
                 Lookup.getDefault().lookupAll(BMultiChartPart.class).stream()
-                        .filter(c -> Strings.CI.equals(c.getCategory(), BRockBlast.class.getName()))
+                        .filter(c -> Strings.CI.equals(c.getCategory(), BKey.CLUSTER_CHART))
                         .sorted(Comparator.comparing(BMultiChartPart::getName))
                         .forEachOrdered(multiChartComponent -> {
                             try {
@@ -57,17 +58,18 @@ public class DynamicClusterMultiChartAggregate {
                                 );
 
                                 var chartPanel = chartBuilder.build(p, multiChartComponent).call();
-                                var tabTitle = "%s (%d)".formatted(multiChartComponent.getName(), chartBuilder.getPointSize());
-                                mTabbedPane.add(tabTitle, chartPanel);
+                                if (chartBuilder.getPointSize() > 0) {
+                                    var tabTitle = "%s (%d)".formatted(multiChartComponent.getName(), chartBuilder.getPointSize());
+                                    mTabbedPane.add(tabTitle, chartPanel);
+                                }
                             } catch (Exception ex) {
                                 Exceptions.printStackTrace(ex);
                             }
                         });
 
-                if (prevIndex > -1) {
-                    mTabbedPane.setSelectedIndex(prevIndex);
-                }
-
+//                if (prevIndex > -1) {
+//                    mTabbedPane.setSelectedIndex(prevIndex);
+//                }
                 return mTabbedPane;
             }
         };

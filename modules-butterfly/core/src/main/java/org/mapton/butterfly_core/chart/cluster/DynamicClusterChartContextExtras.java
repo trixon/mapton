@@ -46,7 +46,7 @@ public class DynamicClusterChartContextExtras extends MContextMenuItem {
     public EventHandler<ActionEvent> getAction() {
         return event -> {
             var p = new BRockBlast();
-            p.setName("Här och nu");
+            p.setName("Klusterdiagram");
             p.setDateLatest(LocalDateTime.now());
             p.ext().setDateFirst(LocalDateTime.now());
             p.setButterfly(ButterflyManager.getInstance().getButterfly());

@@ -16,11 +16,13 @@
 package org.mapton.butterfly_core.chart.cluster;
 
 import com.sun.jna.platform.KeyboardUtils;
+import java.awt.BasicStroke;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
@@ -28,10 +30,13 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.entity.LegendItemEntity;
 import org.jfree.chart.entity.XYItemEntity;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MLatLon;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
@@ -57,48 +62,51 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BRockBlast>
         if (p == null) {
             return null;
         }
-
         mMultiChartComponent = multiChartComponent;
         var callable = (Callable<ChartPanel>) () -> {
-            mDateFirst = p.ext().getDateFirst().toLocalDate().minusMonths(6);
-            mDateLast = p.ext().getDateFirst().toLocalDate().plusMonths(0);
-            setTitle(p);
+            mDateFirst = LocalDate.MAX;
+            mDateLast = LocalDate.MIN;
             updateDataset(p);
+            setTitle(p);
             var plot = getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
-            dateAxis.setRange(DateHelper.convertToDate(mDateFirst), DateHelper.convertToDate(mDateLast));
-            plot.clearRangeMarkers();
 
-            var rangeAxis = (NumberAxis) plot.getRangeAxis();
-            rangeAxis.setAutoRange(true);
+            if (getPointSize() > 0) {
+                dateAxis.setRange(DateHelper.convertToDate(mDateFirst), DateHelper.convertToDate(mDateLast));
 
-            getChartPanel().addChartMouseListener(new ChartMouseListener() {
-                @Override
-                public void chartMouseClicked(ChartMouseEvent event) {
-                    var e = event.getEntity();
-                    if (e != null) {
-                        var name = "";
-                        if (event.getEntity() instanceof XYItemEntity entity) {
-                            name = getDataset().getSeriesKey(entity.getSeriesIndex()).toString();
-                        } else if (e instanceof LegendItemEntity entity) {
-                            name = entity.getSeriesKey().toString();
-                        }
+                plot.clearRangeMarkers();
 
-                        if (!name.isBlank()) {
-                            var isKeyPressed = KeyboardUtils.isPressed(KeyEvent.VK_SHIFT);
-                            mMultiChartComponent.panTo(name);
-                            if (isKeyPressed) {
-                                mMultiChartComponent.select(name);
+                var rangeAxis = (NumberAxis) plot.getRangeAxis();
+                rangeAxis.setAutoRange(true);
+
+                getChartPanel().addChartMouseListener(new ChartMouseListener() {
+                    @Override
+                    public void chartMouseClicked(ChartMouseEvent event) {
+                        var e = event.getEntity();
+                        if (e != null) {
+                            var name = "";
+                            if (event.getEntity() instanceof XYItemEntity entity) {
+                                name = getDataset().getSeriesKey(entity.getSeriesIndex()).toString();
+                            } else if (e instanceof LegendItemEntity entity) {
+                                name = entity.getSeriesKey().toString();
+                            }
+
+                            if (!name.isBlank()) {
+                                var isKeyPressed = KeyboardUtils.isPressed(KeyEvent.VK_SHIFT);
+                                mMultiChartComponent.panTo(name);
+                                if (isKeyPressed) {
+                                    mMultiChartComponent.select(name);
+                                }
                             }
                         }
                     }
-                }
 
-                @Override
-                public void chartMouseMoved(ChartMouseEvent event) {
-                    //nvm
-                }
-            });
+                    @Override
+                    public void chartMouseMoved(ChartMouseEvent event) {
+                        //nvm
+                    }
+                });
+            }
 
             return getChartPanel();
         };
@@ -117,37 +125,60 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BRockBlast>
 
     @Override
     public void setTitle(BRockBlast b) {
-        mChart.setTitle("%s: %s".formatted(mTitlePrefix, b.getName()));
-
-//        setTitle(p, Color.BLUE);
-        var date = "%s ← (%s) → %s".formatted(mDateFirst, b.ext().getDateFirst().toLocalDate(), mDateLast);
+        mChart.setTitle("%s: %s".formatted(b.getName(), mTitlePrefix));
+        var date = "%s → %s".formatted(mDateFirst, mDateLast);
         getLeftSubTextTitle().setText(date);
-
-        var rightTitle = "Z = %.1f".formatted(b.getZeroZ());
-        getRightSubTextTitle().setText(rightTitle);
     }
 
     @Override
     public void updateDataset(BRockBlast b) {
         var plot = getPlot();
         resetPlot(plot);
-
+        var renderer = new XYLineAndShapeRenderer(true, true);
+        var stroke = new BasicStroke(2.0f);
+        renderer.setDefaultStroke(stroke);
+        plot.setRenderer(renderer);
         var latLon = new MLatLon(b.getLat(), b.getLon());
         var points = mMultiChartComponent.getPoints(latLon, mDateFirst, b.ext().getDateFirst().toLocalDate(), mDateLast);
-        mPointSize = points.size();
+        var seriesList = new ArrayList<TimeSeries>();
+
         for (var p : points) {
             var timeSeries = new TimeSeries(p.getName());
-            TreeMap<LocalDateTime, Double> map = p.getValue(BMultiChartPart.class);
-            if (map != null) {
-                for (var entry : map.entrySet()) {
-                    var date = entry.getKey();
-                    var z = entry.getValue();
+            Function<BXyzPointObservation, Double> function = p.getValue(BKey.CLUSTER_CHART_FUNCTION);
+            if (function != null) {
+                for (var o : p.extOrNull().getObservationsTimeFiltered()) {
+                    var date = o.getDate();
                     var minute = ChartHelper.convertToMinute(date);
-                    timeSeries.addOrUpdate(minute, z);
+                    timeSeries.addOrUpdate(minute, function.apply(o));
+                    if (DateHelper.isBeforeOrEqual(date, mDateFirst.atStartOfDay())) {
+                        mDateFirst = date.toLocalDate();
+                    }
+                    if (DateHelper.isAfterOrEqual(date, mDateLast.atStartOfDay())) {
+                        mDateLast = date.toLocalDate();
+                    }
                 }
+                seriesList.add(timeSeries);
             }
-            getDataset().addSeries(timeSeries);
         }
+
+        var orderedList = seriesList.stream()
+                .sorted(Comparator.comparingDouble(ts -> {
+                    var count = ts.getItemCount();
+                    if (count == 0) {
+                        return Double.NEGATIVE_INFINITY;
+                    }
+                    var lastItem = ts.getDataItem(count - 1);
+                    var value = lastItem.getValue();
+                    return (value == null) ? Double.NaN : value.doubleValue();
+                }))
+                .limit(10)
+                .toList();
+
+        orderedList.forEach(timeSeries -> getDataset().addSeries(timeSeries));
+        for (int i = 0; i < getDataset().getSeriesCount(); i++) {
+            renderer.setSeriesStroke(i, stroke);
+        }
+        mPointSize = orderedList.size();
 
         plotOverlays(plot, b, mDateFirst);
     }

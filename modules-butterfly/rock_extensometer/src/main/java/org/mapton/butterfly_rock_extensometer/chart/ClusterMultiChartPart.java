@@ -22,12 +22,11 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BMultiChartPart;
+import org.mapton.butterfly_core.api.BMultiChartPartCluster;
 import org.mapton.butterfly_core.api.BaseManager;
-import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.butterfly_format.types.rock.BRockExtensometerPoint;
 import org.mapton.butterfly_format.types.rock.BRockExtensometerPointObservation;
 import org.mapton.butterfly_rock_extensometer.ExtensoManager;
-import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -35,20 +34,15 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = BMultiChartPart.class)
-public class ExtensoMultiChartPart extends BMultiChartPart {
+//@ServiceProvider(service = BMultiChartPart.class)
+public class ClusterMultiChartPart extends BMultiChartPartCluster {
 
-    public ExtensoMultiChartPart() {
+    public ClusterMultiChartPart() {
     }
 
     @Override
     public String getAxisLabel() {
         return "mm";
-    }
-
-    @Override
-    public String getCategory() {
-        return BRockBlast.class.getName();
     }
 
     @Override
