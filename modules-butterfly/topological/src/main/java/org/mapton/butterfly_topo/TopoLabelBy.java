@@ -429,6 +429,9 @@ public enum TopoLabelBy implements LabelBy.Operations {
     TREND_1D_F(LabelBy.CAT_TREND, "1d " + BTrendPeriod.FIRST.getTitle(), p -> {
         return LabelBy.trend(p, BTrendPeriod.FIRST, BComponent.HEIGHT);
     }),
+    TREND_1D_DIFF_6Z(LabelBy.CAT_TREND, "*1d (%s-%s)".formatted(BTrendPeriod.ZERO.getTitle(), BTrendPeriod.HALF_YEAR.getTitle()), p -> {
+        return LabelBy.trendDiff(p, BTrendPeriod.ZERO, BTrendPeriod.HALF_YEAR, BComponent.HEIGHT);
+    }),
     TREND_2D_1W(LabelBy.CAT_TREND, "2d " + BTrendPeriod.WEEK.getTitle(), p -> {
         return LabelBy.trend(p, BTrendPeriod.WEEK, BComponent.PLANE);
     }),
