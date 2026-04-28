@@ -18,6 +18,7 @@ package org.mapton.butterfly_core.api;
 import gov.nasa.worldwind.geom.Position;
 import java.util.HashMap;
 import org.mapton.api.MLatLon;
+import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -27,7 +28,7 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class BCoordinatrix {
 
-    private static final HashMap<BXyzPoint, MLatLon> sPointToLatLon = new HashMap();
+    private static final HashMap<BBasePoint, MLatLon> sPointToLatLon = new HashMap();
     private static final HashMap<BXyzPoint, Position> sPositionWW2d = new HashMap();
     private static final HashMap<BXyzPoint, Position> sPositionWW3d = new HashMap();
 
@@ -37,7 +38,7 @@ public class BCoordinatrix {
         sPositionWW3d.clear();
     }
 
-    public static MLatLon toLatLon(BXyzPoint p) {
+    public static MLatLon toLatLon(BBasePoint p) {
         return sPointToLatLon.computeIfAbsent(p, k -> new MLatLon(k.getLat(), k.getLon()));
     }
 
