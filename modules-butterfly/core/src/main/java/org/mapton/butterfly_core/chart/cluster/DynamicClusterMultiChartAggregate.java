@@ -21,7 +21,7 @@ import javax.swing.JTabbedPane;
 import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BMultiChartPart;
-import org.mapton.butterfly_format.types.rock.BRockBlast;
+import org.mapton.butterfly_format.types.BClusterChartPoint;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 
@@ -37,7 +37,7 @@ public class DynamicClusterMultiChartAggregate {
         mTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
     }
 
-    public synchronized Callable<JTabbedPane> build(BRockBlast p) {
+    public synchronized Callable<JTabbedPane> build(BClusterChartPoint p) {
         if (p == null) {
             return null;
         }

@@ -19,10 +19,8 @@ import java.time.LocalDateTime;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import org.mapton.api.MContextMenuItem;
-import org.mapton.api.MKey;
-import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.ButterflyManager;
-import org.mapton.butterfly_format.types.rock.BRockBlast;
+import org.mapton.butterfly_format.types.BClusterChartPoint;
 import org.openide.awt.Actions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
@@ -37,22 +35,20 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = MContextMenuItem.class)
 public class DynamicClusterChartContextExtras extends MContextMenuItem {
 
-    private final DynamicClusterMultiChartAggregate mChartAggregate = new DynamicClusterMultiChartAggregate();
-
     public DynamicClusterChartContextExtras() {
     }
 
     @Override
     public EventHandler<ActionEvent> getAction() {
         return event -> {
-            var p = new BRockBlast();
+            var p = new BClusterChartPoint();
             p.setName("Klusterdiagram");
             p.setDateLatest(LocalDateTime.now());
             p.ext().setDateFirst(LocalDateTime.now());
             p.setButterfly(ButterflyManager.getInstance().getButterfly());
             p.setLat(getLatitude());
             p.setLon(getLongitude());
-            Mapton.getGlobalState().put(MKey.CHART, mChartAggregate.build(p));
+            DynamicClusterChartManager.getInstance().selectedItemProperty().setValue(p);
         };
     }
 

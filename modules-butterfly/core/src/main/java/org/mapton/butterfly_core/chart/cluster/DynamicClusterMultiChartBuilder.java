@@ -33,11 +33,12 @@ import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MLatLon;
+import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
+import org.mapton.butterfly_format.types.BClusterChartPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
-import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -45,7 +46,7 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BRockBlast> {
+public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BClusterChartPoint> {
 
     private LocalDate mDateFirst;
     private LocalDate mDateLast;
@@ -58,7 +59,7 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BRockBlast>
         initChart(axisLabel, decimalPattern);
     }
 
-    public synchronized Callable<ChartPanel> build(BRockBlast p, BMultiChartPart multiChartComponent) {
+    public synchronized Callable<ChartPanel> build(BClusterChartPoint p, BMultiChartPart multiChartComponent) {
         if (p == null) {
             return null;
         }
@@ -115,7 +116,7 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BRockBlast>
     }
 
     @Override
-    public Object build(BRockBlast selectedObject) {
+    public Object build(BClusterChartPoint selectedObject) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -124,14 +125,14 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BRockBlast>
     }
 
     @Override
-    public void setTitle(BRockBlast b) {
+    public void setTitle(BClusterChartPoint b) {
         mChart.setTitle("%s: %s".formatted(b.getName(), mTitlePrefix));
         var date = "%s → %s".formatted(mDateFirst, mDateLast);
         getLeftSubTextTitle().setText(date);
     }
 
     @Override
-    public void updateDataset(BRockBlast b) {
+    public void updateDataset(BClusterChartPoint b) {
         var plot = getPlot();
         resetPlot(plot);
         var renderer = new XYLineAndShapeRenderer(true, true);
@@ -161,6 +162,8 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BRockBlast>
             }
         }
 
+        var limit = MSimpleObjectStorageManager.getInstance().getInteger(DynamicClusterMaxCountSosi.class, DynamicClusterMaxCountSosi.DEFAULT_VALUE);
+
         var orderedList = seriesList.stream()
                 .sorted(Comparator.comparingDouble(ts -> {
                     var count = ts.getItemCount();
@@ -171,7 +174,7 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BRockBlast>
                     var value = lastItem.getValue();
                     return (value == null) ? Double.NaN : value.doubleValue();
                 }))
-                .limit(10)
+                .limit(limit)
                 .toList();
 
         orderedList.forEach(timeSeries -> getDataset().addSeries(timeSeries));

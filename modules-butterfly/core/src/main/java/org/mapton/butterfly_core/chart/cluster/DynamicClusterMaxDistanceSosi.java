@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_core.api.sos;
+package org.mapton.butterfly_core.chart.cluster;
 
+import org.mapton.api.MSimpleObjectStorageInteger;
 import org.mapton.butterfly_core.api.ButterflySosi;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class ScalePlot extends ButterflySosi {
+@ServiceProvider(service = MSimpleObjectStorageInteger.Misc.class)
+public class DynamicClusterMaxDistanceSosi extends ButterflySosi {
 
-    public static final int DEFAULT_VALUE = 500;
+    public static final int DEFAULT_VALUE = 100;
 
-    public ScalePlot() {
+    public DynamicClusterMaxDistanceSosi() {
+        setName("Klusterdiagram, max avstånd");
         setDefaultValue(DEFAULT_VALUE);
     }
 

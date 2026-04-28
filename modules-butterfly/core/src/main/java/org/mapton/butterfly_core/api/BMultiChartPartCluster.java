@@ -15,17 +15,23 @@
  */
 package org.mapton.butterfly_core.api;
 
+import org.mapton.api.MSimpleObjectStorageManager;
+import org.mapton.butterfly_core.chart.cluster.DynamicClusterMaxDistanceSosi;
+
 /**
  *
  * @author Patrik Karlström
  */
 public abstract class BMultiChartPartCluster extends BMultiChartPart {
 
-    public static final double LIMIT_DISTANCE_CLUSTER = 100.0;
-
     @Override
     public String getCategory() {
         return BKey.CLUSTER_CHART;
     }
 
+    public int getDefaultDistance() {
+        var distance = MSimpleObjectStorageManager.getInstance().getInteger(DynamicClusterMaxDistanceSosi.class, DynamicClusterMaxDistanceSosi.DEFAULT_VALUE);
+
+        return distance;
+    }
 }

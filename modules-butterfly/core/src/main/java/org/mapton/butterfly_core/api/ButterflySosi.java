@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_core.api.sos;
+package org.mapton.butterfly_core.api;
 
-import org.mapton.butterfly_core.api.ButterflySosi;
+import org.mapton.api.MSimpleObjectStorageInteger;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class ScalePlot extends ButterflySosi {
+public abstract class ButterflySosi extends MSimpleObjectStorageInteger.Misc {
 
-    public static final int DEFAULT_VALUE = 500;
-
-    public ScalePlot() {
-        setDefaultValue(DEFAULT_VALUE);
+    public ButterflySosi() {
+        setGroup("Butterfly");
     }
 
 }
