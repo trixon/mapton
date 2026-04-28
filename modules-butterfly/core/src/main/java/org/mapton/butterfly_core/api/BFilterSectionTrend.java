@@ -30,9 +30,10 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.ui.forms.MBaseFilterSection;
-import org.mapton.butterfly_format.types.BTrendDirection;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BTrendDirection;
+import static org.mapton.butterfly_format.types.BTrendDirection.PARALLEL;
 import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.openide.util.NbBundle;
@@ -86,6 +87,8 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         var validAbs2d = true;
         var validRel1d = true;
         var validRel2d = true;
+        var validRelAbs1d = true;
+        var validRelAbs2d = true;
 
         if (isSelected()) {
             if (p.getDimension() != BDimension._2d) {
@@ -94,6 +97,9 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
                 }
                 if (mHeightComponent.isActivatedRel()) {
                     validRel1d = validateRel(p, mHeightComponent);
+                }
+                if (mHeightComponent.isActivatedRel2()) {
+                    validRelAbs1d = validateRelAbs(p, mHeightComponent);
                 }
             }
 
@@ -104,10 +110,18 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
                 if (mPlaneComponent.isActivatedRel()) {
                     validRel2d = validateRel(p, mPlaneComponent);
                 }
+                if (mPlaneComponent.isActivatedRel2()) {
+                    validRelAbs2d = validateRelAbs(p, mPlaneComponent);
+                }
             }
         }
 
-        var valid = validAbs1d && validAbs2d && validRel1d && validRel2d
+        var valid = validAbs1d
+                && validAbs2d
+                && validRel1d
+                && validRel2d
+                && validRelAbs1d
+                && validRelAbs2d
                 && validateVerticalDirection(p);
 
         return valid;
@@ -244,6 +258,32 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         }
     }
 
+    private boolean validateRelAbs(BXyzPoint p, TrendComponent trendComponent) {
+        var slider = trendComponent.mRelAbsSliderPane;
+        var begPeriod = mPeriodRelScb.getValue();
+        var endPeriod = mPeriodAbsScb.getValue();
+
+        HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(trendComponent.getKey());
+        if (map == null) {
+            return false;
+        }
+
+        var begTrend = map.get(begPeriod);
+        var endTrend = map.get(endPeriod);
+        if (ObjectUtils.anyNull(begTrend, endTrend)) {
+            return false;
+        }
+
+        var begValue = TrendHelper.getMmPerYear(begTrend);
+        var endValue = TrendHelper.getMmPerYear(endTrend);
+        if (ObjectUtils.anyNull(begValue, endValue)) {
+            return false;
+        }
+
+        var diff = Math.abs(endValue - begValue);
+        return validateSliderPaneLtEq(slider, diff);
+    }
+
     private boolean validateVerticalDirection(BXyzPoint p) {
         if (mDirectionScb.getValue() == BTrendDirection.EITHER) {
             return true;
@@ -290,9 +330,10 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
 
     class TrendComponent extends BorderPane {
 
-        private final SliderPane mAbsSliderPane = new SliderPane("Årshastighet (mm/år)", 100, true, true, 1d);
+        private final SliderPane mAbsSliderPane = new SliderPane("Minsta hastighet (mm/år)", 100, true, true, 1d);
         private final BComponent mComponent;
-        private final SliderPane mRelSliderPane = new SliderPane("Differens (period-differensperiod)", -100, 100d, true, true, 1d);
+        private final SliderPane mRelAbsSliderPane = new SliderPane("Max absolut differens", 0, 100d, true, true, 1d);
+        private final SliderPane mRelSliderPane = new SliderPane("Min differens (period-differensperiod)", -100, 100d, true, true, 1d);
 
         public TrendComponent(BComponent component) {
             mComponent = component;
@@ -302,6 +343,7 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         private void clear() {
             mAbsSliderPane.clear();
             mRelSliderPane.clear();
+            mRelAbsSliderPane.clear();
         }
 
         private void createUI() {
@@ -311,7 +353,8 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             int col = 0;
             gp.addColumn(col++,
                     mAbsSliderPane,
-                    mRelSliderPane
+                    mRelSliderPane,
+                    mRelAbsSliderPane
             );
 
             var borderNode = Borders.wrap(gp)
@@ -336,7 +379,9 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
                     mAbsSliderPane.selectedProperty(),
                     mAbsSliderPane.valueProperty(),
                     mRelSliderPane.selectedProperty(),
-                    mRelSliderPane.valueProperty()
+                    mRelSliderPane.valueProperty(),
+                    mRelAbsSliderPane.selectedProperty(),
+                    mRelAbsSliderPane.valueProperty()
             ).forEach(propertyBase -> propertyBase.addListener(changeListener));
         }
 
@@ -344,6 +389,7 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             String mode = mComponent.getDimension().getName() + "_";
             mAbsSliderPane.initSession(getKeyFilter(mode + "valueAbsolute"), sessionManager);
             mRelSliderPane.initSession(getKeyFilter(mode + "valueCompare"), sessionManager);
+            mRelAbsSliderPane.initSession(getKeyFilter(mode + "valueCompareAbs"), sessionManager);
         }
 
         private boolean isActivatedAbs() {
@@ -354,12 +400,17 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             return mRelSliderPane.isSelected() && !mPeriodRelScb.getItems().isEmpty();
         }
 
+        private boolean isActivatedRel2() {
+            return mRelAbsSliderPane.isSelected() && !mPeriodRelScb.getItems().isEmpty();
+        }
+
         private void load() {
         }
 
         private void reset() {
             mAbsSliderPane.setSelected(false);
             mRelSliderPane.setSelected(false);
+            mRelAbsSliderPane.setSelected(false);
         }
     }
 }
