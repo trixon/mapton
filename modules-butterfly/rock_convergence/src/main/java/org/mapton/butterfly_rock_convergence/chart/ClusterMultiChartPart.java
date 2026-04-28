@@ -63,7 +63,7 @@ public class ClusterMultiChartPart extends BMultiChartPartCluster {
     public ArrayList<BRockConvergence> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = ConvergenceManager.getInstance().getTimeFilteredItems().stream()
                 .filter(p -> {
-                    return hasValidGeometry(latLon, new MLatLon(p.getLat(), p.getLon()), LIMIT_DISTANCE_CLUSTER);
+                    return hasValidGeometry(latLon, new MLatLon(p.getLat(), p.getLon()), getDefaultDistance());
                 })
                 .filter((var p) -> {
                     Function<BXyzPointObservation, Double> function = o -> latLon.distance(new MLatLon(p.getLat(), p.getLon()));

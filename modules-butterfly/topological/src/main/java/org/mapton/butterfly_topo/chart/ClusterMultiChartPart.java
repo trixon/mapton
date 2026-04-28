@@ -53,7 +53,7 @@ public abstract class ClusterMultiChartPart extends BMultiChartPartCluster {
         var pointList = TopoManager.getInstance().getTimeFilteredItems().stream()
                 .filter(mDimensPredicate)
                 .filter(p -> {
-                    return hasValidGeometry(latLon, BCoordinatrix.toLatLon(p), LIMIT_DISTANCE_CLUSTER);
+                    return hasValidGeometry(latLon, BCoordinatrix.toLatLon(p), getDefaultDistance());
                 })
                 .filter(p -> {
                     var observationCount = p.ext().getObservationsTimeFiltered().stream()

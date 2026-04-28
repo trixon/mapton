@@ -24,7 +24,6 @@ import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BMultiChartPartCluster;
-import static org.mapton.butterfly_core.api.BMultiChartPartCluster.LIMIT_DISTANCE_CLUSTER;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
@@ -68,7 +67,7 @@ public class ClusterMultiChartPart extends BMultiChartPartCluster {
     public ArrayList<BStructuralStrainGaugePoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = StrainManager.getInstance().getTimeFilteredItems().stream()
                 .filter(p -> {
-                    return hasValidGeometry(latLon, BCoordinatrix.toLatLon(p), LIMIT_DISTANCE_CLUSTER);
+                    return hasValidGeometry(latLon, BCoordinatrix.toLatLon(p), getDefaultDistance());
                 })
                 .filter(p -> {
                     var observationCount = p.ext().getObservationsTimeFiltered().stream()
