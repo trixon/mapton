@@ -396,6 +396,24 @@ public class LabelBy {
         return result;
     }
 
+    public static String trendDiff(BXyzPoint p, BTrendPeriod period1, BTrendPeriod period2, BComponent component) {
+        var result = "-";
+        HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(component == BComponent.HEIGHT ? BKey.TRENDS_H : BKey.TRENDS_P);
+        if (map != null) {
+            var trend1 = map.get(period1);
+            var trend2 = map.get(period2);
+            if (trend1 != null && trend2 != null) {
+                var value1 = TrendHelper.getMmPerYear(trend1);
+                var value2 = TrendHelper.getMmPerYear(trend2);
+                if (value1 != null) {
+                    result = "%.1f".formatted(value1 - value2);
+                }
+            }
+        }
+
+        return result;
+    }
+
     public static String valueZeroZ(BXyzPoint p) {
         var z = p.getZeroZ();
 
