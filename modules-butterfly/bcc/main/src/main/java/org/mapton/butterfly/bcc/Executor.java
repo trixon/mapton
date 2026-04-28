@@ -133,11 +133,18 @@ public class Executor {
 
     private void executePlugins() throws ClassNotFoundException {
         for (int i = 0; i < mConfig.getClasses().length; i++) {
+            System.err.println("...");
             System.out.flush();
             System.err.flush();
+            System.gc();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            }
             var className = mConfig.getClasses()[i];
             var arg = mConfig.getClassArgs()[i];
-
+            System.out.println("");
             System.out.println("Load: " + className);
             System.out.println("Args: " + arg);
             if (Strings.CI.startsWith(arg, "disabled")) {
