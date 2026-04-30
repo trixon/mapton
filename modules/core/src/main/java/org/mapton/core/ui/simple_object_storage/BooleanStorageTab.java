@@ -58,15 +58,24 @@ public class BooleanStorageTab<T extends MSimpleObjectStorageBoolean> extends Ba
 
     @Override
     public void load(Object object) {
-        Lookup.getDefault().lookupAll(mClass).forEach(simpleStorage -> {
-            mClassToToggleSwitch.get(simpleStorage.getClass()).setSelected(mManager.getBoolean(simpleStorage.getClass(), simpleStorage.getDefaultValue()));
-        });
+        Lookup.getDefault().lookupAll(mClass).stream()
+                .forEach(simpleStorage -> {
+                    try {
+                        mClassToToggleSwitch.get(simpleStorage.getClass()).setSelected(mManager.getBoolean(simpleStorage.getClass(), simpleStorage.getDefaultValue()));
+                    } catch (Exception e) {
+//                        System.err.println("Error setting " + simpleStorage.getName());
+                    }
+                });
     }
 
     @Override
     public void save(Object object) {
         Lookup.getDefault().lookupAll(mClass).forEach(simpleStorage -> {
-            mManager.putBoolean(simpleStorage.getClass(), mClassToToggleSwitch.get(simpleStorage.getClass()).isSelected());
+            try {
+                mManager.putBoolean(simpleStorage.getClass(), mClassToToggleSwitch.get(simpleStorage.getClass()).isSelected());
+            } catch (Exception e) {
+                //
+            }
         });
     }
 

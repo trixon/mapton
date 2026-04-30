@@ -64,7 +64,6 @@ class ChartPropertiesView extends BorderPane {
     }
 
     private void createUI() {
-
         var overlayScrollPane = new ScrollPane(mOverlayItemBox);
         overlayScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         overlayScrollPane.setFitToWidth(true);

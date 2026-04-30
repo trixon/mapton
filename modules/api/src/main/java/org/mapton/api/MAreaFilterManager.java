@@ -87,6 +87,7 @@ public class MAreaFilterManager {
                 var geometry = mWktReader.read(area.getWktGeometry());
                 area.setGeometry(geometry);
             } catch (ParseException ex) {
+                System.err.println(area.getName());
                 Exceptions.printStackTrace(ex);
             }
 
