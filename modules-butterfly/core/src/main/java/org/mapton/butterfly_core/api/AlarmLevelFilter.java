@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.shared;
+package org.mapton.butterfly_core.api;
 
 import java.util.ResourceBundle;
 import org.mapton.butterfly_format.types.BComponent;

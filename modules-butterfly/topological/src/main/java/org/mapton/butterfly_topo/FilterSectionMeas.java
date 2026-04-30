@@ -31,10 +31,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.api.ui.forms.NegPosStringConverterInteger;
+import org.mapton.butterfly_core.api.AlarmLevelChangeUnit;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_topo.shared.AlarmLevelChangeMode;
-import org.mapton.butterfly_topo.shared.AlarmLevelChangeUnit;
-import org.mapton.butterfly_topo.shared.AlarmLevelFilter;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -52,13 +50,9 @@ import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
  */
 class FilterSectionMeas extends MBaseFilterSection {
 
-    private final SessionCheckComboBox<AlarmLevelFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
     private final DateDiffPane mDateDiffPane;
-    private final int mDefaultAlarmLevelAgeValue = -7;
     private final int mDefaultDiffPercentageValue = 80;
     private final double mDefaultDiffValue = 0.020;
-    private final int mDefaultMeasAlarmLevelChangeLimit = 1;
-    private final int mDefaultMeasAlarmLevelChangeValue = 10;
     private final int mDefaultMeasTopListLimit = 14;
     private final int mDefaultMeasTopListSize = 10;
     private final double mDefaultMeasYoyoCount = 5.0;
@@ -72,13 +66,6 @@ class FilterSectionMeas extends MBaseFilterSection {
     private final SessionIntegerSpinner mDiffMeasPercentageHSis = new SessionIntegerSpinner(-1000, 1000, mDefaultDiffPercentageValue, 10);
     private final CheckBox mDiffMeasPercentagePCheckbox = new CheckBox();
     private final SessionIntegerSpinner mDiffMeasPercentagePSis = new SessionIntegerSpinner(-1000, 1000, mDefaultDiffPercentageValue, 10);
-    private final CheckBox mMeasAlarmLevelAgeCheckbox = new CheckBox();
-    private final SessionIntegerSpinner mMeasAlarmLevelAgeSis = new SessionIntegerSpinner(Integer.MIN_VALUE, Integer.MAX_VALUE, mDefaultAlarmLevelAgeValue);
-    private final CheckBox mMeasAlarmLevelChangeCheckbox = new CheckBox();
-    private final SessionIntegerSpinner mMeasAlarmLevelChangeLimitSis = new SessionIntegerSpinner(1, 100, mDefaultMeasAlarmLevelChangeLimit);
-    private final SessionComboBox<AlarmLevelChangeMode> mMeasAlarmLevelChangeModeScb = new SessionComboBox<>();
-    private final SessionComboBox<AlarmLevelChangeUnit> mMeasAlarmLevelChangeUnitScb = new SessionComboBox<>();
-    private final SessionIntegerSpinner mMeasAlarmLevelChangeValueSis = new SessionIntegerSpinner(2, 10000, mDefaultMeasAlarmLevelChangeValue);
     private final RangeSliderPane mMeasBearingRangeSlider = new RangeSliderPane(Dict.BEARING.toString(), -90.0, 360.0, false);
     private final SessionCheckComboBox<String> mMeasCodeSccb = new SessionCheckComboBox<>(true);
     private final CheckBox mMeasLatestOperatorCheckbox = new CheckBox();
@@ -105,14 +92,12 @@ class FilterSectionMeas extends MBaseFilterSection {
     public void clear() {
         super.clear();
         FxHelper.setSelected(false,
-                mMeasAlarmLevelChangeCheckbox,
                 mDiffMeasLatestCheckbox,
                 mDiffMeasAllCheckbox,
                 mMeasYoyoCheckbox,
                 mMeasTopListCheckbox,
                 mMeasLatestOperatorCheckbox,
                 mNumOfMeasCheckbox,
-                mMeasAlarmLevelAgeCheckbox,
                 mDiffMeasPercentageHCheckbox,
                 mDiffMeasPercentagePCheckbox
         );
@@ -120,9 +105,6 @@ class FilterSectionMeas extends MBaseFilterSection {
         mDiffMeasLatestSds.getValueFactory().setValue(mDefaultDiffValue);
         mDiffMeasPercentageHSis.getValueFactory().setValue(mDefaultDiffPercentageValue);
         mDiffMeasPercentagePSis.getValueFactory().setValue(mDefaultDiffPercentageValue);
-        mMeasAlarmLevelAgeSis.getValueFactory().setValue(mDefaultAlarmLevelAgeValue);
-        mMeasAlarmLevelChangeLimitSis.getValueFactory().setValue(mDefaultMeasAlarmLevelChangeLimit);
-        mMeasAlarmLevelChangeValueSis.getValueFactory().setValue(mDefaultMeasAlarmLevelChangeValue);
         mMeasNumOfSis.getValueFactory().setValue(mDefaultNumOfMeasfValue);
         mMeasTopListLimitSis.getValueFactory().setValue(mDefaultMeasTopListLimit);
         mMeasTopListSizeSds.getValueFactory().setValue(mDefaultMeasTopListSize);
@@ -130,7 +112,6 @@ class FilterSectionMeas extends MBaseFilterSection {
         mMeasYoyoSizeSds.getValueFactory().setValue(mDefaultMeasYoyoSize);
         mMeasBearingRangeSlider.clear();
         SessionCheckComboBox.clearChecks(
-                mAlarmSccb,
                 mMeasOperatorSccb,
                 mMeasCodeSccb
         );
@@ -163,14 +144,6 @@ class FilterSectionMeas extends MBaseFilterSection {
         sessionManager.register(getKeyFilter("latestOperator"), mMeasLatestOperatorCheckbox.selectedProperty());
         sessionManager.register(getKeyFilter("numOfMeas"), mNumOfMeasCheckbox.selectedProperty());
         sessionManager.register(getKeyFilter("numOfValue"), mMeasNumOfSis.sessionValueProperty());
-        sessionManager.register(getKeyFilter("alarmLevelAge"), mMeasAlarmLevelAgeCheckbox.selectedProperty());
-        sessionManager.register(getKeyFilter("alarmLevelAgeValue"), mMeasAlarmLevelAgeSis.sessionValueProperty());
-        sessionManager.register(getKeyFilter("alarmLevelChange"), mMeasAlarmLevelChangeCheckbox.selectedProperty());
-        sessionManager.register(getKeyFilter("alarmLevelChangeMode"), mMeasAlarmLevelChangeModeScb.selectedIndexProperty());
-        sessionManager.register(getKeyFilter("alarmLevelChangeUnit"), mMeasAlarmLevelChangeUnitScb.selectedIndexProperty());
-        sessionManager.register(getKeyFilter("alarmLevelChangeValue"), mMeasAlarmLevelChangeValueSis.sessionValueProperty());
-        sessionManager.register(getKeyFilter("alarmLevelChangeLimit"), mMeasAlarmLevelChangeLimitSis.sessionValueProperty());
-        sessionManager.register(getKeyFilter("checkedNextAlarm"), mAlarmSccb.checkedStringProperty());
         mMeasBearingRangeSlider.initSession(getKeyFilter("bearing"), sessionManager);
         mDateDiffPane.initSession(sessionManager);
     }
@@ -185,7 +158,6 @@ class FilterSectionMeas extends MBaseFilterSection {
 
     void initListeners(TopoFilter filter) {
         filter.measNumOfProperty().bind(mNumOfMeasCheckbox.selectedProperty());
-        filter.measAlarmLevelAgeProperty().bind(mMeasAlarmLevelAgeCheckbox.selectedProperty());
         filter.measDiffAllProperty().bind(mDiffMeasAllCheckbox.selectedProperty());
         filter.measDiffPercentageHProperty().bind(mDiffMeasPercentageHCheckbox.selectedProperty());
         filter.measDiffPercentagePProperty().bind(mDiffMeasPercentagePCheckbox.selectedProperty());
@@ -194,7 +166,6 @@ class FilterSectionMeas extends MBaseFilterSection {
         filter.measDiffLatestProperty().bind(mDiffMeasLatestCheckbox.selectedProperty());
         filter.measLatestOperatorProperty().bind(mMeasLatestOperatorCheckbox.selectedProperty());
         filter.measNumOfValueProperty().bind(mMeasNumOfSis.sessionValueProperty());
-        filter.measAlarmLevelAgeValueProperty().bind(mMeasAlarmLevelAgeSis.sessionValueProperty());
         filter.measDiffAllValueProperty().bind(mDiffMeasAllSds.sessionValueProperty());
         filter.measDiffPercentageHValueProperty().bind(mDiffMeasPercentageHSis.sessionValueProperty());
         filter.measYoyoCountValueProperty().bind(mMeasYoyoCountSds.sessionValueProperty());
@@ -202,16 +173,10 @@ class FilterSectionMeas extends MBaseFilterSection {
         filter.measYoyoSizeValueProperty().bind(mMeasYoyoSizeSds.sessionValueProperty());
         filter.measDiffLatestValueProperty().bind(mDiffMeasLatestSds.sessionValueProperty());
         filter.measDiffPercentagePValueProperty().bind(mDiffMeasPercentagePSis.sessionValueProperty());
-        filter.measAlarmLevelChangeProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty());
-        filter.measAlarmLevelChangeModeProperty().bind(mMeasAlarmLevelChangeModeScb.getSelectionModel().selectedItemProperty());
-        filter.measAlarmLevelChangeUnitProperty().bind(mMeasAlarmLevelChangeUnitScb.getSelectionModel().selectedItemProperty());
         filter.measTopListUnitProperty().bind(mMeasTopListUnitScb.getSelectionModel().selectedItemProperty());
-        filter.measAlarmLevelChangeValueProperty().bind(mMeasAlarmLevelChangeValueSis.sessionValueProperty());
-        filter.measAlarmLevelChangeLimitProperty().bind(mMeasAlarmLevelChangeLimitSis.sessionValueProperty());
         filter.measTopListLimitProperty().bind(mMeasTopListLimitSis.sessionValueProperty());
         filter.mMeasOperatorsCheckModel = mMeasOperatorSccb.getCheckModel();
         filter.mMeasCodeCheckModel = mMeasCodeSccb.getCheckModel();
-        filter.mAlarmLevelCheckModel = mAlarmSccb.getCheckModel();
         filter.mMeasBearingSelectedProperty.bind(mMeasBearingRangeSlider.selectedProperty());
         filter.mMeasBearingMinProperty.bind(mMeasBearingRangeSlider.minProperty());
         filter.mMeasBearingMaxProperty.bind(mMeasBearingRangeSlider.maxProperty());
@@ -222,11 +187,7 @@ class FilterSectionMeas extends MBaseFilterSection {
     void load(ArrayList<BTopoControlPoint> items) {
         mMeasOperatorSccb.loadAndRestoreCheckItems(items.stream().flatMap(p -> p.ext().getObservationsAllRaw().stream().map(o -> o.getOperator())));
         mMeasCodeSccb.loadAndRestoreCheckItems();
-        mMeasAlarmLevelChangeModeScb.load();
-        mMeasAlarmLevelChangeUnitScb.load();
         mMeasTopListUnitScb.load();
-        mMeasAlarmLevelChangeValueSis.load();
-        mMeasAlarmLevelChangeLimitSis.load();
         mMeasTopListLimitSis.load();
         mDiffMeasLatestSds.load();
         mDiffMeasAllSds.load();
@@ -236,9 +197,7 @@ class FilterSectionMeas extends MBaseFilterSection {
         mMeasYoyoSizeSds.load();
         mMeasTopListSizeSds.load();
         mMeasNumOfSis.load();
-        mMeasAlarmLevelAgeSis.load();
         mMeasNumOfSis.disableProperty().bind(mNumOfMeasCheckbox.selectedProperty().not());
-        mMeasAlarmLevelAgeSis.disableProperty().bind(mMeasAlarmLevelAgeCheckbox.selectedProperty().not());
         mDiffMeasAllSds.disableProperty().bind(mDiffMeasAllCheckbox.selectedProperty().not());
         mDiffMeasLatestSds.disableProperty().bind(mDiffMeasLatestCheckbox.selectedProperty().not());
         mDiffMeasPercentageHSis.disableProperty().bind(mDiffMeasPercentageHCheckbox.selectedProperty().not());
@@ -246,14 +205,8 @@ class FilterSectionMeas extends MBaseFilterSection {
         mMeasTopListSizeSds.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
         mMeasYoyoCountSds.disableProperty().bind(mMeasYoyoCheckbox.selectedProperty().not());
         mMeasYoyoSizeSds.disableProperty().bind(mMeasYoyoCheckbox.selectedProperty().not());
-        mMeasAlarmLevelChangeLimitSis.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
         mMeasTopListLimitSis.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
-        mMeasAlarmLevelChangeModeScb.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
-        mMeasAlarmLevelChangeUnitScb.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
         mMeasTopListUnitScb.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
-        mMeasAlarmLevelChangeValueSis.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
-
-        mAlarmSccb.loadAndRestoreCheckItems();
 
         mDateDiffPane.load(items);
     }
@@ -274,13 +227,9 @@ class FilterSectionMeas extends MBaseFilterSection {
                 }
             }
         });
-        FxHelper.setShowCheckedCount(true, mAlarmSccb, mMeasCodeSccb, mMeasOperatorSccb);
-        mAlarmSccb.setTitle(SDict.ALARM_LEVEL.toString());
-        mAlarmSccb.getItems().setAll(AlarmLevelFilter.values());
+        FxHelper.setShowCheckedCount(true, mMeasCodeSccb, mMeasOperatorSccb);
         mMeasCodeSccb.setTitle(getBundle().getString("measCodeCheckComboBoxTitle"));
         mMeasOperatorSccb.setTitle(SDict.SURVEYORS.toString());
-        mMeasAlarmLevelChangeModeScb.getItems().setAll(AlarmLevelChangeMode.values());
-        mMeasAlarmLevelChangeUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
         mMeasTopListUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
         mMeasTopListUnitScb.getSelectionModel().selectFirst();
         mMeasCodeSccb.getItems().setAll(List.of(
@@ -290,8 +239,6 @@ class FilterSectionMeas extends MBaseFilterSection {
                 getBundle().getString("measCodeReplacementNot")
         ));
         mMeasNumOfSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
-        mMeasAlarmLevelAgeSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
-        mMeasAlarmLevelChangeCheckbox.setText(getBundle().getString("measAlarmLevelChangeCheckBoxText"));
         mDiffMeasLatestCheckbox.setText(getBundle().getString("diffMeasLatestCheckBoxText"));
         mDiffMeasAllCheckbox.setText(getBundle().getString("diffMeasAllCheckBoxText"));
         mDiffMeasPercentageHCheckbox.setText(getBundle().getString("diffMeasPercentageHCheckboxText"));
@@ -300,7 +247,6 @@ class FilterSectionMeas extends MBaseFilterSection {
         mMeasTopListCheckbox.setText(getBundle().getString("TopListCheckBoxText"));
         mMeasLatestOperatorCheckbox.setText(getBundle().getString("measLatesOperatorCheckBoxText"));
         mNumOfMeasCheckbox.setText(getBundle().getString("numOfMeasCheckBoxText"));
-        mMeasAlarmLevelAgeCheckbox.setText("Ålder på larmnivå");
         mDiffMeasLatestSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
         mDiffMeasAllSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
         mDiffMeasPercentageHSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
@@ -323,29 +269,31 @@ class FilterSectionMeas extends MBaseFilterSection {
         displacementGridPane.addRow(2, mMeasTopListLimitSis, mMeasTopListUnitScb);
         mMeasTopListSizeSds.setPrefWidth(spinnerWidth);
         mMeasTopListLimitSis.setPrefWidth(spinnerWidth);
-        var alcGridPane = new GridPane(GAP_H, GAP_V);
-        alcGridPane.add(mMeasAlarmLevelChangeCheckbox, 0, 0, GridPane.REMAINING, 1);
-        alcGridPane.addRow(1, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelChangeModeScb);
-        alcGridPane.addRow(2, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeUnitScb);
-        mMeasAlarmLevelChangeLimitSis.setPrefWidth(spinnerWidth);
-        mMeasAlarmLevelChangeValueSis.setPrefWidth(spinnerWidth);
-        var spinners = new Spinner[]{mDiffMeasAllSds, mDiffMeasLatestSds, mDiffMeasPercentageHSis, mDiffMeasPercentagePSis, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelAgeSis, mMeasTopListSizeSds, mMeasTopListLimitSis};
+        var spinners = new Spinner[]{
+            mDiffMeasAllSds,
+            mDiffMeasLatestSds,
+            mDiffMeasPercentageHSis,
+            mDiffMeasPercentagePSis,
+            mMeasNumOfSis,
+            mMeasYoyoCountSds,
+            mMeasYoyoSizeSds,
+            mMeasTopListSizeSds,
+            mMeasTopListLimitSis
+        };
         FxHelper.setEditable(true, spinners);
         FxHelper.autoCommitSpinners(spinners);
 
         var movementBox = new VBox(GAP_V, diffGridPane, diffPercentGridPane, displacementGridPane, yoyoGridPane, mMeasBearingRangeSlider);
         var miscBox = new VBox(GAP_V, new VBox(titleGap, mNumOfMeasCheckbox, mMeasNumOfSis), new Separator(), mMeasCodeSccb, new VBox(titleGap, mMeasOperatorSccb, mMeasLatestOperatorCheckbox));
-        var alarmBox = new VBox(GAP_V, mAlarmSccb, new VBox(titleGap, mMeasAlarmLevelAgeCheckbox, mMeasAlarmLevelAgeSis), alcGridPane);
         int row = 0;
         mDateDiffPane.getRoot().setDisable(true);
         mRoot.add(wrapInTitleBorder("Rörelser under period", mDateDiffPane.getRoot()), 0, row++, 1, 1);
         mRoot.add(wrapInTitleBorder("Rörelser", movementBox), 0, row++, 1, 1);
         row = 0;
-        mRoot.add(wrapInTitleBorder("Larmnivå", alarmBox), 1, row++, 1, 1);
         mRoot.add(wrapInTitleBorder("Övrigt", miscBox), 1, row++, 1, 1);
-        FxHelper.autoSizeRegionHorizontal(mMeasTopListUnitScb, mMeasAlarmLevelChangeModeScb, mMeasAlarmLevelChangeUnitScb);
-        BindingHelper.bindWidthForChildrens(movementBox, alarmBox, miscBox);
-        BindingHelper.bindWidthForRegions(movementBox, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasNumOfSis, mMeasAlarmLevelAgeSis, mMeasOperatorSccb);
+        FxHelper.autoSizeRegionHorizontal(mMeasTopListUnitScb);
+        BindingHelper.bindWidthForChildrens(movementBox, miscBox);
+        BindingHelper.bindWidthForRegions(movementBox, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasNumOfSis, mMeasOperatorSccb);
         FxHelper.autoSizeColumn(mRoot, 2);
         mRoot.setMaxWidth(getMaxWidth());
     }

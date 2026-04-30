@@ -16,11 +16,9 @@
 package org.mapton.butterfly_topo;
 
 import j2html.tags.ContainerTag;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,9 +33,11 @@ import javax.swing.SortOrder;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.FormHelper;
+import org.mapton.butterfly_core.api.AlarmLevelChangeUnit;
 import org.mapton.butterfly_core.api.BCoordinatrix;
+import org.mapton.butterfly_core.api.BFilterSectionAlarm;
+import org.mapton.butterfly_core.api.BFilterSectionAlarmProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
@@ -55,12 +55,8 @@ import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.butterfly_topo.shared.AlarmLevelChangeMode;
-import org.mapton.butterfly_topo.shared.AlarmLevelChangeUnit;
-import org.mapton.butterfly_topo.shared.AlarmLevelFilter;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.CollectionHelper;
-import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -73,9 +69,9 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
         BFilterSectionTrendProvider,
+        BFilterSectionAlarmProvider,
         BFilterSectionDisruptorProvider {
 
-    IndexedCheckModel<AlarmLevelFilter> mAlarmLevelCheckModel;
     DoubleProperty mMeasBearingMaxProperty = new SimpleDoubleProperty();
     DoubleProperty mMeasBearingMinProperty = new SimpleDoubleProperty();
     SimpleBooleanProperty mMeasBearingSelectedProperty = new SimpleBooleanProperty();
@@ -87,13 +83,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private final SimpleBooleanProperty mDimens3Property = new SimpleBooleanProperty();
     private FilterSectionMeas mFilterSectionMeas;
     private final TopoManager mManager = TopoManager.getInstance();
-    private final SimpleBooleanProperty mMeasAlarmLevelAgeProperty = new SimpleBooleanProperty();
-    private final SimpleIntegerProperty mMeasAlarmLevelAgeValueProperty = new SimpleIntegerProperty();
-    private final SimpleIntegerProperty mMeasAlarmLevelChangeLimitProperty = new SimpleIntegerProperty();
-    private final SimpleObjectProperty<AlarmLevelChangeMode> mMeasAlarmLevelChangeModeProperty = new SimpleObjectProperty();
-    private final SimpleBooleanProperty mMeasAlarmLevelChangeProperty = new SimpleBooleanProperty();
-    private final SimpleObjectProperty<AlarmLevelChangeUnit> mMeasAlarmLevelChangeUnitProperty = new SimpleObjectProperty();
-    private final SimpleIntegerProperty mMeasAlarmLevelChangeValueProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mMeasDateDiffProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasDateDiffValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasDiffAllProperty = new SimpleBooleanProperty();
@@ -115,7 +104,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private final SimpleDoubleProperty mMeasYoyoCountValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasYoyoProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasYoyoSizeValueProperty = new SimpleDoubleProperty();
-    private final SimpleBooleanProperty mSameAlarmProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionMeasProperty = new SimpleBooleanProperty();
 
     public TopoFilter() {
@@ -142,38 +130,9 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
 
     public void initCheckModelListeners() {
         List.of(
-                mAlarmLevelCheckModel,
                 mMeasCodeCheckModel,
                 mMeasOperatorsCheckModel
         ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
-    }
-
-    public SimpleBooleanProperty measAlarmLevelAgeProperty() {
-        return mMeasAlarmLevelAgeProperty;
-    }
-
-    public SimpleIntegerProperty measAlarmLevelAgeValueProperty() {
-        return mMeasAlarmLevelAgeValueProperty;
-    }
-
-    public SimpleIntegerProperty measAlarmLevelChangeLimitProperty() {
-        return mMeasAlarmLevelChangeLimitProperty;
-    }
-
-    public SimpleObjectProperty<AlarmLevelChangeMode> measAlarmLevelChangeModeProperty() {
-        return mMeasAlarmLevelChangeModeProperty;
-    }
-
-    public SimpleBooleanProperty measAlarmLevelChangeProperty() {
-        return mMeasAlarmLevelChangeProperty;
-    }
-
-    public SimpleObjectProperty<AlarmLevelChangeUnit> measAlarmLevelChangeUnitProperty() {
-        return mMeasAlarmLevelChangeUnitProperty;
-    }
-
-    public SimpleIntegerProperty measAlarmLevelChangeValueProperty() {
-        return mMeasAlarmLevelChangeValueProperty;
     }
 
     public SimpleBooleanProperty measDateDiffProperty() {
@@ -260,16 +219,8 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         return mMeasYoyoSizeValueProperty;
     }
 
-    public SimpleBooleanProperty sameAlarmProperty() {
-        return mSameAlarmProperty;
-    }
-
     public SimpleBooleanProperty sectionMeasProperty() {
         return mSectionMeasProperty;
-    }
-
-    public void setAlarmLevelCheckModel(IndexedCheckModel<AlarmLevelFilter> alarmLevelCheckModel) {
-        mAlarmLevelCheckModel = alarmLevelCheckModel;
     }
 
     @Override
@@ -303,6 +254,12 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     }
 
     @Override
+    public void setFilterSection(BFilterSectionAlarm filterSection) {
+        mFilterSectionAlarm = filterSection;
+        mFilterSectionAlarm.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> p.isVisible() != mInvisibleProperty.get())
@@ -322,15 +279,13 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 .filter(p -> validate1dCloseToAuto(p))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
+                .filter(p -> mFilterSectionAlarm.filter(p))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
                 .filter(p -> mFilterSectionTrend.filter(p))
                 .filter(p -> mFilterSectionMisc.filter(p))
                 .filter(p -> {
                     if (mSectionMeasProperty.get()) {
-                        return validateAlarm(p)
-                                && validateMeasAlarmLevelAge(p)
-                                && validateMeasAlarmLevelChange(p)
-                                && validateMeasDisplacementAll(p)
+                        return validateMeasDisplacementAll(p)
                                 && validateMeasDisplacementLatest(p)
                                 && validateMeasDisplacementPercentH(p)
                                 && validateMeasDisplacementPercentP(p)
@@ -349,7 +304,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
 
         filteredItems = mFilterSectionMisc.filterCluster(filteredItems);
 
-        if (mSameAlarmProperty.get()) {
+        if (mFilterSectionAlarm.getSameAlarmCheckBox().isSelected()) {
             var hAlarms = filteredItems.stream().map(o -> o.getAlarm1Id()).collect(Collectors.toSet());
             var pAlarms = filteredItems.stream().map(o -> o.getAlarm2Id()).collect(Collectors.toSet());
 
@@ -390,6 +345,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         map.put(Dict.TEXT.toString(), getFreeText());
         mFilterSectionPoint.createInfoContent(map);
         map.put(SDict.DIMENSION.toString(), makeInfoDimension());
+        mFilterSectionAlarm.createInfoContent(map);
         mFilterSectionDate.createInfoContent(map);
         mFilterSectionDisruptor.createInfoContent(map);
         mFilterSectionTrend.createInfoContent(map);
@@ -409,10 +365,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
 
             if (mMeasDiffLatestProperty.get()) {
                 map.put(getBundle().getString("diffMeasLatestCheckBoxText"), FormHelper.negPosToLtGt(mMeasDiffLatestValueProperty.get()));
-            }
-
-            if (mSameAlarmProperty.get()) {
-                map.put(getBundle().getString("sameAlarmCheckBoxText"), BooleanHelper.asYesNo(mSameAlarmProperty.get()));
             }
         } catch (NullPointerException e) {
         }
@@ -477,17 +429,10 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 mDimens2Property,
                 mDimens3Property,
                 m1dCloseToAutoProperty,
-                mMeasAlarmLevelChangeProperty,
-                mMeasAlarmLevelChangeLimitProperty,
-                mMeasAlarmLevelChangeModeProperty,
-                mMeasAlarmLevelChangeUnitProperty,
-                mMeasAlarmLevelChangeValueProperty,
                 mMeasTopListProperty,
                 mMeasTopListLimitProperty,
                 mMeasTopListUnitProperty,
                 mMeasTopListSizeValueProperty,
-                mMeasAlarmLevelAgeProperty,
-                mMeasAlarmLevelAgeValueProperty,
                 mMeasDiffAllProperty,
                 mMeasDiffAllValueProperty,
                 mMeasDiffPercentageHProperty,
@@ -502,7 +447,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 mMeasLatestOperator,
                 mMeasNumOfProperty,
                 mMeasNumOfValueProperty,
-                mSameAlarmProperty,
                 mMeasYoyoCountValueProperty,
                 mMeasYoyoSizeValueProperty,
                 mMeasYoyoProperty
@@ -539,72 +483,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         }
     }
 
-    private boolean validateAlarm(BTopoControlPoint p) {
-        if (mAlarmLevelCheckModel.isEmpty()) {
-            return true;
-        }
-
-        var level = TopoHelper.getAlarmLevel(p);
-        var levelH = TopoHelper.getAlarmLevelHeight(p);
-        var levelP = TopoHelper.getAlarmLevelPlane(p);
-
-        var anyAlarmLevelFilterValues = EnumSet.of(AlarmLevelFilter.ANY_0, AlarmLevelFilter.ANY_1, AlarmLevelFilter.ANY_2, AlarmLevelFilter.ANY_3, AlarmLevelFilter.ANY_E);
-
-        for (var alarmFilter : AlarmLevelFilter.values()) {
-            var itemChecked = mAlarmLevelCheckModel.isChecked(alarmFilter);
-            if (anyAlarmLevelFilterValues.contains(alarmFilter) && itemChecked) {
-                if (alarmFilter == AlarmLevelFilter.ANY_0 && level == 0) {
-                    return true;
-                } else if (alarmFilter == AlarmLevelFilter.ANY_1 && level == 1) {
-                    return true;
-                } else if (alarmFilter == AlarmLevelFilter.ANY_2 && level == 2) {
-                    return true;
-                } else if (alarmFilter == AlarmLevelFilter.ANY_3 && level == 3) {
-                    return true;
-                } else if (alarmFilter == AlarmLevelFilter.ANY_E && level == -1) {
-                    return true;
-                }
-            }
-            var validH = itemChecked && alarmFilter.getComponent() == BComponent.HEIGHT && alarmFilter.getLevel() == levelH;
-            var validP = itemChecked && alarmFilter.getComponent() == BComponent.PLANE && alarmFilter.getLevel() == levelP;
-            var valid = false;
-            switch (p.getDimension()) {
-                case _1d ->
-                    valid = validH;
-                case _2d ->
-                    valid = validP;
-                case _3d -> {
-                    var hSelected = mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_0)
-                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_1)
-                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_2)
-                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_3)
-                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_E);
-
-                    var pSelected = mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_0)
-                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_1)
-                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_2)
-                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_3)
-                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_E);
-                    if (hSelected && pSelected) {
-                        valid = validH && validP;
-                    } else if (hSelected) {
-                        valid = validH;
-                    } else if (pSelected) {
-                        valid = validP;
-                    }
-                }
-                default ->
-                    throw new AssertionError();
-            }
-
-            if (valid) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private boolean validateDimension(BDimension dimension) {
         var d1 = mDimens1Property.get();
         var d2 = mDimens2Property.get();
@@ -629,167 +507,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         }
 
         return false;
-    }
-
-    private boolean validateMeasAlarmLevelAge(BTopoControlPoint p) {
-        if (!mMeasAlarmLevelAgeProperty.get()) {
-            return true;
-        }
-
-        var hset = new HashSet<Integer>();
-        var pset = new HashSet<Integer>();
-
-        for (var o : p.ext().getObservationsTimeFiltered()) {
-            hset.add(p.ext().getAlarmLevel(BComponent.HEIGHT, o));
-            pset.add(p.ext().getAlarmLevel(BComponent.PLANE, o));
-            if (hset.size() > 1 || pset.size() > 1) {
-                break;
-            }
-        }
-
-        var noChangeH = hset.size() < 2;
-        var noChangeP = pset.size() < 2;
-
-        switch (p.getDimension()) {
-            case _1d -> {
-                if (noChangeH) {
-                    return false;
-                }
-            }
-            case _2d -> {
-                if (noChangeP) {
-                    return false;
-                }
-            }
-            case _3d -> {
-                if (noChangeH || noChangeP) {
-                    return false;
-                }
-            }
-            default ->
-                throw new AssertionError();
-        }
-
-        var lim = mMeasAlarmLevelAgeValueProperty.get();
-        Long value = null;
-
-        var ageH = p.ext().getAlarmLevelAge(BComponent.HEIGHT);
-        var ageP = p.ext().getAlarmLevelAge(BComponent.PLANE);
-
-        if (ObjectUtils.allNull(ageH, ageP)) {
-            return true;
-        }
-
-        switch (p.getDimension()) {
-            case BDimension._1d -> {
-                value = p.ext().getAlarmLevelAge(BComponent.HEIGHT);
-            }
-            case BDimension._2d -> {
-                value = p.ext().getAlarmLevelAge(BComponent.PLANE);
-            }
-            case BDimension._3d -> {
-                var valueH = p.ext().getAlarmLevelAge(BComponent.HEIGHT);
-                var valueP = p.ext().getAlarmLevelAge(BComponent.PLANE);
-
-                if (ObjectUtils.allNotNull(valueH, valueP)) {
-                    if (lim < 0) {
-                        value = Math.max(valueH, valueP);
-                    } else {
-
-                        value = Math.min(valueH, valueP);
-                    }
-                } else if (valueH == null) {
-                    value = valueP;
-                } else if (valueP == null) {
-                    value = valueH;
-                }
-            }
-
-            default ->
-                throw new AssertionError();
-        }
-
-        if (ObjectUtils.allNull(value)) {
-            return true;
-        }
-
-        value = Math.abs(value);
-
-        if (lim == 0) {
-            return value == 0;
-        } else if (lim < 0) {
-            return value <= Math.abs(lim) && value != 0;
-        } else if (lim > 0) {
-            return value >= lim;
-        }
-
-        return true;
-    }
-
-    private boolean validateMeasAlarmLevelChange(BTopoControlPoint p) {
-        if (!mMeasAlarmLevelChangeProperty.get()) {
-            return true;
-        }
-
-        var observations = p.ext().getObservationsTimeFiltered().stream()
-                .filter(o -> MTemporalManager.getInstance().isValid(o.getDate()))
-                .filter(o -> DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), p.getDateZero()))
-                .toList();
-
-        if (observations.size() < 2) {
-            return false;
-        }
-
-        var mode = measAlarmLevelChangeModeProperty().get();
-        var unit = measAlarmLevelChangeUnitProperty().get();
-        int value = mMeasAlarmLevelChangeValueProperty.get();
-        int limit = mMeasAlarmLevelChangeLimitProperty.get();
-
-        if (unit == AlarmLevelChangeUnit.DAYS) {
-            observations = observations.stream()
-                    .filter(o -> DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), LocalDate.now().minusDays(value)))
-                    .toList();
-        } else {
-            observations = observations.stream()
-                    .skip(Math.max(0, observations.size() - value))
-                    .toList();
-        }
-
-        if (observations.size() < 2) {
-            return false;
-        }
-
-        int countBetter = 0;
-        int countWorse = 0;
-
-        for (int i = 1; i < observations.size(); i++) {
-            var prev = observations.get(i - 1);
-            var current = observations.get(i);
-            int prevLevel = p.ext().getAlarmLevel(prev);
-            int currentLevel = p.ext().getAlarmLevel(current);
-
-            if (prevLevel > currentLevel) {
-                countBetter++;
-            }
-
-            if (prevLevel < currentLevel) {
-                countWorse++;
-            }
-        }
-
-        switch (mode) {
-            case AlarmLevelChangeMode.BETTER -> {
-                return countBetter >= limit;
-            }
-            case AlarmLevelChangeMode.WORSE -> {
-                return countWorse >= limit;
-            }
-            case AlarmLevelChangeMode.EITHER -> {
-                return countBetter + countWorse >= limit;
-            }
-            default ->
-                throw new AssertionError();
-        }
     }
 
     private boolean validateMeasBearing(BTopoControlPoint p) {

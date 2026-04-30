@@ -29,6 +29,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.mapton.api.ui.forms.MBaseFilterSection;
+import org.mapton.butterfly_core.api.AlarmLevelCalculator;
+import org.mapton.butterfly_core.api.BFilterSectionAlarm;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
@@ -52,6 +54,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final CheckBox mDimens2Checkbox = new CheckBox("2");
     private final CheckBox mDimens3Checkbox = new CheckBox("3");
     private final TopoFilter mFilter;
+    private final BFilterSectionAlarm mFilterSectionAlarm;
     private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
     private final FilterSectionMeas mFilterSectionMeas;
@@ -60,10 +63,15 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionTrend<BTopoControlPoint> mFilterSectionTrend;
     private final TopoManager mManager = TopoManager.getInstance();
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
-    private final CheckBox mSameAlarmCheckbox = new CheckBox();
 
     public TopoFilterPopOver(TopoFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
+        var alarmLevelCalculator = new AlarmLevelCalculator(
+                p -> TopoHelper.getAlarmLevel((BTopoControlPoint) p),
+                p -> TopoHelper.getAlarmLevelHeight((BTopoControlPoint) p),
+                p -> TopoHelper.getAlarmLevelPlane((BTopoControlPoint) p)
+        );
+        mFilterSectionAlarm = new BFilterSectionAlarm(alarmLevelCalculator);
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMeas = new FilterSectionMeas();
@@ -71,6 +79,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionTrend = new BFilterSectionTrend<>();
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
+        mFilter.setFilterSection(mFilterSectionAlarm);
         mFilter.setFilterSection(mFilterSectionDate);
         mFilter.setFilterSection(mFilterSectionDisruptor);
         mFilter.setFilterSection(mFilterSectionMeas);
@@ -95,11 +104,11 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
                 mDimens2Checkbox,
                 mDimens3Checkbox,
                 m1dCloseToAutoCheckbox,
-                mSameAlarmCheckbox,
                 mMeasIncludeWithoutCheckbox
         );
 
         mFilterSectionPoint.clear();
+        mFilterSectionAlarm.clear();
         mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
         mFilterSectionMeas.clear();
@@ -110,25 +119,13 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     }
 
     @Override
-    public void presetRestore(Preferences preferences) {
-        clear();
-        presetStore(preferences);
-        //mDateRangePane.reset();
-    }
-
-    @Override
-    public void presetStore(Preferences preferences) {
-        var sessionManager = initSession(preferences);
-        sessionManager.unregisterAll();
-    }
-
-    @Override
     public void load(Butterfly butterfly) {
         var items = butterfly.topo().getControlPoints();
 
         mFilterSectionPoint.load(items);
         mFilterSectionDisruptor.load();
         mFilterSectionMeas.load(items);
+        mFilterSectionAlarm.load(items);
         mFilterSectionDate.load(mManager.getTemporalRange());
         mFilterSectionMisc.load();
         mFilterSectionTrend.load();
@@ -145,6 +142,19 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     }
 
     @Override
+    public void presetRestore(Preferences preferences) {
+        clear();
+        presetStore(preferences);
+        //mDateRangePane.reset();
+    }
+
+    @Override
+    public void presetStore(Preferences preferences) {
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
+    }
+
+    @Override
     public void reset() {
         clear();
 
@@ -158,9 +168,8 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
     private void createUI() {
         mMeasIncludeWithoutCheckbox.setText(getBundle().getString("measIncludeWithoutCheckboxText"));
-        mSameAlarmCheckbox.setText(getBundle().getString("sameAlarmCheckBoxText"));
 
-        var bottomBox = new VBox(FxHelper.getUIScaled(4.0), new Separator(), mMeasIncludeWithoutCheckbox, mSameAlarmCheckbox);
+        var bottomBox = new VBox(FxHelper.getUIScaled(4.0), new Separator(), mMeasIncludeWithoutCheckbox, mFilterSectionAlarm.getSameAlarmCheckBox());
         bottomBox.setPadding(FxHelper.getUIScaledInsets(8, 16, 8, 16));
 
         var root = new BorderPane(getTabPane());
@@ -172,6 +181,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
                 mFilterSectionPoint.getTab(),
                 mFilterSectionDate.getTab(),
                 mFilterSectionMeas.getTab(),
+                mFilterSectionAlarm.getTab(),
                 mFilterSectionMisc.getTab(),
                 mFilterSectionDisruptor.getTab(),
                 mFilterSectionTrend.getTab()
@@ -198,7 +208,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private void initListeners() {
         activatePasteName(actionEvent -> {
             mFilter.freeTextProperty().set(mManager.getSelectedItem().getName());
-            mSameAlarmCheckbox.setSelected(true);
+            mFilterSectionAlarm.getSameAlarmCheckBox().setSelected(true);
         });
 
         mFilterSectionMeas.initListeners(mFilter);
@@ -210,8 +220,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.dimens3Property().bind(mDimens3Checkbox.selectedProperty());
         mFilter.closeToAutoProperty().bind(m1dCloseToAutoCheckbox.selectedProperty());
 
-        mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
-
         mFilter.sectionMeasProperty().bind(mFilterSectionMeas.selectedProperty());
 
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
@@ -221,6 +229,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private SessionManager initSession(Preferences preferences) {
         var sessionManager = new SessionManager(preferences);
         mFilterSectionPoint.initSession(sessionManager);
+        mFilterSectionAlarm.initSession(sessionManager);
         mFilterSectionDate.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMeas.initSession(sessionManager);
@@ -233,7 +242,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         sessionManager.register(filterSectionTopo.getKeyFilter("checkedDimension3"), mDimens3Checkbox.selectedProperty());
         sessionManager.register(filterSectionTopo.getKeyFilter("checkedDimension1dCloseToAuto"), m1dCloseToAutoCheckbox.selectedProperty());
         sessionManager.register(filterSectionTopo.getKeyFilter("measIncludeWithout"), mMeasIncludeWithoutCheckbox.selectedProperty());
-        sessionManager.register(filterSectionTopo.getKeyFilter("sameAlarm"), mSameAlarmCheckbox.selectedProperty());
 
         return sessionManager;
     }

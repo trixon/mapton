@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.shared;
+package org.mapton.butterfly_core.api;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum AlarmLevelChangeMode {
-    BETTER("förbättringar"),
-    WORSE("försämringar"),
-    EITHER("förändringar");
+public enum AlarmLevelChangeUnit {
+    DAYS("senaste dagarna"),
+    MEASUREMENTS("senaste mätningarna");
     private final String mName;
 
-    private AlarmLevelChangeMode(String name) {
+    private AlarmLevelChangeUnit(String name) {
         mName = name;
     }
 

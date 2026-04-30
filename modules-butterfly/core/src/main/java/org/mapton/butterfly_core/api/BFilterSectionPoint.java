@@ -806,7 +806,6 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     "∞"
             ));
 
-            int rowGap = FxHelper.getUIScaled(12);
             mBaseBox = new GridPane(rowGap, rowGap);
             var dummyLabel = new Label();
             dummyLabel.prefHeightProperty().bind(mMeasurementModeSccb.heightProperty());

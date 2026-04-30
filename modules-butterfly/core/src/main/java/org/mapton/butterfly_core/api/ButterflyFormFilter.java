@@ -25,6 +25,7 @@ import org.mapton.api.ui.forms.FormFilter;
  */
 public abstract class ButterflyFormFilter<ManagerType extends MBaseDataManager> extends FormFilter {
 
+    protected BFilterSectionAlarm mFilterSectionAlarm;
     protected BFilterSectionDate mFilterSectionDate;
     protected BFilterSectionDisruptor mFilterSectionDisruptor;
     protected BFilterSectionMisc mFilterSectionMisc;
