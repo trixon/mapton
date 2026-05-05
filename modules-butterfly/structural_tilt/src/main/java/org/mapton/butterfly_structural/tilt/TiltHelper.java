@@ -21,6 +21,7 @@ import org.apache.commons.math3.util.FastMath;
 import org.mapton.butterfly_core.api.AlarmManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BComponent;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 
 /**
@@ -37,8 +38,8 @@ public class TiltHelper {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevel(p));
     }
 
-    public static int getAlarmLevel(BStructuralTiltPoint p) {
-        var o = p.ext().getObservationFilteredLast();
+    public static int getAlarmLevel(BXyzPoint p) {
+        var o = p.extOrNull().getObservationFilteredLast();
         if (o == null) {
             return -1;
         } else {
@@ -46,7 +47,7 @@ public class TiltHelper {
             var newZ = toDegreeBased(oldZ);
 
             o.ext().setDeltaZ(newZ);
-            var alarmLevel = p.ext().getAlarmLevelHeight(o);
+            var alarmLevel = p.extOrNull().getAlarmLevelHeight(o);
             o.ext().setDeltaZ(oldZ);
 
             return alarmLevel;

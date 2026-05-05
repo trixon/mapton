@@ -258,7 +258,7 @@ class FilterSectionMeas extends MBaseFilterSection {
         var miscBox = new VBox(GAP_V, new VBox(titleGap, mNumOfMeasCheckbox, mMeasNumOfSis), new Separator(), mMeasCodeSccb, new VBox(titleGap, mMeasOperatorSccb, mMeasLatestOperatorCheckbox));
         int row = 0;
         mDateDiffPane.getRoot().setDisable(true);
-        mRoot.add(wrapInTitleBorder("Rörelser under period", mDateDiffPane.getRoot()), 0, row++, 1, 1);
+//        mRoot.add(wrapInTitleBorder("Rörelser under period", mDateDiffPane.getRoot()), 0, row++, 1, 1);
         mRoot.add(wrapInTitleBorder("Rörelser", movementBox), 0, row++, 1, 1);
         row = 0;
         mRoot.add(wrapInTitleBorder("Övrigt", miscBox), 1, row++, 1, 1);

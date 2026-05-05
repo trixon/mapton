@@ -20,6 +20,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import org.mapton.butterfly_core.api.BFilterSectionAlarm;
+import org.mapton.butterfly_core.api.BFilterSectionAlarmProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
@@ -39,6 +41,7 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
         BFilterSectionDisruptorProvider,
+        BFilterSectionAlarmProvider,
         FilterSectionMeasProvider {
 
     private FilterSectionMeas mFilterSectionMeas;
@@ -53,6 +56,12 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
     public void initCheckModelListeners() {
 //        List.of(
 //        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
+    }
+
+    @Override
+    public void setFilterSection(BFilterSectionAlarm filterSection) {
+        mFilterSectionAlarm = filterSection;
+        mFilterSectionAlarm.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
@@ -89,6 +98,7 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
+                .filter(p -> mFilterSectionAlarm.filter(p))
                 .filter(p -> mFilterSectionMeas.filter(p))
                 // .filter(p -> mFilterSectionDisruptor.filter(p))
                 .toList();

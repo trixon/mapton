@@ -21,16 +21,18 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import org.mapton.butterfly_core.api.BFilterSectionAlarm;
+import org.mapton.butterfly_core.api.BFilterSectionAlarmProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
+import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
-import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 
 /**
  *
@@ -40,6 +42,7 @@ public class StrainFilter extends ButterflyFormFilter<StrainManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
+        BFilterSectionAlarmProvider,
         BFilterSectionDisruptorProvider {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(StrainFilter.class);
@@ -55,6 +58,12 @@ public class StrainFilter extends ButterflyFormFilter<StrainManager> implements
 //        List.of(
 //                getDisruptorCheckModel()
 //        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
+    }
+
+    @Override
+    public void setFilterSection(BFilterSectionAlarm filterSection) {
+        mFilterSectionAlarm = filterSection;
+        mFilterSectionAlarm.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
@@ -84,6 +93,7 @@ public class StrainFilter extends ButterflyFormFilter<StrainManager> implements
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
+                .filter(p -> mFilterSectionAlarm.filter(p))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
                 .toList();

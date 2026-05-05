@@ -18,6 +18,8 @@ package org.mapton.butterfly_hydro.groundwater;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.prefs.Preferences;
 import javafx.scene.layout.BorderPane;
+import org.mapton.butterfly_core.api.AlarmLevelCalculator;
+import org.mapton.butterfly_core.api.BFilterSectionAlarm;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
@@ -33,15 +35,22 @@ import org.openide.util.NbPreferences;
 public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
 
     private final GroundwaterFilter mFilter;
+    private final BFilterSectionAlarm mFilterSectionAlarm;
     private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
+    private final FilterSectionMeas mFilterSectionMeas;
     private final BFilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final GroundwaterManager mManager = GroundwaterManager.getInstance();
-    private final FilterSectionMeas mFilterSectionMeas;
 
     public GroundwaterFilterPopOver(GroundwaterFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
+        var alarmLevelCalculator = new AlarmLevelCalculator(
+                p -> -1,
+                p -> -1,
+                p -> -1
+        );
+        mFilterSectionAlarm = new BFilterSectionAlarm(alarmLevelCalculator);
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMeas = new FilterSectionMeas();
@@ -50,6 +59,7 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
+        mFilter.setFilterSection(mFilterSectionAlarm);
         mFilter.setFilterSection(mFilterSectionDisruptor);
         mFilter.setFilterSection(mFilterSectionMeas);
 
@@ -71,8 +81,32 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDisruptor.clear();
         mFilterSectionMeas.clear();
         mFilterSectionMisc.clear();
+        mFilterSectionAlarm.clear();
 
         resetTabs();
+    }
+
+    @Override
+    public void load(Butterfly butterfly) {
+        var items = butterfly.hydro().getGroundwaterPoints();
+
+        mFilterSectionPoint.load(items);
+        mFilterSectionAlarm.load(items);
+        mFilterSectionDisruptor.load();
+        mFilterSectionMeas.load(items, mManager.getTemporalRange());
+        mFilterSectionDate.load(mManager.getTemporalRange());
+        mFilterSectionMisc.load();
+    }
+
+    @Override
+    public void onPolygonFilterChange() {
+        mFilter.update();
+    }
+
+    @Override
+    public void onShownFirstTime() {
+        mFilterSectionPoint.onShownFirstTime();
+        mFilterSectionAlarm.onShownFirstTime();
     }
 
     @Override
@@ -86,22 +120,6 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
     public void presetStore(Preferences preferences) {
         var sessionManager = initSession(preferences);
         sessionManager.unregisterAll();
-    }
-
-    @Override
-    public void load(Butterfly butterfly) {
-        var items = butterfly.hydro().getGroundwaterPoints();
-
-        mFilterSectionPoint.load(items);
-        mFilterSectionDisruptor.load();
-        mFilterSectionMeas.load(items, mManager.getTemporalRange());
-        mFilterSectionDate.load(mManager.getTemporalRange());
-        mFilterSectionMisc.load();
-    }
-
-    @Override
-    public void onPolygonFilterChange() {
-        mFilter.update();
     }
 
     @Override
@@ -124,6 +142,7 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),
                 mFilterSectionDate.getTab(),
+                mFilterSectionAlarm.getTab(),
                 mFilterSectionMeas.getTab()
         //                mFilterSectionDisruptor.getTab()
         );
@@ -153,6 +172,7 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
         var sessionManager = new SessionManager(preferences);
         mFilterSectionPoint.initSession(sessionManager);
         mFilterSectionDate.initSession(sessionManager);
+        mFilterSectionAlarm.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMeas.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);

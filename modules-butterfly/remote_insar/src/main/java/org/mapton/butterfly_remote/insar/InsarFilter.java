@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import org.mapton.butterfly_core.api.BFilterSectionAlarm;
+import org.mapton.butterfly_core.api.BFilterSectionAlarmProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
@@ -42,6 +44,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         BFilterSectionPointProvider,
         BFilterSectionTrendProvider,
         BFilterSectionDisruptorProvider,
+        BFilterSectionAlarmProvider,
         FilterSectionMeasProvider {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(InsarFilter.class);
@@ -57,6 +60,12 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
     public void initCheckModelListeners() {
 //        List.of(
 //        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
+    }
+
+    @Override
+    public void setFilterSection(BFilterSectionAlarm filterSection) {
+        mFilterSectionAlarm = filterSection;
+        mFilterSectionAlarm.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
@@ -92,6 +101,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
+                .filter(p -> mFilterSectionAlarm.filter(p))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
                 .filter(p -> mFilterSectionTrend.filter(p))
                 .filter(p -> mFilterSectionMeas.filter(p))

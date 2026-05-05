@@ -19,6 +19,8 @@ import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 import javafx.scene.layout.BorderPane;
+import org.mapton.butterfly_core.api.AlarmLevelCalculator;
+import org.mapton.butterfly_core.api.BFilterSectionAlarm;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
@@ -37,15 +39,22 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(InsarFilterPopOver.class);
     private final InsarFilter mFilter;
+    private final BFilterSectionAlarm mFilterSectionAlarm;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
+    private final FilterSectionMeas mFilterSectionMeas;
     private final BFilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final BFilterSectionTrend<BRemoteInsarPoint> mFilterSectionTrend;
     private final InsarManager mManager = InsarManager.getInstance();
-    private final FilterSectionMeas mFilterSectionMeas;
 
     public InsarFilterPopOver(InsarFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
+        var alarmLevelCalculator = new AlarmLevelCalculator(
+                p -> InsarHelper.getAlarmLevel((BRemoteInsarPoint) p),
+                p -> InsarHelper.getAlarmLevelHeight((BRemoteInsarPoint) p),
+                p -> -1
+        );
+        mFilterSectionAlarm = new BFilterSectionAlarm(alarmLevelCalculator);
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMisc = new BFilterSectionMisc(filter);
         mFilterSectionTrend = new BFilterSectionTrend<>();
@@ -53,6 +62,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
+        mFilter.setFilterSection(mFilterSectionAlarm);
         mFilter.setFilterSection(mFilterSectionDisruptor);
         mFilter.setFilterSection(mFilterSectionTrend);
         mFilter.setFilterSection(mFilterSectionMeas);
@@ -71,6 +81,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.freeTextProperty().set("");
 
         mFilterSectionPoint.clear();
+        mFilterSectionAlarm.clear();
         mFilterSectionDisruptor.clear();
         mFilterSectionMisc.clear();
         mFilterSectionTrend.clear();
@@ -80,23 +91,11 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
     }
 
     @Override
-    public void presetRestore(Preferences preferences) {
-        clear();
-        presetStore(preferences);
-        //mDateRangePane.reset();
-    }
-
-    @Override
-    public void presetStore(Preferences preferences) {
-        var sessionManager = initSession(preferences);
-        sessionManager.unregisterAll();
-    }
-
-    @Override
     public void load(Butterfly butterfly) {
         var items = butterfly.remote().getInsarPoints();
 
         mFilterSectionPoint.load(items);
+        mFilterSectionAlarm.load(items);
         mFilterSectionDisruptor.load();
         mFilterSectionMisc.load();
         mFilterSectionTrend.load();
@@ -111,6 +110,20 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
     @Override
     public void onShownFirstTime() {
         mFilterSectionPoint.onShownFirstTime();
+        mFilterSectionAlarm.onShownFirstTime();
+    }
+
+    @Override
+    public void presetRestore(Preferences preferences) {
+        clear();
+        presetStore(preferences);
+        //mDateRangePane.reset();
+    }
+
+    @Override
+    public void presetStore(Preferences preferences) {
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
     }
 
     @Override
@@ -133,6 +146,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),
                 mFilterSectionMeas.getTab(),
+                mFilterSectionAlarm.getTab(),
                 mFilterSectionDisruptor.getTab(),
                 mFilterSectionTrend.getTab()
         );
@@ -154,6 +168,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
     private SessionManager initSession(Preferences preferences) {
         var sessionManager = new SessionManager(preferences);
         mFilterSectionPoint.initSession(sessionManager);
+        mFilterSectionAlarm.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
         mFilterSectionTrend.initSession(sessionManager);

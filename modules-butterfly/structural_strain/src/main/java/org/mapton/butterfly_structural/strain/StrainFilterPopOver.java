@@ -19,6 +19,8 @@ import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 import javafx.scene.layout.BorderPane;
+import org.mapton.butterfly_core.api.AlarmLevelCalculator;
+import org.mapton.butterfly_core.api.BFilterSectionAlarm;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
@@ -36,6 +38,7 @@ public class StrainFilterPopOver extends BaseTabbedFilterPopOver {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(StrainFilterPopOver.class);
     private final StrainFilter mFilter;
+    private final BFilterSectionAlarm mFilterSectionAlarm;
     private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
     private final BFilterSectionMisc mFilterSectionMisc;
@@ -44,6 +47,12 @@ public class StrainFilterPopOver extends BaseTabbedFilterPopOver {
 
     public StrainFilterPopOver(StrainFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
+        var alarmLevelCalculator = new AlarmLevelCalculator(
+                p -> StrainHelper.getAlarmLevel(p),
+                p -> StrainHelper.getAlarmLevelHeight(p),
+                p -> -1
+        );
+        mFilterSectionAlarm = new BFilterSectionAlarm(alarmLevelCalculator);
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMisc = new BFilterSectionMisc(filter);
@@ -51,6 +60,7 @@ public class StrainFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
+        mFilter.setFilterSection(mFilterSectionAlarm);
         mFilter.setFilterSection(mFilterSectionDisruptor);
 
         setFilter(filter);
@@ -70,8 +80,31 @@ public class StrainFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
         mFilterSectionMisc.clear();
+        mFilterSectionAlarm.clear();
 
         resetTabs();
+    }
+
+    @Override
+    public void load(Butterfly butterfly) {
+        var items = butterfly.structural().getStrainPoints();
+
+        mFilterSectionPoint.load(items);
+        mFilterSectionDisruptor.load();
+        mFilterSectionDate.load(mManager.getTemporalRange());
+        mFilterSectionMisc.load();
+        mFilterSectionAlarm.load(items);
+    }
+
+    @Override
+    public void onPolygonFilterChange() {
+        mFilter.update();
+    }
+
+    @Override
+    public void onShownFirstTime() {
+        mFilterSectionPoint.onShownFirstTime();
+        mFilterSectionAlarm.onShownFirstTime();
     }
 
     @Override
@@ -85,26 +118,6 @@ public class StrainFilterPopOver extends BaseTabbedFilterPopOver {
     public void presetStore(Preferences preferences) {
         var sessionManager = initSession(preferences);
         sessionManager.unregisterAll();
-    }
-
-    @Override
-    public void load(Butterfly butterfly) {
-        var items = butterfly.structural().getStrainPoints();
-
-        mFilterSectionPoint.load(items);
-        mFilterSectionDisruptor.load();
-        mFilterSectionDate.load(mManager.getTemporalRange());
-        mFilterSectionMisc.load();
-    }
-
-    @Override
-    public void onPolygonFilterChange() {
-        mFilter.update();
-    }
-
-    @Override
-    public void onShownFirstTime() {
-        mFilterSectionPoint.onShownFirstTime();
     }
 
     @Override
@@ -127,6 +140,7 @@ public class StrainFilterPopOver extends BaseTabbedFilterPopOver {
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),
                 mFilterSectionDate.getTab(),
+                mFilterSectionAlarm.getTab(),
                 mFilterSectionDisruptor.getTab()
         );
 
@@ -148,6 +162,7 @@ public class StrainFilterPopOver extends BaseTabbedFilterPopOver {
         var sessionManager = new SessionManager(preferences);
         mFilterSectionPoint.initSession(sessionManager);
         mFilterSectionDate.initSession(sessionManager);
+        mFilterSectionAlarm.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
 
