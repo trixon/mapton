@@ -139,6 +139,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     @Override
     public void onShownFirstTime() {
         mFilterSectionPoint.onShownFirstTime();
+        mFilterSectionAlarm.onShownFirstTime();
     }
 
     @Override

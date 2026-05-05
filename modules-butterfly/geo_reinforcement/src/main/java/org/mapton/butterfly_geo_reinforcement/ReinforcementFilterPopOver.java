@@ -123,14 +123,11 @@ public class ReinforcementFilterPopOver extends BaseTabbedFilterPopOver {
         setContentNode(root);
 
         mFilterSectionPoint.disable(
-                PointElement.ALARM,
-                //                PointElement.CATEGORY,
                 PointElement.FREQUENCY,
                 PointElement.FREQUENCY_DEFAULT,
                 PointElement.FREQUENCY_DEFAULT_STAT,
                 PointElement.MEAS_MODE,
                 PointElement.MEAS_NEXT
-        //                PointElement.STATUS
         );
 
         mFilterSectionDate.disable(

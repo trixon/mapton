@@ -135,7 +135,6 @@ public class QuakeFilterPopOver extends BaseTabbedFilterPopOver {
                 PointElement.FREQUENCY_DEFAULT_STAT,
                 PointElement.FREQUENCY_INTENSE,
                 PointElement.FREQUENCY_INTENSE_STAT,
-                PointElement.ALARM_STAT,
                 PointElement.MEAS_MODE,
                 PointElement.MEAS_MODE_SUB,
                 PointElement.UNIT_DIFF,

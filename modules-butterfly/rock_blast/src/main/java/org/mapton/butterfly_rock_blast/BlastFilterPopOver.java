@@ -123,7 +123,6 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
         setContentNode(root);
 
         mFilterSectionPoint.disable(
-                PointElement.ALARM,
                 PointElement.CATEGORY,
                 PointElement.FREQUENCY,
                 PointElement.FREQUENCY_DEFAULT,

@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
@@ -34,6 +35,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import static org.mapton.api.ui.forms.MBaseFilterSection.GAP_V;
@@ -76,12 +79,14 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
     private final SessionComboBox<AlarmLevelChangeUnit> mLevelChangeUnitScb = new SessionComboBox<>();
     private final SessionIntegerSpinner mLevelChangeValueSis = new SessionIntegerSpinner(2, 10000, DEFAULT_LEVEL_CHANGE_VALUE);
     private final SessionCheckComboBox<AlarmLevelFilter> mLevelSccb = new SessionCheckComboBox<>(true);
+    private final SessionCheckComboBox<String> mNameSccb = new SessionCheckComboBox<>();
     private final CheckBox mPercentageHCheckbox = new CheckBox();
     private final SessionIntegerSpinner mPercentageHSis = new SessionIntegerSpinner(-1000, 1000, DEFAULT_PERCENTAGE_VALUE, 10);
     private final CheckBox mPercentagePCheckbox = new CheckBox();
     private final SessionIntegerSpinner mPercentagePSis = new SessionIntegerSpinner(-1000, 1000, DEFAULT_PERCENTAGE_VALUE, 10);
     private final GridPane mRoot = new GridPane(columnGap, rowGap);
     private final CheckBox mSameAlarmCheckBox = new CheckBox();
+    private final SessionCheckComboBox<AlarmFlags> mStatSccb = new SessionCheckComboBox<>();
 
     public BFilterSectionAlarm(AlarmLevelCalculator alarmLevelCalculator) {
         super(SDict.ALARM.toString());
@@ -108,6 +113,8 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
         mLevelChangeValueSis.getValueFactory().setValue(DEFAULT_LEVEL_CHANGE_VALUE);
 
         SessionCheckComboBox.clearChecks(
+                mNameSccb,
+                mStatSccb,
                 mLevelSccb
         );
     }
@@ -118,6 +125,7 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
             return;
         }
         map.put(SDict.ALARM.toUpper(), ".");
+        map.put(SDict.ALARMS.toString(), makeInfo(mNameSccb.getCheckModel().getCheckedItems()));
         if (mSameAlarmCheckBox.isSelected()) {
             map.put(mBundle.getString("sameAlarmCheckBoxText"), BooleanHelper.asYesNo(mSameAlarmCheckBox.isSelected()));
         }
@@ -126,6 +134,8 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
     public void disable(AlarmElement... elements) {
         var map = new HashMap<AlarmElement, Node>();
         map.put(SAME_ALARM, mSameAlarmCheckBox);
+        map.put(ALARM, mNameSccb);
+        map.put(ALARM_STAT, mStatSccb);
 
         for (var element : elements) {
             map.get(element).setDisable(true);
@@ -135,7 +145,9 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
     public boolean filter(BXyzPoint p) {
         if (isSelected()) {
             var valid = true
-                    & validateLevel(p)
+                    && validateAlarmName(p, mNameSccb.getCheckModel())
+                    && validateAlarmFlags(p, mStatSccb.getCheckModel())
+                    && validateLevel(p)
                     && validateLevelAge(p)
                     && validateLevelChange(p)
                     && validatePercentageH(p)
@@ -171,6 +183,8 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
         ).forEach(propertyBase -> propertyBase.addListener(changeListenerObject));
 
         List.of(
+                mNameSccb.getCheckModel(),
+                mStatSccb.getCheckModel(),
                 mLevelSccb.getCheckModel()
         ).forEach(cm -> cm.getCheckedItems().addListener(listChangeListener));
     }
@@ -178,6 +192,8 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
     @Override
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
+        sessionManager.register(getKeyFilter("checkedName"), mNameSccb.checkedStringProperty());
+        sessionManager.register(getKeyFilter("checkedStat"), mStatSccb.checkedStringProperty());
         sessionManager.register(getKeyFilter("section"), selectedProperty());
         sessionManager.register(getKeyFilter("level"), mLevelSccb.checkedStringProperty());
         sessionManager.register(getKeyFilter("levelAge"), mLevelAgeCheckBox.selectedProperty());
@@ -209,6 +225,9 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
         mPercentagePSis.load();
         mPercentageHSis.disableProperty().bind(mPercentageHCheckbox.selectedProperty().not());
         mPercentagePSis.disableProperty().bind(mPercentagePCheckbox.selectedProperty().not());
+        var allAlarmNames = items.stream().map(o -> o.getAlarm1Id()).collect(Collectors.toCollection(HashSet::new));
+        allAlarmNames.addAll(items.stream().map(o -> o.getAlarm2Id()).collect(Collectors.toSet()));
+        mNameSccb.loadAndRestoreCheckItems(allAlarmNames.stream());
 
         mLevelSccb.loadAndRestoreCheckItems();
 
@@ -216,16 +235,48 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
 
     @Override
     public void onShownFirstTime() {
-        FxHelper.setVisibleRowCount(25, mLevelSccb);
+        FxHelper.setVisibleRowCount(25,
+                mNameSccb,
+                mLevelSccb
+        );
     }
 
     @Override
     public void reset(PropertiesConfiguration filterConfig) {
     }
 
+    public boolean validateAlarmName(BXyzPoint p, IndexedCheckModel checkModel) {
+        var ah = p.getAlarm1Id();
+        var ap = p.getAlarm2Id();
+
+        switch (p.getDimension()) {
+            case _1d -> {
+                return validateCheck(checkModel, ah);
+            }
+            case _2d -> {
+                return validateCheck(checkModel, ap);
+            }
+            case _3d -> {
+                return validateCheck(checkModel, ah) && validateCheck(checkModel, ap);
+            }
+        }
+
+        return true;
+    }
+
+    public boolean validateAlarmName1(BXyzPoint p, IndexedCheckModel checkModel) {
+        return validateCheck(checkModel, p.getAlarm1Id());
+    }
+
+    public boolean validateAlarmName2(BXyzPoint p, IndexedCheckModel checkModel) {
+        return validateCheck(checkModel, p.getAlarm2Id());
+    }
+
     private void createUI() {
         mSameAlarmCheckBox.setText(mBundle.getString("sameAlarmCheckBoxText"));
         FxHelper.setShowCheckedCount(true,
+                mNameSccb,
+                mStatSccb,
                 mLevelSccb
         );
         mLevelSccb.setTitle(SDict.ALARM_LEVEL.toString());
@@ -238,6 +289,9 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
         mLevelAgeCheckBox.setText("Ålder på larmnivå");
         mPercentageHCheckbox.setText(mBundle.getString("diffMeasPercentageHCheckboxText"));
         mPercentagePCheckbox.setText(mBundle.getString("diffMeasPercentagePCheckboxText"));
+        mNameSccb.setTitle(SDict.ALARMS.toString());
+        mStatSccb.setTitle("Larm, status");
+        mStatSccb.getItems().setAll(AlarmFlags.values());
 
         mPercentageHSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
         mPercentagePSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
@@ -267,9 +321,11 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
         var wrappedAlarmBox = wrapInTitleBorder("Larmnivå", alarmBox);
         var wrappedPercentageBox = wrapInTitleBorder("Larmförbrukning", diffPercentGridPane);
         var leftBox = new VBox(rowGap,
+                mNameSccb,
                 wrappedAlarmBox
         );
         var rightBox = new VBox(rowGap,
+                mStatSccb,
                 wrappedPercentageBox
         );
 
@@ -278,6 +334,71 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
         FxHelper.autoSizeColumn(mRoot, 2);
         FxHelper.autoSizeRegionHorizontal(mLevelSccb, mLevelChangeModeScb, mLevelChangeUnitScb, mPercentageHSis, mPercentagePSis);
         BindingHelper.bindWidthForChildrens(leftBox, rightBox);
+    }
+
+    private boolean validateAlarmFlags(BXyzPoint p, IndexedCheckModel<AlarmFlags> checkModel) {
+        if (checkModel.isEmpty()) {
+            return true;
+        }
+
+        var set1 = true;
+        var nset1 = true;
+        var set2 = true;
+        var nset2 = true;
+        var diffset = true;
+        var diffnset = true;
+        var level2nset = true;
+        var level3set = true;
+
+        var a1 = p.extOrNull().getAlarm(BComponent.HEIGHT);
+        var a2 = p.extOrNull().getAlarm(BComponent.PLANE);
+
+        if (checkModel.isChecked(AlarmFlags.SET_1)) {
+            set1 = a1 != null;
+        }
+
+        if (checkModel.isChecked(AlarmFlags.NOT_SET_1)) {
+            nset1 = a1 == null;
+        }
+
+        if (checkModel.isChecked(AlarmFlags.SET_2)) {
+            set2 = a2 != null;
+        }
+
+        if (checkModel.isChecked(AlarmFlags.NOT_SET_2)) {
+            nset2 = a2 == null;
+        }
+
+        if (checkModel.isChecked(AlarmFlags.SET_DIFF)) {
+            diffset = a1 != null && a1.getRatio1() != null;
+        }
+
+        if (checkModel.isChecked(AlarmFlags.NOT_SET_DIFF)) {
+            diffnset = a1 == null || a1.getRatio1() == null;
+        }
+
+        if (checkModel.isChecked(AlarmFlags.NOT_SET_LEVEL_2)) {
+            var hNotSet = a1 != null && StringUtils.isBlank(a1.getLimit2());
+            var pNotSet = a2 != null && StringUtils.isBlank(a2.getLimit2());
+
+            level3set = hNotSet || pNotSet;
+        }
+
+        if (checkModel.isChecked(AlarmFlags.SET_LEVEL_3)) {
+            var hSet = a1 != null && StringUtils.isNotBlank(a1.getLimit3());
+            var pSet = a2 != null && StringUtils.isNotBlank(a2.getLimit3());
+
+            level3set = hSet || pSet;
+        }
+
+        return set1
+                && nset1
+                && set2
+                && nset2
+                && diffset
+                && diffnset
+                && level2nset
+                && level3set;
     }
 
     private boolean validateLevel(BXyzPoint p) {
@@ -550,6 +671,31 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
     }
 
     public enum AlarmElement {
+        ALARM,
+        ALARM_STAT,
         SAME_ALARM;
     }
+
+    public enum AlarmFlags {
+        SET_1("Har larm 1"),
+        SET_2("Har larm 2"),
+        NOT_SET_1("Saknar larm 1"),
+        NOT_SET_2("Saknar larm 2"),
+        SET_DIFF("Har diff"),
+        NOT_SET_DIFF("Saknar diff"),
+        NOT_SET_LEVEL_2("Saknar nivå 2"),
+        SET_LEVEL_3("Har nivå 3");
+        private final String mTitle;
+
+        private AlarmFlags(String title) {
+            mTitle = title;
+        }
+
+        @Override
+        public String toString() {
+            return mTitle;
+        }
+
+    }
+
 }

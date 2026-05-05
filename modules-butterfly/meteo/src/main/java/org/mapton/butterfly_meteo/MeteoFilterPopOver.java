@@ -136,11 +136,6 @@ public class MeteoFilterPopOver extends BaseTabbedFilterPopOver {
         );
 
         setContentNode(root);
-
-        mFilterSectionPoint.disable(
-                BFilterSectionPoint.PointElement.ALARM,
-                BFilterSectionPoint.PointElement.ALARM_STAT
-        );
     }
 
     private void initListeners() {

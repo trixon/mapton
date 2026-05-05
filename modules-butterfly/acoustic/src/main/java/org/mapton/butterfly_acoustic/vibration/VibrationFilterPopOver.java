@@ -138,7 +138,6 @@ public class VibrationFilterPopOver extends BaseTabbedFilterPopOver {
         setContentNode(root);
 
         mFilterSectionPoint.disable(
-                BFilterSectionPoint.PointElement.ALARM,
                 BFilterSectionPoint.PointElement.MEAS_NEXT
         );
     }

@@ -131,7 +131,6 @@ public class ExtensoFilterPopOver extends BaseTabbedFilterPopOver {
         setContentNode(root);
 
         mFilterSectionPoint.disable(
-                PointElement.ALARM,
                 PointElement.FORMULA_ROLLING,
                 PointElement.FORMULA_SPARSE
         );

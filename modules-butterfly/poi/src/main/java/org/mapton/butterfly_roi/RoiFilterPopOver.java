@@ -123,9 +123,6 @@ public class RoiFilterPopOver extends BaseTabbedFilterPopOver {
         setContentNode(root);
 
         mFilterSectionPoint.disable(
-                PointElement.ALARM,
-                PointElement.ALARM_STAT,
-                //                PointElement.FREQUENCY,
                 PointElement.FREQUENCY_DEFAULT,
                 PointElement.FREQUENCY_DEFAULT_STAT,
                 PointElement.FREQUENCY_INTENSE,
