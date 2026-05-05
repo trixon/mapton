@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Spinner;
@@ -63,6 +64,7 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
     public static final int DEFAULT_LEVEL_AGE_VALUE = -7;
     public static final int DEFAULT_LEVEL_CHANGE_LIMIT = 1;
     public static final int DEFAULT_LEVEL_CHANGE_VALUE = 10;
+    public static final int DEFAULT_PERCENTAGE_VALUE = 80;
 
     private final AlarmLevelCalculator mAlarmLevelCalculator;
     private final ResourceBundle mBundle = NbBundle.getBundle(BFilterSectionAlarm.class);
@@ -74,6 +76,10 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
     private final SessionComboBox<AlarmLevelChangeUnit> mLevelChangeUnitScb = new SessionComboBox<>();
     private final SessionIntegerSpinner mLevelChangeValueSis = new SessionIntegerSpinner(2, 10000, DEFAULT_LEVEL_CHANGE_VALUE);
     private final SessionCheckComboBox<AlarmLevelFilter> mLevelSccb = new SessionCheckComboBox<>(true);
+    private final CheckBox mPercentageHCheckbox = new CheckBox();
+    private final SessionIntegerSpinner mPercentageHSis = new SessionIntegerSpinner(-1000, 1000, DEFAULT_PERCENTAGE_VALUE, 10);
+    private final CheckBox mPercentagePCheckbox = new CheckBox();
+    private final SessionIntegerSpinner mPercentagePSis = new SessionIntegerSpinner(-1000, 1000, DEFAULT_PERCENTAGE_VALUE, 10);
     private final GridPane mRoot = new GridPane(columnGap, rowGap);
     private final CheckBox mSameAlarmCheckBox = new CheckBox();
 
@@ -90,9 +96,13 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
         FxHelper.setSelected(false,
                 mSameAlarmCheckBox,
                 mLevelChangeCheckbox,
-                mLevelAgeCheckBox
+                mLevelAgeCheckBox,
+                mPercentageHCheckbox,
+                mPercentagePCheckbox
         );
 
+        mPercentageHSis.getValueFactory().setValue(DEFAULT_PERCENTAGE_VALUE);
+        mPercentagePSis.getValueFactory().setValue(DEFAULT_PERCENTAGE_VALUE);
         mLevelAgeSis.getValueFactory().setValue(DEFAULT_LEVEL_AGE_VALUE);
         mLevelChangeLimitSis.getValueFactory().setValue(DEFAULT_LEVEL_CHANGE_LIMIT);
         mLevelChangeValueSis.getValueFactory().setValue(DEFAULT_LEVEL_CHANGE_VALUE);
@@ -127,7 +137,9 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
             var valid = true
                     & validateLevel(p)
                     && validateLevelAge(p)
-                    && validateLevelChange(p);
+                    && validateLevelChange(p)
+                    && validatePercentageH(p)
+                    && validatePercentageP(p);
 
             return valid;
         } else {
@@ -145,6 +157,10 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
                 mLevelAgeCheckBox.selectedProperty(),
                 mLevelChangeCheckbox.selectedProperty(),
                 mSameAlarmCheckBox.selectedProperty(),
+                mPercentageHCheckbox.selectedProperty(),
+                mPercentagePCheckbox.selectedProperty(),
+                mPercentageHSis.sessionValueProperty(),
+                mPercentagePSis.sessionValueProperty(),
                 //
                 mLevelAgeSis.valueProperty(),
                 mLevelChangeValueSis.valueProperty(),
@@ -172,6 +188,10 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
         sessionManager.register(getKeyFilter("levelChangeValue"), mLevelChangeValueSis.sessionValueProperty());
         sessionManager.register(getKeyFilter("levelChangeLimit"), mLevelChangeLimitSis.sessionValueProperty());
         sessionManager.register(getKeyFilter("sameAlarm"), mSameAlarmCheckBox.selectedProperty());
+        sessionManager.register(getKeyFilter("percentageH"), mPercentageHCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("percentageP"), mPercentagePCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("percentageHValue"), mPercentageHSis.sessionValueProperty());
+        sessionManager.register(getKeyFilter("percentagePValue"), mPercentagePSis.sessionValueProperty());
     }
 
     public void load(ArrayList<? extends BXyzPoint> items) {
@@ -185,6 +205,10 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
         mLevelChangeModeScb.disableProperty().bind(mLevelChangeCheckbox.selectedProperty().not());
         mLevelChangeUnitScb.disableProperty().bind(mLevelChangeCheckbox.selectedProperty().not());
         mLevelChangeValueSis.disableProperty().bind(mLevelChangeCheckbox.selectedProperty().not());
+        mPercentageHSis.load();
+        mPercentagePSis.load();
+        mPercentageHSis.disableProperty().bind(mPercentageHCheckbox.selectedProperty().not());
+        mPercentagePSis.disableProperty().bind(mPercentagePCheckbox.selectedProperty().not());
 
         mLevelSccb.loadAndRestoreCheckItems();
 
@@ -192,6 +216,7 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
 
     @Override
     public void onShownFirstTime() {
+        FxHelper.setVisibleRowCount(25, mLevelSccb);
     }
 
     @Override
@@ -211,42 +236,48 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
         mLevelAgeSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
         mLevelChangeCheckbox.setText(mBundle.getString("measAlarmLevelChangeCheckBoxText"));
         mLevelAgeCheckBox.setText("Ålder på larmnivå");
+        mPercentageHCheckbox.setText(mBundle.getString("diffMeasPercentageHCheckboxText"));
+        mPercentagePCheckbox.setText(mBundle.getString("diffMeasPercentagePCheckboxText"));
 
+        mPercentageHSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
+        mPercentagePSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
+        FxHelper.setPadding(new Insets(GAP_V, 0, 0, 0), mLevelAgeCheckBox, mLevelChangeCheckbox);
         var alcGridPane = new GridPane(GAP_H, GAP_V);
         alcGridPane.add(mLevelChangeCheckbox, 0, 0, GridPane.REMAINING, 1);
         alcGridPane.addRow(1, mLevelChangeLimitSis, mLevelChangeModeScb);
         alcGridPane.addRow(2, mLevelChangeValueSis, mLevelChangeUnitScb);
+        var diffPercentGridPane = new GridPane(GAP_H, GAP_V);
+        diffPercentGridPane.addColumn(0, mPercentageHCheckbox, mPercentageHSis);
+        diffPercentGridPane.addColumn(1, mPercentagePCheckbox, mPercentagePSis);
 
         mLevelChangeLimitSis.setPrefWidth(spinnerWidth);
         mLevelChangeValueSis.setPrefWidth(spinnerWidth);
 
         var spinners = new Spinner[]{
+            mPercentageHSis,
+            mPercentagePSis,
             mLevelChangeValueSis,
             mLevelChangeLimitSis,
             mLevelAgeSis
         };
-
         FxHelper.setEditable(true, spinners);
         FxHelper.autoCommitSpinners(spinners);
+
         var alarmBox = new VBox(GAP_V, mLevelSccb, new VBox(titleGap, mLevelAgeCheckBox, mLevelAgeSis), alcGridPane);
         var wrappedAlarmBox = wrapInTitleBorder("Larmnivå", alarmBox);
-
+        var wrappedPercentageBox = wrapInTitleBorder("Larmförbrukning", diffPercentGridPane);
         var leftBox = new VBox(rowGap,
                 wrappedAlarmBox
         );
-        var rightBox = new VBox(rowGap
-        //                new Button("X")
+        var rightBox = new VBox(rowGap,
+                wrappedPercentageBox
         );
 
-        mRoot.setMaxWidth(getMaxWidth());
         int row = 0;
         mRoot.addRow(row++, leftBox, rightBox);
         FxHelper.autoSizeColumn(mRoot, 2);
-        BindingHelper.bindWidthForChildrens(mRoot);
-
-        FxHelper.autoSizeRegionHorizontal(mLevelChangeModeScb, mLevelChangeUnitScb);
-        BindingHelper.bindWidthForChildrens(mRoot, alarmBox);
-        BindingHelper.bindWidthForRegions(alarmBox, mLevelAgeSis);
+        FxHelper.autoSizeRegionHorizontal(mLevelSccb, mLevelChangeModeScb, mLevelChangeUnitScb, mPercentageHSis, mPercentagePSis);
+        BindingHelper.bindWidthForChildrens(leftBox, rightBox);
     }
 
     private boolean validateLevel(BXyzPoint p) {
@@ -474,6 +505,47 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
             }
             default ->
                 throw new AssertionError();
+        }
+    }
+
+    private boolean validatePercentageH(BXyzPoint p) {
+        var ext = p.extOrNull();
+        if (!mPercentageHCheckbox.isSelected() || p.getDimension() == BDimension._2d) {
+            return true;
+        } else if (ext.getAlarmPercent(BComponent.HEIGHT) == null) {
+            return false;
+        }
+
+        double lim = mPercentageHSis.getValue();
+        double value = ext.getAlarmPercent(BComponent.HEIGHT);
+
+        if (lim == 0) {
+            return value == 0;
+        } else if (lim < 0) {
+            return value <= Math.abs(lim);
+        } else {
+            return value >= lim;
+        }
+    }
+
+    private boolean validatePercentageP(BXyzPoint p) {
+        var ext = p.extOrNull();
+        if (!mPercentagePCheckbox.isSelected()) {
+            return true;
+        } else if (p.getDimension() == BDimension._1d) {
+            return false;
+        } else if (ext.getAlarmPercent(BComponent.PLANE) == null) {
+            return false;
+        }
+        double lim = mPercentagePSis.getValue();
+        double value = ext.getAlarmPercent(BComponent.PLANE);
+
+        if (lim == 0) {
+            return value == 0;
+        } else if (lim < 0) {
+            return value <= Math.abs(lim);
+        } else {
+            return value >= lim;
         }
     }
 

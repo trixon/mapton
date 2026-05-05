@@ -51,7 +51,6 @@ import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
 class FilterSectionMeas extends MBaseFilterSection {
 
     private final DateDiffPane mDateDiffPane;
-    private final int mDefaultDiffPercentageValue = 80;
     private final double mDefaultDiffValue = 0.020;
     private final int mDefaultMeasTopListLimit = 14;
     private final int mDefaultMeasTopListSize = 10;
@@ -62,10 +61,6 @@ class FilterSectionMeas extends MBaseFilterSection {
     private final SessionDoubleSpinner mDiffMeasAllSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffValue, 0.001);
     private final CheckBox mDiffMeasLatestCheckbox = new CheckBox();
     private final SessionDoubleSpinner mDiffMeasLatestSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffValue, 0.001);
-    private final CheckBox mDiffMeasPercentageHCheckbox = new CheckBox();
-    private final SessionIntegerSpinner mDiffMeasPercentageHSis = new SessionIntegerSpinner(-1000, 1000, mDefaultDiffPercentageValue, 10);
-    private final CheckBox mDiffMeasPercentagePCheckbox = new CheckBox();
-    private final SessionIntegerSpinner mDiffMeasPercentagePSis = new SessionIntegerSpinner(-1000, 1000, mDefaultDiffPercentageValue, 10);
     private final RangeSliderPane mMeasBearingRangeSlider = new RangeSliderPane(Dict.BEARING.toString(), -90.0, 360.0, false);
     private final SessionCheckComboBox<String> mMeasCodeSccb = new SessionCheckComboBox<>(true);
     private final CheckBox mMeasLatestOperatorCheckbox = new CheckBox();
@@ -97,14 +92,10 @@ class FilterSectionMeas extends MBaseFilterSection {
                 mMeasYoyoCheckbox,
                 mMeasTopListCheckbox,
                 mMeasLatestOperatorCheckbox,
-                mNumOfMeasCheckbox,
-                mDiffMeasPercentageHCheckbox,
-                mDiffMeasPercentagePCheckbox
+                mNumOfMeasCheckbox
         );
         mDiffMeasAllSds.getValueFactory().setValue(mDefaultDiffValue);
         mDiffMeasLatestSds.getValueFactory().setValue(mDefaultDiffValue);
-        mDiffMeasPercentageHSis.getValueFactory().setValue(mDefaultDiffPercentageValue);
-        mDiffMeasPercentagePSis.getValueFactory().setValue(mDefaultDiffPercentageValue);
         mMeasNumOfSis.getValueFactory().setValue(mDefaultNumOfMeasfValue);
         mMeasTopListLimitSis.getValueFactory().setValue(mDefaultMeasTopListLimit);
         mMeasTopListSizeSds.getValueFactory().setValue(mDefaultMeasTopListSize);
@@ -127,16 +118,12 @@ class FilterSectionMeas extends MBaseFilterSection {
         sessionManager.register(getKeyFilter("checkedMeasCode"), mMeasCodeSccb.checkedStringProperty());
         sessionManager.register(getKeyFilter("CheckedOperators"), mMeasOperatorSccb.checkedStringProperty());
         sessionManager.register(getKeyFilter("diffAll"), mDiffMeasAllCheckbox.selectedProperty());
-        sessionManager.register(getKeyFilter("diffPercentageH"), mDiffMeasPercentageHCheckbox.selectedProperty());
-        sessionManager.register(getKeyFilter("diffPercentageP"), mDiffMeasPercentagePCheckbox.selectedProperty());
         sessionManager.register(getKeyFilter("topList"), mMeasTopListCheckbox.selectedProperty());
         sessionManager.register(getKeyFilter("topListSizeValue"), mMeasTopListSizeSds.sessionValueProperty());
         sessionManager.register(getKeyFilter("topListUnit"), mMeasTopListUnitScb.selectedIndexProperty());
         sessionManager.register(getKeyFilter("topListLimit"), mMeasTopListLimitSis.sessionValueProperty());
         sessionManager.register(getKeyFilter("yoyo"), mMeasYoyoCheckbox.selectedProperty());
         sessionManager.register(getKeyFilter("diffAllValue"), mDiffMeasAllSds.sessionValueProperty());
-        sessionManager.register(getKeyFilter("diffPercentageHValue"), mDiffMeasPercentageHSis.sessionValueProperty());
-        sessionManager.register(getKeyFilter("diffPercentagePValue"), mDiffMeasPercentagePSis.sessionValueProperty());
         sessionManager.register(getKeyFilter("yoyoCountValue"), mMeasYoyoCountSds.sessionValueProperty());
         sessionManager.register(getKeyFilter("yoyoSizeValue"), mMeasYoyoSizeSds.sessionValueProperty());
         sessionManager.register(getKeyFilter("diffLatest"), mDiffMeasLatestCheckbox.selectedProperty());
@@ -159,20 +146,16 @@ class FilterSectionMeas extends MBaseFilterSection {
     void initListeners(TopoFilter filter) {
         filter.measNumOfProperty().bind(mNumOfMeasCheckbox.selectedProperty());
         filter.measDiffAllProperty().bind(mDiffMeasAllCheckbox.selectedProperty());
-        filter.measDiffPercentageHProperty().bind(mDiffMeasPercentageHCheckbox.selectedProperty());
-        filter.measDiffPercentagePProperty().bind(mDiffMeasPercentagePCheckbox.selectedProperty());
         filter.measYoyoProperty().bind(mMeasYoyoCheckbox.selectedProperty());
         filter.measTopListProperty().bind(mMeasTopListCheckbox.selectedProperty());
         filter.measDiffLatestProperty().bind(mDiffMeasLatestCheckbox.selectedProperty());
         filter.measLatestOperatorProperty().bind(mMeasLatestOperatorCheckbox.selectedProperty());
         filter.measNumOfValueProperty().bind(mMeasNumOfSis.sessionValueProperty());
         filter.measDiffAllValueProperty().bind(mDiffMeasAllSds.sessionValueProperty());
-        filter.measDiffPercentageHValueProperty().bind(mDiffMeasPercentageHSis.sessionValueProperty());
         filter.measYoyoCountValueProperty().bind(mMeasYoyoCountSds.sessionValueProperty());
         filter.measTopListSizeValueProperty().bind(mMeasTopListSizeSds.sessionValueProperty());
         filter.measYoyoSizeValueProperty().bind(mMeasYoyoSizeSds.sessionValueProperty());
         filter.measDiffLatestValueProperty().bind(mDiffMeasLatestSds.sessionValueProperty());
-        filter.measDiffPercentagePValueProperty().bind(mDiffMeasPercentagePSis.sessionValueProperty());
         filter.measTopListUnitProperty().bind(mMeasTopListUnitScb.getSelectionModel().selectedItemProperty());
         filter.measTopListLimitProperty().bind(mMeasTopListLimitSis.sessionValueProperty());
         filter.mMeasOperatorsCheckModel = mMeasOperatorSccb.getCheckModel();
@@ -191,8 +174,6 @@ class FilterSectionMeas extends MBaseFilterSection {
         mMeasTopListLimitSis.load();
         mDiffMeasLatestSds.load();
         mDiffMeasAllSds.load();
-        mDiffMeasPercentageHSis.load();
-        mDiffMeasPercentagePSis.load();
         mMeasYoyoCountSds.load();
         mMeasYoyoSizeSds.load();
         mMeasTopListSizeSds.load();
@@ -200,8 +181,6 @@ class FilterSectionMeas extends MBaseFilterSection {
         mMeasNumOfSis.disableProperty().bind(mNumOfMeasCheckbox.selectedProperty().not());
         mDiffMeasAllSds.disableProperty().bind(mDiffMeasAllCheckbox.selectedProperty().not());
         mDiffMeasLatestSds.disableProperty().bind(mDiffMeasLatestCheckbox.selectedProperty().not());
-        mDiffMeasPercentageHSis.disableProperty().bind(mDiffMeasPercentageHCheckbox.selectedProperty().not());
-        mDiffMeasPercentagePSis.disableProperty().bind(mDiffMeasPercentagePCheckbox.selectedProperty().not());
         mMeasTopListSizeSds.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
         mMeasYoyoCountSds.disableProperty().bind(mMeasYoyoCheckbox.selectedProperty().not());
         mMeasYoyoSizeSds.disableProperty().bind(mMeasYoyoCheckbox.selectedProperty().not());
@@ -241,23 +220,17 @@ class FilterSectionMeas extends MBaseFilterSection {
         mMeasNumOfSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
         mDiffMeasLatestCheckbox.setText(getBundle().getString("diffMeasLatestCheckBoxText"));
         mDiffMeasAllCheckbox.setText(getBundle().getString("diffMeasAllCheckBoxText"));
-        mDiffMeasPercentageHCheckbox.setText(getBundle().getString("diffMeasPercentageHCheckboxText"));
-        mDiffMeasPercentagePCheckbox.setText(getBundle().getString("diffMeasPercentagePCheckboxText"));
         mMeasYoyoCheckbox.setText(getBundle().getString("YoyoCheckBoxText"));
         mMeasTopListCheckbox.setText(getBundle().getString("TopListCheckBoxText"));
         mMeasLatestOperatorCheckbox.setText(getBundle().getString("measLatesOperatorCheckBoxText"));
         mNumOfMeasCheckbox.setText(getBundle().getString("numOfMeasCheckBoxText"));
         mDiffMeasLatestSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
         mDiffMeasAllSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
-        mDiffMeasPercentageHSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
-        mDiffMeasPercentagePSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
         var diffGridPane = new GridPane(GAP_H, GAP_V);
         diffGridPane.addColumn(0, mDiffMeasAllCheckbox, mDiffMeasAllSds);
         diffGridPane.addColumn(1, mDiffMeasLatestCheckbox, mDiffMeasLatestSds);
         FxHelper.autoSizeColumn(diffGridPane, 2);
         var diffPercentGridPane = new GridPane(GAP_H, GAP_V);
-        diffPercentGridPane.addColumn(0, mDiffMeasPercentageHCheckbox, mDiffMeasPercentageHSis);
-        diffPercentGridPane.addColumn(1, mDiffMeasPercentagePCheckbox, mDiffMeasPercentagePSis);
         FxHelper.autoSizeColumn(diffPercentGridPane, 2);
         var yoyoGridPane = new GridPane(GAP_H, GAP_V);
         yoyoGridPane.add(mMeasYoyoCheckbox, 0, 0, GridPane.REMAINING, 1);
@@ -272,8 +245,6 @@ class FilterSectionMeas extends MBaseFilterSection {
         var spinners = new Spinner[]{
             mDiffMeasAllSds,
             mDiffMeasLatestSds,
-            mDiffMeasPercentageHSis,
-            mDiffMeasPercentagePSis,
             mMeasNumOfSis,
             mMeasYoyoCountSds,
             mMeasYoyoSizeSds,

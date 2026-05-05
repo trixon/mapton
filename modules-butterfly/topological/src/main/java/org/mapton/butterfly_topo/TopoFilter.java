@@ -89,10 +89,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private final SimpleDoubleProperty mMeasDiffAllValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasDiffLatestProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasDiffLatestValueProperty = new SimpleDoubleProperty();
-    private final SimpleBooleanProperty mMeasDiffPercentageHProperty = new SimpleBooleanProperty();
-    private final SimpleIntegerProperty mMeasDiffPercentageHValueProperty = new SimpleIntegerProperty();
-    private final SimpleBooleanProperty mMeasDiffPercentagePProperty = new SimpleBooleanProperty();
-    private final SimpleIntegerProperty mMeasDiffPercentagePValueProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mMeasIncludeWithout = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mMeasLatestOperator = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mMeasNumOfProperty = new SimpleBooleanProperty();
@@ -157,22 +153,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
 
     public SimpleDoubleProperty measDiffLatestValueProperty() {
         return mMeasDiffLatestValueProperty;
-    }
-
-    public SimpleBooleanProperty measDiffPercentageHProperty() {
-        return mMeasDiffPercentageHProperty;
-    }
-
-    public SimpleIntegerProperty measDiffPercentageHValueProperty() {
-        return mMeasDiffPercentageHValueProperty;
-    }
-
-    public SimpleBooleanProperty measDiffPercentagePProperty() {
-        return mMeasDiffPercentagePProperty;
-    }
-
-    public SimpleIntegerProperty measDiffPercentagePValueProperty() {
-        return mMeasDiffPercentagePValueProperty;
     }
 
     public SimpleBooleanProperty measIncludeWithoutProperty() {
@@ -287,8 +267,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                     if (mSectionMeasProperty.get()) {
                         return validateMeasDisplacementAll(p)
                                 && validateMeasDisplacementLatest(p)
-                                && validateMeasDisplacementPercentH(p)
-                                && validateMeasDisplacementPercentP(p)
                                 //                                && validateMeasDateDiff(p)
                                 && validateMeasCount(p)
                                 && validateMeasCode(p)
@@ -435,10 +413,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 mMeasTopListSizeValueProperty,
                 mMeasDiffAllProperty,
                 mMeasDiffAllValueProperty,
-                mMeasDiffPercentageHProperty,
-                mMeasDiffPercentageHValueProperty,
-                mMeasDiffPercentagePProperty,
-                mMeasDiffPercentagePValueProperty,
                 mMeasDiffLatestProperty,
                 mMeasDiffLatestValueProperty,
                 mMeasDateDiffProperty,
@@ -610,43 +584,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
             }
         } else {
             return false;
-        }
-    }
-
-    private boolean validateMeasDisplacementPercentH(BTopoControlPoint p) {
-        if (!mMeasDiffPercentageHProperty.get() || p.getDimension() == BDimension._2d || p.ext().getAlarmPercent(BComponent.HEIGHT) == null) {
-            return true;
-        }
-
-        double lim = mMeasDiffPercentageHValueProperty.get();
-        double value = p.ext().getAlarmPercent(BComponent.HEIGHT);
-
-        if (lim == 0) {
-            return value == 0;
-        } else if (lim < 0) {
-            return value <= Math.abs(lim);
-        } else {
-            return value >= lim;
-        }
-    }
-
-    private boolean validateMeasDisplacementPercentP(BTopoControlPoint p) {
-        if (!mMeasDiffPercentagePProperty.get()
-                || p.getDimension() == BDimension._1d
-                || p.ext().getAlarmPercent(BComponent.PLANE) == null
-                || p.ext().deltaZero().getDelta2() == null) {
-            return true;
-        }
-
-        double lim = mMeasDiffPercentagePValueProperty.get();
-        double value = p.ext().getAlarmPercent(BComponent.PLANE);
-
-        if (lim == 0) {
-            return value == 0;
-        } else if (lim < 0) {
-            return value <= Math.abs(lim);
-        } else {
-            return value >= lim;
         }
     }
 
