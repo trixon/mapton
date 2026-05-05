@@ -44,6 +44,7 @@ public class ExtensoOptions extends BOptionsBase implements MPresetActions {
         initLabelProxyProperty(mLabelByProperty, ExtensoLabelBy.class);
         initPointProxyProperty(mPointByProperty, ExtensoPointBy.class);
         setPreferences(getPreferencesForPath("optionPresets"));
+        disablePlotAlarm();
     }
 
     public ObjectProperty<ExtensoColorBy> colorByProperty() {

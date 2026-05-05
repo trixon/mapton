@@ -44,6 +44,7 @@ public class BlastOptions extends BOptionsBase implements MPresetActions {
         initLabelProxyProperty(mLabelByProperty, BlastLabelBy.class);
         initPointProxyProperty(mPointByProperty, BlastPointBy.class);
         setPreferences(getPreferencesForPath("optionPresets"));
+        disablePlotAlarm();
         disablePlotDebt();
     }
 

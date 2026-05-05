@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_rock_earthquake.graphics;
 
+import org.mapton.worldwind.api.Blinker;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -121,36 +122,4 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BRockEarth
         mBlinker = new Blinker(ea);
     }
 
-    private class Blinker {
-
-        private RoundAnnotation annotation;
-        private double initialScale, initialOpacity;
-        private int steps = 10;
-        private int step = 0;
-        private int delay = 100;
-        private Timer timer;
-
-        private Blinker(RoundAnnotation ea) {
-            this.annotation = ea;
-            this.initialScale = this.annotation.getAttributes().getScale() * .5;
-            this.initialOpacity = this.annotation.getAttributes().getOpacity();
-            this.timer = new Timer(delay, actionEvent -> {
-                annotation.getAttributes().setScale(initialScale * (1f + 7f * ((float) step / (float) steps)));
-                annotation.getAttributes().setOpacity(initialOpacity * (1f - ((float) step / (float) steps)));
-                step = step == steps ? 0 : step + 1;
-            });
-            start();
-        }
-
-        private void stop() {
-            timer.stop();
-            step = 0;
-            this.annotation.getAttributes().setScale(initialScale);
-            this.annotation.getAttributes().setOpacity(initialOpacity);
-        }
-
-        private void start() {
-            timer.start();
-        }
-    }
 }

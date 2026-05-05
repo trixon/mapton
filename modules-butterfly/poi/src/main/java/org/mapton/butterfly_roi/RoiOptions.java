@@ -44,6 +44,7 @@ public class RoiOptions extends BOptionsBase implements MPresetActions {
         initLabelProxyProperty(mLabelByProperty, RoiLabelBy.class);
         initPointProxyProperty(mPointByProperty, RoiPointBy.class);
         setPreferences(getPreferencesForPath("optionPresets"));
+        disablePlotAlarm();
         disablePlotDebt();
     }
 

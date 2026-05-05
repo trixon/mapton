@@ -15,20 +15,27 @@
  */
 package org.mapton.butterfly_core.api;
 
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.render.AnnotationAttributes;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
 import org.mapton.api.Mapton;
 import se.trixon.almond.util.GraphicsHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
 public abstract class BaseAttributeManager {
+
+    private AnnotationAttributes mAlarmAnnotationAttributes;
 
     private BasicShapeAttributes[] mAlarmInteriorAttributes;
     private BasicShapeAttributes mAlarmLimitAttributes;
@@ -47,6 +54,21 @@ public abstract class BaseAttributeManager {
     private PointPlacemarkAttributes mSinglePinAttributes;
 
     public BaseAttributeManager() {
+    }
+
+    public AnnotationAttributes getAlarmAnnotationAttributes() {
+        if (mAlarmAnnotationAttributes == null) {
+            var size = SwingHelper.getUIScaled(32);
+            mAlarmAnnotationAttributes = new AnnotationAttributes();
+            mAlarmAnnotationAttributes.setLeader(AVKey.SHAPE_NONE);
+            mAlarmAnnotationAttributes.setDrawOffset(new Point(0, (int) (-size * .5)));
+            mAlarmAnnotationAttributes.setSize(new Dimension(size, size));
+            mAlarmAnnotationAttributes.setBorderWidth(0);
+            mAlarmAnnotationAttributes.setCornerRadius(0);
+            mAlarmAnnotationAttributes.setBackgroundColor(Color.BLACK);
+        }
+
+        return mAlarmAnnotationAttributes;
     }
 
     public BasicShapeAttributes getAlarmInteriorAttributes(int alarmLevel) {

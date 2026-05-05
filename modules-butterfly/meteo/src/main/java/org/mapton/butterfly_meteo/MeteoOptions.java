@@ -44,6 +44,7 @@ public class MeteoOptions extends BOptionsBase implements MPresetActions {
         initLabelProxyProperty(mLabelByProperty, MeteoLabelBy.class);
         initPointProxyProperty(mPointByProperty, MeteoPointBy.class);
         setPreferences(getPreferencesForPath("optionPresets"));
+        disablePlotAlarm();
         disablePlotDebt();
     }
 

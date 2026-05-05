@@ -38,6 +38,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 public abstract class BOptionsBase<T> extends OptionsBase {
 
     public static final String DEFAULT_GRAPHICS = "";
+    public static final boolean DEFAULT_PLOT_ALARM = false;
     public static final boolean DEFAULT_PLOT_ANNOTATION = false;
     public static final boolean DEFAULT_PLOT_DEBT = false;
     public static final int DEFAULT_PLOT_DISTANCE = 15;
@@ -47,6 +48,7 @@ public abstract class BOptionsBase<T> extends OptionsBase {
     private final StringProperty mGraphicsProperty = new SimpleStringProperty(DEFAULT_GRAPHICS);
     private final SimpleObjectProperty<LabelBy.Operations> mLabelByOperationProperty = new SimpleObjectProperty<>();
     private StringProperty mLabelByProxyProperty;
+    private BooleanProperty mPlotAlarmProperty = new SimpleBooleanProperty(DEFAULT_PLOT_ALARM);
     private final BooleanProperty mPlotAnnotationProperty = new SimpleBooleanProperty(DEFAULT_PLOT_ANNOTATION);
     private BooleanProperty mPlotDebtProperty = new SimpleBooleanProperty(DEFAULT_PLOT_DEBT);
     private final IntegerProperty mPlotDistanceProperty = new SimpleIntegerProperty(DEFAULT_PLOT_DISTANCE);
@@ -59,6 +61,10 @@ public abstract class BOptionsBase<T> extends OptionsBase {
 
     public StringProperty colorByProxyProperty() {
         return mColorByProxyProperty;
+    }
+
+    public void disablePlotAlarm() {
+        mPlotAlarmProperty = null;
     }
 
     public void disablePlotDebt() {
@@ -105,6 +111,13 @@ public abstract class BOptionsBase<T> extends OptionsBase {
         if (mPlotDebtProperty != null) {
             sessionManager.register(getKeyOptions("plotDebt"), mPlotDebtProperty);
         }
+        if (mPlotAlarmProperty != null) {
+            sessionManager.register(getKeyOptions("plotAlarm"), mPlotAlarmProperty);
+        }
+    }
+
+    public boolean isPlotAlarm() {
+        return mPlotAlarmProperty != null && mPlotAlarmProperty.get();
     }
 
     public boolean isPlotAnnotation() {
@@ -129,6 +142,10 @@ public abstract class BOptionsBase<T> extends OptionsBase {
 
     public StringProperty labelByProxyProperty() {
         return mLabelByProxyProperty;
+    }
+
+    public BooleanProperty plotAlarmProperty() {
+        return mPlotAlarmProperty;
     }
 
     public BooleanProperty plotAnnotationProperty() {
@@ -174,6 +191,9 @@ public abstract class BOptionsBase<T> extends OptionsBase {
         }
         if (mPlotDebtProperty != null) {
             mPlotDebtProperty.set(DEFAULT_PLOT_DEBT);
+        }
+        if (mPlotAlarmProperty != null) {
+            mPlotAlarmProperty.set(DEFAULT_PLOT_ALARM);
         }
     }
 

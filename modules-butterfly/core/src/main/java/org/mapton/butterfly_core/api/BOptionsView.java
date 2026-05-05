@@ -52,6 +52,7 @@ public abstract class BOptionsView extends MOptionsView {
     @Deprecated(forRemoval = true)
     private final SimpleObjectProperty<LabelBy.Operations> mLabelByProperty = new SimpleObjectProperty<>();
     private final SessionCheckBox mPlotAnnotationScbx = new SessionCheckBox(MDict.ANNOTATION.toString());
+    private final SessionCheckBox mPlotAlarmScbx = new SessionCheckBox("Larm");
     private final SessionCheckBox mPlotDebtScbx = new SessionCheckBox("Skuld");
     private final SessionCheckBox mPlotSelectedScbx = new SessionCheckBox("Bara valt");
     private MPresetActions mPresetActions;
@@ -101,6 +102,10 @@ public abstract class BOptionsView extends MOptionsView {
 
     public SessionCheckBox getPlotDebtScbx() {
         return mPlotDebtScbx;
+    }
+
+    public SessionCheckBox getPlotAlarmScbx() {
+        return mPlotAlarmScbx;
     }
 
     public SessionCheckBox getPlotSelectedScbx() {
@@ -187,6 +192,10 @@ public abstract class BOptionsView extends MOptionsView {
             mPlotDebtScbx.selectedProperty().bindBidirectional(options.plotDebtProperty());
             mPlotDebtScbx.setDisable(false);
         }
+        if (options.plotAlarmProperty() != null) {
+            mPlotAlarmScbx.selectedProperty().bindBidirectional(options.plotAlarmProperty());
+            mPlotAlarmScbx.setDisable(false);
+        }
         if (options.plotSelectedProperty() != null) {
             mPlotSelectedScbx.selectedProperty().bindBidirectional(options.plotSelectedProperty());
         }
@@ -212,6 +221,7 @@ public abstract class BOptionsView extends MOptionsView {
         }
 
         mPlotDebtScbx.setDisable(true);
+        mPlotAlarmScbx.setDisable(true);
         mPlotAnnotationScbx.setDisable(true);
         mDistanceSliderPane = new SliderPane("...plus de inom (m)", 50.0, false);
         mDistanceSliderPane.disableProperty().bind(mPlotSelectedScbx.selectedProperty().not());
@@ -220,9 +230,9 @@ public abstract class BOptionsView extends MOptionsView {
         mBottomPane.setDisable(true);
 
         int row = 0;
-        mBottomPane.addRow(row++, mPlotSelectedScbx, mPlotAnnotationScbx, mPlotDebtScbx);
+        mBottomPane.addRow(row++, mPlotSelectedScbx, mPlotAnnotationScbx, mPlotDebtScbx, mPlotAlarmScbx);
         mBottomPane.add(mDistanceSliderPane, 0, row++, GridPane.REMAINING, 1);
-        FxHelper.autoSizeColumn(mBottomPane, 3);
+        FxHelper.autoSizeColumn(mBottomPane, 4);
 
         setLabelPadding(mLabelLabel, mGraphicLabel);
         setBottom(mBottomPane);

@@ -44,6 +44,7 @@ public class ReinforcementOptions extends BOptionsBase implements MPresetActions
         initLabelProxyProperty(mLabelByProperty, ReinforcementLabelBy.class);
         initPointProxyProperty(mPointByProperty, ReinforcementPointBy.class);
         setPreferences(getPreferencesForPath("optionPresets"));
+        disablePlotAlarm();
         disablePlotDebt();
     }
 

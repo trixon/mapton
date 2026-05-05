@@ -15,9 +15,11 @@
  */
 package org.mapton.butterfly_core.api;
 
+import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.AnnotationAttributes;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Material;
@@ -33,7 +35,10 @@ import java.util.List;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.worldwind.api.Blinker;
+import org.mapton.worldwind.api.RoundAnnotation;
 import org.mapton.worldwind.api.WWHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -127,10 +132,10 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
         if (options.isPlotDebt()) {
             plotDebt((BXyzPoint) p, position);
         }
-    }
 
-    public void plotAxisX(BBase p, Position position, double length) {
-        plotAxis(p, position, length, p.getAzimuth());
+        if (options.isPlotAlarm()) {
+            plotAlarmAnnotation((BXyzPoint) p, position);
+        }
     }
 
     public void plotAxis(BBase p, Position position, double length, double altitude) {
@@ -194,6 +199,10 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
         } catch (Exception e) {
             //System.err.println(e);
         }
+    }
+
+    public void plotAxisX(BBase p, Position position, double length) {
+        plotAxis(p, position, length, p.getAzimuth());
     }
 
     public void plotPercentageAlarmIndicator(Position position, BAlarm alarm, RigidShape rigidShape, boolean rising) {
@@ -284,6 +293,24 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
             return true;
         } else {
             return false;
+        }
+    }
+
+    protected void plotAlarmAnnotation(BXyzPoint p, Position position) {
+        try {
+            var alarmPercent = p.extOrNull().getAlarmPercent();
+            if (alarmPercent > 150) {
+                var attrs = new AnnotationAttributes();
+                attrs.setDefaults(mAttributeManager.getAlarmAnnotationAttributes());
+                var annotation = new RoundAnnotation(position, SwingHelper.getUIScaled(16), attrs);
+                annotation.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                attrs.setTextColor(Color.RED.darker());
+                attrs.setScale(Math.min(alarmPercent, 400) / 100.0);
+                var blinker = new Blinker(annotation);
+                addRenderable(annotation, false, null, null);
+            }
+        } catch (Exception e) {
+            //
         }
     }
 

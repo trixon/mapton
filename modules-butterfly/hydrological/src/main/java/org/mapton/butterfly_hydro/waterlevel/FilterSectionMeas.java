@@ -55,7 +55,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
 
     private final double mDefaultLevelPeriodValue = 0.5;
     private final SessionDoubleSpinner mLevelPeriodAllSds = new SessionDoubleSpinner(-20.0, 20.0, mDefaultLevelPeriodValue, 0.1);
-    private final CheckBox mLevelPeriodCheckbox = new CheckBox();
+    private final CheckBox mLevelPeriodCheckBox = new CheckBox();
     private final SessionComboBox<Direction> mLevelPeriodDirectionScb = new SessionComboBox<>();
     private final DateRangePane mLeverPeriodDateRangePane = new DateRangePane();
     private final MeasFilterUI mMeasFilterUI;
@@ -73,7 +73,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
         mLevelPeriodDirectionScb.getSelectionModel().select(mDefaultDirection);
         mLevelPeriodAllSds.getValueFactory().setValue(mDefaultLevelPeriodValue);
         mLeverPeriodDateRangePane.reset();
-        FxHelper.setSelected(false, mLevelPeriodCheckbox);
+        FxHelper.setSelected(false, mLevelPeriodCheckBox);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
         sessionManager.register(getKeyFilter("section"), selectedProperty());
-        sessionManager.register(getKeyFilter("levelPeriod"), mLevelPeriodCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("levelPeriod"), mLevelPeriodCheckBox.selectedProperty());
         sessionManager.register(getKeyFilter("levelPeriod.Value"), mLevelPeriodAllSds.sessionValueProperty());
         sessionManager.register(getKeyFilter("levelPeriod.DateLow"), mLeverPeriodDateRangePane.lowStringProperty());
         sessionManager.register(getKeyFilter("levelPeriod.DateHigh"), mLeverPeriodDateRangePane.highStringProperty());
@@ -125,7 +125,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
                 //
                 levelPeriodDateHighProperty(),
                 levelPeriodDateLowProperty(),
-                mLevelPeriodCheckbox.selectedProperty(),
+                mLevelPeriodCheckBox.selectedProperty(),
                 mLevelPeriodAllSds.valueProperty(),
                 mLevelPeriodDirectionScb.getSelectionModel().selectedItemProperty()
         ).forEach(propertyBase -> propertyBase.addListener(changeListenerObject));
@@ -133,7 +133,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
 
     void load(ArrayList<BHydroWaterLevelPoint> items, MTemporalRange temporalRange) {
         mLevelPeriodAllSds.load();
-        mLevelPeriodAllSds.disableProperty().bind(mLevelPeriodCheckbox.selectedProperty().not());
+        mLevelPeriodAllSds.disableProperty().bind(mLevelPeriodCheckBox.selectedProperty().not());
         if (temporalRange != null) {
             mLeverPeriodDateRangePane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
         }
@@ -207,13 +207,13 @@ public class FilterSectionMeas extends MBaseFilterSection {
         }
 
         private void createUI() {
-            mLevelPeriodCheckbox.setText("Nivåförändring");
+            mLevelPeriodCheckBox.setText("Nivåförändring");
             mLevelPeriodAllSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
 
             mLevelPeriodDirectionScb.getItems().setAll(Direction.values());
             mLevelPeriodDirectionScb.getSelectionModel().select(mDefaultDirection);
             var levelPeriodGridPane = new GridPane(GAP_H, GAP_V);
-            levelPeriodGridPane.add(mLevelPeriodCheckbox, 0, 0, 2, 1);
+            levelPeriodGridPane.add(mLevelPeriodCheckBox, 0, 0, 2, 1);
             levelPeriodGridPane.addRow(1, mLevelPeriodAllSds, mLevelPeriodDirectionScb);
             FxHelper.autoSizeColumn(levelPeriodGridPane, 2);
 
@@ -250,8 +250,8 @@ public class FilterSectionMeas extends MBaseFilterSection {
             FxHelper.autoSizeColumn(mRoot, 2);
             BindingHelper.bindWidthForChildrens(leftBox, rightBox);
 
-            mLevelPeriodDirectionScb.disableProperty().bind(mLevelPeriodCheckbox.selectedProperty().not().or(mLevelPeriodAllSds.valueProperty().isEqualTo(0.0)));
-            wrappedDateBox.disableProperty().bind(mLevelPeriodCheckbox.selectedProperty().not());
+            mLevelPeriodDirectionScb.disableProperty().bind(mLevelPeriodCheckBox.selectedProperty().not().or(mLevelPeriodAllSds.valueProperty().isEqualTo(0.0)));
+            wrappedDateBox.disableProperty().bind(mLevelPeriodCheckBox.selectedProperty().not());
         }
 
         private void reset(PropertiesConfiguration filterConfig) {
