@@ -217,6 +217,17 @@ public class GraphicRendererGroup extends GraphicRendererBase {
         }
         if (sCheckModel.isChecked(GraphicItem.CLUSTER_DEFORMATION_SURFACE)) {
             addRenderable(shape3, false, null, null);
+
+            //TODO Handle polygons for crossing lines
+//            for (int i = 0; i < startPositions.size() - 1; i++) {
+//                var p1 = startPositions.get(i);
+//                var p2 = endPositions.get(i);
+//                var p3 = endPositions.get(i + 1);
+//                var p4 = startPositions.get(i + 1);
+//                var shape = new Polygon(List.of(p1, p2, p3, p4));
+//                shape.setAttributes(attr3);
+//                addRenderable(shape, false, null, null);
+//            }
         }
     }
 

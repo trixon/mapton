@@ -44,7 +44,7 @@ public class GraphicRendererCircle extends GraphicRendererBase {
 
     public void plot(BTopoControlPoint p, Position position) {
         initScales();
-        if (sCheckModel.isChecked(GraphicItem.CIRCLE_1D) && p.getDimension() == BDimension._1d) {
+        if (sCheckModel.isChecked(GraphicItem.CIRCLE_1D) && !(p.getDimension() == BDimension._2d)) {
             plot1dCircle(p, position);
         }
 
