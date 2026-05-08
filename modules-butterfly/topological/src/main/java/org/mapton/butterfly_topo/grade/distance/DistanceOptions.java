@@ -30,9 +30,11 @@ import org.mapton.butterfly_topo.grade.GradePointBy;
 public class DistanceOptions extends BOptionsBase implements MPresetActions {
 
     public static final DistanceColorBy DEFAULT_COLOR_BY = DistanceColorBy.DEFAULT;
+    public static final DistanceMode DEFAULT_DISTANCE_MODE = DistanceMode._1d;
     public static final DistanceLabelBy DEFAULT_LABEL_BY = DistanceLabelBy.NAME;
     public static final GradePointBy DEFAULT_POINT_BY = GradePointBy.PIN;
     private final ObjectProperty<DistanceColorBy> mColorByProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BY);
+    private final ObjectProperty<DistanceMode> mDistanceModeProperty = new SimpleObjectProperty<>(DEFAULT_DISTANCE_MODE);
     private final ObjectProperty<DistanceLabelBy> mLabelByProperty = new SimpleObjectProperty<>(DEFAULT_LABEL_BY);
     private final ObjectProperty<GradePointBy> mPointByProperty = new SimpleObjectProperty<>(DEFAULT_POINT_BY);
 
@@ -52,8 +54,16 @@ public class DistanceOptions extends BOptionsBase implements MPresetActions {
         return mColorByProperty;
     }
 
+    public ObjectProperty<DistanceMode> distanceModeProperty() {
+        return mDistanceModeProperty;
+    }
+
     public DistanceColorBy getColorBy() {
         return mColorByProperty.get();
+    }
+
+    public DistanceMode getDistanceMode() {
+        return mDistanceModeProperty.get();
     }
 
     public DistanceLabelBy getLabelBy() {
@@ -67,6 +77,8 @@ public class DistanceOptions extends BOptionsBase implements MPresetActions {
     @Override
     public void initSession(SessionManager sessionManager) {
         super.initSession(sessionManager);
+//        sessionManager.register(getKeyOptions("distanceMode"), mDistanceModeProperty);
+
     }
 
     public ObjectProperty<DistanceLabelBy> labelByProperty() {

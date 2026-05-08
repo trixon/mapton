@@ -31,6 +31,7 @@ class DistanceListCell extends BListCell<BTopoGrade> {
     private final Label mDesc1Label = new Label();
     private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
+    private final DistanceOptions mOptions = DistanceOptions.getInstance();
 
     public DistanceListCell() {
         createUI();
@@ -46,7 +47,18 @@ class DistanceListCell extends BListCell<BTopoGrade> {
         var gradeDiff = p.ext().getDiff();
 
         mHeaderLabel.setText(header);
-        mDesc1Label.setText("%.0f mm".formatted(gradeDiff.getPartialDiffDistance()));
+        switch (mOptions.getDistanceMode()) {
+            case _1d:
+                mDesc1Label.setText("%.0f mm 1d".formatted(gradeDiff.getPartialDiffZ() * 1000));
+                break;
+
+            case _3d:
+                mDesc1Label.setText("%.0f mm 3d".formatted(gradeDiff.getPartialDiffDistance()));
+                break;
+
+            default:
+                throw new AssertionError();
+        }
         mDesc2Label.setText("Δ=%.1f m, ΔH=%.1f m, ΔP=%.1f m".formatted(
                 p.getDistance3d(),
                 p.getDistanceHeight(),

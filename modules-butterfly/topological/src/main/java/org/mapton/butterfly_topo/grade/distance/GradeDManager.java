@@ -26,6 +26,7 @@ import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
 import se.trixon.almond.util.fx.FxHelper;
@@ -36,8 +37,10 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class GradeDManager extends GradeManagerBase {
 
+    public static final Double MAX_2D_DISTANCE = 10.0;
     public static final Double MAX_RADIAL_DISTANCE = 50.0;
     public static final Double MIN_RADIAL_DISTANCE = 0.050;
+    private final DistanceOptions mOptions = DistanceOptions.getInstance();
     private final DistancePropertiesBuilder mPropertiesBuilder = new DistancePropertiesBuilder();
 
     public static GradeDManager getInstance() {
@@ -60,6 +63,92 @@ public class GradeDManager extends GradeManagerBase {
 
     @Override
     public void load() {
+        var gradesLim = switch (mOptions.getDistanceMode()) {
+            case _1d ->
+                load1d();
+            case _3d ->
+                load3d();
+        };
+
+        FxHelper.runLater(() -> {
+            setItemsAll(gradesLim);
+            setItemsFiltered(gradesLim);
+            setItemsTimeFiltered(gradesLim);
+        });
+    }
+
+    @Override
+    protected void applyTemporalFilter() {
+        setItemsTimeFiltered(getFilteredItems());
+    }
+
+    @Override
+    protected void load(ArrayList<BTopoGrade> items) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private ArrayList<BTopoGrade> load1d() {
+        var pointToPoints = new TreeMap<String, HashSet<String>>();
+        var dimensionToPointsMap = mTopoManager.getTimeFilteredItems().stream()
+                .filter(p -> p.getDimension() != BDimension._2d)
+                .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
+                .collect(Collectors.groupingBy(BTopoControlPoint::getDimension));
+
+        if (dimensionToPointsMap.containsKey(BDimension._1d) && dimensionToPointsMap.containsKey(BDimension._3d)) {
+            for (var p1 : dimensionToPointsMap.get(BDimension._1d)) {
+                var point = new Point2D(p1.getZeroX(), p1.getZeroY());
+                for (var p2 : dimensionToPointsMap.get(BDimension._3d)) {
+                    if (p1.getZeroZ() > p2.getZeroZ()) {
+                        continue;
+                    }
+                    var distance = point.distance(p2.getZeroX(), p2.getZeroY());
+                    if (p1 != p2 && distance <= MAX_2D_DISTANCE) {
+                        if (!pointToPoints.computeIfAbsent(p2.getName(), k -> new HashSet<>()).contains(p1.getName())) {//Skip A-B, B-A
+                            pointToPoints.computeIfAbsent(p1.getName(), k -> new HashSet<>()).add(p2.getName());
+                        }
+                    }
+                }
+            }
+        }
+
+        var gradesAll = new ArrayList<BTopoGrade>();
+        for (var entry : pointToPoints.entrySet()) {
+            var p1 = mTopoManager.getItemForKey(entry.getKey());
+            for (var n2 : entry.getValue()) {
+                var p2 = mTopoManager.getItemForKey(n2);
+                var grade = new BTopoGrade(BAxis.RESULTANT, p1, p2);
+                if (grade.getCommonObservations().size() > 1 && true) {
+                    gradesAll.add(grade);
+                }
+            }
+        }
+
+        Comparator<BTopoGrade> c1 = (o1, o2)
+                -> Double.valueOf(o1.ext().getDiff().getPartialDiffZAbs())
+                        .compareTo(o2.ext().getDiff().getPartialDiffZAbs());
+//        Comparator<BTopoGrade> c1 = (o1, o2)
+//                -> Double.valueOf(o1.ext().getDiff().getPartialDiffDistanceAbs())
+//                        .compareTo(o2.ext().getDiff().getPartialDiffDistanceAbs());
+
+        var gradesLim = gradesAll.stream()
+                .sorted(c1.reversed())
+                .limit(1000)
+                .peek(g -> {
+                    var first = BCoordinatrix.toLatLon(g.getP1());
+                    var second = BCoordinatrix.toLatLon(g.getP2());
+                    var d = first.distance(second);
+                    var b = first.getBearing(second);
+                    var mid = first.getDestinationPoint(b, d * .5);
+                    g.setLat(mid.getLatitude());
+                    g.setLon(mid.getLongitude());
+                })
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        return gradesLim;
+    }
+
+    private ArrayList<BTopoGrade> load3d() {
         var pointToPoints = new TreeMap<String, HashSet<String>>();
         var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
                 .filter(p -> p.getDimension() != BDimension._2d)
@@ -110,21 +199,7 @@ public class GradeDManager extends GradeManagerBase {
             g.setLon(mid.getLongitude());
         });
 
-        FxHelper.runLater(() -> {
-            setItemsAll(gradesLim);
-            setItemsFiltered(gradesLim);
-            setItemsTimeFiltered(gradesLim);
-        });
-    }
-
-    @Override
-    protected void applyTemporalFilter() {
-        setItemsTimeFiltered(getFilteredItems());
-    }
-
-    @Override
-    protected void load(ArrayList<BTopoGrade> items) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return gradesLim;
     }
 
     private static class Holder {
