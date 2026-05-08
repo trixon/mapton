@@ -21,6 +21,7 @@ import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoHeightPair;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 
 /**
  *
@@ -39,10 +40,10 @@ public class HeightPairPropertiesBuilder extends PropertiesBuilder<BTopoHeightPa
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
-//        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), p.getPeriod());
-//        propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower())), p.ext().getNumOfCommonObservations());
-//        propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(Dict.Time.DAYS.toLower())), p.ext().getNumOfCommonDays());
-//        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getNumOfDaysSinceLast());
+        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), p.getPeriod());
+        propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower())), p.ext().getNumOfCommonObservations());
+        propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(Dict.Time.DAYS.toLower())), p.ext().getNumOfCommonDays());
+        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getNumOfDaysSinceLast());
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("filterDeltaH")), MathHelper.convertDoubleToString(p.getDistanceHeight(), 2));
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("filterDeltaR")), MathHelper.convertDoubleToString(p.getDistancePlane(), 2));
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("filterDabbaH")), "%.1f".formatted(p.ext().getDiff().getPartialDiffZ() * 1000));

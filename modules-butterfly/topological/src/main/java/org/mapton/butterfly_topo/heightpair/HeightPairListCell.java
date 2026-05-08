@@ -16,6 +16,7 @@
 package org.mapton.butterfly_topo.heightpair;
 
 import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
 import org.mapton.butterfly_core.api.BListCell;
 import org.mapton.butterfly_format.types.topo.BTopoHeightPair;
 
@@ -41,15 +42,15 @@ class HeightPairListCell extends BListCell<BTopoHeightPair> {
         mAlarmIndicator.update(p);
 
         var header = p.getName();
-//        var gradeDiff = p.ext().getDiff();
+        var pairDiff = p.ext().getDiff();
 
         mHeaderLabel.setText(header);
 //        mDesc1Label.setText("%.1f mm/m".formatted(gradeDiff.getZPerMille()));
-//        mDesc2Label.setText("ΔH=%.1f m, ΔP=%.1f m, ∂iH=%.1f mm".formatted(p.getDistanceHeight(),
-//                p.getDistancePlane(),
-//                gradeDiff.getPartialDiffZ() * 1000
-//        ));
-//        mDesc3Label.setText("%s (%d)".formatted(p.getPeriod(), p.getCommonObservations().size()));
+        mDesc2Label.setText("ΔH=%.1f m, ΔP=%.1f m, ∂iH=%.1f mm".formatted(p.getDistanceHeight(),
+                p.getDistancePlane(),
+                pairDiff.getPartialDiffZ() * 1000
+        ));
+        mDesc3Label.setText("%s (%d)".formatted(p.getPeriod(), p.getCommonObservations().size()));
     }
 
     private void createUI() {
@@ -71,7 +72,7 @@ class HeightPairListCell extends BListCell<BTopoHeightPair> {
 
         @Override
         public void update(BTopoHeightPair p) {
-//            m1dShape.setFill(TopoHelper.getAlarmColorHeightFx(p));
+            m1dShape.setFill(Color.BLUE);
             m1dShape.setVisible(true);
         }
     }
