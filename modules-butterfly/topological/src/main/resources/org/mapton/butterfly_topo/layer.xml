@@ -32,7 +32,6 @@ limitations under the License.
                 <file name="DistanceTopComponent.wstcgrp" url="DistanceTopComponentWstcgrp.xml"/>
                 <file name="GradeHTopComponent.wstcgrp" url="GradeHTopComponentWstcgrp.xml"/>
                 <file name="GradeVTopComponent.wstcgrp" url="GradeVTopComponentWstcgrp.xml"/>
-                <file name="HeightPairTopComponent.wstcgrp" url="HeightPairTopComponentWstcgrp.xml"/>
                 <file name="MonmonTopComponent.wstcgrp" url="MonmonTopComponentWstcgrp.xml"/>
             </folder>
         </folder>
