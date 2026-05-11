@@ -107,6 +107,7 @@ public class PhotosOptions extends OptionsBase implements MPresetActions {
 
     @Override
     public void presetRestore(Preferences preferences) {
+        reset();
         presetStore(preferences);
     }
 
@@ -116,6 +117,7 @@ public class PhotosOptions extends OptionsBase implements MPresetActions {
         sessionManager.unregisterAll();
     }
 
+    @Override
     public void reset() {
         mPlotGapProperty.set(DEFAULT_PLOT_GAP);
         mPlotTrackProperty.set(DEFAULT_PLOT_TRACK);

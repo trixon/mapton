@@ -127,6 +127,7 @@ public class WatermarkOptions extends OptionsBase implements MPresetActions {
 
     @Override
     public void presetRestore(Preferences preferences) {
+        reset();
         presetStore(preferences);
     }
 
@@ -136,6 +137,7 @@ public class WatermarkOptions extends OptionsBase implements MPresetActions {
         sessionManager.unregisterAll();
     }
 
+    @Override
     public void reset() {
         mPatternProperty.set(DEFAULT_PATTERN);
         mOpacityProperty.set(DEFAULT_OPACITY);

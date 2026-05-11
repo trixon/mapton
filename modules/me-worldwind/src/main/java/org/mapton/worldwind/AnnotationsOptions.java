@@ -79,6 +79,7 @@ public class AnnotationsOptions extends OptionsBase implements MPresetActions {
 
     @Override
     public void presetRestore(Preferences preferences) {
+        reset();
         presetStore(preferences);
     }
 
@@ -88,6 +89,7 @@ public class AnnotationsOptions extends OptionsBase implements MPresetActions {
         sessionManager.unregisterAll();
     }
 
+    @Override
     public void reset() {
         mLimitProperty.set(DEFAULT_LIMIT);
         mLimitModeProperty.set(DEFAULT_LIMIT_MODE);

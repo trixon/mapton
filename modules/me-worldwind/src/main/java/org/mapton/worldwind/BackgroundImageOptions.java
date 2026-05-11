@@ -55,6 +55,7 @@ public class BackgroundImageOptions extends OptionsBase implements MPresetAction
 
     @Override
     public void presetRestore(Preferences preferences) {
+        reset();
         presetStore(preferences);
     }
 
@@ -64,6 +65,7 @@ public class BackgroundImageOptions extends OptionsBase implements MPresetAction
         sessionManager.unregisterAll();
     }
 
+    @Override
     public void reset() {
         mOpacityProperty.set(DEFAULT_OPACITY);
     }
