@@ -77,6 +77,7 @@ public class TunnelvattenOptions extends BOptionsBase implements MPresetActions 
 
     @Override
     public void presetRestore(Preferences preferences) {
+        reset();
         presetStore(preferences);
     }
 

@@ -79,6 +79,7 @@ public class RoiOptions extends BOptionsBase implements MPresetActions {
 
     @Override
     public void presetRestore(Preferences preferences) {
+        reset();
         presetStore(preferences);
     }
 
