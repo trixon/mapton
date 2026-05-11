@@ -22,6 +22,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.ui.MPresetActions;
@@ -29,6 +30,7 @@ import org.mapton.core.api.ui.MPresetPopOver;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.SliderPane;
 import se.trixon.almond.util.fx.session.SessionCheckBox;
@@ -51,8 +53,8 @@ public abstract class BOptionsView extends MOptionsView {
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty();
     @Deprecated(forRemoval = true)
     private final SimpleObjectProperty<LabelBy.Operations> mLabelByProperty = new SimpleObjectProperty<>();
-    private final SessionCheckBox mPlotAnnotationScbx = new SessionCheckBox(MDict.ANNOTATION.toString());
-    private final SessionCheckBox mPlotAlarmScbx = new SessionCheckBox("Larm");
+    private final SessionCheckBox mPlotAlarmScbx = new SessionCheckBox(SDict.ALARMS.toString());
+    private final SessionCheckBox mPlotAnnotationScbx = new SessionCheckBox(MDict.ANNOTATIONS.toString());
     private final SessionCheckBox mPlotDebtScbx = new SessionCheckBox("Skuld");
     private final SessionCheckBox mPlotSelectedScbx = new SessionCheckBox("Bara valt");
     private MPresetActions mPresetActions;
@@ -96,16 +98,16 @@ public abstract class BOptionsView extends MOptionsView {
         return mLabelMenuButton;
     }
 
+    public SessionCheckBox getPlotAlarmScbx() {
+        return mPlotAlarmScbx;
+    }
+
     public SessionCheckBox getPlotAnnotationScbx() {
         return mPlotAnnotationScbx;
     }
 
     public SessionCheckBox getPlotDebtScbx() {
         return mPlotDebtScbx;
-    }
-
-    public SessionCheckBox getPlotAlarmScbx() {
-        return mPlotAlarmScbx;
     }
 
     public SessionCheckBox getPlotSelectedScbx() {
@@ -230,9 +232,10 @@ public abstract class BOptionsView extends MOptionsView {
         mBottomPane.setDisable(true);
 
         int row = 0;
-        mBottomPane.addRow(row++, mPlotSelectedScbx, mPlotAnnotationScbx, mPlotDebtScbx, mPlotAlarmScbx);
-        mBottomPane.add(mDistanceSliderPane, 0, row++, GridPane.REMAINING, 1);
-        FxHelper.autoSizeColumn(mBottomPane, 4);
+        var hbox = new HBox(FxHelper.getUIScaled(16.0), mPlotSelectedScbx, mPlotAnnotationScbx, mPlotDebtScbx, mPlotAlarmScbx);
+        mBottomPane.addRow(row++, hbox);
+        mBottomPane.addRow(row++, mDistanceSliderPane);
+        FxHelper.autoSizeColumn(mBottomPane, 1);
 
         setLabelPadding(mLabelLabel, mGraphicLabel);
         setBottom(mBottomPane);

@@ -25,6 +25,7 @@ import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.commons.io.monitor.FileEntry;
 import org.mapton.butterfly_core.loader.ButterflyOpener;
 import org.mapton.butterfly_format.BundleMode;
 import org.mapton.butterfly_format.ButterflyLoader;
@@ -39,15 +40,15 @@ public class ButterflyMonitor {
 
     private final ButterflyLoader mButterflyLoader = ButterflyLoader.getInstance();
     private final FileAlterationListener mFileAlterationListener;
-    private final FileAlterationMonitor mMonitor = new FileAlterationMonitor(TimeUnit.SECONDS.toMillis(10));
+    private final FileAlterationMonitor mMonitor = new FileAlterationMonitor(TimeUnit.SECONDS.toMillis(1));
     private FileAlterationObserver mObserver;
     private boolean mRunning;
 
     public ButterflyMonitor() {
         mFileAlterationListener = new FileAlterationListenerAdaptor() {
             private File mFile;
-            private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(20 * 1000, () -> {
-                if (mRunning) {
+            private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(30 * 1000, () -> {
+                if (mRunning && mFile != null) {
                     System.out.format("%s ButterflyMonitor: Change detected in %s\n",
                             LocalTime.now(),
                             mFile.toString()
@@ -58,15 +59,15 @@ public class ButterflyMonitor {
 
             @Override
             public void onFileChange(File file) {
-                load(file);
+                signalLoad(file);
             }
 
             @Override
             public void onFileCreate(File file) {
-                load(file);
+                signalLoad(file);
             }
 
-            private void load(File file) {
+            private void signalLoad(File file) {
                 if (validForReload(file)) {
                     mFile = file;
                     mDelayedResetRunner.reset();
@@ -77,9 +78,8 @@ public class ButterflyMonitor {
                 if (mButterflyLoader.getBundleMode() == BundleMode.DIR) {
                     return true;
                 } else {
-                    return file.equals(ButterflyManager.getInstance().getSource());
+                    return file != null && file.equals(ButterflyManager.getInstance().getSource());
                 }
-
             }
         };
     }
@@ -94,11 +94,16 @@ public class ButterflyMonitor {
             filter = FileFilterUtils.suffixFileFilter(".bfz");
         }
 
-        mObserver = new FileAlterationObserver(directory, filter, IOCase.INSENSITIVE);
-        mObserver.addListener(mFileAlterationListener);
-        mMonitor.addObserver(mObserver);
-
         try {
+            mObserver = FileAlterationObserver.builder()
+                    .setRootEntry(new FileEntry(directory))
+                    .setFileFilter(filter)
+                    .setIOCase(IOCase.INSENSITIVE)
+                    .get();
+//            mObserver = new FileAlterationObserver(directory, filter, IOCase.INSENSITIVE);
+            mObserver.addListener(mFileAlterationListener);
+            mMonitor.addObserver(mObserver);
+
             mMonitor.start();
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
