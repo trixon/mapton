@@ -23,7 +23,6 @@ public enum BDimension {
     _1d, _2d, _3d;
 
     BDimension() {
-
     }
 
     public String asText() {

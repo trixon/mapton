@@ -19,11 +19,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.DoubleStream;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import org.apache.commons.lang3.ObjectUtils;
@@ -31,7 +29,6 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.BDimension;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
@@ -64,8 +61,8 @@ public class BTopoGrade extends BXyzPoint {
 
         setName("%s → %s".formatted(mP1.getName(), mP2.getName()));
 
-        var map1 = createObservationMap(mP1);
-        var map2 = createObservationMap(mP2);
+        var map1 = createObservationMap(mP1, mWeeklyAvgFormatterTo, mWeeklyAvgFormatterFrom);
+        var map2 = createObservationMap(mP2, mWeeklyAvgFormatterTo, mWeeklyAvgFormatterFrom);
 
         for (var entry : map1.entrySet()) {
             LocalDate date = entry.getKey();
@@ -139,85 +136,6 @@ public class BTopoGrade extends BXyzPoint {
 
     public String getPeriod() {
         return "%s → %s".formatted(getFirstDate(), getLastDate());
-    }
-
-    private HashMap<LocalDate, Point3D> createObservationMap(BTopoControlPoint p) {
-        var map1 = new HashMap<LocalDate, Point3D>();
-
-        var weekToObservations = new HashMap<String, ArrayList<Point3D>>();
-        var beforeZero1 = true;
-        var beforeZero3 = true;
-        if (p.getDimension() == BDimension._1d) {
-            var hasZero = false;
-            for (var o : p.ext().getObservationsTimeFiltered()) {
-                if (o.isZeroMeasurement()) {
-                    hasZero = true;
-                    break;
-                }
-            }
-
-            for (var o : p.ext().getObservationsTimeFiltered()) {
-                if (o.isZeroMeasurement()) {
-                    beforeZero1 = false;
-                }
-                if (hasZero && beforeZero1 || ObjectUtils.anyNull(o.ext().getDeltaZ())) {
-                    continue;
-                }
-                var yyyyww = o.getDate().toLocalDate().format(mWeeklyAvgFormatterTo);
-                var point3D = new Point3D(0, 0, o.ext().getDeltaZ());
-                weekToObservations.computeIfAbsent(yyyyww, k -> new ArrayList<>()).add(point3D);
-            }
-        } else if (p.getDimension() == BDimension._3d) {
-            var hasZero = false;
-            for (var o : p.ext().getObservationsTimeFiltered()) {
-                if (o.isZeroMeasurement()) {
-                    hasZero = true;
-                    break;
-                }
-            }
-
-            for (var o : p.ext().getObservationsTimeFiltered()) {
-                if (o.isZeroMeasurement()) {
-                    beforeZero3 = false;
-                }
-                if (hasZero && beforeZero3 || ObjectUtils.anyNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ())) {
-                    continue;
-                }
-                var key = o.getDate().toLocalDate().format(mWeeklyAvgFormatterTo);
-                var point3D = new Point3D(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ());
-                weekToObservations.computeIfAbsent(key, k -> new ArrayList<>()).add(point3D);
-            }
-        }
-
-        for (var entry : weekToObservations.entrySet()) {
-            var yyyyww = entry.getKey();
-            var observations = entry.getValue();
-//            var x = observations.stream().mapToDouble(o -> o.getX()).average().getAsDouble();
-//            var y = observations.stream().mapToDouble(o -> o.getY()).average().getAsDouble();
-//            var z = observations.stream().mapToDouble(o -> o.getZ()).average().getAsDouble();
-
-            double x = getMedian(observations.stream().mapToDouble(o -> o.getX()));
-            double y = getMedian(observations.stream().mapToDouble(o -> o.getY()));
-            double z = getMedian(observations.stream().mapToDouble(o -> o.getZ()));
-            var point3D = new Point3D(x, y, z);
-
-            map1.put(LocalDate.parse(yyyyww, mWeeklyAvgFormatterFrom), point3D);
-        }
-
-        return map1;
-    }
-
-    private double getMedian(DoubleStream stream) {
-        var values = stream.sorted().toArray();
-        int length = values.length;
-
-        if (length == 0) {
-            throw new IllegalArgumentException("Stream is empty");
-        } else if (length % 2 == 1) {
-            return values[length / 2];
-        } else {
-            return (values[length / 2 - 1] + values[length / 2]) / 2.0;
-        }
     }
 
     private void recalc1(BTopoControlPoint p) {

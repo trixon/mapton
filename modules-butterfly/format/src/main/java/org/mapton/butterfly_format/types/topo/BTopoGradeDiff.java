@@ -78,6 +78,10 @@ public class BTopoGradeDiff {
         return mDeltaPairPoint3d.getZ();
     }
 
+    public double getPartialDiffZAbs() {
+        return Math.abs(mDeltaPairPoint3d.getZ());
+    }
+
     public Double getRAngleDeg() {
         return Math.toDegrees(getRAngleRad());
     }

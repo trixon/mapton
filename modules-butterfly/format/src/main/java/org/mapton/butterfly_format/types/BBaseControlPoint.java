@@ -17,6 +17,7 @@ package org.mapton.butterfly_format.types;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.stream.DoubleStream;
 
 /**
  *
@@ -92,6 +93,19 @@ public abstract class BBaseControlPoint extends BBasePoint {
 
     public String getFrequencyHighParam() {
         return frequencyHighParam;
+    }
+
+    public double getMedian(DoubleStream stream) {
+        var values = stream.sorted().toArray();
+        int length = values.length;
+
+        if (length == 0) {
+            throw new IllegalArgumentException("Stream is empty");
+        } else if (length % 2 == 1) {
+            return values[length / 2];
+        } else {
+            return (values[length / 2 - 1] + values[length / 2]) / 2.0;
+        }
     }
 
     public String getOperator() {

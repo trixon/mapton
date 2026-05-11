@@ -17,7 +17,10 @@ package org.mapton.butterfly_format.types;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -61,6 +64,73 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
     private transient Double zeroYScaled;
     private Double zeroZ;
     private transient Double zeroZScaled;
+
+    public HashMap<LocalDate, Point3D> createObservationMap(BXyzPoint p, DateTimeFormatter dateTimeFormatterTo, DateTimeFormatter dateTimeFormatterFrom) {
+        var observationsTimeFiltered = p.extOrNull().getObservationsTimeFiltered();
+        var map1 = new HashMap<LocalDate, Point3D>();
+
+        var weekToObservations = new HashMap<String, ArrayList<Point3D>>();
+        var beforeZero1 = true;
+        var beforeZero3 = true;
+        if (p.getDimension() == BDimension._1d) {
+            var hasZero = false;
+            for (var o : observationsTimeFiltered) {
+                if (o.isZeroMeasurement()) {
+                    hasZero = true;
+                    break;
+                }
+            }
+
+            for (var o : observationsTimeFiltered) {
+                if (o.isZeroMeasurement()) {
+                    beforeZero1 = false;
+                }
+                if (hasZero && beforeZero1 || ObjectUtils.anyNull(o.ext().getDeltaZ())) {
+                    continue;
+                }
+                var yyyyww = o.getDate().toLocalDate().format(dateTimeFormatterTo);
+                var point3D = new Point3D(0, 0, o.ext().getDeltaZ());
+                weekToObservations.computeIfAbsent(yyyyww, k -> new ArrayList<>()).add(point3D);
+            }
+        } else if (p.getDimension() == BDimension._3d) {
+            var hasZero = false;
+            for (var o : observationsTimeFiltered) {
+                if (o.isZeroMeasurement()) {
+                    hasZero = true;
+                    break;
+                }
+            }
+
+            for (var o : observationsTimeFiltered) {
+                if (o.isZeroMeasurement()) {
+                    beforeZero3 = false;
+                }
+                if (hasZero && beforeZero3 || ObjectUtils.anyNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ())) {
+                    continue;
+                }
+                var key = o.getDate().toLocalDate().format(dateTimeFormatterTo);
+                var point3D = new Point3D(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ());
+                weekToObservations.computeIfAbsent(key, k -> new ArrayList<>()).add(point3D);
+            }
+        }
+
+        for (var entry : weekToObservations.entrySet()) {
+            var yyyyww = entry.getKey();
+            var observations = entry.getValue();
+//            var x = observations.stream().mapToDouble(o -> o.getX()).average().getAsDouble();
+//            var y = observations.stream().mapToDouble(o -> o.getY()).average().getAsDouble();
+//            var z = observations.stream().mapToDouble(o -> o.getZ()).average().getAsDouble();
+
+            double x = getMedian(observations.stream().mapToDouble(o -> o.getX()));
+            double y = getMedian(observations.stream().mapToDouble(o -> o.getY()));
+            double z = getMedian(observations.stream().mapToDouble(o -> o.getZ()));
+            var point3D = new Point3D(x, y, z);
+
+            map1.put(LocalDate.parse(yyyyww, dateTimeFormatterFrom), point3D);
+        }
+
+        return map1;
+    }
 
     public Object ext() {
         return null;
