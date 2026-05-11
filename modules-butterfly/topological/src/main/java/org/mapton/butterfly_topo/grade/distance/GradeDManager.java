@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_format.Butterfly;
@@ -40,6 +41,7 @@ public class GradeDManager extends GradeManagerBase {
     public static final Double MAX_2D_DISTANCE = 10.0;
     public static final Double MAX_RADIAL_DISTANCE = 50.0;
     public static final Double MIN_RADIAL_DISTANCE = 0.050;
+    private final ManagerOptionsView mManagerOptionsView = new ManagerOptionsView();
     private final DistanceOptions mOptions = DistanceOptions.getInstance();
     private final DistancePropertiesBuilder mPropertiesBuilder = new DistancePropertiesBuilder();
 
@@ -57,6 +59,11 @@ public class GradeDManager extends GradeManagerBase {
     }
 
     @Override
+    public Node getOptionsView() {
+        return mManagerOptionsView.getUI();
+    }
+
+    @Override
     public void load(Butterfly butterfly) {
         //nvm - load on topo manager changes instead
     }
@@ -66,6 +73,8 @@ public class GradeDManager extends GradeManagerBase {
         var gradesLim = switch (mOptions.getDistanceMode()) {
             case _1d ->
                 load1d();
+            case _2d ->
+                load2d();
             case _3d ->
                 load3d();
         };
@@ -127,9 +136,6 @@ public class GradeDManager extends GradeManagerBase {
         Comparator<BTopoGrade> c1 = (o1, o2)
                 -> Double.valueOf(o1.ext().getDiff().getPartialDiffZAbs())
                         .compareTo(o2.ext().getDiff().getPartialDiffZAbs());
-//        Comparator<BTopoGrade> c1 = (o1, o2)
-//                -> Double.valueOf(o1.ext().getDiff().getPartialDiffDistanceAbs())
-//                        .compareTo(o2.ext().getDiff().getPartialDiffDistanceAbs());
 
         var gradesLim = gradesAll.stream()
                 .sorted(c1.reversed())
@@ -142,10 +148,16 @@ public class GradeDManager extends GradeManagerBase {
                     var mid = first.getDestinationPoint(b, d * .5);
                     g.setLat(mid.getLatitude());
                     g.setLon(mid.getLongitude());
+                    g.setValue("distanceMode", mOptions.getDistanceMode());
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 
         return gradesLim;
+    }
+
+    private ArrayList<BTopoGrade> load2d() {
+        //TODO
+        return load1d();
     }
 
     private ArrayList<BTopoGrade> load3d() {

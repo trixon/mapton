@@ -21,6 +21,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.butterfly_core.api.BOptionsBase;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_topo.grade.GradePointBy;
 
 /**
@@ -30,11 +31,11 @@ import org.mapton.butterfly_topo.grade.GradePointBy;
 public class DistanceOptions extends BOptionsBase implements MPresetActions {
 
     public static final DistanceColorBy DEFAULT_COLOR_BY = DistanceColorBy.DEFAULT;
-    public static final DistanceMode DEFAULT_DISTANCE_MODE = DistanceMode._1d;
+    public static final BDimension DEFAULT_DISTANCE_MODE = BDimension._1d;
     public static final DistanceLabelBy DEFAULT_LABEL_BY = DistanceLabelBy.NAME;
     public static final GradePointBy DEFAULT_POINT_BY = GradePointBy.PIN;
     private final ObjectProperty<DistanceColorBy> mColorByProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BY);
-    private final ObjectProperty<DistanceMode> mDistanceModeProperty = new SimpleObjectProperty<>(DEFAULT_DISTANCE_MODE);
+    private final ObjectProperty<BDimension> mDistanceModeProperty = new SimpleObjectProperty<>(DEFAULT_DISTANCE_MODE);
     private final ObjectProperty<DistanceLabelBy> mLabelByProperty = new SimpleObjectProperty<>(DEFAULT_LABEL_BY);
     private final ObjectProperty<GradePointBy> mPointByProperty = new SimpleObjectProperty<>(DEFAULT_POINT_BY);
 
@@ -54,7 +55,7 @@ public class DistanceOptions extends BOptionsBase implements MPresetActions {
         return mColorByProperty;
     }
 
-    public ObjectProperty<DistanceMode> distanceModeProperty() {
+    public ObjectProperty<BDimension> distanceModeProperty() {
         return mDistanceModeProperty;
     }
 
@@ -62,7 +63,7 @@ public class DistanceOptions extends BOptionsBase implements MPresetActions {
         return mColorByProperty.get();
     }
 
-    public DistanceMode getDistanceMode() {
+    public BDimension getDistanceMode() {
         return mDistanceModeProperty.get();
     }
 

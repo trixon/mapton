@@ -15,8 +15,10 @@
  */
 package org.mapton.butterfly_topo.grade.distance;
 
+import java.awt.Color;
 import javafx.scene.control.Label;
 import org.mapton.butterfly_core.api.BListCell;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoHelper;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -86,7 +88,14 @@ class DistanceListCell extends BListCell<BTopoGrade> {
 
         @Override
         public void update(BTopoGrade p) {
-            m1dShape.setFill(SwingHelper.colorToColor(TopoHelper.getGradeDistanceColor(p)));
+            Color color;
+            if (mOptions.getDistanceMode() == BDimension._1d) {
+                color = TopoHelper.getGradeDistanceZColor(p);
+            } else {
+                color = TopoHelper.getGradeDistanceColor(p);
+            }
+
+            m1dShape.setFill(SwingHelper.colorToColor(color));
             m1dShape.setVisible(true);
         }
     }

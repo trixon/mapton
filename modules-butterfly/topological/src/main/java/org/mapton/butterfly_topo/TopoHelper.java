@@ -19,9 +19,9 @@ import gov.nasa.worldwind.render.Material;
 import java.awt.Color;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BAxis;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.rock.BRockConvergence;
 import org.mapton.butterfly_format.types.rock.BRockConvergencePair;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_format.types.topo.BTopoGradeDiff;
 
@@ -158,6 +158,16 @@ public class TopoHelper {
     public static Color getGradeDistanceColor(BTopoGrade p) {
         var gradeDiff = p.ext().getDiff();
         var dZ = gradeDiff.getPartialDiffDistance() / 1000.0;
+        if (dZ < 0) {
+            return ButterflyHelper.sVerticalNegColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.025, dZ)];
+        } else {
+            return ButterflyHelper.sVerticalPosColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalPosMaterials.length, 0.025, dZ)];
+        }
+    }
+
+    public static Color getGradeDistanceZColor(BTopoGrade p) {
+        var gradeDiff = p.ext().getDiff();
+        var dZ = gradeDiff.getPartialDiffZ();
         if (dZ < 0) {
             return ButterflyHelper.sVerticalNegColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.025, dZ)];
         } else {

@@ -33,8 +33,14 @@ public enum DistanceLabelBy implements LabelBy.Operations {
     NONE(LabelBy.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
-    MEAS_GRADE_D(LabelBy.CAT_MEAS, "Avståndsförändring", p -> {
-        return MathHelper.convertDoubleToString(p.ext().getDiff().getPartialDiffDistance(), 1);
+    MEAS_GRADE_D1(LabelBy.CAT_MEAS, "Avståndsförändring, 1d", p -> {
+        return MathHelper.convertDoubleToString(p.ext().getDiff().getPartialDiffZ() * 1000, 0);
+    }),
+    MEAS_GRADE_D2(LabelBy.CAT_MEAS, "Avståndsförändring, 2d", p -> {
+        return MathHelper.convertDoubleToString(p.ext().getDiff().getPartialDiffR() * 1000, 0);
+    }),
+    MEAS_GRADE_D3(LabelBy.CAT_MEAS, "Avståndsförändring, 3d", p -> {
+        return MathHelper.convertDoubleToString(p.ext().getDiff().getPartialDiffDistance(), 0);
     });
     private final String mCategory;
     private final Function<BTopoGrade, String> mFunction;

@@ -261,7 +261,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
                     leftBox.getChildren().add(mDabbaRRangeSlider);
                     break;
                 case RESULTANT:
-                    leftBox.getChildren().removeAll(mGradeHorizontalSlider, mDabbaHRangeSlider);
+                    leftBox.getChildren().removeAll(mGradeHorizontalSlider);
                     leftBox.getChildren().add(mGradeDistanceRangeSlider);
                     leftBox.getChildren().add(mGradeDistanceSlider);
                     mFilterMeasAlarmLevel.getRootBordered().setDisable(true);
@@ -269,8 +269,6 @@ public class FilterSectionMeas extends MBaseFilterSection {
             }
             int row = 1;
             mRoot.addRow(row++, leftBox, rightBox);
-//            FxHelper.autoSizeColumn(mRoot, 2);
-//            FxHelper.bindWidthForChildrens(leftBox, rightBox);
         }
 
         public Node getRoot() {

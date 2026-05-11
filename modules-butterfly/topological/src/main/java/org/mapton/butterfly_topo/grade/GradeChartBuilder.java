@@ -28,6 +28,7 @@ import org.mapton.api.MTemporalManager;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.BComponent;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.ce_jfreechart.api.ChartHelper;
@@ -150,8 +151,15 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
             }
 
             if (p.getAxis() == BAxis.RESULTANT) {
-                mTimeSeriesD.add(minute, gradeDiff.getPartialDiffDistance());
-                mMinMaxCollection.add(gradeDiff.getPartialDiffDistance());
+                BDimension distanceMode = p.getValue("distanceMode");
+                double value;
+                if (distanceMode == BDimension._1d) {
+                    value = gradeDiff.getPartialDiffZ() * 1000;
+                } else {
+                    value = gradeDiff.getPartialDiffDistance();
+                }
+                mTimeSeriesD.add(minute, value);
+                mMinMaxCollection.add(value);
             }
         });
 
