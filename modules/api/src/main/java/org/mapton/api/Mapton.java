@@ -259,6 +259,10 @@ public class Mapton {
         return (int) (getIconSizeToolBar() / 1.3);
     }
 
+    public static double getIconSizeToolBarIntDouble() {
+        return getIconSizeToolBar() / 1.3;
+    }
+
     public static Mapton getInstance() {
         return Holder.INSTANCE;
     }

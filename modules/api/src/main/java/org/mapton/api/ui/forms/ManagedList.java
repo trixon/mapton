@@ -15,19 +15,29 @@
  */
 package org.mapton.api.ui.forms;
 
+import com.dlsc.gemsfx.Spacer;
 import com.sun.jna.platform.KeyboardUtils;
 import java.awt.event.KeyEvent;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import org.controlsfx.control.PopOver;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.Mapton;
+import static org.mapton.api.Mapton.getIconSizeToolBarIntDouble;
+import org.mapton.api.ui.MPopOver;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.ListItemCountLabel;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -39,10 +49,10 @@ public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
 
     private static Object sLastOfAnyObject;
     private long mLastSelection;
+    private final ListItemCountLabel mListItemCountLabel = new ListItemCountLabel();
     private final ListView<ItemType> mListView = new ListView<>();
     private final MBaseDataManager mManager;
     private final BorderPane mRoot = new BorderPane();
-    private final ListItemCountLabel mListItemCountLabel = new ListItemCountLabel();
 
     public ManagedList(MBaseDataManager manager) {
         mManager = manager;
@@ -60,11 +70,26 @@ public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
     }
 
     private void createUI() {
+        var popOver = new MPopOver();
+        popOver.setTitle(Dict.OPTIONS.toString());
+        popOver.setArrowLocation(PopOver.ArrowLocation.BOTTOM_CENTER);
+        popOver.setContentNode(mManager.getOptionsView());
+        int iconSize = (int) (0.5 * getIconSizeToolBarIntDouble());
+        var settingsButton = new Button("", MaterialIcon._Action.SETTINGS.getImageView(iconSize));
+        settingsButton.setOnAction(actionEvent -> {
+            popOver.show(settingsButton);
+        });
+        settingsButton.setDisable(mManager.getOptionsView() == null);
+        settingsButton.setTooltip(new Tooltip(Dict.OPTIONS.toString()));
+
+        var hbox = new HBox(settingsButton, new Spacer(), mListItemCountLabel);
+
+        hbox.setAlignment(Pos.CENTER_LEFT);
         mRoot.setCenter(mListView);
-        mRoot.setBottom(mListItemCountLabel);
+        mRoot.setBottom(hbox);
 
         mListView.itemsProperty().bind(mManager.timeFilteredItemsProperty());
-        mListItemCountLabel.prefWidthProperty().bind(mRoot.widthProperty());
+        hbox.prefWidthProperty().bind(mRoot.widthProperty());
         mListItemCountLabel.init(mListView, mManager.getTimeFilteredItems(), mManager.getAllItems());
     }
 

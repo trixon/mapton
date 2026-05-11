@@ -30,6 +30,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import org.controlsfx.control.action.Action;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -211,6 +212,10 @@ public abstract class MBaseDataManager<T> {
 
     public Object getObjectTrends(T t) {
         return Boolean.FALSE;
+    }
+
+    public Node getOptionsView() {
+        return null;
     }
 
     public T getSelectedItem() {
