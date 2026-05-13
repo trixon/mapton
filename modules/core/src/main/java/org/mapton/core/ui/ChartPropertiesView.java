@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.prefs.Preferences;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -38,13 +39,18 @@ import org.mapton.api.MKey;
 import org.mapton.api.MSimpleObjectStorageBoolean;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.Mapton;
+import org.mapton.core.api.ChartOptionsManager;
+import org.mapton.core.api.ChartStartPoint;
 import org.mapton.core.ui.simple_object_storage.BaseTab;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.BindingHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.Spacer;
+import se.trixon.almond.util.fx.session.SessionCheckBox;
+import se.trixon.almond.util.fx.session.SessionComboBox;
 
 /**
  *
@@ -52,9 +58,10 @@ import se.trixon.almond.util.fx.Spacer;
  */
 class ChartPropertiesView extends BorderPane {
 
+    private final ChartOptionsManager mChartOptionsManager = ChartOptionsManager.getInstance();
     private final Class<MSimpleObjectStorageBoolean.Misc> mClass = MSimpleObjectStorageBoolean.Misc.class;
-    private final VBox mOverlayItemBox = new VBox(FxHelper.getUIScaled(8));
     private final MSimpleObjectStorageManager mManager = MSimpleObjectStorageManager.getInstance();
+    private final VBox mOverlayItemBox = new VBox(FxHelper.getUIScaled(8));
     private final Preferences mPreferences = NbPreferences.forModule(ChartPropertiesView.class).node("chartProperties");
 
     public ChartPropertiesView() {
@@ -71,7 +78,8 @@ class ChartPropertiesView extends BorderPane {
         mOverlayItemBox.setPadding(FxHelper.getUIScaledInsets(8));
 
         var overlayTab = new Tab(MDict.OVERLAYS.toString(), overlayScrollPane);
-        var dateTab = new Tab(Dict.DATE.toString(), null);
+        var dateView = new DateView();
+        var dateTab = new Tab(Dict.DATE.toString(), dateView);
         var rootTabPane = new TabPane(overlayTab, dateTab);
         rootTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         rootTabPane.setSide(Side.LEFT);
@@ -134,4 +142,36 @@ class ChartPropertiesView extends BorderPane {
         });
     }
 
+    private class DateView extends VBox {
+
+        public DateView() {
+            super(FxHelper.getUIScaled(8));
+            createUI();
+        }
+
+        private void createUI() {
+            setPadding(FxHelper.getUIScaledInsets(8));
+            var headerLabel = new Label("Period");
+            var chartEndTodayScb = new SessionCheckBox("Slutdatum idag");
+            chartEndTodayScb.setTooltip(new Tooltip("... och inte senaste"));
+            var resetOnFirstScb = new SessionCheckBox("...och nollställ på första synliga");
+            resetOnFirstScb.setDisable(true);
+            var periodComboBox = new SessionComboBox<ChartStartPoint>();
+            periodComboBox.getItems().setAll(ChartStartPoint.values());
+            periodComboBox.valueProperty().bindBidirectional(mChartOptionsManager.datePeriodProperty());
+            resetOnFirstScb.selectedProperty().bindBidirectional(mChartOptionsManager.dateResetOnFirst());
+            chartEndTodayScb.selectedProperty().bindBidirectional(mChartOptionsManager.dateEndTodayProperty());
+
+            var vbox = new VBox(
+                    headerLabel,
+                    periodComboBox);
+
+            getChildren().addAll(vbox,
+                    chartEndTodayScb,
+                    resetOnFirstScb
+            );
+
+            BindingHelper.bindWidthForChildrens(this, vbox);
+        }
+    }
 }
