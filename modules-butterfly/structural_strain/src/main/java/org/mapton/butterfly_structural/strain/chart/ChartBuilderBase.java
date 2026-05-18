@@ -15,9 +15,6 @@
  */
 package org.mapton.butterfly_structural.strain.chart;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
@@ -60,8 +57,9 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralStrain
             setTitle(p);
             var plot = getPlot();
             updateDataset(p);
-            var date = isCompleteView() ? mDateNull : Date.from(Instant.now().minus(getRecentDays(), ChronoUnit.DAYS));
-            setDateRangeNullNow(plot, p, date);
+            if (isCompleteView()) {
+                setDateRangeBySettings(plot, p);
+            }
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);
 

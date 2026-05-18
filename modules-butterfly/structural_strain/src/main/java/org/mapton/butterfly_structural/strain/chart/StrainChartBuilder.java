@@ -69,7 +69,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
             setTitle(p);
             updateDataset(p);
             var plot = getPlot();
-            setDateRangeNullNow(plot, p, mDateNull);
+            setDateRangeBySettings(plot, p);
 
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);

@@ -61,7 +61,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BHydroWaterLevelP
             var plot = getPlot();
             updateDataset(p);
             var date = isCompleteView() ? mDateNull : Date.from(Instant.now().minus(getRecentDays(), ChronoUnit.DAYS));
-            setDateRangeNullNow(plot, p, date);
+            setDateRangeBySettings(plot, p);
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);
 

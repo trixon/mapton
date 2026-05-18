@@ -65,7 +65,7 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
 
             mDateNull = DateHelper.convertToDate(p.getFirstDate());
 
-            setDateRangeNullNow(plot, p, mDateNull);
+            setDateRangeBySettings(plot, p);
 
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);

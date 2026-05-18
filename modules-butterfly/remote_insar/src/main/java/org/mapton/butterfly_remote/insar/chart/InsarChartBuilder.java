@@ -68,8 +68,7 @@ public class InsarChartBuilder extends XyzChartBuilder<BRemoteInsarPoint> {
             setTitle(p);
             updateDataset(p);
             var plot = getPlot();
-            setDateRangeNullNow(plot, p, mDateNull);
-
+            setDateRangeBySettings(plot, p);
             plot.clearRangeMarkers();
             plotAlarmIndicators(p, InsarHelper.getScaleFactor(p));
 

@@ -15,26 +15,18 @@
  */
 package org.mapton.butterfly_rock_earthquake.chart;
 
-import com.sun.jna.platform.KeyboardUtils;
-import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
-import org.jfree.chart.ChartMouseEvent;
-import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.entity.LegendItemEntity;
-import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.rock.BRockEarthquake;
 import org.mapton.ce_jfreechart.api.ChartHelper;
-import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -65,40 +57,10 @@ public class QuakeMultiChartBuilder extends XyzChartBuilder<BRockEarthquake> {
             setTitle(p);
             updateDataset(p);
             var plot = getPlot();
-            var dateAxis = (DateAxis) plot.getDomainAxis();
-            dateAxis.setRange(DateHelper.convertToDate(mDateFirst), DateHelper.convertToDate(mDateLast));
             plot.clearRangeMarkers();
 
             var rangeAxis = (NumberAxis) plot.getRangeAxis();
             rangeAxis.setAutoRange(true);
-
-            getChartPanel().addChartMouseListener(new ChartMouseListener() {
-                @Override
-                public void chartMouseClicked(ChartMouseEvent event) {
-                    var e = event.getEntity();
-                    if (e != null) {
-                        var name = "";
-                        if (event.getEntity() instanceof XYItemEntity entity) {
-                            name = getDataset().getSeriesKey(entity.getSeriesIndex()).toString();
-                        } else if (e instanceof LegendItemEntity entity) {
-                            name = entity.getSeriesKey().toString();
-                        }
-
-                        if (!name.isBlank()) {
-                            var isKeyPressed = KeyboardUtils.isPressed(KeyEvent.VK_SHIFT);
-                            mMultiChartComponent.panTo(name);
-                            if (isKeyPressed) {
-                                mMultiChartComponent.select(name);
-                            }
-                        }
-                    }
-                }
-
-                @Override
-                public void chartMouseMoved(ChartMouseEvent event) {
-                    //nvm
-                }
-            });
 
             return getChartPanel();
         };

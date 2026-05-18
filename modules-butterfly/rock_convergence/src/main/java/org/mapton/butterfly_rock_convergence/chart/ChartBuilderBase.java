@@ -15,9 +15,6 @@
  */
 package org.mapton.butterfly_rock_convergence.chart;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
@@ -64,8 +61,9 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BRockConvergence>
             setTitle(p);
             var plot = getPlot();
             updateDataset(p);
-            var date = isCompleteView() ? mDateNull : Date.from(Instant.now().minus(getRecentDays(), ChronoUnit.DAYS));
-            setDateRangeNullNow(plot, p, date);
+            if (isCompleteView()) {
+                setDateRangeBySettings(plot, p);
+            }
             plot.clearRangeMarkers();
             plotAlarmIndicators(p, 1000);
 

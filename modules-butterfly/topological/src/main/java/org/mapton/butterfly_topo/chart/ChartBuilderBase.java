@@ -15,9 +15,6 @@
  */
 package org.mapton.butterfly_topo.chart;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
@@ -63,11 +60,11 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoControlPoint
             setTitle(p);
             var plot = getPlot();
             updateDataset(p);
-            var date = isCompleteView() ? mDateNull : Date.from(Instant.now().minus(getRecentDays(), ChronoUnit.DAYS));
-            setDateRangeNullNow(plot, p, date);
+            if (isCompleteView()) {
+                setDateRangeBySettings(plot, p);
+            }
             plot.clearRangeMarkers();
             plotAlarmIndicators(p, 1000);
-//            plot.setNotify(true);
 
             return getChartPanel();
         };

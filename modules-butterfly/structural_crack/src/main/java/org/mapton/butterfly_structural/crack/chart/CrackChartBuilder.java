@@ -69,7 +69,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
             setTitle(p);
             updateDataset(p);
             var plot = getPlot();
-            setDateRangeNullNow(plot, p, mDateNull);
+            setDateRangeBySettings(plot, p);
 
             plot.clearRangeMarkers();
             plotAlarmIndicators(p, CrackHelper.getScaleFactor1000(p));

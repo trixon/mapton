@@ -50,7 +50,9 @@ public class LoadChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint> 
             setTitle(p);
             updateDataset(p);
             var plot = getPlot();
-            setDateRangeNullNow(plot, p, mDateNull);
+            if (isCompleteView()) {
+                setDateRangeBySettings(plot, p);
+            }
 
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);

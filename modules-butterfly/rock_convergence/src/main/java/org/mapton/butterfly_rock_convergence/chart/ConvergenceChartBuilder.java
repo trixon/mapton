@@ -48,9 +48,7 @@ public class ConvergenceChartBuilder extends XyzChartBuilder<BRockConvergence> {
             setTitle(p);
             updateDataset(p);
             var plot = getPlot();
-            if (mDateNull != null) {
-                setDateRangeNullNow(plot, p, mDateNull);
-            }
+            setDateRangeBySettings(plot, p);
 
             plot.clearRangeMarkers();
             plotAlarmIndicators(p, 1000);
