@@ -21,12 +21,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.MovingAverage;
 import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
@@ -39,23 +36,12 @@ import se.trixon.almond.util.DateHelper;
  */
 public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
 
-    private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
-    private final NumberAxis mTemperatureAxis = new NumberAxis("°C");
-    private final TimeSeriesCollection mTemperatureDataset = new TimeSeriesCollection();
-    private final TimeSeries mTimeSeriesTemperature = new TimeSeries("°C");
     private final TimeSeries mTimeSeriesX = new TimeSeries("Transversal");
     private final TimeSeries mTimeSeriesY = new TimeSeries("Longitudinell");
     private final TimeSeries mTimeSeriesZ = new TimeSeries("Resultant");
 
     public TiltChartBuilder() {
         initChart("mm/m", "0.0");
-
-        var plot = getPlot();
-        plot.setRangeAxis(2, mTemperatureAxis);
-        plot.setDataset(2, mTemperatureDataset);
-        plot.mapDatasetToRangeAxis(2, 2);
-        plot.setRangeAxisLocation(2, AxisLocation.BOTTOM_OR_RIGHT);
-        plot.setRenderer(2, mSecondaryRenderer);
     }
 
     @Override
@@ -108,9 +94,6 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
         mTimeSeriesY.clear();
         mTimeSeriesZ.clear();
 
-        mTemperatureDataset.removeAllSeries();
-        mTimeSeriesTemperature.clear();
-
         var plot = getPlot();
         resetPlot(plot);
 
@@ -124,7 +107,6 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
             mTimeSeriesX.add(minute, o.ext().getDeltaX());
             mTimeSeriesY.add(minute, o.ext().getDeltaY());
             mTimeSeriesZ.add(minute, o.ext().getDelta2d());
-            mTimeSeriesTemperature.add(minute, o.getTemperature());
         });
 
         var renderer = plot.getRenderer();
@@ -166,9 +148,6 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
             renderer.setSeriesPaint(index, Color.BLUE);
             renderer.setSeriesStroke(index, avgStroke);
         }
-
-        mTemperatureDataset.addSeries(mTimeSeriesTemperature);
-        mSecondaryRenderer.setSeriesPaint(mTemperatureDataset.getSeriesIndex(mTimeSeriesTemperature.getKey()), Color.GRAY);
     }
 
 //    private void plotAlarmIndicator(BComponent component, double value, Color color) {

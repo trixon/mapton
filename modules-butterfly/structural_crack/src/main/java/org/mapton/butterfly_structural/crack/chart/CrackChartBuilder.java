@@ -20,11 +20,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.axis.AxisLocation;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
@@ -33,7 +29,6 @@ import org.mapton.butterfly_structural.crack.CrackManager;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.CircularInt;
 import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -42,21 +37,10 @@ import se.trixon.almond.util.MathHelper;
 public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
 
     private final CircularInt mColorCircularInt = new CircularInt(0, 5);
-    private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
-    private final NumberAxis mTemperatureAxis = new NumberAxis("°C");
-    private final TimeSeriesCollection mTemperatureDataset = new TimeSeriesCollection();
-    private final TimeSeries mTimeSeriesTemperature = new TimeSeries("°C");
     private final TimeSeries mTimeSeriesZ = new TimeSeries("Δ µε");
 
     public CrackChartBuilder() {
         initChart("mm", null);
-
-        var plot = getPlot();
-        plot.setRangeAxis(2, mTemperatureAxis);
-        plot.setDataset(2, mTemperatureDataset);
-        plot.mapDatasetToRangeAxis(2, 2);
-        plot.setRangeAxisLocation(2, AxisLocation.BOTTOM_OR_RIGHT);
-        plot.setRenderer(2, mSecondaryRenderer);
     }
 
     @Override
@@ -97,16 +81,11 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
     public synchronized void updateDataset(BStructuralCrackPoint p) {
         mTimeSeriesZ.clear();
 
-        mTemperatureDataset.removeAllSeries();
-        mTimeSeriesTemperature.clear();
-
         var plot = getPlot();
         resetPlot(plot);
 
         plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
-
-        updateDatasetTemperature(p);
 
         var single = true;
         if (single) {
@@ -160,19 +139,5 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
         renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
 
         setRange(1.05, CrackHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.HEIGHT));
-    }
-
-    private void updateDatasetTemperature(BStructuralCrackPoint p) {
-        p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = ChartHelper.convertToMinute(o.getDate());
-            if (MathHelper.isBetween(-40d, +40d, o.getTemperature())) {
-                mTimeSeriesTemperature.addOrUpdate(minute, o.getTemperature());
-            }
-        });
-
-        if (!mTimeSeriesTemperature.isEmpty()) {
-            mTemperatureDataset.addSeries(mTimeSeriesTemperature);
-            mSecondaryRenderer.setSeriesPaint(mTemperatureDataset.getSeriesIndex(mTimeSeriesTemperature.getKey()), Color.GRAY);
-        }
     }
 }
