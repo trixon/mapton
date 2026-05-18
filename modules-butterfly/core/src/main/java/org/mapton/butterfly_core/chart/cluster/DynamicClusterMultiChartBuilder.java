@@ -26,7 +26,6 @@ import java.util.function.Function;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.entity.LegendItemEntity;
 import org.jfree.chart.entity.XYItemEntity;
@@ -70,10 +69,9 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BClusterCha
             updateDataset(p);
             setTitle(p);
             var plot = getPlot();
-            var dateAxis = (DateAxis) plot.getDomainAxis();
 
             if (getPointSize() > 0) {
-                dateAxis.setRange(DateHelper.convertToDate(mDateFirst), DateHelper.convertToDate(mDateLast));
+                setDateRangeBySettings(plot, p);
 
                 plot.clearRangeMarkers();
 

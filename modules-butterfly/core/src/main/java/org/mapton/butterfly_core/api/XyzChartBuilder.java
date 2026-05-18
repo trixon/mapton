@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -61,6 +62,8 @@ import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
+import org.mapton.core.api.ChartOptionsManager;
+import org.mapton.core.api.ChartStartPoint;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.DateHelper;
@@ -80,6 +83,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     protected Date mDateEnd;
     protected Date mDateNull;
     protected final MinMaxCollection mMinMaxCollection = new MinMaxCollection();
+    private final ChartOptionsManager mChartOptionsManager = ChartOptionsManager.getInstance();
     private ChartPanel mChartPanel;
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private Date mDefaultDate;
@@ -299,6 +303,37 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         plot.clearDomainMarkers();
         plot.clearAnnotations();
         mMinMaxCollection.reset();
+    }
+
+    public void setDateRangeBySettings(XYPlot plot, BBaseControlPoint p) {
+        var dateAxis = (DateAxis) plot.getDomainAxis();
+        var now = LocalDateTime.now();
+        var endDate = now.plusDays(1);
+        var chartStartPoint = mChartOptionsManager.getDatePeriod();
+        LocalDateTime startDate;
+
+        try {
+            if (!mChartOptionsManager.isDateEndTodayProperty()) {
+                endDate = p.getDateLatest().plusDays(1);
+            }
+
+            if (chartStartPoint == ChartStartPoint.FIRST) {
+                if (p instanceof BXyzPoint xyzPoint) {
+                    startDate = xyzPoint.extOrNull().getDateFirst();
+                } else {
+                    startDate = LocalDateTime.of(1970, Month.JANUARY, 1, 0, 0);
+                }
+            } else if (chartStartPoint == ChartStartPoint.ZERO) {
+                startDate = p.getDateZero().atStartOfDay();
+            } else {
+                startDate = now.minusMonths(chartStartPoint.getMonths());
+            }
+            dateAxis.setRange(DateHelper.convertToDate(startDate), DateHelper.convertToDate(endDate));
+        } catch (Exception e) {
+            startDate = now.minusMonths(chartStartPoint.getMonths());
+            endDate = now.plusDays(1);
+            dateAxis.setRange(DateHelper.convertToDate(startDate), DateHelper.convertToDate(endDate));
+        }
     }
 
     public void setDateRangeNullLast(XYPlot plot, BBaseControlPoint p, Date dateNull, Date dateEnd) {
