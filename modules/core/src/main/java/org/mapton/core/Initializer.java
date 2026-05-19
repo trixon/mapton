@@ -167,6 +167,7 @@ public class Initializer implements Runnable {
                 map.put("grid", new FileChooser.ExtensionFilter("Mapton Grid (*.grid)", "*.grid"));
                 map.put("png", new FileChooser.ExtensionFilter("%s (*.png)".formatted(Dict.IMAGE.toString()), "*.png"));
                 map.put("pdf", new FileChooser.ExtensionFilter("Portable Document Format (*.pdf)", "*.pdf"));
+                map.put("zip", new FileChooser.ExtensionFilter("Zip file (*.zip)", "*.zip"));
             });
 
             Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {

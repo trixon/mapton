@@ -18,7 +18,9 @@ package org.mapton.core.api.ui;
 import com.dlsc.gemsfx.Spacer;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -64,9 +66,15 @@ public class MPresetPopOver extends MPopOver {
     private final ObjectProperty<ObservableList<DefaultEditableListItem>> mItemsRawProperty = new SimpleObjectProperty<>();
     private final Preferences mPreferences;
     private final MPresetActions mPresetActions;
+    private static final HashMap<String, ArrayList<String>> sTypeToItems = new HashMap<>();
+
+    public static HashMap<String, ArrayList<String>> getTypeToItems() {
+        return sTypeToItems;
+    }
 
     public MPresetPopOver(MPresetActions presetActions, String parent, String path) {
         mPreferences = NbPreferences.forModule(presetActions.getClass()).node(parent).node(path);
+        sTypeToItems.computeIfAbsent(parent, k -> new ArrayList<>()).add(mPreferences.absolutePath());
         mPresetActions = presetActions;
         mItemsFilteredProperty.set(FXCollections.observableArrayList());
         mItemsRawProperty.set(FXCollections.observableArrayList());

@@ -42,7 +42,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.lang3.SystemUtils;
-import se.trixon.almond.nbp.FileChooserHelper;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
 import org.mapton.api.MKey;
@@ -59,6 +58,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
+import se.trixon.almond.nbp.FileChooserHelper;
 import se.trixon.almond.nbp.dialogs.NbSnapHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
@@ -117,6 +117,7 @@ public final class MapTopComponent extends MTopComponent {
         map.put("png", new FileNameExtensionFilter("%s (*.png)".formatted(Dict.IMAGE.toString()), "png"));
         map.put("txt", new FileNameExtensionFilter("%s (*.txt)".formatted(Dict.TEXT.toString()), "txt"));
         map.put("pdf", new FileNameExtensionFilter("Portable Document Format (*.pdf)", "pdf"));
+        map.put("zip", new FileNameExtensionFilter("Zip file (*.zip)", "zip"));
 
         //TODO Remove once no longer needed
         SimpleDialog.getExtensionFilters().putAll(map);
