@@ -13,33 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_core.loader;
+package org.mapton.butterfly_core.commands;
 
+import net.lingala.zip4j.exception.ZipException;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MCommandBoxItem;
-import org.mapton.api.MCommandBoxItemSystem;
+import org.mapton.core.api.ui.MPresetPopOver;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MCommandBoxItem.class)
-public class CloseButterflyCommandBoxItem extends MCommandBoxItemSystem {
+public class ExportPresetFilterCommandBoxItem extends BaseExportPresetCommandBoxItem {
 
-    public CloseButterflyCommandBoxItem() {
-    }
-
-    @Override
-    public String getParent() {
-        return "Butterfly";
+    public ExportPresetFilterCommandBoxItem() {
     }
 
     @Override
     public Action getAction() {
-        return new Action("%s Butterfly (%s)".formatted(Dict.CLOSE.toString(), Dict.RESTART.toLower()), actionEvent -> {
-            ButterflyOpener.getInstance().close();
+        return new Action("Filter", actionEvent -> {
+            try {
+                export(MPresetPopOver.PARENT_NODE_FILTER);
+            } catch (ZipException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         });
     }
 

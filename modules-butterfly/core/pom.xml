@@ -58,8 +58,11 @@ limitations under the License.
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-filesystems-nb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -72,10 +75,6 @@ limitations under the License.
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-windows</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-dialogs</artifactId>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
