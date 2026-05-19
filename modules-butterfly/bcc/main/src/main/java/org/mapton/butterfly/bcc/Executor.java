@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -145,7 +146,7 @@ public class Executor {
             var className = mConfig.getClasses()[i];
             var arg = mConfig.getClassArgs()[i];
             System.out.println("");
-            System.out.println("Load: " + className);
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH.mm.ss")) + "  Load: " + className);
             System.out.println("Args: " + arg);
             if (Strings.CI.startsWith(arg, "disabled")) {
                 System.out.println("continue");
