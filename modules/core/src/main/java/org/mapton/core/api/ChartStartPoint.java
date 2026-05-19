@@ -22,26 +22,30 @@ import java.time.LocalDateTime;
  * @author Patrik Karlström
  */
 public enum ChartStartPoint {
-    FIRST("Sedan första", -1),
     ZERO("Sedan nollmätning", -1),
-    LATEST_03("Senaste 3 månaderna", 3),
-    LATEST_06("Senaste 6 månaderna", 6),
-    LATEST_12("Senaste 12 månaderna", 12),
-    LATEST_24("Senaste 24 månaderna", 24);
-    private final int mMonths;
+    LATEST_01("Senaste veckan", 1),
+    LATEST_02("Senaste två veckorna", 2),
+    LATEST_04("Senaste månaden", 4),
+    LATEST_08("Senaste två månaderna", 8),
+    LATEST_12("Senaste tre månaderna", 12),
+    LATEST_26("Senaste halvåret", 26),
+    LATEST_52("Senaste året", 52),
+    LATEST_104("Senaste två åren", 104),
+    FIRST("Sedan första", -1),;
+    private final int mWeeks;
     private final String mTitle;
 
-    private ChartStartPoint(String title, int months) {
+    private ChartStartPoint(String title, int weeks) {
         mTitle = title;
-        mMonths = months;
+        mWeeks = weeks;
     }
 
     public LocalDateTime getStartDate() {
         return null;
     }
 
-    public int getMonths() {
-        return mMonths;
+    public int getWeeks() {
+        return mWeeks;
     }
 
     public String getTitle() {

@@ -18,6 +18,7 @@ package org.mapton.core.ui;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.prefs.Preferences;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.control.Label;
@@ -144,6 +145,9 @@ class ChartPropertiesView extends BorderPane {
 
     private class DateView extends VBox {
 
+        private final SessionComboBox<ChartStartPoint> mPeriodComboBox = new SessionComboBox<>();
+        private final SessionCheckBox mResetOnFirstScb = new SessionCheckBox("💀...och nollställ på första synliga");
+
         public DateView() {
             super(FxHelper.getUIScaled(8));
             createUI();
@@ -154,24 +158,35 @@ class ChartPropertiesView extends BorderPane {
             var headerLabel = new Label("Period");
             var chartEndTodayScb = new SessionCheckBox("Slutdatum idag");
             chartEndTodayScb.setTooltip(new Tooltip("... och inte senaste"));
-            var resetOnFirstScb = new SessionCheckBox("...och nollställ på första synliga");
-            resetOnFirstScb.setDisable(true);
-            var periodComboBox = new SessionComboBox<ChartStartPoint>();
-            periodComboBox.getItems().setAll(ChartStartPoint.values());
-            periodComboBox.valueProperty().bindBidirectional(mChartOptionsManager.datePeriodProperty());
-            resetOnFirstScb.selectedProperty().bindBidirectional(mChartOptionsManager.dateResetOnFirst());
+            mPeriodComboBox.getItems().setAll(ChartStartPoint.values());
+            initBindings();
+
+            mPeriodComboBox.valueProperty().bindBidirectional(mChartOptionsManager.datePeriodProperty());
+            mResetOnFirstScb.selectedProperty().bindBidirectional(mChartOptionsManager.dateResetOnFirst());
             chartEndTodayScb.selectedProperty().bindBidirectional(mChartOptionsManager.dateEndTodayProperty());
 
             var vbox = new VBox(
                     headerLabel,
-                    periodComboBox);
+                    mPeriodComboBox);
 
             getChildren().addAll(vbox,
                     chartEndTodayScb,
-                    resetOnFirstScb
+                    mResetOnFirstScb
             );
 
             BindingHelper.bindWidthForChildrens(this, vbox);
+        }
+
+        private void initBindings() {
+            mResetOnFirstScb.disableProperty().bind(
+                    Bindings.createBooleanBinding(() -> {
+                        var selectedPeriod = mPeriodComboBox.getValue();
+
+                        return selectedPeriod == null
+                                || selectedPeriod == ChartStartPoint.FIRST
+                                || selectedPeriod == ChartStartPoint.ZERO;
+                    }, mPeriodComboBox.valueProperty())
+            );
         }
     }
 }
