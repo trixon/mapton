@@ -24,6 +24,7 @@ import gov.nasa.worldwind.render.ShapeAttributes;
 import java.awt.Color;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -52,7 +53,9 @@ public class MonAttributeManager extends BaseAttributeManager {
             Color.BLUE,
             Color.GREEN,
             Color.RED,
-            Color.BLACK
+            //            Color.BLACK,
+            FxHelper.colorToAwtColor(javafx.scene.paint.Color.CORAL),
+            FxHelper.colorToAwtColor(javafx.scene.paint.Color.ALICEBLUE)
         };
     }
 

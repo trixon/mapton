@@ -130,8 +130,16 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
                     o2.getMeasuredX(), o2.getMeasuredY(), o2.getMeasuredZ())) {
 
             }
-            var x = o1.getMeasuredX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * mScale3dP;
-            var y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * mScale3dP;
+            var x = p.getZeroX();
+            var y = p.getZeroY();
+            try {
+                x = o1.getMeasuredX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * mScale3dP;
+            } catch (Exception e) {
+            }
+            try {
+                y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * mScale3dP;
+            } catch (Exception e) {
+            }
             var z = o1.getMeasuredZ()
                     + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * mScale3dH
                     + TopoLayerBundle.getZOffset();

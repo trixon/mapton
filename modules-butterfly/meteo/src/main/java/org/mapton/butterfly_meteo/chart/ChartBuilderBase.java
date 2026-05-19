@@ -57,7 +57,9 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BMeteoPoint> {
             setTitle(p);
             var plot = getPlot();
             updateDataset(p);
-            setDateRangeBySettings(plot, p);
+            if (isCompleteView()) {
+                setDateRangeBySettings(plot, p);
+            }
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);
 
@@ -81,4 +83,5 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BMeteoPoint> {
 //        String delta = p.ext().deltaZero().getDelta1(0);
 //        getRightSubTextTitle().setText("Δ " + delta);
     }
+
 }

@@ -65,9 +65,6 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         mDateNull = DateHelper.convertToDate(p.ext().getDateFirst());
         if (isCompleteView()) {
             setDateRangeBySettings(plot, p);
-
-//            dateAxis.setRange(DateHelper.convertToDate(p.ext().getDateFirst()), nowAsDate);
-//            setRange(1.05, p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
         } else {
             var sb = new StringBuilder();
             if (p.getDimension() != BDimension._2d) {
