@@ -43,7 +43,7 @@ public class DoOnStart implements Runnable {
         }, ButterflyFileOpener.class.getName());
 
         Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED, () -> {
-            SystemHelper.runLaterDelayed(5000, () -> {
+            SystemHelper.runLaterDelayed(15_000, () -> {
                 ButterflyOpener.getInstance().restore();
             });
         });
