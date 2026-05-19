@@ -23,10 +23,12 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 import org.apache.commons.numbers.core.Precision;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -67,6 +69,7 @@ import org.mapton.core.api.ChartStartPoint;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.DateHelper;
+import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.MinMaxCollection;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -206,6 +209,17 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         return mRecentDaysDefault;
     }
 
+    public LocalDateTime getResetOnFirstDate() {
+        var mManager = ChartOptionsManager.getInstance();
+        if (mManager.isDateResetOnFirst()) {
+            if (mManager.getDatePeriod() != ChartStartPoint.ZERO) {
+                return LocalDateTime.now().minusWeeks(mManager.getDatePeriod().getWeeks());
+            }
+        }
+
+        return null;
+    }
+
     public TextTitle getRightSubTextTitle() {
         return mRightSubTextTitle;
     }
@@ -326,14 +340,41 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
             } else if (chartStartPoint == ChartStartPoint.ZERO) {
                 startDate = p.getDateZero().atStartOfDay();
             } else {
-                startDate = now.minusMonths(chartStartPoint.getMonths());
+                startDate = now.minusWeeks(chartStartPoint.getWeeks());
             }
             dateAxis.setRange(DateHelper.convertToDate(startDate), DateHelper.convertToDate(endDate));
         } catch (Exception e) {
-            startDate = now.minusMonths(chartStartPoint.getMonths());
+            startDate = now.minusWeeks(chartStartPoint.getWeeks());
             endDate = now.plusDays(1);
-            dateAxis.setRange(DateHelper.convertToDate(startDate), DateHelper.convertToDate(endDate));
+            if (startDate.isBefore(endDate)) {
+                dateAxis.setRange(DateHelper.convertToDate(startDate), DateHelper.convertToDate(endDate));
+            }
         }
+
+        if (mChartOptionsManager.isDateResetOnFirst()
+                && !Set.of(ChartStartPoint.FIRST, ChartStartPoint.ZERO).contains(chartStartPoint)) {
+            try {
+                dateAxis.setRange(DateHelper.convertToDate(startDate.minusDays(2)), DateHelper.convertToDate(endDate));
+            } catch (Exception e) {
+                //nvm
+            }
+
+            var stroke = new BasicStroke(10.0f);
+            var color = GraphicsHelper.colorAddAlpha(Color.BLACK, 60);
+            var minute = ChartHelper.convertToMinute(startDate);
+            var marker = new ValueMarker(minute.getFirstMillisecond(), color, stroke);
+            var font = new Font("Serif", Font.BOLD, SwingHelper.getUIScaled(24));
+            marker.setLabel("💀");
+            marker.setPaint(color);
+            marker.setLabelPaint(Color.YELLOW);
+            marker.setLabelAnchor(RectangleAnchor.CENTER);
+            marker.setLabelTextAnchor(TextAnchor.CENTER);
+            marker.setLabelFont(font);
+
+            plot.addDomainMarker(marker);
+        }
+
+        resetAtFirstVisibleConditionally(plot);
     }
 
     public void setDateRangeNullLast(XYPlot plot, BBaseControlPoint p, Date dateNull, Date dateEnd) {
@@ -484,6 +525,43 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
             return mDefaultDate;
         } else {
             return date;
+        }
+    }
+
+    private synchronized void resetAtFirstVisibleConditionally(XYPlot plot) {
+        var chartStartPoint = mChartOptionsManager.getDatePeriod();
+        if (!mChartOptionsManager.isDateResetOnFirst()
+                || Set.of(ChartStartPoint.FIRST, ChartStartPoint.ZERO).contains(chartStartPoint)) {
+            return;
+        }
+        var startDate = LocalDateTime.now().minusWeeks(chartStartPoint.getWeeks());
+        var startMillis = startDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+        for (var dataset : plot.getDatasets().values()) {
+            if (dataset instanceof TimeSeriesCollection timeSeriesCollection) {
+                for (int i = 0; i < timeSeriesCollection.getSeriesCount(); i++) {
+                    var series = timeSeriesCollection.getSeries(i);
+                    series.setNotify(false);
+                    Double offset = null;
+                    for (int j = 0; j < series.getItemCount(); j++) {
+                        var item = series.getDataItem(j);
+                        var period = item.getPeriod();
+                        var itemDate = period.getEnd();
+
+                        if (itemDate.getTime() > startMillis) {
+                            var currentValue = item.getValue();
+                            if (currentValue != null) {
+                                if (offset == null) {
+                                    offset = currentValue.doubleValue();
+                                }
+                                var newValue = currentValue.doubleValue() - offset;
+                                series.update(period, newValue);
+                            }
+                        }
+                    }
+                    series.setNotify(true);
+                }
+            }
         }
     }
 
