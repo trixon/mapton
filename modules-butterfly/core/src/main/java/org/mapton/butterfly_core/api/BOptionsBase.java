@@ -25,6 +25,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.OptionsBase;
@@ -44,6 +45,9 @@ public abstract class BOptionsBase<T> extends OptionsBase {
     public static final int DEFAULT_PLOT_DISTANCE = 15;
     public static final boolean DEFAULT_PLOT_SELECTED = false;
     public static final boolean DEFAULT_PLOT_SELECTED_PLUS = false;
+    public static final BTrendPeriod DEFAULT_TREND_PERIOD_A = BTrendPeriod.MONTH;
+    public static final BTrendPeriod DEFAULT_TREND_PERIOD_B = BTrendPeriod.ZERO;
+    public static final BTrendPeriod DEFAULT_TREND_PERIOD_C = BTrendPeriod.QUARTER;
     private StringProperty mColorByProxyProperty;
     private final StringProperty mGraphicsProperty = new SimpleStringProperty(DEFAULT_GRAPHICS);
     private final SimpleObjectProperty<LabelBy.Operations> mLabelByOperationProperty = new SimpleObjectProperty<>();
@@ -55,8 +59,15 @@ public abstract class BOptionsBase<T> extends OptionsBase {
     private final BooleanProperty mPlotSelectedPlusProperty = new SimpleBooleanProperty(DEFAULT_PLOT_SELECTED_PLUS);
     private final BooleanProperty mPlotSelectedProperty = new SimpleBooleanProperty(DEFAULT_PLOT_SELECTED);
     private StringProperty mPointByProxyProperty;
+    private final ObjectProperty<BTrendPeriod> mTrendPeriodAProperty = new SimpleObjectProperty<>(DEFAULT_TREND_PERIOD_A);
+    private StringProperty mTrendPeriodAProxyProperty;
+    private final ObjectProperty<BTrendPeriod> mTrendPeriodBProperty = new SimpleObjectProperty<>(DEFAULT_TREND_PERIOD_B);
+    private StringProperty mTrendPeriodBProxyProperty;
+    private final ObjectProperty<BTrendPeriod> mTrendPeriodCProperty = new SimpleObjectProperty<>(DEFAULT_TREND_PERIOD_C);
+    private StringProperty mTrendPeriodCProxyProperty;
 
     public BOptionsBase() {
+        initTrendPeriodProxyProperties();
     }
 
     public StringProperty colorByProxyProperty() {
@@ -93,6 +104,18 @@ public abstract class BOptionsBase<T> extends OptionsBase {
         return NbPreferences.forModule(getClass()).node(path);
     }
 
+    public BTrendPeriod getTrendPeriodA() {
+        return mTrendPeriodAProperty.get();
+    }
+
+    public BTrendPeriod getTrendPeriodB() {
+        return mTrendPeriodBProperty.get();
+    }
+
+    public BTrendPeriod getTrendPeriodCX() {
+        return mTrendPeriodCProperty.get();
+    }
+
     public StringProperty graphicsProperty() {
         return mGraphicsProperty;
     }
@@ -103,6 +126,9 @@ public abstract class BOptionsBase<T> extends OptionsBase {
         sessionManager.register(getKeyOptions("colorBy"), mColorByProxyProperty);
         sessionManager.register(getKeyOptions("labelBy"), mLabelByProxyProperty);
         sessionManager.register(getKeyOptions("graphics"), mGraphicsProperty);
+        sessionManager.register(getKeyOptions("trendPeriondA"), mTrendPeriodAProxyProperty);
+        sessionManager.register(getKeyOptions("trendPeriondB"), mTrendPeriodBProxyProperty);
+        sessionManager.register(getKeyOptions("trendPeriondC"), mTrendPeriodCProxyProperty);
         sessionManager.register(getKeyOptions("plotAnnotatiion"), mPlotAnnotationProperty);
         sessionManager.register(getKeyOptions("plotSelected"), mPlotSelectedProperty);
         sessionManager.register(getKeyOptions("plotSelectedPlus"), mPlotSelectedPlusProperty);
@@ -197,6 +223,18 @@ public abstract class BOptionsBase<T> extends OptionsBase {
         }
     }
 
+    public ObjectProperty<BTrendPeriod> trendPeriodAProperty() {
+        return mTrendPeriodAProperty;
+    }
+
+    public ObjectProperty<BTrendPeriod> trendPeriodBProperty() {
+        return mTrendPeriodBProperty;
+    }
+
+    public ObjectProperty<BTrendPeriod> trendPeriodCProperty() {
+        return mTrendPeriodCProperty;
+    }
+
     protected <E extends Enum<E>> void initColorProxyProperty(ObjectProperty<E> objectProperty, Class<E> enumClass) {
         mColorByProxyProperty = BindingHelper.createStringEnumProxyProperty(objectProperty, enumClass);
     }
@@ -209,4 +247,9 @@ public abstract class BOptionsBase<T> extends OptionsBase {
         mPointByProxyProperty = BindingHelper.createStringEnumProxyProperty(objectProperty, enumClass);
     }
 
+    protected void initTrendPeriodProxyProperties() {
+        mTrendPeriodAProxyProperty = BindingHelper.createStringEnumProxyProperty(mTrendPeriodAProperty, BTrendPeriod.class);
+        mTrendPeriodBProxyProperty = BindingHelper.createStringEnumProxyProperty(mTrendPeriodBProperty, BTrendPeriod.class);
+        mTrendPeriodCProxyProperty = BindingHelper.createStringEnumProxyProperty(mTrendPeriodCProperty, BTrendPeriod.class);
+    }
 }

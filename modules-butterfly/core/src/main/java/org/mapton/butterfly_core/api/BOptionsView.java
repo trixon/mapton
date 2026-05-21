@@ -26,6 +26,7 @@ import javafx.scene.layout.HBox;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.ui.MPresetActions;
+import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.core.api.ui.MPresetPopOver;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MOptionsView;
@@ -34,6 +35,7 @@ import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.SliderPane;
 import se.trixon.almond.util.fx.session.SessionCheckBox;
+import se.trixon.almond.util.fx.session.SessionComboBox;
 
 /**
  *
@@ -47,6 +49,13 @@ public abstract class BOptionsView extends MOptionsView {
     protected final MenuButton mLabelMenuButton = new MenuButton();
     protected final Label mPointLabel = new Label(Dict.Geometry.POINT.toString());
     protected MPresetPopOver mPresetPopOver;
+    protected GridPane mTrendGridPane = new GridPane(FxHelper.getUIScaled(8), FxHelper.getUIScaled(2));
+    protected final Label mTrendPeriodALabel = new Label("Trendperiod");
+    protected final SessionComboBox<BTrendPeriod> mTrendPeriodAScb = new SessionComboBox<>();
+    protected final Label mTrendPeriodBLabel = new Label("Trendreferens");
+    protected final SessionComboBox<BTrendPeriod> mTrendPeriodBScb = new SessionComboBox<>();
+    protected final Label mTrendPeriodCLabel = new Label("Trendperiod C");
+    protected final SessionComboBox<BTrendPeriod> mTrendPeriodCScb = new SessionComboBox<>();
     private GridPane mBottomPane;
     private SliderPane mDistanceSliderPane;
     @Deprecated(forRemoval = true)
@@ -185,6 +194,10 @@ public abstract class BOptionsView extends MOptionsView {
     }
 
     protected void initSession(BOptionsBase options) {
+        mTrendPeriodAScb.valueProperty().bindBidirectional(options.trendPeriodAProperty());
+        mTrendPeriodBScb.valueProperty().bindBidirectional(options.trendPeriodBProperty());
+//        mTrendPeriodCScb.valueProperty().bindBidirectional(options.trendPeriodCProperty());
+
         mBottomPane.setDisable(false);
         if (options.plotAnnotationProperty() != null) {
             mPlotAnnotationScbx.selectedProperty().bindBidirectional(options.plotAnnotationProperty());
@@ -227,11 +240,20 @@ public abstract class BOptionsView extends MOptionsView {
         mPlotAnnotationScbx.setDisable(true);
         mDistanceSliderPane = new SliderPane("...plus de inom (m)", 50.0, false);
         mDistanceSliderPane.disableProperty().bind(mPlotSelectedScbx.selectedProperty().not());
+        mTrendPeriodAScb.getItems().setAll(BTrendPeriod.values());
+        mTrendPeriodBScb.getItems().setAll(BTrendPeriod.values());
+        mTrendPeriodCScb.getItems().setAll(BTrendPeriod.values());
+        int row = 0;
+        mTrendGridPane.addRow(row++, mTrendPeriodALabel, mTrendPeriodBLabel);
+        mTrendGridPane.addRow(row++, mTrendPeriodAScb, mTrendPeriodBScb);
+        FxHelper.autoSizeColumn(mTrendGridPane, 2);
+        setLabelPadding(mTrendPeriodALabel, mTrendPeriodBLabel);
+        FxHelper.autoSizeRegionHorizontal(mTrendPeriodAScb, mTrendPeriodBScb);
 
         mBottomPane = createGridPane();
         mBottomPane.setDisable(true);
 
-        int row = 0;
+        row = 0;
         var hbox = new HBox(FxHelper.getUIScaled(16.0), mPlotSelectedScbx, mPlotAnnotationScbx, mPlotDebtScbx, mPlotAlarmScbx);
         mBottomPane.addRow(row++, hbox);
         mBottomPane.addRow(row++, mDistanceSliderPane);

@@ -414,6 +414,25 @@ public class LabelBy {
         return result;
     }
 
+    public static String trendDiff(BXyzPoint p, BTrendPeriod period, BComponent component) {
+        var result = "-";
+        HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(component == BComponent.HEIGHT ? BKey.TRENDS_H : BKey.TRENDS_P);
+        HashMap<BTrendPeriod, TrendHelper.Trend> mapPrev = p.getValue(component == BComponent.HEIGHT ? BKey.TRENDS_PREV_H : BKey.TRENDS_PREV_P);
+        if (ObjectUtils.allNotNull(map, mapPrev)) {
+            var trend = map.get(period);
+            var trendPrev = mapPrev.get(period);
+            if (ObjectUtils.allNotNull(trend, trendPrev)) {
+                var value = TrendHelper.getMmPerYear(trend);
+                var valuePrev = TrendHelper.getMmPerYear(trendPrev);
+                if (value != null) {
+                    result = "%.1f".formatted(value - valuePrev);
+                }
+            }
+        }
+
+        return result;
+    }
+
     public static String valueZeroZ(BXyzPoint p) {
         var z = p.getZeroZ();
 

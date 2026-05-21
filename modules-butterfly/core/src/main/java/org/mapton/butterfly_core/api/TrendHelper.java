@@ -86,7 +86,7 @@ public class TrendHelper {
         return null;
     }
 
-    public static Trend createTrend(BXyzPoint p, boolean dayliMean, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function) throws IllegalArgumentException {
+    public static Trend createTrend(BXyzPoint p, boolean dailyMean, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function) throws IllegalArgumentException {
         var timeSeries = new TimeSeries("-");
 
         if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
@@ -98,7 +98,7 @@ public class TrendHelper {
         }
 
         var dataset = new TimeSeriesCollection();
-        if (dayliMean) {
+        if (dailyMean) {
             var dailyValues = new HashMap<Day, ArrayList<Double>>();
             var dailyMedians = new TimeSeries("-");
             for (int i = 0; i < timeSeries.getItemCount(); i++) {

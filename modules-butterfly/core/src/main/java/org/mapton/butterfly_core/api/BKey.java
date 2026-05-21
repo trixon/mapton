@@ -30,5 +30,7 @@ public class BKey {
     public static final String PIN_URL = "pin.url";
     public static final String TRENDS_H = "trendsH";
     public static final String TRENDS_P = "trendsP";
+    public static final String TRENDS_PREV_H = TRENDS_H + "Prev";
+    public static final String TRENDS_PREV_P = TRENDS_P + "Prev";
 
 }
