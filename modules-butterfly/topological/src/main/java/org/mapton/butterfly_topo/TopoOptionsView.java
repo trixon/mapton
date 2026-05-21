@@ -78,6 +78,7 @@ public class TopoOptionsView extends BOptionsView implements MRunnable {
         gp.add(mLabelMenuButton, 0, row++, GridPane.REMAINING, 1);
         gp.addRow(row++, mGraphicLabel);
         gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
+        gp.add(mTrendGridPane, 0, row++, GridPane.REMAINING, 1);
 
         FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
         activateAnnotation();

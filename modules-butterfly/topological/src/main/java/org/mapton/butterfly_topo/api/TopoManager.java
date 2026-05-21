@@ -17,6 +17,7 @@ package org.mapton.butterfly_topo.api;
 
 import com.sun.jna.platform.KeyboardUtils;
 import java.awt.event.KeyEvent;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -289,16 +290,30 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     }
 
     private void populateTrend(BTopoControlPoint p, String mode, BTrendPeriod period, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function) {
-        var trend = TrendHelper.createTrend(p, true, startDate, endDate, function);
-        HashMap<BTrendPeriod, Trend> map = (HashMap<BTrendPeriod, Trend>) p.getValue(mode, new HashMap<>());
-        map.put(period, trend);
-        p.setValue(mode, map);
+        try {
+            var trend = TrendHelper.createTrend(p, true, startDate, endDate, function);
+            HashMap<BTrendPeriod, Trend> map = (HashMap<BTrendPeriod, Trend>) p.getValue(mode, new HashMap<>());
+            map.put(period, trend);
+            p.setValue(mode, map);
+            if (period == BTrendPeriod.FIRST || period == BTrendPeriod.ZERO) {
+                return;
+            }
+            var prevStartDate = startDate.minusDays(Duration.between(startDate, endDate).toDays());
+            var prevEndDate = startDate;
+            var trendPrev = TrendHelper.createTrend(p, true, prevStartDate, prevEndDate, function);
+            HashMap<BTrendPeriod, Trend> mapPrev = (HashMap<BTrendPeriod, Trend>) p.getValue(mode + "Prev", new HashMap<>());
+            mapPrev.put(period, trendPrev);
+            p.setValue(mode + "Prev", mapPrev);
+        } catch (IllegalArgumentException e) {
+            //nvm Not enough data
+        }
     }
 
     private void populateTrends(BTopoControlPoint p) {
         var startDateFirst = p.ext().getDateFirst();
         var startDateZero = p.getDateZero().atStartOfDay();
         var endDate = p.ext().getDateLatest();
+        var startDateMinus12m = endDate.minusMonths(12);
         var startDateMinus6m = endDate.minusMonths(6);
         var startDateMinus3m = endDate.minusMonths(3);
         var startDateMinus1m = endDate.minusMonths(1);
@@ -306,6 +321,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
         populateTrend(p, BTrendPeriod.FIRST, startDateFirst, endDate);
         populateTrend(p, BTrendPeriod.ZERO, startDateZero, endDate);
+        populateTrend(p, BTrendPeriod.YEAR, startDateMinus12m, endDate);
         populateTrend(p, BTrendPeriod.HALF_YEAR, startDateMinus6m, endDate);
         populateTrend(p, BTrendPeriod.QUARTER, startDateMinus3m, endDate);
         populateTrend(p, BTrendPeriod.MONTH, startDateMinus1m, endDate);

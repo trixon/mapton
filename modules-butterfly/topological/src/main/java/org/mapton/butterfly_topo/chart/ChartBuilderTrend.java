@@ -19,11 +19,12 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.function.Function;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.general.DatasetUtils;
 import org.jfree.data.time.TimeSeries;
+import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.types.BComponent;
@@ -33,6 +34,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -55,7 +57,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
     public void updateDataset(BTopoControlPoint p) {
         mTimeSeries.clear();
 
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = getPlot();
         resetPlot(plot);
 
         for (var entry : plot.getDatasets().entrySet()) {
@@ -142,8 +144,16 @@ public class ChartBuilderTrend extends ChartBuilderBase {
                 100,
                 title);
 
-        var plot = (XYPlot) mChart.getPlot();
-        plot.setDataset(index, dataset);
+        var seriesCollection = (XYSeriesCollection) dataset;
+        seriesCollection.setNotify(false);
+        List<XYSeries> xx = seriesCollection.getSeries().stream().map(s -> (XYSeries) s).toList();
+        xx.forEach(s -> s.setNotify(false));
+        var plot = getPlot();
+        try {
+            plot.setDataset(index, dataset);
+        } catch (Exception e) {
+            System.out.println("ERROR in ChartBuilderTrend 1");
+        }
 
         var renderer = new XYLineAndShapeRenderer(true, false);
         renderer.setSeriesPaint(0, color);
@@ -155,6 +165,17 @@ public class ChartBuilderTrend extends ChartBuilderBase {
             return "%.1f mm/år".formatted((val1 - val2) * 1000);
         });
 
-        plot.setRenderer(index, renderer);
+        try {
+            plot.setRenderer(index, renderer);
+        } catch (Exception e) {
+            System.out.println("ERROR in ChartBuilderTrend 2");
+        }
+        mChart.setNotify(true);
+        mChart.fireChartChanged();
+        SwingHelper.runLater(() -> {
+            getChartPanel().validate();
+            getChartPanel().repaint();
+        });
+//        getChartPanel().invalidate();
     }
 }

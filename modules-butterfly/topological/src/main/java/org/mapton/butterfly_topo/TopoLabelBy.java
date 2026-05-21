@@ -22,7 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.LabelBy;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -408,50 +407,29 @@ public enum TopoLabelBy implements LabelBy.Operations {
     VALUE_Z(LabelBy.CAT_VALUE, "Z", p -> {
         return LabelBy.valueZeroZ(p);
     }),
-    TREND_1D_1W(LabelBy.CAT_TREND, "1d " + BTrendPeriod.WEEK.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.WEEK, BComponent.HEIGHT);
+    TREND_1D_A(LabelBy.CAT_TREND, "1d Period", p -> {
+        var options = TopoOptions.getInstance();
+        return LabelBy.trend(p, options.getTrendPeriodA(), BComponent.HEIGHT);
     }),
-    TREND_1D_1M(LabelBy.CAT_TREND, "1d " + BTrendPeriod.MONTH.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.MONTH, BComponent.HEIGHT);
+    TREND_1D_DIFF_C(LabelBy.CAT_TREND, "1d Diff föregående", p -> {
+        var options = TopoOptions.getInstance();
+        return LabelBy.trendDiff(p, options.getTrendPeriodA(), BComponent.HEIGHT);
     }),
-    TREND_1D_3M(LabelBy.CAT_TREND, "1d " + BTrendPeriod.QUARTER.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.QUARTER, BComponent.HEIGHT);
+    TREND_1D_DIFF_AB(LabelBy.CAT_TREND, "1d Diff referens", p -> {
+        var options = TopoOptions.getInstance();
+        return LabelBy.trendDiff(p, options.getTrendPeriodA(), options.getTrendPeriodB(), BComponent.HEIGHT);
     }),
-    TREND_1D_6M(LabelBy.CAT_TREND, "1d " + BTrendPeriod.HALF_YEAR.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.HALF_YEAR, BComponent.HEIGHT);
+    TREND_2D_A(LabelBy.CAT_TREND, "2d Period", p -> {
+        var options = TopoOptions.getInstance();
+        return LabelBy.trend(p, options.getTrendPeriodA(), BComponent.PLANE);
     }),
-    TREND_1D_1Y(LabelBy.CAT_TREND, "1d " + BTrendPeriod.YEAR.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.YEAR, BComponent.HEIGHT);
+    TREND_2D_DIFF_C(LabelBy.CAT_TREND, "2d Diff föregående", p -> {
+        var options = TopoOptions.getInstance();
+        return LabelBy.trendDiff(p, options.getTrendPeriodA(), BComponent.HEIGHT);
     }),
-    TREND_1D_Z(LabelBy.CAT_TREND, "1d " + BTrendPeriod.ZERO.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.ZERO, BComponent.HEIGHT);
-    }),
-    TREND_1D_F(LabelBy.CAT_TREND, "1d " + BTrendPeriod.FIRST.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.FIRST, BComponent.HEIGHT);
-    }),
-    TREND_1D_DIFF_6Z(LabelBy.CAT_TREND, "*1d (%s-%s)".formatted(BTrendPeriod.ZERO.getTitle(), BTrendPeriod.HALF_YEAR.getTitle()), p -> {
-        return LabelBy.trendDiff(p, BTrendPeriod.ZERO, BTrendPeriod.HALF_YEAR, BComponent.HEIGHT);
-    }),
-    TREND_2D_1W(LabelBy.CAT_TREND, "2d " + BTrendPeriod.WEEK.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.WEEK, BComponent.PLANE);
-    }),
-    TREND_2D_1M(LabelBy.CAT_TREND, "2d " + BTrendPeriod.MONTH.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.MONTH, BComponent.PLANE);
-    }),
-    TREND_2D_3M(LabelBy.CAT_TREND, "2d " + BTrendPeriod.QUARTER.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.QUARTER, BComponent.PLANE);
-    }),
-    TREND_2D_6M(LabelBy.CAT_TREND, "2d " + BTrendPeriod.HALF_YEAR.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.HALF_YEAR, BComponent.PLANE);
-    }),
-    TREND_2D_1Y(LabelBy.CAT_TREND, "2d " + BTrendPeriod.YEAR.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.YEAR, BComponent.PLANE);
-    }),
-    TREND_2D_Z(LabelBy.CAT_TREND, "2d " + BTrendPeriod.ZERO.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.ZERO, BComponent.PLANE);
-    }),
-    TREND_2D_F(LabelBy.CAT_TREND, "2d " + BTrendPeriod.FIRST.getTitle(), p -> {
-        return LabelBy.trend(p, BTrendPeriod.FIRST, BComponent.PLANE);
+    TREND_2D_DIFF_AB(LabelBy.CAT_TREND, "2d Diff referens", p -> {
+        var options = TopoOptions.getInstance();
+        return LabelBy.trendDiff(p, options.getTrendPeriodA(), options.getTrendPeriodB(), BComponent.PLANE);
     });
 
     private final String mCategory;

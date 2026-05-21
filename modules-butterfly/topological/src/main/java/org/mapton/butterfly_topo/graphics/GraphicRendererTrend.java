@@ -24,6 +24,7 @@ import gov.nasa.worldwind.render.Box;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.RigidShape;
 import gov.nasa.worldwind.render.airspaces.AbstractAirspace;
 import gov.nasa.worldwind.render.airspaces.BasicAirspaceAttributes;
 import gov.nasa.worldwind.render.airspaces.PartialCappedCylinder;
@@ -32,7 +33,9 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
+import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
@@ -70,28 +73,171 @@ public class GraphicRendererTrend extends GraphicRendererBase {
 
     public void plot(BTopoControlPoint p, Position position) {
         initScales();
-        if (sCheckModel.isChecked(GraphicItem.TREND_1D_STACK)) {
-            plotTrendStack(p, position, BComponent.HEIGHT, GraphicItem.TREND_1D_STACK);
-        }
-        if (sCheckModel.isChecked(GraphicItem.TREND_2D_STACK)) {
-            plotTrendStack(p, position, BComponent.PLANE, GraphicItem.TREND_1D_STACK);
-        }
 
-        if (sCheckModel.isChecked(GraphicItem.TREND_1D_PIE)) {
-            plotTrendPie(p, position, BDimension._1d, GraphicItem.TREND_1D_PIE);
-        }
+        try {
+            if (sCheckModel.isChecked(GraphicItem.TREND_1D_PERIOD)) {
+                plotPeriod(p, position, BComponent.HEIGHT, GraphicItem.TREND_1D_PERIOD);
+            }
 
-        if (sCheckModel.isChecked(GraphicItem.TREND_2D_PIE)) {
-            plotTrendPie(p, position, BDimension._2d, GraphicItem.TREND_2D_PIE);
-        }
+            if (sCheckModel.isChecked(GraphicItem.TREND_1D_PERIODS)) {
+                plotPeriods(p, position, BComponent.HEIGHT, GraphicItem.TREND_1D_PERIODS);
+            }
 
+            if (sCheckModel.isChecked(GraphicItem.TREND_1D_DIFF)) {
+                plotDiff(p, position, BComponent.HEIGHT, GraphicItem.TREND_1D_DIFF);
+            }
+
+            if (sCheckModel.isChecked(GraphicItem.TREND_1D_DIFF_PREV)) {
+                plotDiffPrev(p, position, BComponent.HEIGHT, GraphicItem.TREND_1D_DIFF_PREV);
+            }
+
+//
+            if (sCheckModel.isChecked(GraphicItem.TREND_2D_PERIOD)) {
+                plotPeriod(p, position, BComponent.PLANE, GraphicItem.TREND_2D_PERIOD);
+            }
+
+            if (sCheckModel.isChecked(GraphicItem.TREND_2D_PERIODS)) {
+                plotPeriods(p, position, BComponent.PLANE, GraphicItem.TREND_2D_PERIODS);
+            }
+
+            if (sCheckModel.isChecked(GraphicItem.TREND_2D_DIFF)) {
+                plotDiff(p, position, BComponent.PLANE, GraphicItem.TREND_2D_DIFF);
+            }
+
+            if (sCheckModel.isChecked(GraphicItem.TREND_2D_DIFF_PREV)) {
+                plotDiffPrev(p, position, BComponent.PLANE, GraphicItem.TREND_2D_DIFF_PREV);
+            }
+
+//
+            if (sCheckModel.isChecked(GraphicItem.TREND_1D_STACK)) {
+                plotStack(p, position, BComponent.HEIGHT, GraphicItem.TREND_1D_STACK);
+            }
+            if (sCheckModel.isChecked(GraphicItem.TREND_2D_STACK)) {
+                plotStack(p, position, BComponent.PLANE, GraphicItem.TREND_1D_STACK);
+            }
+
+            if (sCheckModel.isChecked(GraphicItem.TREND_1D_PIE)) {
+                plotPie(p, position, BComponent.HEIGHT, GraphicItem.TREND_1D_PIE);
+            }
+
+            if (sCheckModel.isChecked(GraphicItem.TREND_2D_PIE)) {
+                plotPie(p, position, BComponent.PLANE, GraphicItem.TREND_2D_PIE);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Plot TopoTrends failed at: " + p.getName());
+            System.err.println(e);
+        }
     }
 
     private double getSpeed(TrendHelper.Trend trend) {
         return TrendHelper.getMmPerYear(trend) / 5;
     }
 
-    private void plotTrendPie(BTopoControlPoint p, Position position, BDimension dimension, GraphicItem graphicItem) {
+    private void plotDiff(BTopoControlPoint p, Position position, GraphicItem graphicItem, TrendHelper.Trend trendA, TrendHelper.Trend trendB) {
+        if (ObjectUtils.anyNull(trendA, trendB)) {
+            return;
+        }
+
+        var valueA = TrendHelper.getMmPerYear(trendA);
+        var valueB = TrendHelper.getMmPerYear(trendB);
+        if (valueA != null) {
+            var value = valueA - valueB;
+            var material = ButterflyHelper.getRangeMaterial(value, 10.0);
+            plotShape(position, graphicItem, value, null, material);
+        }
+    }
+
+    private void plotDiff(BTopoControlPoint p, Position position, BComponent component, GraphicItem graphicItem) {
+        HashMap<BTrendPeriod, TrendHelper.Trend> map;
+        if (component == BComponent.HEIGHT) {
+            map = p.getValue(BKey.TRENDS_H);
+        } else {
+            map = p.getValue(BKey.TRENDS_P);
+        }
+
+        if (map == null
+                || isPlotLimitReached(p, graphicItem, position)
+                || (p.getDimension() == BDimension._1d && component == BComponent.PLANE)
+                || (p.getDimension() == BDimension._2d && component == BComponent.HEIGHT)) {
+            return;
+        }
+
+        var trendA = map.get(mOptions.getTrendPeriodA());
+        var trendB = map.get(mOptions.getTrendPeriodB());
+
+        plotDiff(p, position, graphicItem, trendA, trendB);
+    }
+
+    private void plotDiffPrev(BTopoControlPoint p, Position position, BComponent component, GraphicItem graphicItem) {
+        HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(component == BComponent.HEIGHT ? BKey.TRENDS_H : BKey.TRENDS_P);
+        HashMap<BTrendPeriod, TrendHelper.Trend> mapPrev = p.getValue(component == BComponent.HEIGHT ? BKey.TRENDS_PREV_H : BKey.TRENDS_PREV_P);
+
+        if (ObjectUtils.anyNull(map, mapPrev) || isPlotLimitReached(p, graphicItem, position)) {
+            return;
+        }
+
+        var trendA = map.get(mOptions.getTrendPeriodA());
+        var trendB = mapPrev.get(mOptions.getTrendPeriodA());
+
+        plotDiff(p, position, graphicItem, trendA, trendB);
+    }
+
+    private void plotPeriod(BTopoControlPoint p, Position position, BComponent component, GraphicItem graphicItem) {
+        HashMap<BTrendPeriod, TrendHelper.Trend> map;
+        if (component == BComponent.HEIGHT) {
+            map = p.getValue(BKey.TRENDS_H);
+        } else {
+            map = p.getValue(BKey.TRENDS_P);
+        }
+
+        if (map == null
+                || isPlotLimitReached(p, graphicItem, position)
+                || (p.getDimension() == BDimension._1d && component == BComponent.PLANE)
+                || (p.getDimension() == BDimension._2d && component == BComponent.HEIGHT)) {
+            return;
+        }
+
+        var trend = map.get(mOptions.getTrendPeriodA());
+        if (trend != null) {
+            var value = TrendHelper.getMmPerYear(trend);
+            var material = ButterflyHelper.getRangeMaterial(value, 10.0);
+            plotShape(position, graphicItem, value, null, material);
+        }
+    }
+
+    private void plotPeriods(BTopoControlPoint p, Position position, BComponent component, GraphicItem graphicItem) {
+        HashMap<BTrendPeriod, TrendHelper.Trend> map;
+        if (graphicItem == GraphicItem.TREND_1D_PERIODS) {
+            map = p.getValue(BKey.TRENDS_H);
+        } else {
+            map = p.getValue(BKey.TRENDS_P);
+        }
+
+        if (map == null
+                || isPlotLimitReached(p, graphicItem, position)
+                || (p.getDimension() == BDimension._1d && component == BComponent.PLANE)
+                || (p.getDimension() == BDimension._2d && component == BComponent.HEIGHT)) {
+            return;
+        }
+
+        int slices = 5;
+        var step = 72;
+
+        for (int i = 0; i < slices - 0; i++) {
+            var interval = mIndexToIntervalMap.get(i);
+            var pos = WWHelper.movePolar(position, i * step, 0.5);
+            var trend = map.get(interval);
+            var height = 0.5;
+            if (trend != null) {
+                height = Math.abs(TrendHelper.getMmPerYear(trend));
+            }
+            var material = mIntervalToMaterialMap.get(interval);
+            plotShape(pos, graphicItem, 1.0, height, material);
+        }
+    }
+
+    private void plotPie(BTopoControlPoint p, Position position, BComponent component, GraphicItem graphicItem) {
         HashMap<BTrendPeriod, TrendHelper.Trend> map;
         if (graphicItem == GraphicItem.TREND_1D_PIE) {
             map = p.getValue(BKey.TRENDS_H);
@@ -99,10 +245,10 @@ public class GraphicRendererTrend extends GraphicRendererBase {
             map = p.getValue(BKey.TRENDS_P);
         }
 
-        if ((map == null || isPlotLimitReached(p, graphicItem, position))
-                || (p.getDimension() == BDimension._1d && dimension == BDimension._2d)
-                || (p.getDimension() == BDimension._2d && dimension == BDimension._1d)) {
-            return;
+        if (map == null
+                || isPlotLimitReached(p, graphicItem, position)
+                || (p.getDimension() == BDimension._1d && component == BComponent.PLANE)
+                || (p.getDimension() == BDimension._2d && component == BComponent.HEIGHT)) {
         }
 
         int slices = 5;
@@ -133,7 +279,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
             partCyl.setCenter(position);
 
             partCyl.setRadii(innerRadius, outerRadius);
-            if (dimension == BDimension._1d) {
+            if (component == BComponent.HEIGHT) {
                 partCyl.setAltitudes(0.0, 0.25);
             } else {
                 partCyl.setAltitudes(5.0, 5.25);
@@ -150,7 +296,29 @@ public class GraphicRendererTrend extends GraphicRendererBase {
         }
     }
 
-    private void plotTrendStack(BTopoControlPoint p, Position position, BComponent component, GraphicItem graphicItem) {
+    private void plotShape(Position position, GraphicItem graphicItem, Double dZ, Double height, Material material) {
+        if (height == null) {
+            height = 0.4;
+        }
+        var pos = WWHelper.positionFromPosition(position, height * 0.5);
+        var radius = Math.min(maxRadius, Math.abs(dZ) * .1 + 0.05) * .5;
+
+        RigidShape shape;
+        if (dZ > 0) {
+            shape = new Box(pos, radius, height * .5, radius);
+        } else {
+            shape = new Cylinder(pos, height, radius);
+        }
+        var attrs = new BasicShapeAttributes();
+        attrs.setDrawOutline(false);
+        attrs.setInteriorMaterial(material);
+        attrs.setEnableLighting(true);
+        shape.setAttributes(attrs);
+
+        addRenderable(shape, true, graphicItem, sMapObjects);
+    }
+
+    private void plotStack(BTopoControlPoint p, Position position, BComponent component, GraphicItem graphicItem) {
         final var height = 25.0;
         mAltitude = height * .5;
         var minRadius = 0.1;

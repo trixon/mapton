@@ -56,7 +56,7 @@ public class TopoTrendsBuilder extends BTrendsBuilder<BTopoControlPoint> {
         return propertyMap;
     }
 
-    private LinkedHashMap<String, String> populate(HashMap<BTrendPeriod, TrendHelper.Trend> map) {
+    private LinkedHashMap<String, String> populate(HashMap<BTrendPeriod, TrendHelper.Trend> map, String suffix) {
         var resultMap = new LinkedHashMap<String, String>();
         var now = LocalDateTime.now();
         if (map != null) {
@@ -67,7 +67,7 @@ public class TopoTrendsBuilder extends BTrendsBuilder<BTopoControlPoint> {
                     var val1 = trend.function().getValue(ChartHelper.convertToMinute(now.plusYears(1)).getFirstMillisecond());
                     var val2 = trend.function().getValue(ChartHelper.convertToMinute(now).getFirstMillisecond());
                     var speed = "%+.1f mm/år (%d)".formatted((val1 - val2) * 1000, trend.numOfMeas());
-                    resultMap.put(key.getTitle(), speed);
+                    resultMap.put(key.getTitle() + suffix, speed);
                     startMinute = trend.startMinute();
                 }
             }
@@ -78,7 +78,14 @@ public class TopoTrendsBuilder extends BTrendsBuilder<BTopoControlPoint> {
 
     private void populate(BTopoControlPoint p, BComponent component, String cat1, LinkedHashMap<String, Object> propertyMap) {
         var trendKey = component == BComponent.HEIGHT ? BKey.TRENDS_H : BKey.TRENDS_P;
-        for (var entry : populate(p.getValue(trendKey)).entrySet()) {
+        for (var entry : populate(p.getValue(trendKey), "").entrySet()) {
+            var key = entry.getKey();
+            var val = entry.getValue();
+            propertyMap.put(getCatKey(cat1, "%dd, %s".formatted(component.getDimension().getIndex(), key)), val);
+        }
+
+        var trendKeyPrev = component == BComponent.HEIGHT ? BKey.TRENDS_PREV_H : BKey.TRENDS_PREV_P;
+        for (var entry : populate(p.getValue(trendKeyPrev), "***").entrySet()) {
             var key = entry.getKey();
             var val = entry.getValue();
             propertyMap.put(getCatKey(cat1, "%dd, %s".formatted(component.getDimension().getIndex(), key)), val);
