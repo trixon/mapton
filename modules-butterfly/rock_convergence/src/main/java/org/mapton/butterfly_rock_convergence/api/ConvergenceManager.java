@@ -133,46 +133,50 @@ public class ConvergenceManager extends BaseManager<BRockConvergence> {
                         .collect(Collectors.toCollection(ArrayList::new));
 
                 g.ext().setControlPoints(controlPoints);
-                var pairToObservations = convergenceToObservations.get(g.getName()).stream()
-                        .collect(Collectors.groupingBy(item -> item.getP1Name() + "::" + item.getP2Name(), Collectors.toCollection(ArrayList::new)));
+                try {
+                    var pairToObservations = convergenceToObservations.get(g.getName()).stream()
+                            .collect(Collectors.groupingBy(item -> item.getP1Name() + "::" + item.getP2Name(), Collectors.toCollection(ArrayList::new)));
 
-                var pairs = new ArrayList<BRockConvergencePair>();
-                int n = controlPoints.size();
-                var offset = 10.0;//TODO Calculate it?
-                var anchorPoint = g.ext().getAnchorPoint();
-                i:
-                for (int i = 0; i < n; i++) {
-                    j:
-                    for (int j = i + 1; j < n; j++) {
-                        var pointI = controlPoints.get(i);
-                        if (pointI == anchorPoint) {
-                            continue i;
-                        }
-
-                        var pointJ = controlPoints.get(j);
-                        if (pointJ == anchorPoint) {
-                            continue j;
-                        }
-                        var pair = new BRockConvergencePair(g, pointI, pointJ, offset);
-                        var observations = pairToObservations.getOrDefault(pair.getP1().getName() + "::" + pair.getP2().getName(), new ArrayList<>());
-                        observations.sort(Comparator.comparing(BRockConvergenceObservation::getDate));
-                        for (var o : observations) {
-                            o.ext().setParent(g);
-                            o.ext().setPair(pair);
-                            dates.add(o.getDate());
-                            o.ext().setDeltaX(o.getCalculatedConvergence1d());
-                            o.ext().setDeltaY(o.getCalculatedConvergence2d());
-                            o.ext().setDeltaZ(o.getCalculatedConvergence3d());
-                            if (o.isZeroMeasurement()) {
-                                g.ext().setStoredZeroDateTime(o.getDate());
+                    var pairs = new ArrayList<BRockConvergencePair>();
+                    int n = controlPoints.size();
+                    var offset = 10.0;//TODO Calculate it?
+                    var anchorPoint = g.ext().getAnchorPoint();
+                    i:
+                    for (int i = 0; i < n; i++) {
+                        j:
+                        for (int j = i + 1; j < n; j++) {
+                            var pointI = controlPoints.get(i);
+                            if (pointI == anchorPoint) {
+                                continue i;
                             }
+
+                            var pointJ = controlPoints.get(j);
+                            if (pointJ == anchorPoint) {
+                                continue j;
+                            }
+                            var pair = new BRockConvergencePair(g, pointI, pointJ, offset);
+                            var observations = pairToObservations.getOrDefault(pair.getP1().getName() + "::" + pair.getP2().getName(), new ArrayList<>());
+                            observations.sort(Comparator.comparing(BRockConvergenceObservation::getDate));
+                            for (var o : observations) {
+                                o.ext().setParent(g);
+                                o.ext().setPair(pair);
+                                dates.add(o.getDate());
+                                o.ext().setDeltaX(o.getCalculatedConvergence1d());
+                                o.ext().setDeltaY(o.getCalculatedConvergence2d());
+                                o.ext().setDeltaZ(o.getCalculatedConvergence3d());
+                                if (o.isZeroMeasurement()) {
+                                    g.ext().setStoredZeroDateTime(o.getDate());
+                                }
+                            }
+                            pair.ext().setObservationsTimeFiltered(observations);
+                            pairs.add(pair);
                         }
-                        pair.ext().setObservationsTimeFiltered(observations);
-                        pairs.add(pair);
                     }
+                    g.ext().getPairs().clear();
+                    g.ext().getPairs().addAll(pairs);
+                } catch (NullPointerException e) {
+                    System.err.println("No convergenceToObservations for " + g.getName());
                 }
-                g.ext().getPairs().clear();
-                g.ext().getPairs().addAll(pairs);
             }
 
             for (var g : butterfly.rock().getConvergence()) {
@@ -187,22 +191,26 @@ public class ConvergenceManager extends BaseManager<BRockConvergence> {
                     g.setLon(p.getLon());
                 });
 
-                var maxObservationsPerDate = convergenceToObservations.get(g.getName()).stream()
-                        .collect(Collectors.groupingBy(BRockConvergenceObservation::getDate))
-                        .values()
-                        .stream()
-                        .flatMap(entry -> entry.stream()
-                        .max(Comparator.comparingDouble(value -> Math.abs(value.getMeasuredZ())))
-                        .stream())
-                        .sorted(Comparator.comparing(BRockConvergenceObservation::getDate))
-                        .collect(Collectors.toList());
-                maxObservationsPerDate.forEach(o -> o.ext().setDeltaZ(o.ext().getDeltaZ()));
-                g.ext().getObservationsAllRaw().addAll(maxObservationsPerDate);
-                var minDate = maxObservationsPerDate.stream().map(gg -> gg.getDate()).min(LocalDateTime::compareTo);
-                var maxDate = maxObservationsPerDate.stream().map(gg -> gg.getDate()).max(LocalDateTime::compareTo);
-                g.ext().setDateFirst(minDate.orElse(LocalDateTime.MIN));
-                maxDate.ifPresent(date -> g.setDateLatest(date));
-                g.ext().setDateLatest(g.getDateLatest());
+                try {
+                    var maxObservationsPerDate = convergenceToObservations.get(g.getName()).stream()
+                            .collect(Collectors.groupingBy(BRockConvergenceObservation::getDate))
+                            .values()
+                            .stream()
+                            .flatMap(entry -> entry.stream()
+                            .max(Comparator.comparingDouble(value -> Math.abs(value.getMeasuredZ())))
+                            .stream())
+                            .sorted(Comparator.comparing(BRockConvergenceObservation::getDate))
+                            .collect(Collectors.toList());
+                    maxObservationsPerDate.forEach(o -> o.ext().setDeltaZ(o.ext().getDeltaZ()));
+                    g.ext().getObservationsAllRaw().addAll(maxObservationsPerDate);
+                    var minDate = maxObservationsPerDate.stream().map(gg -> gg.getDate()).min(LocalDateTime::compareTo);
+                    var maxDate = maxObservationsPerDate.stream().map(gg -> gg.getDate()).max(LocalDateTime::compareTo);
+                    g.ext().setDateFirst(minDate.orElse(LocalDateTime.MIN));
+                    maxDate.ifPresent(date -> g.setDateLatest(date));
+                    g.ext().setDateLatest(g.getDateLatest());
+                } catch (NullPointerException e) {
+                    System.err.println("No convergenceToObservations for " + g.getName());
+                }
             }
 
             var origins = getAllItems()
@@ -277,24 +285,28 @@ public class ConvergenceManager extends BaseManager<BRockConvergence> {
 
             g.setFrequency(666);
             var dates = new TreeSet<LocalDateTime>();
-            var gDate = g.ext().getObservationRawLast().getDate();
-            for (var b : blasts) {
-                var bDate = b.getDateLatest();
-                var blasAfterMeas = bDate.isAfter(gDate);
-                if (blasAfterMeas) {
-                    var gll = BCoordinatrix.toLatLon(g);
-                    var bll = BCoordinatrix.toLatLon(b);
-                    if (gll.distance(bll) <= 40) {
-                        dates.add(b.getDateLatest().plusHours(12));
+            try {
+                var gDate = g.ext().getObservationRawLast().getDate();
+                for (var b : blasts) {
+                    var bDate = b.getDateLatest();
+                    var blasAfterMeas = bDate.isAfter(gDate);
+                    if (blasAfterMeas) {
+                        var gll = BCoordinatrix.toLatLon(g);
+                        var bll = BCoordinatrix.toLatLon(b);
+                        if (gll.distance(bll) <= 40) {
+                            dates.add(b.getDateLatest().plusHours(12));
 //                        dates.add(b.getDateLatest().toLocalDate());
+                        }
                     }
                 }
-            }
 
-            if (!dates.isEmpty()) {
-                var daysBetween = (int) ChronoUnit.DAYS.between(gDate, dates.first());
-                g.setFrequency(Math.max(1, Math.abs(daysBetween)));
+                if (!dates.isEmpty()) {
+                    var daysBetween = (int) ChronoUnit.DAYS.between(gDate, dates.first());
+                    g.setFrequency(Math.max(1, Math.abs(daysBetween)));
 
+                }
+            } catch (Exception e) {
+                System.err.println("No convergenceToObservations for " + g.getName());
             }
         }
     }
