@@ -75,6 +75,10 @@ public class GraphicRendererGroup extends GraphicRendererBase {
         initScales();
         p.setValue("position", new Position(position.latitude, position.longitude, position.getElevation()));
         mPoints.add(p);
+
+        if ((sCheckModel.isChecked(GraphicItem.CLUSTER_DEFORMATION_LINE) || sCheckModel.isChecked(GraphicItem.CLUSTER_DEFORMATION_SURFACE)) && mPoints.size() > 2) {
+            plot3dOffsetPole(p, p.getValue("position"), true, 0.5, true);
+        }
     }
 
     @Override
@@ -162,7 +166,7 @@ public class GraphicRendererGroup extends GraphicRendererBase {
         var endPositions = new ArrayList<Position>();
 
         for (var p : points) {
-            var positions = plot3dOffsetPoleNoCache(p, p.getValue("position"), true, 0.5, true);
+            var positions = plot3dOffsetPoleNoCache(p, p.getValue("position"), false, 0.5, true);
             startPositions.add(positions[0]);
             endPositions.add(positions[1]);
         }

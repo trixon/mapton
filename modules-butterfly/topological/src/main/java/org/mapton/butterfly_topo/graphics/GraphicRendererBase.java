@@ -104,7 +104,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
     public Position[] plot3dOffsetPoleNoCache(BTopoControlPoint p, Position position, boolean plotEnabled, double scaleZero, boolean plotCurrent) {
         var CURRENT_SIZE = 0.500;
         var ZERO_SIZE = CURRENT_SIZE * scaleZero;
-        var zeroZ = p.getZeroZ();
+        var zeroZ = MathHelper.convertDoubleToDouble(p.getZeroZ());
 
         var startPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.getZOffset());
         var startEllipsoid = new Ellipsoid(startPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
@@ -142,7 +142,8 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
                 y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * mScale3dP;
             } catch (Exception e) {
             }
-            var z = o1.getMeasuredZ()
+
+            var z = MathHelper.convertDoubleToDouble(o1.getMeasuredZ())
                     + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * mScale3dH
                     + TopoLayerBundle.getZOffset();
 
