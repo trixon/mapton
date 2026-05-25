@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_core.commands;
 
+import java.io.IOException;
 import net.lingala.zip4j.exception.ZipException;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MCommandBoxItem;
@@ -27,17 +28,19 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MCommandBoxItem.class)
-public class ExportPresetFilterCommandBoxItem extends BaseExportPresetCommandBoxItem {
+public class PresetImportLayerCommandBoxItem extends BasePresetImportCommandBoxItem {
 
-    public ExportPresetFilterCommandBoxItem() {
+    public PresetImportLayerCommandBoxItem() {
     }
 
     @Override
     public Action getAction() {
-        return new Action("Filter", actionEvent -> {
+        return new Action("Förinställningar - Lageregenskaper", actionEvent -> {
             try {
-                export(MPresetPopOver.PARENT_NODE_FILTER);
+                importx(MPresetPopOver.PARENT_NODE_OPTIONS);
             } catch (ZipException ex) {
+                Exceptions.printStackTrace(ex);
+            } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
             }
         });

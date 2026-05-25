@@ -16,15 +16,20 @@
 package org.mapton.butterfly_core.commands;
 
 import java.io.File;
-import java.util.ArrayList;
+import javafx.util.Duration;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Strings;
+import org.controlsfx.control.action.Action;
+import org.mapton.api.MCommandBoxItem;
+import org.mapton.api.MKey;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BBaseCommandBoxItem;
-import org.mapton.core.api.ui.MPresetPopOver;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.modules.Places;
+import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.FileChooserHelper;
 import se.trixon.almond.util.Dict;
@@ -33,20 +38,29 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public abstract class BaseExportPresetCommandBoxItem extends BBaseCommandBoxItem {
+@ServiceProvider(service = MCommandBoxItem.class)
+public class PresetExportCommandBoxItem extends BBaseCommandBoxItem {
 
-    public BaseExportPresetCommandBoxItem() {
+    public PresetExportCommandBoxItem() {
     }
 
     public void export(String key) throws ZipException {
-        var zipFile = new ZipFile(getFile(key));
+    }
 
-        for (var path : MPresetPopOver.getTypeToItems().getOrDefault(key, new ArrayList<>())) {
-            var dir = new File(Places.getUserDirectory(), "config/Preferences" + path);
-            if (dir.isDirectory()) {
-                zipFile.addFolder(dir);
+    @Override
+    public Action getAction() {
+        return new Action("Förinställningar", actionEvent -> {
+            try {
+                var zipFile = new ZipFile(getFile(getClass().getSimpleName()));
+                var dir = new File(Places.getUserDirectory(), "config/Preferences/org/mapton/butterfly");
+                if (dir.isDirectory()) {
+                    zipFile.addFolder(dir);
+                }
+                Mapton.notification(MKey.NOTIFICATION_FX_INFORMATION, "Export slutförd", zipFile.getFile().toString(), Duration.seconds(5), (Action) null);
+            } catch (ZipException ex) {
+                Exceptions.printStackTrace(ex);
             }
-        }
+        });
     }
 
     @Override
