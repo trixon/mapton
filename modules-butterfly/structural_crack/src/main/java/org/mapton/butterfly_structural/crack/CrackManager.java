@@ -88,6 +88,25 @@ public class CrackManager extends BaseManager<BStructuralCrackPoint> {
                 if (!observations.isEmpty()) {
                     p.ext().setDateFirst(observations.getFirst().getDate());
                     p.setDateLatest(observations.getLast().getDate());
+                    Double firstX = null;
+                    Double firstY = null;
+
+                    for (int i = 0; i < observations.size(); i++) {
+                        var o = observations.get(i);
+                        if (o.getMeasuredZ() == null) {
+                            if (i == 0) {
+                                firstX = o.getMeasuredX();
+                                firstY = o.getMeasuredY();
+                            }
+                            var dx = o.getMeasuredX() - firstX;
+                            var dy = o.getMeasuredY() - firstY;
+                            var dz = Math.hypot(dx, dy);
+                            o.setMeasuredX(null);
+                            o.setMeasuredY(null);
+                            o.setMeasuredZ(dz);
+                        }
+//                        o.setMeasuredZ(o.getMeasuredZ() / 1000.0);
+                    }
                 } else {
                     p.ext().setDateFirst(LocalDateTime.MIN);
                 }

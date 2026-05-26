@@ -20,6 +20,8 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Box;
+import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.RigidShape;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -86,6 +88,59 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     private void plotTrace(BStructuralCrackPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicItem.TRACE, position)) {
+            return;
+        }
+        var reversedList = p.ext().getObservationsTimeFiltered().reversed();
+        var prevDate = LocalDateTime.now();
+        var altitude = 0.0;
+        var prevHeight = 0.0;
+
+        for (int i = 0; i < reversedList.size(); i++) {
+            var o = reversedList.get(i);
+
+            var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
+            var height = timeSpan / 24000.0;
+            if (height <= 0) {
+                continue;
+            }
+            altitude = altitude + height * 0.5 + prevHeight * 0.5;
+            prevDate = o.getDate();
+            prevHeight = height;
+
+            if (o.ext().getDeltaZ() == null) {
+                continue;
+            }
+
+            var pos = WWHelper.positionFromPosition(position, altitude);
+            var maxRadius = 10.0;
+
+            var mScale1dH = 1;
+            var dZ = o.ext().getDeltaZ();
+            var radius = Math.min(maxRadius, Math.abs(dZ * 1000) * mScale1dH + 0.05);
+            var maximus = radius == maxRadius;
+            RigidShape shape;
+            if (dZ > 0) {
+                shape = new Box(pos, radius, height / 2, radius);
+            } else {
+                shape = new Cylinder(pos, height, radius);
+            }
+
+            var alarmLevel = p.ext().getAlarmLevelHeight(o);
+            var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, false, maximus);
+
+            if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
+                attrs = new BasicShapeAttributes(attrs);
+                attrs.setInteriorOpacity(0.25);
+                attrs.setOutlineOpacity(0.20);
+            }
+
+            shape.setAttributes(attrs);
+            addRenderable(shape, true, GraphicItem.TRACE, sMapObjects);
+        }
+    }
+
+    private void plotTraceOld(BStructuralCrackPoint p, Position position) {
         if (isPlotLimitReached(p, GraphicItem.TRACE, position)) {
             return;
         }

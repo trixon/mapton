@@ -73,7 +73,7 @@ public class CrackLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Mapton.addWarning(Bundle.CTL_CrackAction(), 5), SDict.STRUCTURAL.toString(), "CrackTopComponent");
+        initCommons(Mapton.addWarning(Bundle.CTL_CrackAction(), 0), SDict.STRUCTURAL.toString(), "CrackTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);

@@ -63,14 +63,17 @@ class CrackListCell extends BListCell<BStructuralCrackPoint> {
         }
 
         var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
-        var desc3 = "%s: %s".formatted(dateRolling, p.ext().getDeltaRolling());
-
+//        var desc3 = dateRolling;
+//        if (p.ext().deltaRolling().getDeltaZ() != null) {
+//            desc3 = "%s: %.2f".formatted(dateRolling, p.ext().deltaRolling().getDeltaZ());
+//        }
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
-        var desc4 = "%s: %s".formatted(dateZero, p.ext().getDeltaZero());
+        var dz = p.ext().deltaZero().getDeltaZ() * 1000;
+        var desc4 = "%s: %.2f mm".formatted(dateZero, dz);
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(dateSB.toString());
-        mDesc3Label.setText(desc3);
+//        mDesc3Label.setText(desc3);
         mDesc4Label.setText(desc4);
     }
 
@@ -79,7 +82,7 @@ class CrackListCell extends BListCell<BStructuralCrackPoint> {
                 mHeaderLabel,
                 mDesc1Label,
                 mDesc2Label,
-                mDesc3Label,
+                //                mDesc3Label,
                 mDesc4Label
         );
 

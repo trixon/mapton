@@ -35,7 +35,8 @@ public class CrackHelper {
     }
 
     public static int getAlarmLevel(BStructuralCrackPoint p) {
-        return p.ext().getAlarmLevel(BComponent.HEIGHT, p.ext().getObservationFilteredLast().ext().getDeltaZ() * getScaleFactor(p));
+        var factor = p.getUnit().equalsIgnoreCase("m") ? 1 : 1000;
+        return p.ext().getAlarmLevel(BComponent.HEIGHT, p.ext().getObservationFilteredLast().ext().getDeltaZ() * factor);
     }
 
     public static int getScaleFactor(BStructuralCrackPoint p) {
