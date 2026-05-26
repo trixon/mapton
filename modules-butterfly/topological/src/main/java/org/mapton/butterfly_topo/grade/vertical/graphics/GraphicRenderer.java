@@ -237,7 +237,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             RigidShape rigidShape;
 
             if (bearing == null || Double.isNaN(bearing)) {
-                rigidShape = new Ellipsoid(pos, radius, height * .5, radius);
+                rigidShape = new Ellipsoid(pos, radius, height / 2, radius);
             } else {
                 var angle = 5.0;
                 rigidShape = new Wedge(pos, Angle.fromDegrees(angle), height, radius);

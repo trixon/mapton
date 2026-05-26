@@ -131,7 +131,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
             RigidShape shape;
             if (dZ > 0) {
-                shape = new Box(pos, radius, height, radius);
+                shape = new Box(pos, radius, height / 2, radius);
             } else {
                 shape = new Cylinder(pos, height, radius);
             }
@@ -241,7 +241,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         height = Math.max(height, 0.1);
         RigidShape shape;
         if (z > 0) {
-            shape = new Box(position, radius, height, radius);
+            shape = new Box(position, radius, height / 2, radius);
         } else {
             shape = new Cylinder(position, height, radius);
         }

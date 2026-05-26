@@ -125,7 +125,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             var maximus = radius == maxRadius;
             RigidShape shape;
             if (dZ > 0) {
-                shape = new Box(pos, radius, height, radius);
+                shape = new Box(pos, radius, height / 2, radius);
             } else {
                 shape = new Cylinder(pos, height, radius);
             }

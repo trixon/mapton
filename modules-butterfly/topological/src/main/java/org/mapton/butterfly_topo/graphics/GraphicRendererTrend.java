@@ -305,7 +305,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
 
         RigidShape shape;
         if (dZ > 0) {
-            shape = new Box(pos, radius, height * .5, radius);
+            shape = new Box(pos, radius, height / 2, radius);
         } else {
             shape = new Cylinder(pos, height, radius);
         }
@@ -341,14 +341,14 @@ public class GraphicRendererTrend extends GraphicRendererBase {
                 if (component == BComponent.HEIGHT) {
                     if (p.getDimension() == BDimension._1d) {
                         if (speed > 0) {
-                            shape = new Box(pos, radius, height * .5, radius);
+                            shape = new Box(pos, radius, height / 2, radius);
                         } else {
                             shape = new Cylinder(pos, height, radius);
                         }
                     } else {
                         if (speed > 0) {
                             pos = WWHelper.movePolar(pos, 90.0, radius, pos.getElevation());
-                            shape = new Box(pos, radius, height * .5, radius);
+                            shape = new Box(pos, radius, height / 2, radius);
                         } else {
                             airspace = new PartialCappedCylinder(pos, radius, Angle.fromDegrees(0.0), Angle.fromDegrees(180.0));
                         }

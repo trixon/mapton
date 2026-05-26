@@ -20,6 +20,8 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Box;
+import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.RigidShape;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -110,15 +112,18 @@ public class GraphicRenderer extends GraphicRendererBase {
             var pos = WWHelper.positionFromPosition(position, altitude);
             var maxRadius = 10.0;
 
-            var mScale1dH = 0.02;
+            var mScale1dH = 0.001;
             var dZ = o.ext().getDeltaZ();
             var radius = Math.min(maxRadius, Math.abs(dZ) * mScale1dH + 0.05);
-            var maximus = radius == maxRadius;
+            RigidShape shape;
+            if (dZ > 0) {
+                shape = new Box(pos, radius, height / 2, radius);
+            } else {
+                shape = new Cylinder(pos, height, radius);
+            }
 
-            var cylinder = new Box(pos, radius, height, radius);
             var alarmLevel = p.ext().getAlarmLevelHeight(o);
-            var rise = Math.signum(dZ) > 0;
-            var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, maximus);
+            var attrs = new BasicShapeAttributes(mAttributeManager.getComponentTrace1dAttributes(alarmLevel, false, false));
 
             if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
                 attrs = new BasicShapeAttributes(attrs);
@@ -126,8 +131,8 @@ public class GraphicRenderer extends GraphicRendererBase {
                 attrs.setOutlineOpacity(0.20);
             }
 
-            cylinder.setAttributes(attrs);
-            addRenderable(cylinder, true, GraphicItem.TRACE, sMapObjects);
+            shape.setAttributes(attrs);
+            addRenderable(shape, true, GraphicItem.TRACE, sMapObjects);
         }
     }
 }
