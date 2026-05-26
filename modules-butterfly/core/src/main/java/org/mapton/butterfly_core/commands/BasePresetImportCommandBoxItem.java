@@ -80,7 +80,6 @@ public abstract class BasePresetImportCommandBoxItem extends BBaseCommandBoxItem
     private void copyPropertiesWithStructure(Path sourceDir, Path targetDir, String filter) throws IOException {
         try (Stream<Path> stream = Files.walk(sourceDir)) {
             stream.filter(Files::isRegularFile)
-                    .filter(p -> p.toString().contains(filter))
                     .filter(p -> p.toString().endsWith(".properties"))
                     .forEach(sourceFile -> {
                         try {
@@ -88,7 +87,9 @@ public abstract class BasePresetImportCommandBoxItem extends BBaseCommandBoxItem
                             var targetFileParent = targetDir.resolve(relativePath.getParent() != null ? relativePath.getParent() : Paths.get(""));
                             Files.createDirectories(targetFileParent);
                             var destinationFile = resolveUniqueTargetName(targetFileParent, sourceFile.getFileName().toString());
-                            Files.copy(sourceFile, destinationFile, StandardCopyOption.REPLACE_EXISTING);
+                            if (destinationFile.toString().contains(filter)) {
+                                Files.copy(sourceFile, destinationFile, StandardCopyOption.REPLACE_EXISTING);
+                            }
                         } catch (IOException e) {
                             System.err.println("Kunde inte kopiera " + sourceFile + ": " + e.getMessage());
                         }
