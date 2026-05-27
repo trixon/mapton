@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import org.mapton.butterfly_core.api.BFilterSectionAlarm;
+import org.mapton.butterfly_core.api.BFilterSectionAlarmProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
@@ -40,6 +42,7 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
+        BFilterSectionAlarmProvider,
         BFilterSectionDisruptorProvider {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilter.class);
@@ -75,6 +78,12 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
     }
 
     @Override
+    public void setFilterSection(BFilterSectionAlarm filterSection) {
+        mFilterSectionAlarm = filterSection;
+        mFilterSectionAlarm.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> p.isVisible() != mInvisibleProperty.get())
@@ -83,6 +92,7 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
+                .filter(p -> mFilterSectionAlarm.filter(p))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
                 .toList();
@@ -105,6 +115,7 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
         mFilterSectionPoint.createInfoContent(map);
         mFilterSectionDate.createInfoContent(map);
         mFilterSectionDisruptor.createInfoContent(map);
+        mFilterSectionAlarm.createInfoContent(map);
 
         return createHtmlFilterInfo(map);
     }

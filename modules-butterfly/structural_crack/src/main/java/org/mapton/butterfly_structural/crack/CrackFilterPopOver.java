@@ -19,12 +19,15 @@ import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 import javafx.scene.layout.BorderPane;
+import org.mapton.butterfly_core.api.AlarmLevelCalculator;
+import org.mapton.butterfly_core.api.BFilterSectionAlarm;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
@@ -41,15 +44,23 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final CrackManager mManager = CrackManager.getInstance();
+    private final BFilterSectionAlarm mFilterSectionAlarm;
 
     public CrackFilterPopOver(CrackFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
+        var alarmLevelCalculator = new AlarmLevelCalculator(
+                p -> CrackHelper.getAlarmLevel((BStructuralCrackPoint) p),
+                p -> -1,
+                p -> -1
+        );
+        mFilterSectionAlarm = new BFilterSectionAlarm(alarmLevelCalculator);
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMisc = new BFilterSectionMisc(filter);
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
+        mFilter.setFilterSection(mFilterSectionAlarm);
         mFilter.setFilterSection(mFilterSectionDate);
         mFilter.setFilterSection(mFilterSectionDisruptor);
 
@@ -67,6 +78,7 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.freeTextProperty().set("");
 
         mFilterSectionPoint.clear();
+        mFilterSectionAlarm.clear();
         mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
         mFilterSectionMisc.clear();
@@ -92,6 +104,7 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
         var items = butterfly.structural().getCrackPoints();
 
         mFilterSectionPoint.load(items);
+        mFilterSectionAlarm.load(items);
         mFilterSectionDisruptor.load();
         mFilterSectionDate.load(mManager.getTemporalRange());
         mFilterSectionMisc.load();
@@ -105,6 +118,7 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
     @Override
     public void onShownFirstTime() {
         mFilterSectionPoint.onShownFirstTime();
+        mFilterSectionAlarm.onShownFirstTime();
     }
 
     @Override
@@ -127,6 +141,7 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),
                 mFilterSectionDate.getTab(),
+                mFilterSectionAlarm.getTab(),
                 mFilterSectionDisruptor.getTab()
         );
 
@@ -147,6 +162,7 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
     private SessionManager initSession(Preferences preferences) {
         var sessionManager = new SessionManager(preferences);
         mFilterSectionPoint.initSession(sessionManager);
+        mFilterSectionAlarm.initSession(sessionManager);
         mFilterSectionDate.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
