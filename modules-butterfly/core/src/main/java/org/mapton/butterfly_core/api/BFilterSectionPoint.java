@@ -55,7 +55,7 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
  */
 public class BFilterSectionPoint extends MBaseFilterSection {
 
-    private final RangeSliderPane mAltitudeRangeSlider = new RangeSliderPane("Z", -100.0, 100.0, false);
+    private final RangeSliderPane mAltitudeRangeSlider = new RangeSliderPane("Z", -100.0, 100.0, true);
     private final ResourceBundle mBundle = NbBundle.getBundle(getClass());
     private final SessionCheckComboBox<String> mCategorySccb;
     private final SessionCheckComboBox<String> mClassificationSccb;
@@ -674,8 +674,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mTagSccb,
                     mOriginSccb,
                     mUnitSccb,
-                    mRollingSccb,
-                    mAltitudeRangeSlider
+                    mRollingSccb
             );
 
             var rightBox = new VBox(rowGap,
@@ -693,7 +692,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
             int row = 1;
             mBaseBox.addRow(row++, leftBox, rightBox);
-
+            mBaseBox.add(mAltitudeRangeSlider, 0, row++, 2, 1);
             FxHelper.autoSizeColumn(mBaseBox, 2);
             BindingHelper.bindWidthForChildrens(leftBox, rightBox);
         }
