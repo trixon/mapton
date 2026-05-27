@@ -257,7 +257,7 @@ public class BFilterSectionAlarm extends MBaseFilterSection {
                 return validateCheck(checkModel, ap);
             }
             case _3d -> {
-                return validateCheck(checkModel, ah) && validateCheck(checkModel, ap);
+                return validateCheck(checkModel, ah) || validateCheck(checkModel, ap);
             }
         }
 
