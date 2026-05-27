@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.math3.util.FastMath;
 import org.mapton.api.report.MReport;
 import org.mapton.butterfly_activities.api.ActManager;
 import org.mapton.butterfly_format.types.BComponent;
@@ -271,7 +270,7 @@ public class AlarmProgressReport extends BaseTopoMeasurementReport {
 
     private Integer getMax(Integer n1, Integer n2) {
         if (ObjectUtils.allNotNull(n1, n2)) {
-            return FastMath.max(n1, n2);
+            return Math.max(n1, n2);
         } else if (n1 != null) {
             return n1;
         } else {

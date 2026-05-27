@@ -17,7 +17,6 @@ package org.mapton.butterfly_structural.tilt;
 
 import java.awt.Color;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.math3.util.FastMath;
 import org.mapton.butterfly_core.api.AlarmManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BComponent;
@@ -104,11 +103,11 @@ public class TiltHelper {
     }
 
     public static Double toDegreeBased(Double value) {
-        return value == null ? null : FastMath.toDegrees(value) / 1000.0;
+        return value == null ? null : Math.toDegrees(value) / 1000.0;
     }
 
     public static Double toRadianBased(Double value) {
-        return value == null ? null : FastMath.toRadians(value) * 1000.0;
+        return value == null ? null : Math.toRadians(value) * 1000.0;
     }
 
 }

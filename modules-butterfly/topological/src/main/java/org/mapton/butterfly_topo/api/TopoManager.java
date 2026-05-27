@@ -28,7 +28,6 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.math3.util.FastMath;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
@@ -251,7 +250,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
         mMinimumZscaled = Double.MAX_VALUE;
         for (var p : timeFilteredItems) {
             try {
-                mMinimumZscaled = FastMath.min(mMinimumZscaled, p.getZeroZ() + mScale3dH * p.ext().deltaZero().getDeltaZ());
+                mMinimumZscaled = Math.min(mMinimumZscaled, p.getZeroZ() + mScale3dH * p.ext().deltaZero().getDeltaZ());
             } catch (Exception e) {
                 //nvm
             }

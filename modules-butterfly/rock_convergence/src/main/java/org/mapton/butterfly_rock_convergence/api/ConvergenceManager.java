@@ -27,7 +27,6 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.math3.util.FastMath;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BCoordinatrix;
@@ -92,7 +91,7 @@ public class ConvergenceManager extends BaseManager<BRockConvergence> {
             var o = g.ext().getControlPointsWithoutAnchor().stream()
                     .map(p -> p.getZeroZ())
                     .mapToDouble(Double::doubleValue).min().orElse(0);
-            offset = FastMath.min(o, offset);
+            offset = Math.min(o, offset);
         }
 
         if (offset < 0) {

@@ -23,7 +23,6 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.math3.util.FastMath;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_core.api.ButterflyManager;
@@ -196,7 +195,7 @@ public class ExtensoManager extends BaseManager<BRockExtensometer> {
         mMinimumDepth = Double.MAX_VALUE;
         for (var p : timeFilteredItems) {
             for (var point : p.getPoints()) {
-                mMinimumDepth = FastMath.min(mMinimumDepth, point.getDepth());
+                mMinimumDepth = Math.min(mMinimumDepth, point.getDepth());
             }
         }
 

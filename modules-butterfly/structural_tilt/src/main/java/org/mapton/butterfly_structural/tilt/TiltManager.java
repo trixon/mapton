@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import org.apache.commons.math3.util.FastMath;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
@@ -158,7 +157,7 @@ public class TiltManager extends BaseManager<BStructuralTiltPoint> {
             p.ext().setMeasurementCountStats(measCountStats);
             timeFilteredObservations.forEach(o -> {
                 CollectionHelper.incInteger(measCountStats, o.getDate().format(measCountStatsDateTimeFormatter));
-                o.ext().setDeltaZ(FastMath.hypot(o.ext().getDeltaX(), o.ext().getDeltaY()));
+                o.ext().setDeltaZ(Math.hypot(o.ext().getDeltaX(), o.ext().getDeltaY()));
             });
         });
 
@@ -167,7 +166,7 @@ public class TiltManager extends BaseManager<BStructuralTiltPoint> {
 //        mMinimumZscaled = Double.MAX_VALUE;
 //        for (var p : timeFilteredItems) {
 //            try {
-//                mMinimumZscaled = FastMath.min(mMinimumZscaled, p.getZeroZ() + mScale3dH * p.ext().deltaZero().getDeltaZ());
+//                mMinimumZscaled = Math.min(mMinimumZscaled, p.getZeroZ() + mScale3dH * p.ext().deltaZero().getDeltaZ());
 //            } catch (Exception e) {
 //                //nvm
 //            }

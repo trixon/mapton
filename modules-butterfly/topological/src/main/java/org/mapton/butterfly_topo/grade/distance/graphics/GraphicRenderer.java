@@ -31,7 +31,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import org.apache.commons.math3.util.FastMath;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -115,7 +114,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             var o = reversedList.get(i);
 
             var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
-            var height = FastMath.max(0.01, timeSpan / 24000.0);
+            var height = Math.max(0.01, timeSpan / 24000.0);
 
             altitude = altitude + height * 0.5 + prevHeight * 0.5;
             prevDate = o.getDate();
