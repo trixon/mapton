@@ -38,6 +38,7 @@ import org.mapton.api.MLatLonBox;
 import org.mapton.api.MPoiStyle.ImageLocation;
 import org.mapton.worldwind.LayerObjectView;
 import org.openide.util.NbPreferences;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -69,6 +70,10 @@ public class WWHelper {
 
     public static Renderable createIndicator(MLatLon latLon) {
         return createIndicator(latLon, 2.0);
+    }
+
+    public static Material createMaterial(javafx.scene.paint.Color color) {
+        return new Material(FxHelper.colorToAwtColor(color));
     }
 
     public static Renderable createIndicator(MLatLon latLon, double radius) {

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BBase;
+import org.mapton.butterfly_format.types.BBaseControlPointObservation;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.worldwind.api.Blinker;
 import org.mapton.worldwind.api.RoundAnnotation;
@@ -203,6 +204,24 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
 
     public void plotAxisX(BBase p, Position position, double length) {
         plotAxis(p, position, length, p.getAzimuth());
+    }
+
+    public void plotIndicator(Position pos, double radius, int count, javafx.scene.paint.Color color, boolean enabled) {
+        if (enabled) {
+            var nodes = WWHelper.createNodes(pos, radius, count);
+            var polygon = new Polygon(nodes);
+            polygon.setAltitudes(pos.getAltitude() - 0.1, pos.getAltitude() + 0.1);
+            polygon.setAttributes(mAttributeManager.getIndicatorAttributes(color));
+            addRenderable(polygon, true, null, null);
+        }
+    }
+
+    public void plotIndicatorReplacement(Position pos, double radius, BBaseControlPointObservation o) {
+        plotIndicator(pos, radius, 3, javafx.scene.paint.Color.DEEPPINK, o.isReplacementMeasurement());
+    }
+
+    public void plotIndicatorZero(Position pos, double radius, BBaseControlPointObservation o) {
+        plotIndicator(pos, radius, 6, javafx.scene.paint.Color.CORNFLOWERBLUE, o.isZeroMeasurement());
     }
 
     public void plotPercentageAlarmIndicator(Position position, BAlarm alarm, RigidShape rigidShape, boolean rising) {

@@ -85,7 +85,13 @@ public class GraphicRendererTrace extends GraphicRendererBase {
 
             var pos = WWHelper.positionFromPosition(position, altitude);
             var maxRadius = 10.0;
-
+            var indicatorPosition = WWHelper.positionFromPosition(position, altitude + height / 2);
+            if (sCheckModel.isChecked(GraphicItem.TRACE_1D_ZERO)) {
+                plotIndicatorZero(indicatorPosition, 2, o);
+            }
+            if (sCheckModel.isChecked(GraphicItem.TRACE_1D_REPLACE)) {
+                plotIndicatorReplacement(indicatorPosition, 2, o);
+            }
             var dZ = o.ext().getDeltaZ();
             var radius = Math.min(maxRadius, Math.abs(dZ) * mScale1dH + 0.05);
             var maximus = radius == maxRadius;

@@ -42,6 +42,8 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     CIRCLE_3D("3d-delta", Integer.MAX_VALUE),
     CIRCLE_VERTICAL_DIRECTION("Färgskala, vertikalrörelse", Integer.MAX_VALUE),
     TRACE_1D(SDict.TRACE_1D.toString(), 10_000),
+    TRACE_1D_ZERO("\t— %s".formatted("Nollmätning"), Integer.MAX_VALUE),
+    TRACE_1D_REPLACE("\t— %s".formatted("Ersättningsmätning"), Integer.MAX_VALUE),
     VECTOR_1D(SDict.VECTOR_1D.toString(), 100),
     VECTOR_1D_ALARM("\t— %s".formatted(SDict.ALARM_LEVEL.toString()), 100),
     VECTOR_1D_LABEL("\t— %s".formatted(Dict.LABEL.toString()), 100),

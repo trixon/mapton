@@ -22,10 +22,13 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import gov.nasa.worldwind.render.airspaces.BasicAirspaceAttributes;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.util.HashMap;
 import org.mapton.api.Mapton;
+import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -36,7 +39,6 @@ import se.trixon.almond.util.swing.SwingHelper;
 public abstract class BaseAttributeManager {
 
     private AnnotationAttributes mAlarmAnnotationAttributes;
-
     private BasicShapeAttributes[] mAlarmInteriorAttributes;
     private BasicShapeAttributes mAlarmLimitAttributes;
     private BasicShapeAttributes[] mAlarmOutlineAttributes;
@@ -52,8 +54,21 @@ public abstract class BaseAttributeManager {
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
     private PointPlacemarkAttributes mSinglePinAttributes;
+    private final HashMap<javafx.scene.paint.Color, BasicAirspaceAttributes> mColorToAirspaceAttributes = new HashMap<>();
 
     public BaseAttributeManager() {
+    }
+
+    public BasicAirspaceAttributes getIndicatorAttributes(javafx.scene.paint.Color color) {
+        return mColorToAirspaceAttributes.computeIfAbsent(color, k -> {
+            var attrs = new BasicAirspaceAttributes();
+            attrs.setInteriorMaterial(WWHelper.createMaterial(color));
+            attrs.setEnableLighting(true);
+            attrs.setInteriorOpacity(0.5);
+            attrs.setDrawInterior(true);
+
+            return attrs;
+        });
     }
 
     public AnnotationAttributes getAlarmAnnotationAttributes() {
