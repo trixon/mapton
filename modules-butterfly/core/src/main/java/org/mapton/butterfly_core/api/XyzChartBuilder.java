@@ -83,10 +83,10 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     private static final double sMinDefaultValue = 0.00001d;
 
     protected JFreeChart mChart;
+    protected final ChartOptionsManager mChartOptionsManager = ChartOptionsManager.getInstance();
     protected Date mDateEnd;
     protected Date mDateNull;
     protected final MinMaxCollection mMinMaxCollection = new MinMaxCollection();
-    private final ChartOptionsManager mChartOptionsManager = ChartOptionsManager.getInstance();
     private ChartPanel mChartPanel;
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private Date mDefaultDate;

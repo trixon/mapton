@@ -15,10 +15,8 @@
  */
 package org.mapton.butterfly_topo.chart;
 
-import com.sun.jna.platform.KeyboardUtils;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -31,6 +29,7 @@ import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
+import org.mapton.core.api.ChartMiscLineMode;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -103,7 +102,8 @@ public class ChartBuilderAzimuth extends ChartBuilderBase {
                 if (firstDelta == null) {
                     firstDelta = delta;
                 }
-                if (!KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
+
+                if (mChartOptionsManager.getMiscLineModeProperty() == ChartMiscLineMode.EXTRAPOLATE) {
                     if (lastDelta != null) {
                         timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()).previous(), lastDelta);
                     }

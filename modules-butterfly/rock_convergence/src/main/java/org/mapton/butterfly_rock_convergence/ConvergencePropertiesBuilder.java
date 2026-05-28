@@ -105,7 +105,7 @@ public class ConvergencePropertiesBuilder extends BPropertiesBuilder<BRockConver
                         var delta1 = pair.ext().getDelta(function, o1);
                         var days = ChronoUnit.DAYS.between(o0.getDate(), o1.getDate());
                         var blasts = ButterflyManager.getInstance().util().getBlasts(p, 40, o0.getDate(), o1.getDate()).size();
-//                        var blasts = ButterflyHelper.getLimitedPoints(p, p.getButterfly().rock().getBlasts(), false, 40, Integer.MAX_VALUE, aStartDate);
+//                        var blasts2 = ButterflyHelper.getLimitedPoints(p, p.getButterfly().rock().getBlasts(), false, 40, Integer.MAX_VALUE, aStartDate);
                         propertyMap.put(pair.getSimpleName(), "%+.1f (%+.1f @ %dd/%ds)".formatted(
                                 pair.ext().getDelta(function),
                                 delta1 - delta0,

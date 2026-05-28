@@ -30,7 +30,6 @@ import gov.nasa.worldwind.render.SurfaceCircle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.math3.util.FastMath;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.mapton.api.MLatLon;
@@ -203,10 +202,10 @@ public class WWHelper {
         double maxY = Double.MIN_VALUE;
 
         for (var coordinate : coordinates) {
-            minX = FastMath.min(minX, coordinate.x);
-            minY = FastMath.min(minY, coordinate.y);
-            maxX = FastMath.max(maxX, coordinate.x);
-            maxY = FastMath.max(maxY, coordinate.y);
+            minX = Math.min(minX, coordinate.x);
+            minY = Math.min(minY, coordinate.y);
+            maxX = Math.max(maxX, coordinate.x);
+            maxY = Math.max(maxY, coordinate.y);
         }
 
         var sector = new Sector(

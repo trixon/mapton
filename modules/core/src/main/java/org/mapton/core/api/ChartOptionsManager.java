@@ -38,6 +38,8 @@ public class ChartOptionsManager {
     private final ObjectProperty<ChartStartPoint> mDatePeriodProperty = new SimpleObjectProperty<>(ChartStartPoint.ZERO);
     private final StringProperty mDatePeriodProxyProperty = BindingHelper.createStringEnumProxyProperty(mDatePeriodProperty, ChartStartPoint.class);
     private final BooleanProperty mDateResetOnFirst = new SimpleBooleanProperty();
+    private final ObjectProperty<ChartMiscLineMode> mMiscLineModeProperty = new SimpleObjectProperty<>(ChartMiscLineMode.EXTRAPOLATE);
+    private final StringProperty mMiscLineModeProxyProperty = BindingHelper.createStringEnumProxyProperty(mMiscLineModeProperty, ChartMiscLineMode.class);
     private final Preferences mPreferences = NbPreferences.forModule(ChartOptionsManager.class).node("chart");
     private final SessionManager mSessionManager = new SessionManager(mPreferences);
 
@@ -66,6 +68,10 @@ public class ChartOptionsManager {
         return mDatePeriodProperty.get();
     }
 
+    public ChartMiscLineMode getMiscLineModeProperty() {
+        return mMiscLineModeProperty.get();
+    }
+
     public boolean isDateEndTodayProperty() {
         return mDateEndTodayProperty.get();
     }
@@ -74,10 +80,16 @@ public class ChartOptionsManager {
         return mDateResetOnFirst.get();
     }
 
+    public ObjectProperty<ChartMiscLineMode> miscLineModeProperty() {
+        return mMiscLineModeProperty;
+    }
+
     private void initBindings() {
         mSessionManager.register("datePeriod", mDatePeriodProxyProperty);
         mSessionManager.register("dateResetOnFirst", mDateResetOnFirst);
         mSessionManager.register("dateEndToday", mDateEndTodayProperty);
+
+        mSessionManager.register("miscLinemode", mMiscLineModeProxyProperty);
     }
 
     private void initListeners() {
@@ -92,6 +104,7 @@ public class ChartOptionsManager {
         mDateResetOnFirst.addListener(listener);
         mDateEndTodayProperty.addListener(listener);
         mDatePeriodProperty.addListener(listener);
+        mMiscLineModeProperty.addListener(listener);
     }
 
     private static class Holder {

@@ -40,6 +40,7 @@ import org.mapton.api.MKey;
 import org.mapton.api.MSimpleObjectStorageBoolean;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.Mapton;
+import org.mapton.core.api.ChartMiscLineMode;
 import org.mapton.core.api.ChartOptionsManager;
 import org.mapton.core.api.ChartStartPoint;
 import org.mapton.core.ui.simple_object_storage.BaseTab;
@@ -81,7 +82,10 @@ class ChartPropertiesView extends BorderPane {
         var overlayTab = new Tab(MDict.OVERLAYS.toString(), overlayScrollPane);
         var dateView = new DateView();
         var dateTab = new Tab(Dict.DATE.toString(), dateView);
-        var rootTabPane = new TabPane(overlayTab, dateTab);
+        var miscView = new MiscView();
+        var miscTab = new Tab(Dict.MISCELLANEOUS.toString(), miscView);
+
+        var rootTabPane = new TabPane(overlayTab, dateTab, miscTab);
         rootTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         rootTabPane.setSide(Side.LEFT);
         setCenter(rootTabPane);
@@ -188,5 +192,34 @@ class ChartPropertiesView extends BorderPane {
                     }, mPeriodComboBox.valueProperty())
             );
         }
+    }
+
+    private class MiscView extends VBox {
+
+        private final SessionComboBox<ChartMiscLineMode> mLineModeComboBox = new SessionComboBox<>();
+
+        public MiscView() {
+            super(FxHelper.getUIScaled(8));
+            createUI();
+        }
+
+        private void createUI() {
+            setPadding(FxHelper.getUIScaledInsets(8));
+            var headerLabel = new Label("Linjeläge");
+            mLineModeComboBox.getItems().setAll(ChartMiscLineMode.values());
+//            initBindings();
+
+            mLineModeComboBox.valueProperty().bindBidirectional(mChartOptionsManager.miscLineModeProperty());
+
+            var vbox = new VBox(
+                    headerLabel,
+                    mLineModeComboBox);
+
+            getChildren().addAll(vbox
+            );
+
+            BindingHelper.bindWidthForChildrens(this, vbox);
+        }
+
     }
 }
