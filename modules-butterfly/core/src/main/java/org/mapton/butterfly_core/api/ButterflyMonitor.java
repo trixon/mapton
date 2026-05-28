@@ -47,7 +47,7 @@ public class ButterflyMonitor {
     public ButterflyMonitor() {
         mFileAlterationListener = new FileAlterationListenerAdaptor() {
             private File mFile;
-            private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(30 * 1000, () -> {
+            private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(10_000, () -> {
                 if (mRunning && mFile != null) {
                     System.out.format("%s ButterflyMonitor: Change detected in %s\n",
                             LocalTime.now(),
@@ -100,7 +100,6 @@ public class ButterflyMonitor {
                     .setFileFilter(filter)
                     .setIOCase(IOCase.INSENSITIVE)
                     .get();
-//            mObserver = new FileAlterationObserver(directory, filter, IOCase.INSENSITIVE);
             mObserver.addListener(mFileAlterationListener);
             mMonitor.addObserver(mObserver);
 

@@ -22,7 +22,6 @@ import org.mapton.api.Mapton;
 import org.openide.modules.OnStart;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.SystemHelper;
 
 /**
  *
@@ -43,9 +42,7 @@ public class DoOnStart implements Runnable {
         }, ButterflyFileOpener.class.getName());
 
         Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED, () -> {
-            SystemHelper.runLaterDelayed(15_000, () -> {
-                ButterflyOpener.getInstance().restore();
-            });
+            ButterflyOpener.getInstance().restore();
         });
     }
 }

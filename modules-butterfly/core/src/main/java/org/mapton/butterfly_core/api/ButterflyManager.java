@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.prefs.BackingStoreException;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.util.Duration;
 import javax.swing.border.EmptyBorder;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -37,6 +38,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
+import org.controlsfx.control.action.Action;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.operation.TransformException;
 import org.locationtech.jts.geom.Geometry;
@@ -45,6 +47,7 @@ import org.locationtech.jts.io.WKTReader;
 import org.mapton.api.MArea;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MCooTrans;
+import org.mapton.api.MKey;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.api.MPrint;
@@ -105,15 +108,20 @@ public class ButterflyManager {
     private final Util mUtil = new Util();
     private final WKTReader mWktReader = new WKTReader();
     private final ZipHelper mZipHelper = ZipHelper.getInstance();
+    private long mStartMilliseconds;
 
     public static ButterflyManager getInstance() {
         return Holder.INSTANCE;
     }
 
     private ButterflyManager() {
-        mDelayedResetRunner = new DelayedResetRunner(3_000, () -> {
+        int delay = 3_000;
+        mDelayedResetRunner = new DelayedResetRunner(delay, () -> {
             if (mProgressHandle != null) {
                 mProgressHandle.finish();
+                mProgressHandle = null;
+                var timeSpent = SystemHelper.age(mStartMilliseconds - delay) / 1000d;
+                Mapton.notification(MKey.NOTIFICATION_FX_INFORMATION, "Butterfly inläst", "Det tog %.1f %s".formatted(timeSpent, Dict.TIME_SECONDS.toLower()), Duration.seconds(5), (Action) null);
             }
         });
     }
@@ -192,6 +200,7 @@ public class ButterflyManager {
     }
 
     public synchronized void load(File file) {
+        mStartMilliseconds = System.currentTimeMillis();
         mButterflyMonitor.stop();
         var taskName = Dict.OPENING_S.toString().formatted("Butterfly");
         mProgressHandle = ProgressHandle.createHandle(taskName, null);
