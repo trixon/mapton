@@ -134,13 +134,15 @@ public abstract class MBaseDataManager<T> {
         getTimeFilteredItemsSet().clear();
         getTimeFilteredItems().clear();
 
-        for (var clearable : mClearables) {
-            switch (clearable) {
-                case Map map ->
-                    map.clear();
-                case List list ->
-                    list.clear();
-                default -> {
+        if (mClearables != null) {
+            for (var clearable : mClearables) {
+                switch (clearable) {
+                    case Map map ->
+                        map.clear();
+                    case List list ->
+                        list.clear();
+                    default -> {
+                    }
                 }
             }
         }
