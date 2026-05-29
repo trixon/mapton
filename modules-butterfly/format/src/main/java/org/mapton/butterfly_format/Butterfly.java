@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
@@ -249,139 +251,66 @@ public class Butterfly {
 
     void load(File sourceDir) {
         mSourceDir = sourceDir;
-        new ImportFromCsv<BCoordinate>(BCoordinate.class) {
-        }.load(sourceDir, "coordinates.csv", mCoordinates);
+        List<ImportTask<?>> tasks = new ArrayList<>();
+        int observationsCategory = 2_000_000;
 
-        new ImportFromCsv<BRoi>(BRoi.class) {
-        }.load(sourceDir, "roi.csv", mRois);
+        tasks.add(new ImportTask<>(BCoordinate.class, "coordinates.csv", mCoordinates));
+        tasks.add(new ImportTask<>(BRoi.class, "roi.csv", mRois));
+        tasks.add(new ImportTask<>(BAcousticVibrationPoint.class, "noiseVibrationPoints.csv", mVibrationPoints));
+        tasks.add(new ImportTask<>(BAcousticVibrationChannel.class, "noiseVibrationChannels.csv", mVibrationChannels));
+        tasks.add(new ImportTask<>(BAcousticVibrationLimit.class, "noiseVibrationLimits.csv", mVibrationLimits));
+        tasks.add(new ImportTask<>(BAcousticVibrationObservation.class, "noiseVibrationObservations.csv", mVibrationObservations, observationsCategory));
+        tasks.add(new ImportTask<>(BAlarm.class, "alarms.csv", mAlarms));
+        tasks.add(new ImportTask<>(BHistory.class, "alarms_history.csv", mAlarmsHistory));
+        tasks.add(new ImportTask<>(BAreaActivity.class, "areaActivities.csv", mAreaActivities));
+        tasks.add(new ImportTask<>(BAreaBase.class, "areaFilters.csv", mAreaFilters));
+        tasks.add(new ImportTask<>(BTopoControlPoint.class, "topoControlPoints.csv", mTopoControlPoints));
+        tasks.add(new ImportTask<>(BTopoControlPointObservation.class, "topoControlPointsObservations.csv", mTopoControlPointsObservations, observationsCategory));
+        // Structural
+        tasks.add(new ImportTask<>(BStructuralCrackPoint.class, "structuralCrackPoints.csv", mStructuralCrackPoints));
+        tasks.add(new ImportTask<>(BStructuralCrackPointObservation.class, "structuralCrackPointsObservations.csv", mStructuralCrackPointsObservations, observationsCategory));
+        tasks.add(new ImportTask<>(BStructuralLoadCellPoint.class, "structuralLoadCellPoints.csv", mStructuralLoadPoints));
+        tasks.add(new ImportTask<>(BStructuralLoadCellPointObservation.class, "structuralLoadCellPointsObservations.csv", mStructuralLoadPointsObservations, observationsCategory));
+        tasks.add(new ImportTask<>(BStructuralStrainGaugePoint.class, "structuralStrainGaugePoints.csv", mStructuralStrainPoints));
+        tasks.add(new ImportTask<>(BStructuralStrainGaugePointObservation.class, "structuralStrainGaugePointsObservations.csv", mStructuralStrainPointsObservations, observationsCategory));
+        tasks.add(new ImportTask<>(BStructuralTiltPoint.class, "structuralTiltPoints.csv", mStructuralTiltPoints));
+        tasks.add(new ImportTask<>(BStructuralTiltPointObservation.class, "structuralTiltPointsObservations.csv", mStructuralTiltPointsObservations, observationsCategory));
+        // Rock
+        tasks.add(new ImportTask<>(BRockBlast.class, "rockBlasts.csv", mRockBlasts));
+        tasks.add(new ImportTask<>(BRockEarthquake.class, "rockEarthquakes.csv", mRockEarthquakes));
+        tasks.add(new ImportTask<>(BRockConvergence.class, "rockConvergence.csv", mRockConvergence));
+        tasks.add(new ImportTask<>(BRockConvergenceObservation.class, "rockConvergenceObservations.csv", mRockConvergenceObservations, observationsCategory));
+        tasks.add(new ImportTask<>(BRockExtensometer.class, "rockExtensometers.csv", mRockExtensometers));
+        tasks.add(new ImportTask<>(BRockExtensometerPoint.class, "rockExtensometersPoints.csv", mRockExtensometersPoints));
+        tasks.add(new ImportTask<>(BRockExtensometerPointObservation.class, "rockExtensometersPointsObservations.csv", mRockExtensometersPointsObservations, observationsCategory));
+        // TMO
+        tasks.add(new ImportTask<>(BGrundvatten.class, "tmoGrundvatten.csv", mTmo.getGrundvatten()));
+        tasks.add(new ImportTask<>(BInfiltration.class, "tmoInfiltration.csv", mTmo.getInfiltration()));
+        tasks.add(new ImportTask<>(BRorelse.class, "tmoRorelse.csv", mTmo.getRorelse()));
+        tasks.add(new ImportTask<>(BTunnelvatten.class, "tmoTunnelvatten.csv", mTmo.getTunnelvatten()));
+// tasks.add(new ImportTask<>(BVattenkemi.class, "tmoVattenkemi.csv", mTmo.getVattenkemi()));
+// tasks.add(new ImportTask<>(BVaderstation.class, "tmoVaderstation.csv", mTmo.getVaderstation()));
+        tasks.add(new ImportTask<>(BGrundvattenObservation.class, "tmoGrundvattenObservations.csv", mTmo.getGrundvattenObservations(), observationsCategory));
+        tasks.add(new ImportTask<>(BInfiltrationObservation.class, "tmoInfiltrationObservations.csv", mTmo.getInfiltrationObservations(), observationsCategory));
+        tasks.add(new ImportTask<>(BTunnelvattenObservation.class, "tmoTunnelvattenObservations.csv", mTmo.getTunnelvattenObservations(), observationsCategory));
+        tasks.add(new ImportTask<>(BRorelseObservation.class, "tmoRorelseObservations.csv", mTmo.getRorelseObservations(), observationsCategory));
 
-        new ImportFromCsv<BAcousticVibrationPoint>(BAcousticVibrationPoint.class) {
-        }.load(sourceDir, "noiseVibrationPoints.csv", mVibrationPoints);
+        // Geotechnical
+        tasks.add(new ImportTask<>(BGeoReinforcementPoint.class, "geoReinforcementPoints.csv", mGeoReinforcementPoints));
+        tasks.add(new ImportTask<>(BGeoInclinometerPoint.class, "geoInclinometerPoints.csv", mGeoInclinometerPoints));
+        tasks.add(new ImportTask<>(BGeoInclinometerPointObservationPre.class, "geoInclinometerPointsObservations.csv", mGeoInclinometerPointsObservationsPre));
 
-        new ImportFromCsv<BAcousticVibrationChannel>(BAcousticVibrationChannel.class) {
-        }.load(sourceDir, "noiseVibrationChannels.csv", mVibrationChannels);
+        // System
+        tasks.add(new ImportTask<>(BSystemKeyVal.class, "systemKeyValStore.csv", mSystemKeyVals));
+        tasks.add(new ImportTask<>(BSystemSearchProvider.class, "systemSearchProviders.csv", mSystemSearchProviders));
+        int cores = Runtime.getRuntime().availableProcessors();
 
-        new ImportFromCsv<BAcousticVibrationLimit>(BAcousticVibrationLimit.class) {
-        }.load(sourceDir, "noiseVibrationLimits.csv", mVibrationLimits);
+        try (ExecutorService executor = Executors.newFixedThreadPool(cores)) {
+            executor.submit(() -> hydro().load());
+            executor.submit(() -> meteo().load());
 
-        new ImportFromCsv<BAcousticVibrationObservation>(BAcousticVibrationObservation.class) {
-        }.load(sourceDir, "noiseVibrationObservations.csv", mVibrationObservations);
-
-        new ImportFromCsv<BAlarm>(BAlarm.class) {
-        }.load(sourceDir, "alarms.csv", mAlarms);
-
-        new ImportFromCsv<BHistory>(BHistory.class) {
-        }.load(sourceDir, "alarms_history.csv", mAlarmsHistory);
-
-        new ImportFromCsv<BAreaActivity>(BAreaActivity.class) {
-        }.load(sourceDir, "areaActivities.csv", mAreaActivities);
-
-        new ImportFromCsv<BAreaBase>(BAreaBase.class) {
-        }.load(sourceDir, "areaFilters.csv", mAreaFilters);
-
-        new ImportFromCsv<BTopoControlPoint>(BTopoControlPoint.class) {
-        }.load(sourceDir, "topoControlPoints.csv", mTopoControlPoints);
-
-        new ImportFromCsv<BTopoControlPointObservation>(BTopoControlPointObservation.class) {
-        }.load(sourceDir, "topoControlPointsObservations.csv", mTopoControlPointsObservations);
-
-        //Structural
-        new ImportFromCsv<BStructuralCrackPoint>(BStructuralCrackPoint.class) {
-        }.load(sourceDir, "structuralCrackPoints.csv", mStructuralCrackPoints);
-
-        new ImportFromCsv<BStructuralCrackPointObservation>(BStructuralCrackPointObservation.class) {
-        }.load(sourceDir, "structuralCrackPointsObservations.csv", mStructuralCrackPointsObservations);
-
-        new ImportFromCsv<BStructuralLoadCellPoint>(BStructuralLoadCellPoint.class) {
-        }.load(sourceDir, "structuralLoadCellPoints.csv", mStructuralLoadPoints);
-
-        new ImportFromCsv<BStructuralLoadCellPointObservation>(BStructuralLoadCellPointObservation.class) {
-        }.load(sourceDir, "structuralLoadCellPointsObservations.csv", mStructuralLoadPointsObservations);
-
-        new ImportFromCsv<BStructuralStrainGaugePoint>(BStructuralStrainGaugePoint.class) {
-        }.load(sourceDir, "structuralStrainGaugePoints.csv", mStructuralStrainPoints);
-
-        new ImportFromCsv<BStructuralStrainGaugePointObservation>(BStructuralStrainGaugePointObservation.class) {
-        }.load(sourceDir, "structuralStrainGaugePointsObservations.csv", mStructuralStrainPointsObservations);
-
-        new ImportFromCsv<BStructuralTiltPoint>(BStructuralTiltPoint.class) {
-        }.load(sourceDir, "structuralTiltPoints.csv", mStructuralTiltPoints);
-
-        new ImportFromCsv<BStructuralTiltPointObservation>(BStructuralTiltPointObservation.class) {
-        }.load(sourceDir, "structuralTiltPointsObservations.csv", mStructuralTiltPointsObservations);
-
-        //Rock
-        new ImportFromCsv<BRockBlast>(BRockBlast.class) {
-        }.load(sourceDir, "rockBlasts.csv", mRockBlasts);
-
-        new ImportFromCsv<BRockEarthquake>(BRockEarthquake.class) {
-        }.load(sourceDir, "rockEarthquakes.csv", mRockEarthquakes);
-
-        new ImportFromCsv<BRockConvergence>(BRockConvergence.class) {
-        }.load(sourceDir, "rockConvergence.csv", mRockConvergence);
-
-        new ImportFromCsv<BRockConvergenceObservation>(BRockConvergenceObservation.class) {
-        }.load(sourceDir, "rockConvergenceObservations.csv", mRockConvergenceObservations);
-
-        new ImportFromCsv<BRockExtensometer>(BRockExtensometer.class) {
-        }.load(sourceDir, "rockExtensometers.csv", mRockExtensometers);
-
-        new ImportFromCsv<BRockExtensometerPoint>(BRockExtensometerPoint.class) {
-        }.load(sourceDir, "rockExtensometersPoints.csv", mRockExtensometersPoints);
-
-        new ImportFromCsv<BRockExtensometerPointObservation>(BRockExtensometerPointObservation.class) {
-        }.load(sourceDir, "rockExtensometersPointsObservations.csv", mRockExtensometersPointsObservations);
-
-        hydro().load();
-
-        //TMO
-        new ImportFromCsv<BGrundvatten>(BGrundvatten.class) {
-        }.load(sourceDir, "tmoGrundvatten.csv", mTmo.getGrundvatten());
-
-        new ImportFromCsv<BInfiltration>(BInfiltration.class) {
-        }.load(sourceDir, "tmoInfiltration.csv", mTmo.getInfiltration());
-
-        new ImportFromCsv<BRorelse>(BRorelse.class) {
-        }.load(sourceDir, "tmoRorelse.csv", mTmo.getRorelse());
-
-        new ImportFromCsv<BTunnelvatten>(BTunnelvatten.class) {
-        }.load(sourceDir, "tmoTunnelvatten.csv", mTmo.getTunnelvatten());
-
-//        new ImportFromCsv<BVattenkemi>(BVattenkemi.class) {
-//        }.load(sourceDir, "tmoVattenkemi.csv", mTmo.getVattenkemi());
-//
-//        new ImportFromCsv<BVaderstation>(BVaderstation.class) {
-//        }.load(sourceDir, "tmoVaderstation.csv", mTmo.getVaderstation());
-        new ImportFromCsv<BGrundvattenObservation>(BGrundvattenObservation.class) {
-        }.load(sourceDir, "tmoGrundvattenObservations.csv", mTmo.getGrundvattenObservations());
-
-        new ImportFromCsv<BInfiltrationObservation>(BInfiltrationObservation.class) {
-        }.load(sourceDir, "tmoInfiltrationObservations.csv", mTmo.getInfiltrationObservations());
-
-        new ImportFromCsv<BTunnelvattenObservation>(BTunnelvattenObservation.class) {
-        }.load(sourceDir, "tmoTunnelvattenObservations.csv", mTmo.getTunnelvattenObservations());
-
-        new ImportFromCsv<BRorelseObservation>(BRorelseObservation.class) {
-        }.load(sourceDir, "tmoRorelseObservations.csv", mTmo.getRorelseObservations());
-
-        //Geotechnical
-        new ImportFromCsv<BGeoReinforcementPoint>(BGeoReinforcementPoint.class) {
-        }.load(sourceDir, "geoReinforcementPoints.csv", mGeoReinforcementPoints);
-
-        new ImportFromCsv<BGeoInclinometerPoint>(BGeoInclinometerPoint.class) {
-        }.load(sourceDir, "geoInclinometerPoints.csv", mGeoInclinometerPoints);
-
-        new ImportFromCsv<BGeoInclinometerPointObservationPre>(BGeoInclinometerPointObservationPre.class) {
-        }.load(sourceDir, "geoInclinometerPointsObservations.csv", mGeoInclinometerPointsObservationsPre);
-
-        //System
-        new ImportFromCsv<BSystemKeyVal>(BSystemKeyVal.class) {
-        }.load(sourceDir, "systemKeyValStore.csv", mSystemKeyVals);
-
-        new ImportFromCsv<BSystemSearchProvider>(BSystemSearchProvider.class) {
-        }.load(sourceDir, "systemSearchProviders.csv", mSystemSearchProviders);
-
-        meteo().load();
+            tasks.forEach(task -> executor.submit(() -> task.execute(sourceDir)));
+        }
     }
 
     void postLoad() {

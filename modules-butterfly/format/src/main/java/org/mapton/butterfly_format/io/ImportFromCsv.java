@@ -16,6 +16,7 @@
 package org.mapton.butterfly_format.io;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -40,32 +41,36 @@ import org.mapton.butterfly_format.types.BDimension;
  */
 public abstract class ImportFromCsv<T> {
 
+    private static final CsvMapper SHARED_MAPPER;
     private static final ZipHelper ZIP_HELPER = ZipHelper.getInstance();
-    private final Class<T> classOfT;
-    private final CsvMapper mMapper;
-    private final CsvSchema schema;
 
-    public ImportFromCsv(Class<T> clazz) {
-        classOfT = clazz;
+    private final Class<T> mClassOfT;
+    private final CsvSchema mSchema;
+
+    static {
         var simpleModule = new SimpleModule();
         simpleModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
         simpleModule.addDeserializer(BDimension.class, new DimensionDeserializer());
 
-        mMapper = CsvMapper.builder()
+        SHARED_MAPPER = CsvMapper.builder()
                 .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
+                .enable(StreamReadFeature.USE_FAST_DOUBLE_PARSER)
                 .addModule(new JavaTimeModule())
                 .addModule(simpleModule)
                 .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
                 .disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
                 .build();
 
-        mMapper.setVisibility(mMapper.getSerializationConfig()
+        SHARED_MAPPER.setVisibility(SHARED_MAPPER.getSerializationConfig()
                 .getDefaultVisibilityChecker()
                 .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                 .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
         );
+    }
 
-        schema = mMapper.schemaFor(classOfT)
+    public ImportFromCsv(Class<T> clazz) {
+        mClassOfT = clazz;
+        mSchema = SHARED_MAPPER.schemaFor(mClassOfT)
                 .withHeader()
                 .withQuoteChar('"')
                 .withColumnReordering(true);
@@ -78,7 +83,7 @@ public abstract class ImportFromCsv<T> {
             if (sourceDir == null) {
                 try (var inputStream = ZIP_HELPER.getStream(path)) {
                     if (inputStream != null) {
-                        var mappingIterator = mMapper.readerFor(classOfT).with(schema).readValues(inputStream);
+                        var mappingIterator = SHARED_MAPPER.readerFor(mClassOfT).with(mSchema).readValues(inputStream);
                         list.addAll((ArrayList<T>) mappingIterator.readAll());
                     }
                 }
@@ -88,9 +93,9 @@ public abstract class ImportFromCsv<T> {
                     System.out.println("Missing source file, or file is empty: " + file);
                     return;
                 }
-                var mappingIterator = mMapper
-                        .readerFor(classOfT)
-                        .with(schema)
+                var mappingIterator = SHARED_MAPPER
+                        .readerFor(mClassOfT)
+                        .with(mSchema)
                         .readValues(file);
                 list.addAll((ArrayList<T>) mappingIterator.readAll());
             }

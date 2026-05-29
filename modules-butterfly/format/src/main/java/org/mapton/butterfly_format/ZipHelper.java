@@ -18,9 +18,12 @@ package org.mapton.butterfly_format;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
+import net.lingala.zip4j.model.FileHeader;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -31,6 +34,8 @@ import org.openide.util.Exceptions;
  * @author Patrik Karlström
  */
 public class ZipHelper {
+
+    private final Map<String, FileHeader> mHeaderCache = new HashMap<>();
 
     private char[] mPassword;
     private ZipFile mZipFile;
@@ -74,7 +79,7 @@ public class ZipHelper {
 
     public ZipInputStream getStream(String path) {
         try {
-            var fileHeader = mZipFile.getFileHeader(path);
+            var fileHeader = mHeaderCache.get(path);
             if (fileHeader == null) {
                 System.out.println("ZIP resource not found: " + path);
             } else {
@@ -113,6 +118,15 @@ public class ZipHelper {
 
     public void init(File file) {
         mZipFile = new ZipFile(file, mPassword);
+        mHeaderCache.clear();
+
+        try {
+            for (var header : mZipFile.getFileHeaders()) {
+                mHeaderCache.put(header.getFileName(), header);
+            }
+        } catch (ZipException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     public void setPassword(char[] password) {
