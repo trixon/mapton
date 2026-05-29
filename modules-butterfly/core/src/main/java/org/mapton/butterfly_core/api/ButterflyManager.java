@@ -200,6 +200,8 @@ public class ButterflyManager {
     }
 
     public synchronized void load(File file) {
+        BCoordinatrix.clear();
+//        BaseManager.clearPreLoad();
         mStartMilliseconds = System.currentTimeMillis();
         mButterflyMonitor.stop();
         var taskName = Dict.OPENING_S.toString().formatted("Butterfly");

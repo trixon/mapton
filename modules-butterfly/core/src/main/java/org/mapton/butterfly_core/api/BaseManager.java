@@ -18,6 +18,7 @@ package org.mapton.butterfly_core.api;
 import gov.nasa.worldwind.render.Renderable;
 import java.net.URLEncoder;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javafx.beans.property.BooleanProperty;
@@ -52,6 +53,7 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
 
     private static BBase sCurrItem;
     private static BaseManager< BBase> sCurrManager;
+    private static final HashSet<BaseManager> sInstanciatedManagers = new HashSet<>();
     private static BBase sPrevItem;
     private static BaseManager< BBase> sPrevManager;
     protected boolean mFirstLoad = true;
@@ -67,6 +69,16 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
                 getCurrManager().setSelectedItemAfterReset(getCurrItem());
             }
         }, MKey.OBJECT_RESELECT);
+    }
+
+    public static void clearPreLoad() {
+        sCurrItem = null;
+        sCurrManager = null;
+        sPrevItem = null;
+        sPrevManager = null;
+        sInstanciatedManagers.forEach(manager -> {
+            manager.clear();
+        });
     }
 
     public static BBase getCurrItem() {
@@ -86,7 +98,7 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
 
     public BaseManager(Class<T> typeParameterClass) {
         super(typeParameterClass);
-
+        sInstanciatedManagers.add(this);
         mButterflyManager.butterflyProperty().addListener((p, o, n) -> {
             mButterfly = n;
             FxHelper.runLater(() -> load(n));
