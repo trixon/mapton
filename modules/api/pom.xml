@@ -255,14 +255,18 @@
             <version>2.1.4</version>
         </dependency>
         <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>4.0.8</version>
+            <version>4.0.9</version>
         </dependency>
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>4.0.5</version>
+            <version>4.1.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -330,7 +334,7 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-pdf-layout</artifactId>
-            <version>8.1.2</version>
+            <version>8.2.0</version>
         </dependency>
         <dependency>
             <groupId>com.helger.font</groupId>
