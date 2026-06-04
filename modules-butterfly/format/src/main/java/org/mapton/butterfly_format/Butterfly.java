@@ -102,7 +102,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
  */
 public class Butterfly {
 
-    public static final int FORMAT = 5;
+    public static final int FORMAT = 6;
     public static final String KEY_FORMAT = "FORMAT";
     public static final String KEY_TIMESTAMP = "TIMESTAMP";
     public static final String VERSION_FILE = "version.properties";

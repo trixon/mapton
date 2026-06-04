@@ -65,7 +65,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
     private Double zeroZ;
     private transient Double zeroZScaled;
 
-    public HashMap<LocalDate, Point3D> createObservationMap(BXyzPoint p, DateTimeFormatter dateTimeFormatterTo, DateTimeFormatter dateTimeFormatterFrom) {
+    public static HashMap<LocalDate, Point3D> createObservationMap(BXyzPoint p, DateTimeFormatter dateTimeFormatterTo, DateTimeFormatter dateTimeFormatterFrom) {
         var observationsTimeFiltered = p.extOrNull().getObservationsTimeFiltered();
         var map1 = new HashMap<LocalDate, Point3D>();
 

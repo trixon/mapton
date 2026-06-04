@@ -40,6 +40,19 @@ public abstract class BBaseControlPoint extends BBasePoint {
     private String status;
     private String tag;
 
+    public static double getMedian(DoubleStream stream) {
+        var values = stream.sorted().toArray();
+        int length = values.length;
+
+        if (length == 0) {
+            throw new IllegalArgumentException("Stream is empty");
+        } else if (length % 2 == 1) {
+            return values[length / 2];
+        } else {
+            return (values[length / 2 - 1] + values[length / 2]) / 2.0;
+        }
+    }
+
     public BBaseControlPoint() {
     }
 
@@ -93,19 +106,6 @@ public abstract class BBaseControlPoint extends BBasePoint {
 
     public String getFrequencyHighParam() {
         return frequencyHighParam;
-    }
-
-    public double getMedian(DoubleStream stream) {
-        var values = stream.sorted().toArray();
-        int length = values.length;
-
-        if (length == 0) {
-            throw new IllegalArgumentException("Stream is empty");
-        } else if (length % 2 == 1) {
-            return values[length / 2];
-        } else {
-            return (values[length / 2 - 1] + values[length / 2]) / 2.0;
-        }
     }
 
     public String getOperator() {

@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
@@ -42,17 +43,30 @@ public class BTopoGrade extends BXyzPoint {
 
 //    private static final String DATE_PATTERN = "YYYY-'W'ww";
     private static final String DATE_PATTERN = "yyyy-MM-dd";
+    private static final Map<BTopoControlPoint, Map<LocalDate, Point3D>> sCachePointToObservations = new HashMap<>();
+    //    private final DateTimeFormatter mWeeklyAvgFormatterFrom = new DateTimeFormatterBuilder()
+//            .appendPattern(DATE_PATTERN)
+//            .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.getValue())
+//            .toFormatter(Locale.getDefault());
+    private static final DateTimeFormatter sWeeklyAvgFormatterFrom = DateTimeFormatter.ofPattern(DATE_PATTERN, Locale.getDefault());
+    private static final DateTimeFormatter sWeeklyAvgFormatterTo = DateTimeFormatter.ofPattern(DATE_PATTERN, Locale.getDefault());
     private final BAxis mAxis;
     private final TreeMap<LocalDate, BTopoGradeObservation> mCommonObservations = new TreeMap<>();
     private transient Ext mExt;
     private final BTopoControlPoint mP1;
     private final BTopoControlPoint mP2;
-//    private final DateTimeFormatter mWeeklyAvgFormatterFrom = new DateTimeFormatterBuilder()
-//            .appendPattern(DATE_PATTERN)
-//            .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.getValue())
-//            .toFormatter(Locale.getDefault());
-    private final DateTimeFormatter mWeeklyAvgFormatterFrom = DateTimeFormatter.ofPattern(DATE_PATTERN, Locale.getDefault());
-    private final DateTimeFormatter mWeeklyAvgFormatterTo = DateTimeFormatter.ofPattern(DATE_PATTERN, Locale.getDefault());
+
+    public static void clearCache() {
+        sCachePointToObservations.clear();
+    }
+
+    public static HashMap<LocalDate, Point3D> createObservationMap(BXyzPoint p) {
+        return BXyzPoint.createObservationMap(p, sWeeklyAvgFormatterTo, sWeeklyAvgFormatterFrom);
+    }
+
+    public static Map<BTopoControlPoint, Map<LocalDate, Point3D>> getCachePointToObservations() {
+        return sCachePointToObservations;
+    }
 
     public BTopoGrade(BAxis axis, BTopoControlPoint p1, BTopoControlPoint p2) {
         mAxis = axis;
@@ -60,22 +74,25 @@ public class BTopoGrade extends BXyzPoint {
         mP2 = p2;
 
         setName("%s → %s".formatted(mP1.getName(), mP2.getName()));
+        setButterfly(mP1.getButterfly());
+    }
 
-        var map1 = createObservationMap(mP1, mWeeklyAvgFormatterTo, mWeeklyAvgFormatterFrom);
-        var map2 = createObservationMap(mP2, mWeeklyAvgFormatterTo, mWeeklyAvgFormatterFrom);
+    public void calculate() {
+        var map1 = sCachePointToObservations.get(mP1);
+        var map2 = sCachePointToObservations.get(mP2);
 
         for (var entry : map1.entrySet()) {
-            LocalDate date = entry.getKey();
-            if (map2.containsKey(date)) {
-                var gradeObservation = new BTopoGradeObservation(this, map1.get(date), map2.get(date));
+            var date = entry.getKey();
+            var point2 = map2.get(date);
+            if (point2 != null) {
+                var gradeObservation = new BTopoGradeObservation(this, entry.getValue(), point2);
                 gradeObservation.setDate(date.atStartOfDay());
                 mCommonObservations.put(date, gradeObservation);
             }
         }
 
-        recalc1(mP1);
-        recalc2(mP2);
-        setButterfly(mP1.getButterfly());
+        recalc(mP1, true);
+        recalc(mP2, false);
     }
 
     @Override
@@ -138,73 +155,45 @@ public class BTopoGrade extends BXyzPoint {
         return "%s → %s".formatted(getFirstDate(), getLastDate());
     }
 
-    private void recalc1(BTopoControlPoint p) {
+    private void recalc(BTopoControlPoint p, boolean isCoordinate1) {
+        var dimension = p.getDimension();
+
         for (var o : p.ext().getObservationsTimeFiltered()) {
-            if (mCommonObservations.containsKey(o.getDate().toLocalDate())) {
-                var oo = mCommonObservations.get(o.getDate().toLocalDate());
-                switch (p.getDimension()) {
+            var localDate = o.getDate().toLocalDate();
+
+            var oo = mCommonObservations.get(localDate);
+            if (oo != null) {
+                Point3D point;
+                switch (dimension) {
                     case _1d:
-                        oo.setCoordinate1(new Point3D(
+                        point = new Point3D(
                                 0.0,
                                 0.0,
                                 o.getMeasuredZ() - o.ext().getAccuZ()
-                        ));
-
+                        );
                         break;
                     case _2d:
-                        oo.setCoordinate1(new Point3D(
+                        point = new Point3D(
                                 o.getMeasuredX() - o.ext().getAccuX(),
                                 o.getMeasuredY() - o.ext().getAccuY(),
                                 0.0
-                        ));
-
+                        );
                         break;
                     case _3d:
-                        oo.setCoordinate1(new Point3D(
+                        point = new Point3D(
                                 o.getMeasuredX() - o.ext().getAccuX(),
                                 o.getMeasuredY() - o.ext().getAccuY(),
                                 o.getMeasuredZ() - o.ext().getAccuZ()
-                        ));
-
+                        );
                         break;
                     default:
                         throw new AssertionError();
                 }
-            }
-        }
-    }
 
-    private void recalc2(BTopoControlPoint p) {
-        for (var o : p.ext().getObservationsTimeFiltered()) {
-            if (mCommonObservations.containsKey(o.getDate().toLocalDate())) {
-                var oo = mCommonObservations.get(o.getDate().toLocalDate());
-                switch (p.getDimension()) {
-                    case _1d:
-                        oo.setCoordinate2(new Point3D(
-                                0.0,
-                                0.0,
-                                o.getMeasuredZ() - o.ext().getAccuZ()
-                        ));
-
-                        break;
-                    case _2d:
-                        oo.setCoordinate2(new Point3D(
-                                o.getMeasuredX() - o.ext().getAccuX(),
-                                o.getMeasuredY() - o.ext().getAccuY(),
-                                0.0
-                        ));
-
-                        break;
-                    case _3d:
-                        oo.setCoordinate2(new Point3D(
-                                o.getMeasuredX() - o.ext().getAccuX(),
-                                o.getMeasuredY() - o.ext().getAccuY(),
-                                o.getMeasuredZ() - o.ext().getAccuZ()
-                        ));
-
-                        break;
-                    default:
-                        throw new AssertionError();
+                if (isCoordinate1) {
+                    oo.setCoordinate1(point);
+                } else {
+                    oo.setCoordinate2(point);
                 }
             }
         }
@@ -215,6 +204,7 @@ public class BTopoGrade extends BXyzPoint {
         public Ext() {
         }
 
+        @Override
         public int getAlarmLevel(BComponent component, Double value) {
             var alarm1 = getAlarmP1(component);
             var level1 = -1;
