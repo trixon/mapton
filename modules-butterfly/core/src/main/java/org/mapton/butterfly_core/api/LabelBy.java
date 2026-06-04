@@ -386,14 +386,14 @@ public class LabelBy {
         if (map != null) {
             var trend = map.get(period);
             if (trend != null) {
-                var value = TrendHelper.getMmPerYear(trend);
+                var value = TrendHelper.getVelocity(trend);
                 if (value != null) {
                     result = "%.1f".formatted(value);
                 }
             }
         }
 
-        return result;
+        return ButterflyHelper.replacePlusMinus(result);
     }
 
     public static String trendDiff(BXyzPoint p, BTrendPeriod period1, BTrendPeriod period2, BComponent component) {
@@ -403,15 +403,15 @@ public class LabelBy {
             var trend1 = map.get(period1);
             var trend2 = map.get(period2);
             if (trend1 != null && trend2 != null) {
-                var value1 = TrendHelper.getMmPerYear(trend1);
-                var value2 = TrendHelper.getMmPerYear(trend2);
+                var value1 = TrendHelper.getVelocity(trend1);
+                var value2 = TrendHelper.getVelocity(trend2);
                 if (value1 != null) {
                     result = "%.1f".formatted(value1 - value2);
                 }
             }
         }
 
-        return result;
+        return ButterflyHelper.replacePlusMinus(result);
     }
 
     public static String trendDiff(BXyzPoint p, BTrendPeriod period, BComponent component) {
@@ -422,15 +422,15 @@ public class LabelBy {
             var trend = map.get(period);
             var trendPrev = mapPrev.get(period);
             if (ObjectUtils.allNotNull(trend, trendPrev)) {
-                var value = TrendHelper.getMmPerYear(trend);
-                var valuePrev = TrendHelper.getMmPerYear(trendPrev);
+                var value = TrendHelper.getVelocity(trend);
+                var valuePrev = TrendHelper.getVelocity(trendPrev);
                 if (value != null) {
                     result = "%.1f".formatted(value - valuePrev);
                 }
             }
         }
 
-        return result;
+        return ButterflyHelper.replacePlusMinus(result);
     }
 
     public static String valueZeroZ(BXyzPoint p) {

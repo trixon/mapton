@@ -83,20 +83,25 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
     }
 
     public boolean filter(BXyzPoint p) {
-        var validAbs1d = true;
-        var validAbs2d = true;
-        var validRel1d = true;
-        var validRel2d = true;
+        var validPeriod1d = true;
+        var validPeriod2d = true;
+        var validDiffPrev1d = true;
+        var validDiffPrev2d = true;
+        var validDiffReference1d = true;
+        var validDiffReference2d = true;
         var validRelAbs1d = true;
         var validRelAbs2d = true;
 
         if (isSelected()) {
             if (p.getDimension() != BDimension._2d) {
-                if (mHeightComponent.isActivatedAbs()) {
-                    validAbs1d = validateAbs(p, mHeightComponent);
+                if (mHeightComponent.isActivatedPeriod()) {
+                    validPeriod1d = validatePeriod(p, mHeightComponent);
                 }
-                if (mHeightComponent.isActivatedRel()) {
-                    validRel1d = validateRel(p, mHeightComponent);
+                if (mHeightComponent.isActivatedDiffPrev()) {
+                    validDiffPrev1d = validateDiffPrev(p, mHeightComponent);
+                }
+                if (mHeightComponent.isActivatedDiffReference()) {
+                    validDiffReference1d = validateDiffReference(p, mHeightComponent);
                 }
                 if (mHeightComponent.isActivatedRel2()) {
                     validRelAbs1d = validateRelAbs(p, mHeightComponent);
@@ -104,11 +109,11 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             }
 
             if (p.getDimension() != BDimension._1d) {
-                if (mPlaneComponent.isActivatedAbs()) {
-                    validAbs2d = validateAbs(p, mPlaneComponent);
+                if (mPlaneComponent.isActivatedPeriod()) {
+                    validPeriod2d = validatePeriod(p, mPlaneComponent);
                 }
-                if (mPlaneComponent.isActivatedRel()) {
-                    validRel2d = validateRel(p, mPlaneComponent);
+                if (mPlaneComponent.isActivatedDiffReference()) {
+                    validDiffReference2d = validateDiffReference(p, mPlaneComponent);
                 }
                 if (mPlaneComponent.isActivatedRel2()) {
                     validRelAbs2d = validateRelAbs(p, mPlaneComponent);
@@ -116,10 +121,12 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             }
         }
 
-        var valid = validAbs1d
-                && validAbs2d
-                && validRel1d
-                && validRel2d
+        var valid = validPeriod1d
+                && validPeriod2d
+                && validDiffPrev1d
+                && validDiffPrev2d
+                && validDiffReference1d
+                && validDiffReference2d
                 && validRelAbs1d
                 && validRelAbs2d
                 && validateVerticalDirection(p);
@@ -187,7 +194,7 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         mDirectionScb.getItems().setAll(BTrendDirection.values());
 
         int row = 0;
-        mRoot.addRow(row++, new VBox(new Label("Period"), mPeriodAbsScb), new VBox(new Label("Differensperiod"), mPeriodRelScb));
+        mRoot.addRow(row++, new VBox(new Label("Trendperiod"), mPeriodAbsScb), new VBox(new Label("Trendreferens"), mPeriodRelScb));
         mRoot.addRow(row++, mHeightComponent, mPlaneComponent);
         mRoot.addRow(row++, new VBox(new Label("Riktning"), mDirectionScb), new VBox(new Label("")));
         FxHelper.autoSizeColumn(mRoot, 2);
@@ -209,27 +216,29 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         mPeriodRelScb.getSelectionModel().selectFirst();
     }
 
-    private boolean validateAbs(BXyzPoint p, TrendComponent trendComponent) {
-        HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(trendComponent.getKey());
-        if (map == null) {
+    private boolean validateDiffPrev(BXyzPoint p, TrendComponent trendComponent) {
+        var slider = trendComponent.mDiffPrevSliderPane;
+        var trendPeriod = mPeriodAbsScb.getValue();
+
+        HashMap<BTrendPeriod, TrendHelper.Trend> map1 = p.getValue(trendComponent.getKey());
+        HashMap<BTrendPeriod, TrendHelper.Trend> map2 = p.getValue(trendComponent.getKey() + "Prev");
+        if (ObjectUtils.anyNull(map1, map2)) {
             return false;
         }
 
-        var trend = map.get(mPeriodAbsScb.getValue());
-        if (trend == null) {
+        var trend1 = map1.get(trendPeriod);
+        var trend2 = map2.get(trendPeriod);
+
+        var diff = TrendHelper.getVelocityDiff(trend1, trend2);
+        if (diff == null) {
             return false;
         }
 
-        var value = TrendHelper.getMmPerYear(trend);
-        if (value == null) {
-            return false;
-        }
-
-        return validateSliderPaneGtEq(trendComponent.mAbsSliderPane, Math.abs(value));
+        return validateSliderPaneGtEq(slider, Math.abs(diff) * 1);
     }
 
-    private boolean validateRel(BXyzPoint p, TrendComponent trendComponent) {
-        var slider = trendComponent.mRelSliderPane;
+    private boolean validateDiffReference(BXyzPoint p, TrendComponent trendComponent) {
+        var slider = trendComponent.mDiffReferenceSliderPane;
         var begPeriod = mPeriodRelScb.getValue();
         var endPeriod = mPeriodAbsScb.getValue();
 
@@ -244,8 +253,8 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             return false;
         }
 
-        var begValue = TrendHelper.getMmPerYear(begTrend);
-        var endValue = TrendHelper.getMmPerYear(endTrend);
+        var begValue = TrendHelper.getVelocity(begTrend);
+        var endValue = TrendHelper.getVelocity(endTrend);
         if (ObjectUtils.anyNull(begValue, endValue)) {
             return false;
         }
@@ -256,6 +265,25 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         } else {
             return validateSliderPaneGtEq(slider, diff);
         }
+    }
+
+    private boolean validatePeriod(BXyzPoint p, TrendComponent trendComponent) {
+        HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(trendComponent.getKey());
+        if (map == null) {
+            return false;
+        }
+
+        var trend = map.get(mPeriodAbsScb.getValue());
+        if (trend == null) {
+            return false;
+        }
+
+        var value = TrendHelper.getVelocity(trend);
+        if (value == null) {
+            return false;
+        }
+
+        return validateSliderPaneGtEq(trendComponent.mPeriodSliderPane, Math.abs(value));
     }
 
     private boolean validateRelAbs(BXyzPoint p, TrendComponent trendComponent) {
@@ -274,8 +302,8 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             return false;
         }
 
-        var begValue = TrendHelper.getMmPerYear(begTrend);
-        var endValue = TrendHelper.getMmPerYear(endTrend);
+        var begValue = TrendHelper.getVelocity(begTrend);
+        var endValue = TrendHelper.getVelocity(endTrend);
         if (ObjectUtils.anyNull(begValue, endValue)) {
             return false;
         }
@@ -305,7 +333,7 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             return false;
         }
 
-        var value = TrendHelper.getMmPerYear(trend);
+        var value = TrendHelper.getVelocity(trend);
         if (value == null) {
             return false;
         }
@@ -330,10 +358,11 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
 
     class TrendComponent extends BorderPane {
 
-        private final SliderPane mAbsSliderPane = new SliderPane("Minsta hastighet (mm/år)", 100, true, true, 1d);
         private final BComponent mComponent;
+        private final SliderPane mDiffPrevSliderPane = new SliderPane("Min Diff föregående", 0, 100d, true, true, 1d);
+        private final SliderPane mDiffReferenceSliderPane = new SliderPane("Min Diff referens", -100, 100d, true, true, 1d);
+        private final SliderPane mPeriodSliderPane = new SliderPane("Min hastighet (mm/år)", 100, true, true, 1d);
         private final SliderPane mRelAbsSliderPane = new SliderPane("Max absolut differens", 0, 100d, true, true, 1d);
-        private final SliderPane mRelSliderPane = new SliderPane("Min differens (period-differensperiod)", -100, 100d, true, true, 1d);
 
         public TrendComponent(BComponent component) {
             mComponent = component;
@@ -341,8 +370,9 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         }
 
         private void clear() {
-            mAbsSliderPane.clear();
-            mRelSliderPane.clear();
+            mPeriodSliderPane.clear();
+            mDiffReferenceSliderPane.clear();
+            mDiffPrevSliderPane.clear();
             mRelAbsSliderPane.clear();
         }
 
@@ -352,8 +382,9 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             var gp = new GridPane(rowGap, rowGap);
             int col = 0;
             gp.addColumn(col++,
-                    mAbsSliderPane,
-                    mRelSliderPane,
+                    mPeriodSliderPane,
+                    mDiffPrevSliderPane,
+                    mDiffReferenceSliderPane,
                     mRelAbsSliderPane
             );
 
@@ -376,10 +407,12 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
 
         private void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
             List.of(
-                    mAbsSliderPane.selectedProperty(),
-                    mAbsSliderPane.valueProperty(),
-                    mRelSliderPane.selectedProperty(),
-                    mRelSliderPane.valueProperty(),
+                    mPeriodSliderPane.selectedProperty(),
+                    mPeriodSliderPane.valueProperty(),
+                    mDiffReferenceSliderPane.selectedProperty(),
+                    mDiffReferenceSliderPane.valueProperty(),
+                    mDiffPrevSliderPane.selectedProperty(),
+                    mDiffPrevSliderPane.valueProperty(),
                     mRelAbsSliderPane.selectedProperty(),
                     mRelAbsSliderPane.valueProperty()
             ).forEach(propertyBase -> propertyBase.addListener(changeListener));
@@ -387,17 +420,22 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
 
         private void initSession(SessionManager sessionManager) {
             String mode = mComponent.getDimension().getName() + "_";
-            mAbsSliderPane.initSession(getKeyFilter(mode + "valueAbsolute"), sessionManager);
-            mRelSliderPane.initSession(getKeyFilter(mode + "valueCompare"), sessionManager);
+            mPeriodSliderPane.initSession(getKeyFilter(mode + "valuePeriod"), sessionManager);
+            mDiffReferenceSliderPane.initSession(getKeyFilter(mode + "valueDiffReference"), sessionManager);
+            mDiffPrevSliderPane.initSession(getKeyFilter(mode + "valueDiffPrev"), sessionManager);
             mRelAbsSliderPane.initSession(getKeyFilter(mode + "valueCompareAbs"), sessionManager);
         }
 
-        private boolean isActivatedAbs() {
-            return mAbsSliderPane.isSelected();
+        private boolean isActivatedDiffPrev() {
+            return mDiffPrevSliderPane.isSelected();
         }
 
-        private boolean isActivatedRel() {
-            return mRelSliderPane.isSelected() && !mPeriodRelScb.getItems().isEmpty();
+        private boolean isActivatedDiffReference() {
+            return mDiffReferenceSliderPane.isSelected() && !mPeriodRelScb.getItems().isEmpty();
+        }
+
+        private boolean isActivatedPeriod() {
+            return mPeriodSliderPane.isSelected();
         }
 
         private boolean isActivatedRel2() {
@@ -408,8 +446,9 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
         }
 
         private void reset() {
-            mAbsSliderPane.setSelected(false);
-            mRelSliderPane.setSelected(false);
+            mPeriodSliderPane.setSelected(false);
+            mDiffReferenceSliderPane.setSelected(false);
+            mDiffPrevSliderPane.setSelected(false);
             mRelAbsSliderPane.setSelected(false);
         }
     }

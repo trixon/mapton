@@ -19,6 +19,8 @@ import gov.nasa.worldwind.render.Material;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -240,6 +242,14 @@ public class ButterflyHelper {
             return sVerticalNegMaterials[getColorIndex(sVerticalNegMaterials.length, limit, value)];
         } else {
             return sVerticalPosMaterials[getColorIndex(sVerticalPosMaterials.length, limit, value)];
+        }
+    }
+
+    public static String replacePlusMinus(String s) {
+        if (Strings.CI.equals(s, "-")) {
+            return s;
+        } else {
+            return StringUtils.replaceEach(s, new String[]{"+", "-"}, new String[]{"▲", "▼"});
         }
     }
 

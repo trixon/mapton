@@ -66,6 +66,7 @@ import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.butterfly_format.types.tmo.BBasObjekt;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -201,6 +202,7 @@ public class ButterflyManager {
 
     public synchronized void load(File file) {
         BCoordinatrix.clear();
+        BTopoGrade.clearCache();
 //        BaseManager.clearPreLoad();
         mStartMilliseconds = System.currentTimeMillis();
         mButterflyMonitor.stop();
