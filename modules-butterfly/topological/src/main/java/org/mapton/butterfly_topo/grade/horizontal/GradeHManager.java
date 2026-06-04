@@ -17,10 +17,9 @@ package org.mapton.butterfly_topo.grade.horizontal;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-import javafx.geometry.Point2D;
+import java.util.PriorityQueue;
+import java.util.stream.Collector;
+import java.util.stream.IntStream;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_format.Butterfly;
@@ -61,48 +60,65 @@ public class GradeHManager extends GradeManagerBase {
 
     @Override
     public void load() {
-        var pointToPoints = new TreeMap<String, HashSet<String>>();
         var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
                 .filter(p -> p.getDimension() != BDimension._2d)
                 .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
                 .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
+                .peek(p -> {
+                    BTopoGrade.getCachePointToObservations().computeIfAbsent(p, k -> BTopoGrade.createObservationMap(k));
+                })
                 .toList();
 
-        for (var p1 : sourcePoints) {
-            var point = new Point2D(p1.getZeroX(), p1.getZeroY());
-            for (var p2 : sourcePoints) {
-                double distance = point.distance(p2.getZeroX(), p2.getZeroY());
-                if (p1 != p2 && distance >= MIN_RADIAL_DISTANCE && distance <= MAX_RADIAL_DISTANCE) {
-                    if (!pointToPoints.computeIfAbsent(p2.getName(), k -> new HashSet<>()).contains(p1.getName())) {//Skip A-B, B-A
-                        pointToPoints.computeIfAbsent(p1.getName(), k -> new HashSet<>()).add(p2.getName());
-                    }
-                }
-            }
-        }
+        Comparator<BTopoGrade> c1 = Comparator.comparingInt(o -> o.ext().getAlarmLevelHeight(Math.abs(o.ext().getDiff().getZQuota())));
+        Comparator<BTopoGrade> c2 = Comparator.comparingDouble(o -> Math.abs(o.ext().getDiff().getZQuota()));
 
-        var gradesAll = new ArrayList<BTopoGrade>();
-        for (var entry : pointToPoints.entrySet()) {
-            var p1 = mTopoManager.getItemForKey(entry.getKey());
-            for (var n2 : entry.getValue()) {
-                var p2 = mTopoManager.getItemForKey(n2);
-                var grade = new BTopoGrade(BAxis.HORIZONTAL, p1, p2);
-                if (grade.getCommonObservations().size() > 1 && Math.abs(grade.ext().getDiff().getZQuota()) >= MIN_GRADE_H) {
-                    gradesAll.add(grade);
-                }
-            }
-        }
+        var fullComparator = c1.reversed().thenComparing(c2.reversed());
+        var invertedComparator = fullComparator.reversed();
+        int numOfPoints = sourcePoints.size();
+        int limit = 1000;
 
-        Comparator<BTopoGrade> c1 = (o1, o2)
-                -> Integer.valueOf(o1.ext().getAlarmLevelHeight(Math.abs(o1.ext().getDiff().getZQuota())))
-                        .compareTo(o2.ext().getAlarmLevelHeight(Math.abs(o2.ext().getDiff().getZQuota())));
-        Comparator<BTopoGrade> c2 = (o1, o2)
-                -> Double.valueOf(Math.abs(o1.ext().getDiff().getZQuota()))
-                        .compareTo(Math.abs(o2.ext().getDiff().getZQuota()));
+        var gradesLim = IntStream.range(0, numOfPoints).parallel()
+                .boxed()
+                .flatMap(i -> IntStream.range(i + 1, numOfPoints).mapToObj(j -> new int[]{i, j}))
+                .collect(Collector.of(
+                        () -> new PriorityQueue<BTopoGrade>(limit + 1, invertedComparator),
+                        (queue, pairIndex) -> {
+                            var p1 = sourcePoints.get(pairIndex[0]);
+                            var p2 = sourcePoints.get(pairIndex[1]);
 
-        var gradesLim = gradesAll.stream()
-                .sorted(c1.reversed().thenComparing(c2.reversed()))
-                .limit(1000)
-                .collect(Collectors.toCollection(ArrayList::new));
+                            double distance = Math.hypot(p1.getZeroX() - p2.getZeroX(), p1.getZeroY() - p2.getZeroY());
+                            if (distance >= MIN_RADIAL_DISTANCE && distance <= MAX_RADIAL_DISTANCE) {
+                                var grade = new BTopoGrade(BAxis.HORIZONTAL, p1, p2);
+                                if (grade.getDistancePlane() <= MAX_RADIAL_DISTANCE) {
+                                    grade.calculate();
+
+                                    boolean isValid = grade.getCommonObservations().size() >= 2
+                                    && Math.abs(grade.ext().getDiff().getZQuota()) >= MIN_GRADE_H;
+
+                                    if (isValid) {
+                                        queue.offer(grade);
+                                        if (queue.size() > limit) {
+                                            queue.poll();
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        (queue1, queue2) -> {
+                            for (var element : queue2) {
+                                queue1.offer(element);
+                                if (queue1.size() > limit) {
+                                    queue1.poll();
+                                }
+                            }
+                            return queue1;
+                        },
+                        queue -> {
+                            var result = new ArrayList<>(queue);
+                            result.sort(fullComparator);
+                            return result;
+                        }
+                ));
 
         gradesLim.forEach(g -> {
             var first = BCoordinatrix.toLatLon(g.getP1());

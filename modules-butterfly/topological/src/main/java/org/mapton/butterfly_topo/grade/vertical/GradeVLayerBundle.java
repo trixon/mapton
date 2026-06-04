@@ -75,7 +75,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_GradeVAction(), SDict.TOPOGRAPHY.toString(), "GradeVTopComponent");
+        initCommons(mBundle.getString("grade_v"), SDict.TOPOGRAPHY.toString() + "/Punktpar", "GradeVTopComponent");
 
         mLayer.setMaxActiveAltitude(16000);
         mSurfaceLayer.setMaxActiveAltitude(16000);

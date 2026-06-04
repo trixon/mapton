@@ -17,10 +17,11 @@ package org.mapton.butterfly_topo.grade.distance;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.TreeMap;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import javafx.geometry.Point2D;
+import java.util.stream.IntStream;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BCoordinatrix;
@@ -79,6 +80,19 @@ public class GradeDManager extends GradeManagerBase {
                 load3d();
         };
 
+        gradesLim.forEach(g -> {
+            var first = BCoordinatrix.toLatLon(g.getP1());
+            var second = BCoordinatrix.toLatLon(g.getP2());
+            var d = first.distance(second);
+            var b = first.getBearing(second);
+            var mid = first.getDestinationPoint(b, d * .5);
+            g.setLat(mid.getLatitude());
+            g.setLon(mid.getLongitude());
+            if (mOptions.getDistanceMode() == BDimension._1d) {
+                g.setValue("distanceMode", mOptions.getDistanceMode());
+            }
+        });
+
         FxHelper.runLater(() -> {
             setItemsAll(gradesLim);
             setItemsFiltered(gradesLim);
@@ -97,121 +111,131 @@ public class GradeDManager extends GradeManagerBase {
     }
 
     private ArrayList<BTopoGrade> load1d() {
-        var pointToPoints = new TreeMap<String, HashSet<String>>();
         var dimensionToPointsMap = mTopoManager.getTimeFilteredItems().stream()
                 .filter(p -> p.getDimension() != BDimension._2d)
                 .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
                 .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
                 .collect(Collectors.groupingBy(BTopoControlPoint::getDimension));
 
-        if (dimensionToPointsMap.containsKey(BDimension._1d) && dimensionToPointsMap.containsKey(BDimension._3d)) {
-            for (var p1 : dimensionToPointsMap.get(BDimension._1d)) {
-                var point = new Point2D(p1.getZeroX(), p1.getZeroY());
-                for (var p2 : dimensionToPointsMap.get(BDimension._3d)) {
-                    if (p1.getZeroZ() > p2.getZeroZ()) {
-                        continue;
-                    }
-                    var distance = point.distance(p2.getZeroX(), p2.getZeroY());
-                    if (p1 != p2 && distance <= MAX_2D_DISTANCE) {
-                        if (!pointToPoints.computeIfAbsent(p2.getName(), k -> new HashSet<>()).contains(p1.getName())) {//Skip A-B, B-A
-                            pointToPoints.computeIfAbsent(p1.getName(), k -> new HashSet<>()).add(p2.getName());
+        var list1d = dimensionToPointsMap.getOrDefault(BDimension._1d, List.of());
+        var list3d = dimensionToPointsMap.getOrDefault(BDimension._3d, List.of());
+
+        if (list1d.isEmpty() || list3d.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        for (var p : list1d) {
+            BTopoGrade.getCachePointToObservations().computeIfAbsent(p, k -> BTopoGrade.createObservationMap(k));
+        }
+
+        for (var p : list3d) {
+            BTopoGrade.getCachePointToObservations().computeIfAbsent(p, k -> BTopoGrade.createObservationMap(k));
+        }
+
+        var limit = 1000;
+
+        Comparator<BTopoGrade> fullComparator = Comparator.comparingDouble(o -> o.ext().getDiff().getPartialDiffZAbs());
+
+        return IntStream.range(0, list1d.size()).parallel()
+                .boxed()
+                .flatMap(i -> IntStream.range(0, list3d.size()).mapToObj(j -> new int[]{i, j}))
+                .collect(Collector.of(
+                        () -> new PriorityQueue<BTopoGrade>(limit + 1, fullComparator),
+                        (queue, pairIndex) -> {
+                            var p1 = list1d.get(pairIndex[0]);
+                            var p2 = list3d.get(pairIndex[1]);
+
+                            if (p1 == p2 || p1.getZeroZ() > p2.getZeroZ()) {
+                                return;
+                            }
+
+                            var distance = Math.hypot(p1.getZeroX() - p2.getZeroX(), p1.getZeroY() - p2.getZeroY());
+                            if (distance <= MAX_2D_DISTANCE) {
+                                var grade = new BTopoGrade(BAxis.RESULTANT, p1, p2);
+                                grade.calculate();
+
+                                if (grade.getCommonObservations().size() > 1) {
+                                    queue.offer(grade);
+                                    if (queue.size() > limit) {
+                                        queue.poll();
+                                    }
+                                }
+                            }
+                        },
+                        (queue1, queue2) -> {
+                            for (var element : queue2) {
+                                queue1.offer(element);
+                                if (queue1.size() > limit) {
+                                    queue1.poll();
+                                }
+                            }
+                            return queue1;
+                        },
+                        queue -> {
+                            var result = new ArrayList<>(queue);
+                            result.sort(fullComparator.reversed());
+                            return result;
                         }
-                    }
-                }
-            }
-        }
-
-        var gradesAll = new ArrayList<BTopoGrade>();
-        for (var entry : pointToPoints.entrySet()) {
-            var p1 = mTopoManager.getItemForKey(entry.getKey());
-            for (var n2 : entry.getValue()) {
-                var p2 = mTopoManager.getItemForKey(n2);
-                var grade = new BTopoGrade(BAxis.RESULTANT, p1, p2);
-                if (grade.getCommonObservations().size() > 1 && true) {
-                    gradesAll.add(grade);
-                }
-            }
-        }
-
-        Comparator<BTopoGrade> c1 = (o1, o2)
-                -> Double.valueOf(o1.ext().getDiff().getPartialDiffZAbs())
-                        .compareTo(o2.ext().getDiff().getPartialDiffZAbs());
-
-        var gradesLim = gradesAll.stream()
-                .sorted(c1.reversed())
-                .limit(1000)
-                .peek(g -> {
-                    var first = BCoordinatrix.toLatLon(g.getP1());
-                    var second = BCoordinatrix.toLatLon(g.getP2());
-                    var d = first.distance(second);
-                    var b = first.getBearing(second);
-                    var mid = first.getDestinationPoint(b, d * .5);
-                    g.setLat(mid.getLatitude());
-                    g.setLon(mid.getLongitude());
-                    g.setValue("distanceMode", mOptions.getDistanceMode());
-                })
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        return gradesLim;
+                ));
     }
 
     private ArrayList<BTopoGrade> load2d() {
-        //TODO
         return load1d();
     }
 
     private ArrayList<BTopoGrade> load3d() {
-        var pointToPoints = new TreeMap<String, HashSet<String>>();
         var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
                 .filter(p -> p.getDimension() != BDimension._2d)
                 .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
                 .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
                 .toList();
 
-        for (var p1 : sourcePoints) {
-            var point = new Point2D(p1.getZeroX(), p1.getZeroY());
-            for (var p2 : sourcePoints) {
-                double distance = point.distance(p2.getZeroX(), p2.getZeroY());
-                if (p1 != p2 && distance >= MIN_RADIAL_DISTANCE && distance <= MAX_RADIAL_DISTANCE) {
-                    if (!pointToPoints.computeIfAbsent(p2.getName(), k -> new HashSet<>()).contains(p1.getName())) {//Skip A-B, B-A
-                        pointToPoints.computeIfAbsent(p1.getName(), k -> new HashSet<>()).add(p2.getName());
-                    }
-                }
-            }
+        for (var p : sourcePoints) {
+            BTopoGrade.getCachePointToObservations().computeIfAbsent(p, k -> BTopoGrade.createObservationMap(k));
         }
 
-        var gradesAll = new ArrayList<BTopoGrade>();
-        for (var entry : pointToPoints.entrySet()) {
-            var p1 = mTopoManager.getItemForKey(entry.getKey());
-            for (var n2 : entry.getValue()) {
-                var p2 = mTopoManager.getItemForKey(n2);
-                var grade = new BTopoGrade(BAxis.RESULTANT, p1, p2);
-                if (grade.getCommonObservations().size() > 1 && true) {
-                    gradesAll.add(grade);
-                }
-            }
-        }
+        int numOfPoints = sourcePoints.size();
+        var limit = 1000;
 
-        Comparator<BTopoGrade> c1 = (o1, o2)
-                -> Double.valueOf(o1.ext().getDiff().getPartialDiffDistanceAbs())
-                        .compareTo(o2.ext().getDiff().getPartialDiffDistanceAbs());
+        Comparator<BTopoGrade> fullComparator = Comparator.comparingDouble(o -> o.ext().getDiff().getPartialDiffDistanceAbs());
 
-        var gradesLim = gradesAll.stream()
-                .sorted(c1.reversed())
-                .limit(1000)
-                .collect(Collectors.toCollection(ArrayList::new));
+        return IntStream.range(0, numOfPoints).parallel()
+                .boxed()
+                .flatMap(i -> IntStream.range(i + 1, numOfPoints).mapToObj(j -> new int[]{i, j}))
+                .collect(Collector.of(
+                        () -> new PriorityQueue<BTopoGrade>(limit + 1, fullComparator),
+                        (queue, pairIndex) -> {
+                            var p1 = sourcePoints.get(pairIndex[0]);
+                            var p2 = sourcePoints.get(pairIndex[1]);
+                            var distance = Math.hypot(p1.getZeroX() - p2.getZeroX(), p1.getZeroY() - p2.getZeroY());
 
-        gradesLim.forEach(g -> {
-            var first = BCoordinatrix.toLatLon(g.getP1());
-            var second = BCoordinatrix.toLatLon(g.getP2());
-            var d = first.distance(second);
-            var b = first.getBearing(second);
-            var mid = first.getDestinationPoint(b, d * .5);
-            g.setLat(mid.getLatitude());
-            g.setLon(mid.getLongitude());
-        });
+                            if (distance >= MIN_RADIAL_DISTANCE && distance <= MAX_RADIAL_DISTANCE) {
+                                var grade = new BTopoGrade(BAxis.RESULTANT, p1, p2);
+                                grade.calculate();
 
-        return gradesLim;
+                                if (grade.getCommonObservations().size() > 1) {
+                                    queue.offer(grade);
+                                    if (queue.size() > limit) {
+                                        queue.poll();
+                                    }
+                                }
+                            }
+                        },
+                        (queue1, queue2) -> {
+                            for (var element : queue2) {
+                                queue1.offer(element);
+                                if (queue1.size() > limit) {
+                                    queue1.poll();
+                                }
+                            }
+                            return queue1;
+                        },
+                        queue -> {
+                            var result = new ArrayList<>(queue);
+                            result.sort(fullComparator.reversed());
+                            return result;
+                        }
+                ));
     }
 
     private static class Holder {

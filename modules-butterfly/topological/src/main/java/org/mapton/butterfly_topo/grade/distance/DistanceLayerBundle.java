@@ -76,7 +76,7 @@ public class DistanceLayerBundle extends TopoBaseLayerBundle {
     }
 
     private void init() {
-        initCommons(Mapton.addWarning(Bundle.CTL_DistanceAction(), 0), SDict.TOPOGRAPHY.toString(), "DistanceTopComponent");
+        initCommons(Mapton.addWarning(mBundle.getString("grade_d"), 0), SDict.TOPOGRAPHY.toString() + "/Punktpar", "DistanceTopComponent");
 
         mLayer.setMaxActiveAltitude(16000);
         mSurfaceLayer.setMaxActiveAltitude(16000);

@@ -75,7 +75,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_GradeHAction(), SDict.TOPOGRAPHY.toString(), "GradeHTopComponent");
+        initCommons(mBundle.getString("grade_h"), SDict.TOPOGRAPHY.toString() + "/Punktpar", "GradeHTopComponent");
 
         mLayer.setMaxActiveAltitude(16000);
         mSurfaceLayer.setMaxActiveAltitude(16000);

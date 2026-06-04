@@ -17,9 +17,9 @@ package org.mapton.butterfly_topo.grade.vertical;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.TreeMap;
-import javafx.geometry.Point2D;
+import java.util.PriorityQueue;
+import java.util.stream.Collector;
+import java.util.stream.IntStream;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_format.Butterfly;
@@ -62,75 +62,93 @@ public class GradeVManager extends GradeManagerBase {
 
     @Override
     public void load() {
-        synchronized (this) {
-            var pointToPoints = new TreeMap<String, HashSet<String>>();
-            var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
-                    .filter(p -> p.getDimension() == BDimension._3d)
-                    .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
-                    .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
-                    .toList();
+        var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
+                .filter(p -> p.getDimension() == BDimension._3d)
+                .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
+                .peek(p -> {
+                    BTopoGrade.getCachePointToObservations().computeIfAbsent(p, k -> BTopoGrade.createObservationMap(k));
+                })
+                .toList();
 
-            for (var p1 : sourcePoints) {
-                if (ObjectUtils.anyNull(p1.getZeroX(), p1.getZeroY())) {
-                    continue;
-                }
-                var point = new Point2D(p1.getZeroX(), p1.getZeroY());
-                for (var p2 : sourcePoints) {
-                    if (ObjectUtils.anyNull(p2.getZeroX(), p2.getZeroY())) {
-                        continue;
-                    }
+        Comparator<BTopoGrade> c1 = Comparator.comparingInt(o
+                -> o.ext().getAlarmLevelPlane(Math.abs(o.ext().getDiff().getRQuota()))
+        );
+        Comparator<BTopoGrade> c2 = Comparator.comparingDouble(o
+                -> Math.abs(o.ext().getDiff().getRQuota())
+        );
 
-                    double distanceR = point.distance(p2.getZeroX(), p2.getZeroY());
-                    double distanceH = Math.abs(p2.getZeroZ() - p1.getZeroZ());
+        var fullComparator = c1.reversed().thenComparing(c2.reversed());
+        var invertedComparator = fullComparator.reversed();
+        int numOfPoints = sourcePoints.size();
+        int limit = 1000;
 
-                    if (p1 != p2
-                            && MathHelper.isBetween(MIN_HORIZONTAL_DISTANCE, MAX_HORIZONTAL_DISTANCE, distanceR)
-                            && MathHelper.isBetween(MIN_VERTICAL_DISTANCE, MAX_VERTICAL_DISTANCE, distanceH)) {
-                        if (!pointToPoints.computeIfAbsent(p2.getName(), k -> new HashSet<>()).contains(p1.getName())) {//Skip A-B, B-A
-                            pointToPoints.computeIfAbsent(p1.getName(), k -> new HashSet<>()).add(p2.getName());
+        var gradesLim = IntStream.range(0, numOfPoints).parallel()
+                .boxed()
+                .flatMap(i -> IntStream.range(i + 1, numOfPoints).mapToObj(j -> new int[]{i, j}))
+                .collect(Collector.of(
+                        () -> new PriorityQueue<BTopoGrade>(limit + 1, invertedComparator),
+                        (queue, parIndex) -> {
+                            var p1 = sourcePoints.get(parIndex[0]);
+                            var p2 = sourcePoints.get(parIndex[1]);
+
+                            if (ObjectUtils.anyNull(p1.getZeroX(), p1.getZeroY(), p1.getZeroZ(),
+                                    p2.getZeroX(), p2.getZeroY(), p2.getZeroZ())) {
+                                return;
+                            }
+
+                            var distanceR = Math.hypot(p1.getZeroX() - p2.getZeroX(), p1.getZeroY() - p2.getZeroY());
+                            var distanceH = Math.abs(p2.getZeroZ() - p1.getZeroZ());
+                            var validDistance = MathHelper.isBetween(MIN_HORIZONTAL_DISTANCE, MAX_HORIZONTAL_DISTANCE, distanceR)
+                            && MathHelper.isBetween(MIN_VERTICAL_DISTANCE, MAX_VERTICAL_DISTANCE, distanceH);
+
+                            if (validDistance) {
+                                var grade = new BTopoGrade(BAxis.VERTICAL, p1, p2);
+                                grade.calculate();
+
+                                var isValid = grade.getCommonObservations().size() >= 2
+                                && (Math.abs(grade.ext().getDiff().getRQuota()) >= 0.00001
+                                || Math.abs(grade.ext().getDiff().getZQuota()) >= 0.00001);
+
+                                if (isValid) {
+                                    queue.offer(grade);
+                                    if (queue.size() > limit) {
+                                        queue.poll();
+                                    }
+                                }
+                            }
+                        },
+                        (queue1, queue2) -> {
+                            for (var element : queue2) {
+                                queue1.offer(element);
+                                if (queue1.size() > limit) {
+                                    queue1.poll();
+                                }
+                            }
+                            return queue1;
+                        },
+                        queue -> {
+                            var result = new ArrayList<>(queue);
+                            result.sort(fullComparator);
+                            return result;
                         }
-                    }
-                }
-            }
+                ));
 
-            var grades = new ArrayList<BTopoGrade>();
-            for (var entry : pointToPoints.entrySet()) {
-                var p1 = mTopoManager.getItemForKey(entry.getKey());
-                for (var n2 : entry.getValue()) {
-                    var p2 = mTopoManager.getItemForKey(n2);
-                    var grade = new BTopoGrade(BAxis.VERTICAL, p1, p2);
-                    if (grade.getCommonObservations().size() > 1
-                            //                            && ( Math.abs(pair.getZQuota()) > 0.00001)) {
-                            && (Math.abs(grade.ext().getDiff().getRQuota()) > 0.00001 || Math.abs(grade.ext().getDiff().getZQuota()) > 0.00001)) {
-                        grades.add(grade);
-                    }
-                }
+        gradesLim.forEach(g -> {
+            var first = BCoordinatrix.toLatLon(g.getP1());
+            var second = BCoordinatrix.toLatLon(g.getP2());
+            var d = first.distance(second);
+            var b = first.getBearing(second);
+            var mid = first.getDestinationPoint(b, d * .5);
+            g.setLat(mid.getLatitude());
+            g.setLon(mid.getLongitude());
+        });
 
-                Comparator<BTopoGrade> c1 = (o1, o2)
-                        -> Integer.valueOf(o1.ext().getAlarmLevelPlane(Math.abs(o1.ext().getDiff().getRQuota())))
-                                .compareTo(o2.ext().getAlarmLevelPlane(Math.abs(o2.ext().getDiff().getRQuota())));
-                Comparator<BTopoGrade> c2 = (o1, o2)
-                        -> Double.valueOf(Math.abs(o1.ext().getDiff().getRQuota()))
-                                .compareTo(Math.abs(o2.ext().getDiff().getRQuota()));
-                grades.sort(c1.reversed().thenComparing(c2.reversed()));
-
-                grades.forEach(g -> {
-                    var first = BCoordinatrix.toLatLon(g.getP1());
-                    var second = BCoordinatrix.toLatLon(g.getP2());
-                    var d = first.distance(second);
-                    var b = first.getBearing(second);
-                    var mid = first.getDestinationPoint(b, d * .5);
-                    g.setLat(mid.getLatitude());
-                    g.setLon(mid.getLongitude());
-                });
-
-                FxHelper.runLater(() -> {
-                    setItemsAll(grades);
-                    setItemsFiltered(grades);
-                    setItemsTimeFiltered(grades);
-                });
-            }
-        }
+        FxHelper.runLater(() -> {
+            setItemsAll(gradesLim);
+            setItemsFiltered(gradesLim);
+            setItemsTimeFiltered(gradesLim);
+        });
     }
 
     @Override
