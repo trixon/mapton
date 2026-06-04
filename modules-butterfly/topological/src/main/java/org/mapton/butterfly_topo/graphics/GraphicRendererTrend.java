@@ -65,7 +65,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
             BTrendPeriod.ZERO, Material.MAGENTA,
             BTrendPeriod.FIRST, Material.BLACK);
     private double mAltitude;
-    private final double maxRadius = 10.0;
+    private final double mMaxRadius = 10.0;
 
     public GraphicRendererTrend(RenderableLayer layer, RenderableLayer passiveLayer) {
         super(layer, passiveLayer);
@@ -131,7 +131,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
     }
 
     private double getSpeed(TrendHelper.Trend trend) {
-        return TrendHelper.getMmPerYear(trend) / 5;
+        return TrendHelper.getVelocity(trend) / 5;
     }
 
     private void plotDiff(BTopoControlPoint p, Position position, GraphicItem graphicItem, TrendHelper.Trend trendA, TrendHelper.Trend trendB) {
@@ -139,8 +139,8 @@ public class GraphicRendererTrend extends GraphicRendererBase {
             return;
         }
 
-        var valueA = TrendHelper.getMmPerYear(trendA);
-        var valueB = TrendHelper.getMmPerYear(trendB);
+        var valueA = TrendHelper.getVelocity(trendA);
+        var valueB = TrendHelper.getVelocity(trendB);
         if (valueA != null) {
             var value = valueA - valueB;
             var material = ButterflyHelper.getRangeMaterial(value, 10.0);
@@ -200,7 +200,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
 
         var trend = map.get(mOptions.getTrendPeriodA());
         if (trend != null) {
-            var value = TrendHelper.getMmPerYear(trend);
+            var value = TrendHelper.getVelocity(trend);
             var material = ButterflyHelper.getRangeMaterial(value, 10.0);
             plotShape(position, graphicItem, value, null, material);
         }
@@ -230,7 +230,10 @@ public class GraphicRendererTrend extends GraphicRendererBase {
             var trend = map.get(interval);
             var height = 0.5;
             if (trend != null) {
-                height = Math.abs(TrendHelper.getMmPerYear(trend));
+                var tempHeight = Math.abs(TrendHelper.getVelocity(trend));
+                if (tempHeight > 0) {
+                    height = tempHeight;
+                }
             }
             var material = mIntervalToMaterialMap.get(interval);
             plotShape(pos, graphicItem, 1.0, height, material);
@@ -262,13 +265,13 @@ public class GraphicRendererTrend extends GraphicRendererBase {
             var innerRadius = 0.0;
             var speed = getSpeed(trend);
             var radius = Math.abs(speed);
-            var outerRadius = innerRadius + Math.min(radius, maxRadius);
+            var outerRadius = innerRadius + Math.min(radius, mMaxRadius);
             var attrs = new BasicAirspaceAttributes();
             attrs.setOutlineWidth(3.0);
             attrs.setOutlineMaterial(Material.LIGHT_GRAY);
             attrs.setDrawOutline(speed < 0);
             attrs.setDrawInterior(true);
-            if (radius > maxRadius) {
+            if (radius > mMaxRadius) {
                 var maxMaterial = new Material(Color.decode("#800080"));
                 attrs.setInteriorMaterial(maxMaterial);
             } else {
@@ -301,7 +304,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
             height = 0.4;
         }
         var pos = WWHelper.positionFromPosition(position, height * 0.5);
-        var radius = Math.min(maxRadius, Math.abs(dZ) * .1 + 0.05) * .5;
+        var radius = Math.min(mMaxRadius, Math.abs(dZ) * .1 + 0.05) * .5;
 
         RigidShape shape;
         if (dZ > 0) {
@@ -331,12 +334,12 @@ public class GraphicRendererTrend extends GraphicRendererBase {
                     var trend = map.get(key);
                     speed = getSpeed(trend);
                     radius = Math.max(minRadius, Math.abs(speed * 0.5));
-                    radius = Math.min(radius, maxRadius);
+                    radius = Math.min(radius, mMaxRadius);
                 }
 
                 var pos = WWHelper.positionFromPosition(position, mAltitude);
                 AbstractShape shape = null;
-                AbstractShape shapeMax = new Cylinder(pos, 1.0, maxRadius * 1.25);
+                AbstractShape shapeMax = new Cylinder(pos, 1.0, mMaxRadius * 1.25);
                 AbstractAirspace airspace = null;
                 if (component == BComponent.HEIGHT) {
                     if (p.getDimension() == BDimension._1d) {
@@ -370,7 +373,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
                     shape.setAttributes(attrs);
                     shapeMax.setAttributes(attrs);
                     addRenderable(shape, true, graphicItem, sMapObjects);
-                    if (radius == maxRadius) {
+                    if (radius == mMaxRadius) {
                         addRenderable(shapeMax, true, graphicItem, sMapObjects);
                     }
                 } else if (airspace != null) {
@@ -381,7 +384,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
 
                     airspace.setAttributes(attrs);
                     addRenderable(airspace, true, graphicItem, sMapObjects);
-                    if (radius == maxRadius) {
+                    if (radius == mMaxRadius) {
                     }
                 }
             }

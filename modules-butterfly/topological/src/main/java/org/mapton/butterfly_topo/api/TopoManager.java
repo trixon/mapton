@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.ObjectUtils;
@@ -256,17 +257,32 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             }
         }
 
-        if (mTrendLoadCounter++ < 3) {
+//        if (mTrendLoadCounter++ < 3) {
+        var start = System.currentTimeMillis();
+        int cores = Runtime.getRuntime().availableProcessors();
+        try (var executor = Executors.newFixedThreadPool(cores)) {
             for (var p : timeFilteredItems) {
-                keepLoadingProgressAlive();
-                try {
-                    populateTrends(p);
-                } catch (Exception e) {
-                    //System.err.println(e);
-                }
+                executor.submit(() -> {
+                    if (!p.ext().getObservationsAllRaw().isEmpty()) {
+                        var trendsH = (HashMap<BTrendPeriod, Trend>) p.getValue(BKey.TRENDS_H);
+                        var trendsP = (HashMap<BTrendPeriod, Trend>) p.getValue(BKey.TRENDS_P);
+                        var missingH = trendsH == null || trendsH.isEmpty();
+                        var missingP = trendsP == null || trendsP.isEmpty();
+
+                        if (missingH || missingP) {
+                            try {
+//                                keepLoadingProgressAlive();
+                                populateTrends(p);
+                            } catch (Exception e) {
+                                //System.err.println(e);
+                            }
+                        }
+                    }
+                });
             }
         }
-
+//        System.out.println("Trend calc in " + SystemHelper.age(start));
+//        }
         setItemsTimeFiltered(timeFilteredItems);
     }
 

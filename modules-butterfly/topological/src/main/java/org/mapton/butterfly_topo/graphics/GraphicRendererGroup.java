@@ -239,7 +239,12 @@ public class GraphicRendererGroup extends GraphicRendererBase {
         var lines = ButterflyManager.getInstance().getButterfly().sys().getValAsList("system.deformation.boundaries");
         for (var line : lines) {
             if (!Strings.CI.startsWith(line, "#")) {
-                plotDeformationLineSurface(line);
+                try {
+                    plotDeformationLineSurface(line);
+                } catch (Exception e) {
+                    System.err.println("plotDeformationLineSurface failed: " + line);
+                    System.err.println(e.getMessage());
+                }
             }
         }
     }

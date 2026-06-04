@@ -18,6 +18,7 @@ package org.mapton.butterfly_topo.chart;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 import javax.swing.JTabbedPane;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -38,8 +39,8 @@ public class ChartAggregate {
     public ChartAggregate() {
         final Function<BXyzPointObservation, Double> func1d = (var o) -> o.ext().getDelta1d();
         final Function<BXyzPointObservation, Double> func2d = (var o) -> o.ext().getDelta2d();
-        mBuilderTrend1d = new ChartBuilderTrend(BDimension._1d, func1d);
-        mBuilderTrend2d = new ChartBuilderTrend(BDimension._2d, func2d);
+        mBuilderTrend1d = new ChartBuilderTrend(BComponent.HEIGHT, func1d);
+        mBuilderTrend2d = new ChartBuilderTrend(BComponent.PLANE, func2d);
 
         mTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
     }

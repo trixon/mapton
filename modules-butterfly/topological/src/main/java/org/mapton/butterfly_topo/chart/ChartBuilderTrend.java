@@ -19,6 +19,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -26,9 +27,11 @@ import org.jfree.data.general.DatasetUtils;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
@@ -42,14 +45,14 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class ChartBuilderTrend extends ChartBuilderBase {
 
-    private final BDimension mDimension;
+    private final BComponent mComponent;
     private final Function<BXyzPointObservation, Double> mFunction;
     private final TimeSeries mTimeSeries;
 
-    public ChartBuilderTrend(BDimension dimension, Function<BXyzPointObservation, Double> function) {
-        mDimension = dimension;
+    public ChartBuilderTrend(BComponent component, Function<BXyzPointObservation, Double> function) {
+        mComponent = component;
         mFunction = function;
-        mTimeSeries = new TimeSeries(dimension == BDimension._1d ? Dict.Geometry.HEIGHT : Dict.Geometry.PLANE);
+        mTimeSeries = new TimeSeries(component == BComponent.HEIGHT ? Dict.Geometry.HEIGHT : Dict.Geometry.PLANE);
         initChart(null, null);
     }
 
@@ -93,7 +96,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
             var renderer = new XYLineAndShapeRenderer(true, false);
             plot.setRenderer(0, renderer);
 
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeries.getKey()), mDimension == BDimension._1d ? Color.RED : Color.BLUE);
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeries.getKey()), mComponent == BComponent.HEIGHT ? Color.RED : Color.BLUE);
         }
 
         var startDateFirst = p.ext().getDateFirst();
@@ -105,36 +108,49 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         var startDateMinus1w = endDateLast.minusWeeks(1);
 
         var index = 1;
-        plot(p, "▼", startDateFirst, LocalDateTime.MIN, Color.GREEN, index++, -50);
-        plot(p, "▲", startDateFirst, LocalDateTime.MIN, Color.GREEN, index++, 50);
+        var trendKey = mComponent == BComponent.HEIGHT ? BKey.TRENDS_H : BKey.TRENDS_P;
+        plot(p, "▼", trendKey, null, startDateFirst, LocalDateTime.MIN, Color.GREEN, index++, -50);
+        plot(p, "▲", trendKey, null, startDateFirst, LocalDateTime.MIN, Color.GREEN, index++, 50);
         if (startDateFirst.isBefore(startDateZero)) {
-            plot(p, "Första", startDateFirst, LocalDateTime.MIN, Color.BLACK, index++, null);
+            plot(p, "Första", trendKey, BTrendPeriod.FIRST, startDateFirst, LocalDateTime.MIN, Color.BLACK, index++, null);
         }
 
-        plot(p, "Noll", startDateZero, LocalDateTime.MIN, Color.MAGENTA, index++, null);
-        plot(p, "6m", startDateMinus6m, startDateZero, Color.CYAN, index++, null);
-        plot(p, "3m", startDateMinus3m, startDateZero, Color.YELLOW, index++, null);
-        plot(p, "1m", startDateMinus1m, startDateZero, Color.ORANGE, index++, null);
-        plot(p, "1w", startDateMinus1w, startDateZero, Color.RED, index++, null);
+        plot(p, "Noll", trendKey, BTrendPeriod.ZERO, startDateZero, LocalDateTime.MIN, Color.MAGENTA, index++, null);
+
+        for (var key : List.of(trendKey, trendKey + "Prev")) {
+            plot(p, "12m", key, BTrendPeriod.YEAR, startDateMinus6m, startDateZero, Color.BLUE, index++, null);
+            plot(p, "6m", key, BTrendPeriod.HALF_YEAR, startDateMinus6m, startDateZero, Color.CYAN, index++, null);
+            plot(p, "3m", key, BTrendPeriod.QUARTER, startDateMinus3m, startDateZero, Color.YELLOW, index++, null);
+            plot(p, "1m", key, BTrendPeriod.MONTH, startDateMinus1m, startDateZero, Color.ORANGE, index++, null);
+            plot(p, "1w", key, BTrendPeriod.WEEK, startDateMinus1w, startDateZero, Color.RED, index++, null);
+        }
 
         setRange(1.05, p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
     }
 
-    private void plot(BTopoControlPoint p, String title, LocalDateTime startDate, LocalDateTime limitDate, Color color, int index, Integer percentile) {
+    private void plot(BTopoControlPoint p, String title, String trendKey, BTrendPeriod trendPeriod, LocalDateTime startDate, LocalDateTime limitDate, Color color, int index, Integer percentile) {
         if (startDate.isBefore(limitDate)) {
             return;
         }
 
         var endDate = LocalDateTime.now();
-        TrendHelper.Trend trend;
+        TrendHelper.Trend trend = null;
         try {
             if (percentile == null) {
-                trend = TrendHelper.createTrend(p, true, startDate, endDate, mFunction);
+//                trend = TrendHelper.createTrend(p, true, startDate, endDate, mFunction);
+                HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(trendKey);
+                if (map != null) {
+                    trend = map.get(trendPeriod);
+                }
             } else {
                 trend = TrendHelper.createTrend(p, startDate, endDate, mFunction, percentile);
             }
         } catch (IllegalArgumentException e) {
             System.out.println("Trend: Not enough data.");
+            return;
+        }
+
+        if (trend == null) {
             return;
         }
         var dataset = DatasetUtils.sampleFunction2D(
@@ -155,13 +171,21 @@ public class ChartBuilderTrend extends ChartBuilderBase {
             System.out.println("ERROR in ChartBuilderTrend 1");
         }
 
+        BasicStroke basicStroke;
         var renderer = new XYLineAndShapeRenderer(true, false);
+        renderer.setDrawSeriesLineAsPath(true);
         renderer.setSeriesPaint(0, color);
-        renderer.setSeriesStroke(0, new BasicStroke(percentile == null ? 4f : 2f));
+        if (trendKey.endsWith("Prev")) {
+            basicStroke = new BasicStroke(4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1f, new float[]{4f, 8f}, 0f);
+        } else {
+            basicStroke = new BasicStroke(percentile == null ? 4f : 2f);
+        }
+        renderer.setSeriesStroke(0, basicStroke);
+        var trend2 = trend;
         renderer.setDefaultToolTipGenerator((xyDataset, series, item) -> {
             var now = LocalDateTime.now();
-            var val1 = trend.function().getValue(ChartHelper.convertToMinute(now.plusYears(1)).getFirstMillisecond());
-            var val2 = trend.function().getValue(ChartHelper.convertToMinute(now).getFirstMillisecond());
+            var val1 = trend2.function().getValue(ChartHelper.convertToMinute(now.plusYears(1)).getFirstMillisecond());
+            var val2 = trend2.function().getValue(ChartHelper.convertToMinute(now).getFirstMillisecond());
             return "%.1f mm/år".formatted((val1 - val2) * 1000);
         });
 
