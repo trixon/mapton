@@ -136,7 +136,10 @@ public class WatermarkLayerBundle extends LayerBundle {
             } catch (Exception e) {
                 text = e.getMessage();
             }
-            mAnnotation.setText(text);
+
+            if (!text.equals(mAnnotation.getText())) {
+                mAnnotation.setText(text);
+            }
         });
     }
 
