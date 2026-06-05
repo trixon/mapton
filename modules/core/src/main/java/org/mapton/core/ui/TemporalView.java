@@ -33,9 +33,9 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class TemporalView extends BorderPane {
 
+    private final DateRangePane mDateRangePane = new DateRangePane();
     private final MTemporalManager mManager = MTemporalManager.getInstance();
     private final StringProperty mTitleProperty = new SimpleStringProperty();
-    private final DateRangePane mDateRangePane = new DateRangePane();
 
     public TemporalView() {
         createUI();

@@ -26,6 +26,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.paint.Color;
 import javax.swing.SwingUtilities;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
@@ -34,6 +35,7 @@ import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MKey;
+import org.mapton.api.MTemporalManager;
 import org.mapton.api.MToolMapCommand;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -66,6 +68,7 @@ public class MapToolBar extends BaseToolBar {
     private FxActionSwing mHomeAction;
     private FxActionSwing mLayerAction;
     private PopOver mLayerPopOver;
+    private final MTemporalManager mManager = MTemporalManager.getInstance();
     private Action mPoiAction;
     private PopOver mPoiPopOver;
     private Action mRulerAction;
@@ -279,6 +282,14 @@ public class MapToolBar extends BaseToolBar {
                 updateDocumentInfo(evt.getValue());
             });
         }, MKey.MAP_DOCUMENT_INFO);
+
+        mManager.fullExtentProperty().addListener((p, o, n) -> {
+            if (n) {
+                mTemporalAction.setGraphic(MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBarInt()));
+            } else {
+                mTemporalAction.setGraphic(MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBarInt(), Color.RED));
+            }
+        });
     }
 
     private void initPopOvers() {
