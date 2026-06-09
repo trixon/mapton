@@ -63,7 +63,7 @@ public class WmsLayerLoader {
         if (wmsCapabilities != null) {
             var wmsLayerCapabilities = wmsCapabilities.getLayerByName(layerName);
             try {
-                var wmsLayerStyles = wmsLayerCapabilities.getStyles();
+//                var wmsLayerStyles = wmsLayerCapabilities.getStyles();
                 var layerInfo = new LayerInfo(wmsCapabilities, wmsLayerCapabilities, null);
                 var component = createComponent(layerInfo.getWmsCapabilities(), layerInfo.getParams());
                 if (component instanceof Layer layer) {

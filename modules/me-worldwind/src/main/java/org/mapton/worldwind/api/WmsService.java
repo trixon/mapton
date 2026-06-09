@@ -96,17 +96,18 @@ public abstract class WmsService {
     protected void addService(URI uri) throws Exception {
         var wmsCapabilities = WMSCapabilities.retrieve(uri);
         wmsCapabilities.parse();
-
-        for (var wmsLayerCapabilities : wmsCapabilities.getNamedLayers()) {
-            var wmsLayerStyles = wmsLayerCapabilities.getStyles();
-            if (wmsLayerStyles == null || wmsLayerStyles.isEmpty()) {
-                mLayerInfos.add(new LayerInfo(wmsCapabilities, wmsLayerCapabilities, null));
-            } else {
-                for (var wmsLayerStyle : wmsLayerStyles) {
-                    mLayerInfos.add(new LayerInfo(wmsCapabilities, wmsLayerCapabilities, wmsLayerStyle));
-                }
-            }
-        }
+        wmsCapabilities.getNamedLayers().stream()
+                .filter(wmsLayerCapabilities -> wmsLayerCapabilities != null)
+                .forEachOrdered(wmsLayerCapabilities -> {
+                    var wmsLayerStyles = wmsLayerCapabilities.getStyles();
+                    if (wmsLayerStyles == null || wmsLayerStyles.isEmpty()) {
+                        mLayerInfos.add(new LayerInfo(wmsCapabilities, wmsLayerCapabilities, null));
+                    } else {
+                        for (var wmsLayerStyle : wmsLayerStyles) {
+                            mLayerInfos.add(new LayerInfo(wmsCapabilities, wmsLayerCapabilities, wmsLayerStyle));
+                        }
+                    }
+                });
     }
 
     protected Object createComponent(WMSCapabilities wmsCapabilities, AVList params) {
