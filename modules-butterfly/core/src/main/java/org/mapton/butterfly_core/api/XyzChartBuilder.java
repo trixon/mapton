@@ -137,20 +137,21 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     }
 
     public static synchronized void plotOverlays(XYPlot plot, BBasePoint p, LocalDate aStartDate) {
-        Lookup.getDefault().lookupAll(BChartOverlay.class).stream()
-                //                .filter(o -> !excludedOverlaysSet.contains(o.getClass()))
-                .sorted(Comparator.comparingInt(MChartOverlay::getPosition))
-                .forEach(chartOverlay -> {
-                    try {
-                        if (aStartDate != null) {
-                            chartOverlay.plot(plot, p, aStartDate);
+        SwingHelper.runLater(() -> {
+            Lookup.getDefault().lookupAll(BChartOverlay.class).stream()
+                    //                .filter(o -> !excludedOverlaysSet.contains(o.getClass()))
+                    .sorted(Comparator.comparingInt(MChartOverlay::getPosition))
+                    .forEach(chartOverlay -> {
+                        try {
+                            if (aStartDate != null) {
+                                chartOverlay.plot(plot, p, aStartDate);
+                            }
+                        } catch (Exception e) {
+                            Exceptions.printStackTrace(e);
+                            System.out.println("ERROR IN plotOverlays: " + chartOverlay.mAxis.getLabel());
                         }
-                    } catch (Exception e) {
-                        Exceptions.printStackTrace(e);
-                        System.out.println("ERROR IN plotOverlays: " + chartOverlay.mAxis.getLabel());
-                    }
-                });
-        //plot.setNotify(true);
+                    });
+        });
     }
 
     public void addNEMarkers(XYPlot plot, BBaseControlPointObservation o, boolean doPlot) {
