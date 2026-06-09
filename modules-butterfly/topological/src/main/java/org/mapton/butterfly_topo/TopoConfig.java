@@ -17,6 +17,7 @@ package org.mapton.butterfly_topo;
 
 import java.awt.Color;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly_format.BaseConfig;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.StringHelper;
@@ -38,11 +39,12 @@ public class TopoConfig extends BaseConfig {
             var key = iterator.next();
             var pattern = StringUtils.substringAfterLast(key, "_");
 
-            if (StringUtils.startsWith(key, "color.cat") && macthes(pattern, point.getCategory())
-                    || StringUtils.startsWith(key, "color.name") && macthes(pattern, point.getName())
-                    || StringUtils.startsWith(key, "color.alarm") && macthes(pattern, point.getAlarm1Id(), point.getAlarm2Id())
-                    || StringUtils.startsWith(key, "color.operator") && macthes(pattern, point.getOperator())
-                    || StringUtils.startsWith(key, "color.group") && macthes(pattern, point.getGroup())) {
+            if (Strings.CI.startsWith(key, "color.cat") && macthes(pattern, point.getCategory())
+                    || Strings.CI.startsWith(key, "color.name") && macthes(pattern, point.getName())
+                    || Strings.CI.startsWith(key, "color.alarm") && macthes(pattern, point.getAlarm1Id(), point.getAlarm2Id())
+                    || Strings.CI.startsWith(key, "color.operator") && macthes(pattern, point.getOperator())
+                    || Strings.CI.startsWith(key, "color.origin") && macthes(pattern, point.getOrigin())
+                    || Strings.CI.startsWith(key, "color.group") && macthes(pattern, point.getGroup())) {
                 colorCode = getConfig().getString(key);
             }
         }
