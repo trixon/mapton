@@ -104,7 +104,7 @@ public class GradeVManager extends GradeManagerBase {
 
                             if (validDistance) {
                                 var grade = new BTopoGrade(BAxis.VERTICAL, p1, p2);
-                                grade.calculate();
+                                grade.calculate(getStartDate(), getEndDate());
 
                                 var isValid = grade.getCommonObservations().size() >= 2
                                 && (Math.abs(grade.ext().getDiff().getRQuota()) >= 0.00001

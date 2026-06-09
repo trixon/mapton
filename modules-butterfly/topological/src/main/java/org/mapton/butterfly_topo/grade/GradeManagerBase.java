@@ -15,7 +15,9 @@
  */
 package org.mapton.butterfly_topo.grade;
 
+import java.time.LocalDate;
 import javafx.collections.ListChangeListener;
+import org.mapton.api.MTemporalManager;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
@@ -43,9 +45,17 @@ public abstract class GradeManagerBase extends BaseManager<BTopoGrade> {
 
     }
 
+    public LocalDate getEndDate() {
+        return MTemporalManager.getInstance().getHighDate();
+    }
+
     @Override
     public Object getObjectChart(BTopoGrade selectedObject) {
         return mChartBuilder.build(selectedObject);
+    }
+
+    public LocalDate getStartDate() {
+        return MTemporalManager.getInstance().getLowDate();
     }
 
     public abstract void load();

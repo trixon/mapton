@@ -152,7 +152,7 @@ public class GradeDManager extends GradeManagerBase {
                             var distance = Math.hypot(p1.getZeroX() - p2.getZeroX(), p1.getZeroY() - p2.getZeroY());
                             if (distance <= MAX_2D_DISTANCE) {
                                 var grade = new BTopoGrade(BAxis.RESULTANT, p1, p2);
-                                grade.calculate();
+                                grade.calculate(getStartDate(), getEndDate());
 
                                 if (grade.getCommonObservations().size() > 1) {
                                     queue.offer(grade);
@@ -211,7 +211,7 @@ public class GradeDManager extends GradeManagerBase {
 
                             if (distance >= MIN_RADIAL_DISTANCE && distance <= MAX_RADIAL_DISTANCE) {
                                 var grade = new BTopoGrade(BAxis.RESULTANT, p1, p2);
-                                grade.calculate();
+                                grade.calculate(getStartDate(), getEndDate());
 
                                 if (grade.getCommonObservations().size() > 1) {
                                     queue.offer(grade);

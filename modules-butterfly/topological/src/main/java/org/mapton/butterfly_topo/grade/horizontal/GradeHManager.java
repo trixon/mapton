@@ -90,7 +90,7 @@ public class GradeHManager extends GradeManagerBase {
                             if (distance >= MIN_RADIAL_DISTANCE && distance <= MAX_RADIAL_DISTANCE) {
                                 var grade = new BTopoGrade(BAxis.HORIZONTAL, p1, p2);
                                 if (grade.getDistancePlane() <= MAX_RADIAL_DISTANCE) {
-                                    grade.calculate();
+                                    grade.calculate(getStartDate(), getEndDate());
 
                                     boolean isValid = grade.getCommonObservations().size() >= 2
                                     && Math.abs(grade.ext().getDiff().getZQuota()) >= MIN_GRADE_H;
