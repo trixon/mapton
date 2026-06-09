@@ -36,7 +36,7 @@ public class QuakePropertiesBuilder extends BPropertiesBuilder<BRockEarthquake> 
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
         propertyMap.put(getCatKey(cat1, "Ext.id"), p.getExternalId());
-        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), QuakeListCell.DATE_TIME_FORMATTER.format(p.getDateLatest()));
+        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), QuakeContentListCell.DATE_TIME_FORMATTER.format(p.getDateLatest()));
         propertyMap.put(getCatKey(cat1, Dict.PLACE.toString()), p.getName());
         propertyMap.put(getCatKey(cat1, SDict.MAGNITUDE.toString()), "%.1f %s".formatted(p.getMag(), p.getMagType()));
         var depth = "%.1f km".formatted(p.getZeroZ());

@@ -72,7 +72,7 @@ public final class InfiltrationTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var infiltrationView = new InfiltrationView();
+        var infiltrationView = new InfiltrationContentView();
 
         return new Scene(infiltrationView.getView());
     }

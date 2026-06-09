@@ -41,17 +41,17 @@ import se.trixon.almond.util.SDict;
 @ServiceProvider(service = LayerBundle.class)
 public class WaterLevelLayerBundle extends BfLayerBundle {
 
-    private final WaterLevelManager mManager = WaterLevelManager.getInstance();
-    private final WaterLevelOptionsView mOptionsView;
-    private final GraphicRenderer mGraphicRenderer;
     private final WaterLevelAttributeManager mAttributeManager = WaterLevelAttributeManager.getInstance();
-    private final WaterLevelOptions mOptions = WaterLevelOptions.getInstance();
+    private final GraphicRenderer mGraphicRenderer;
+    private final WaterLevelLayerOptions mLayerOptions = WaterLevelLayerOptions.getInstance();
+    private final WaterLevelLayerOptionsView mLayerOptionsView;
+    private final WaterLevelManager mManager = WaterLevelManager.getInstance();
 
     public WaterLevelLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new WaterLevelOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
+        mLayerOptionsView = new WaterLevelLayerOptionsView(this);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mLayerOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -59,7 +59,7 @@ public class WaterLevelLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -73,8 +73,8 @@ public class WaterLevelLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mOptions.registerLayerBundle(this);
-        mManager.registerLayerBundle(this, mOptionsView);
+        mLayerOptions.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mLayerOptionsView);
     }
 
     private void initRepaint() {
@@ -85,7 +85,7 @@ public class WaterLevelLayerBundle extends BfLayerBundle {
                 return;
             }
 
-            var pointBy = mOptions.getPointBy();
+            var pointBy = mLayerOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -101,7 +101,7 @@ public class WaterLevelLayerBundle extends BfLayerBundle {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
-                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
@@ -109,7 +109,7 @@ public class WaterLevelLayerBundle extends BfLayerBundle {
                         //mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
                         //mapObjects.addAll(plotIndicators(p, position));
 
-                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
+                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mLayerOptions);
                         addClickArea(position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {

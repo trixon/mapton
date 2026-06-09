@@ -37,6 +37,7 @@ import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionTrend;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
@@ -64,7 +65,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final TopoManager mManager = TopoManager.getInstance();
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
 
-    public TopoFilterPopOver(TopoFilter filter) {
+    public TopoFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         var alarmLevelCalculator = new AlarmLevelCalculator(
                 p -> TopoHelper.getAlarmLevel((BTopoControlPoint) p),
@@ -77,7 +78,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMeas = new FilterSectionMeas();
         mFilterSectionMisc = new BFilterSectionMisc(filter);
         mFilterSectionTrend = new BFilterSectionTrend<>();
-        mFilter = filter;
+        mFilter = (TopoFilter) filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionAlarm);
         mFilter.setFilterSection(mFilterSectionDate);

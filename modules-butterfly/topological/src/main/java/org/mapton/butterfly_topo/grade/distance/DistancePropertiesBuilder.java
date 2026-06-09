@@ -49,9 +49,10 @@ public class DistancePropertiesBuilder extends PropertiesBuilder<BTopoGrade> {
         propertyMap.put(getCatKey(cat1, mBundle.getString("filterDeltaD")), MathHelper.convertDoubleToString(p.getDistance3d(), 2));
         propertyMap.put(getCatKey(cat1, mBundle.getString("filterDeltaH")), MathHelper.convertDoubleToString(p.getDistanceHeight(), 2));
         propertyMap.put(getCatKey(cat1, mBundle.getString("filterDeltaR")), MathHelper.convertDoubleToString(p.getDistancePlane(), 2));
-        propertyMap.put(getCatKey(cat1, mBundle.getString("filterDabbaH")), "%.1f".formatted(p.ext().getDiff().getPartialDiffZ() * 1000));
-        propertyMap.put(getCatKey(cat1, mBundle.getString("filterDabbaR")), "%.1f".formatted(p.ext().getDiff().getPartialDiffR() * 1000));
-        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeD")), MathHelper.convertDoubleToString(p.ext().getDiff().getPartialDiffDistance(), 0));
+        var diff = p.ext().getDiff();
+        propertyMap.put(getCatKey(cat1, mBundle.getString("filterDabbaH")), "%.1f".formatted(diff.getPartialDiffZ() * 1000));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("filterDabbaR")), "%.1f".formatted(diff.getPartialDiffR() * 1000));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeD")), MathHelper.convertDoubleToString(diff.getPartialDiffDistance(), 1));
 
         return propertyMap;
     }

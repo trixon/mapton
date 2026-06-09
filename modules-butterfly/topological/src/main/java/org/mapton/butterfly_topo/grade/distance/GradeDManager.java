@@ -42,8 +42,8 @@ public class GradeDManager extends GradeManagerBase {
     public static final Double MAX_2D_DISTANCE = 10.0;
     public static final Double MAX_RADIAL_DISTANCE = 50.0;
     public static final Double MIN_RADIAL_DISTANCE = 0.050;
+    private final DistanceLayerOptions mLayerOptions = DistanceLayerOptions.getInstance();
     private final ManagerOptionsView mManagerOptionsView = new ManagerOptionsView();
-    private final DistanceOptions mOptions = DistanceOptions.getInstance();
     private final DistancePropertiesBuilder mPropertiesBuilder = new DistancePropertiesBuilder();
 
     public static GradeDManager getInstance() {
@@ -71,7 +71,7 @@ public class GradeDManager extends GradeManagerBase {
 
     @Override
     public void load() {
-        var gradesLim = switch (mOptions.getDistanceMode()) {
+        var gradesLim = switch (mLayerOptions.getDistanceMode()) {
             case _1d ->
                 load1d();
             case _2d ->
@@ -88,8 +88,8 @@ public class GradeDManager extends GradeManagerBase {
             var mid = first.getDestinationPoint(b, d * .5);
             g.setLat(mid.getLatitude());
             g.setLon(mid.getLongitude());
-            if (mOptions.getDistanceMode() == BDimension._1d) {
-                g.setValue("distanceMode", mOptions.getDistanceMode());
+            if (mLayerOptions.getDistanceMode() == BDimension._1d) {
+                g.setValue("distanceMode", mLayerOptions.getDistanceMode());
             }
         });
 

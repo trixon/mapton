@@ -171,7 +171,7 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
         };
     }
 
-    public List<String> getDefaultAnnotation(BOptionsBase options, T t) {
+    public List<String> getDefaultAnnotation(BLayerOptions options, T t) {
         if (t instanceof BXyzPoint p && options.isPlotAnnotation()) {
             var ext = p.extOrNull();
             return List.of(p.getName(),
@@ -239,7 +239,7 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
 
     public abstract void load(Butterfly butterfly);
 
-    public void registerLayerBundle(LayerBundle layerBundle, BOptionsView optionsView) {
+    public void registerLayerBundle(LayerBundle layerBundle, BLayerOptionsView optionsView) {
         selectedItemProperty().addListener((p, o, n) -> {
             if (optionsView.isPlotSelected()) {
                 layerBundle.repaint();

@@ -63,8 +63,8 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
     private final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
     private final ArrayList<AVListImpl> mEmptyDummyList = new ArrayList<>();
     private final GraphicRenderer mGraphicRenderer;
-    private final TopoOptionsView mOptionsView;
-    private final TopoOptions mOptions = TopoOptions.getInstance();
+    private final TopoLayerOptions mLayerOptions = TopoLayerOptions.getInstance();
+    private final TopoLayerOptionsView mLayerOptionsView;
 
     public static double getZOffset() {
         return Z_BASE_OFFSET - TopoManager.getInstance().getMinimumZscaled();
@@ -73,8 +73,8 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
     public TopoLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new TopoOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
+        mLayerOptionsView = new TopoLayerOptionsView(this);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mLayerOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -82,7 +82,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -97,7 +97,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
 
     @Override
     public void runOnce() {
-        mOptionsView.runOnce();
+        mLayerOptionsView.runOnce();
     }
 
     private void init() {
@@ -107,8 +107,8 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
     }
 
     private void initListeners() {
-        mOptions.registerLayerBundle(this);
-        mManager.registerLayerBundle(this, mOptionsView);
+        mLayerOptions.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mLayerOptionsView);
     }
 
     private void initRepaint() {
@@ -120,7 +120,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                 return;
             }
 
-            var pointBy = mOptions.getPointBy();
+            var pointBy = mLayerOptions.getPointBy();
             switch (pointBy) {
                 case AUTO -> {
                     mPinLayer.setEnabled(true);
@@ -155,14 +155,14 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                         .forEachOrdered(p -> {
                             if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                                 var position = BCoordinatrix.toPositionWW2d(p);
-                                var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
+                                var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                                 var mapObjects = new ArrayList<AVListImpl>();
 
                                 mapObjects.add(labelPlacemark);
                                 mapObjects.add(plotPin(p, position, labelPlacemark));
                                 mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
 
-                                mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
+                                mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mLayerOptions);
                                 addClickArea(position, mapObjects);
 
                                 var leftClickRunnable = (Runnable) () -> {
@@ -186,7 +186,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
             }
 
             var items = mManager.getTimeFilteredItems();
-            if (mOptionsView.getGraphicsCheckModel().isChecked(GraphicItem.HEAT_MAP) && !items.isEmpty()) {
+            if (mLayerOptionsView.getGraphicsCheckModel().isChecked(GraphicItem.HEAT_MAP) && !items.isEmpty()) {
                 var minLat = items.stream().filter(p -> p.getLat() != null).mapToDouble(p -> p.getLat()).min().getAsDouble();
                 var minLon = items.stream().filter(p -> p.getLat() != null).mapToDouble(p -> p.getLon()).min().getAsDouble();
                 var maxLat = items.stream().filter(p -> p.getLat() != null).mapToDouble(p -> p.getLat()).max().getAsDouble();

@@ -44,7 +44,7 @@ public class VibrationManager extends BaseManager<BAcousticVibrationPoint> {
     private final static String DISRUPTOR_NAME = Bundle.CTL_VibrationAction();
 
     private final VibrationChartBuilder mChartBuilder = new VibrationChartBuilder();
-    private final VibrationOptions mOptions = VibrationOptions.getInstance();
+    private final VibrationLayerOptions mLayerOptions = VibrationLayerOptions.getInstance();
     private final VibrationPropertiesBuilder mPropertiesBuilder = new VibrationPropertiesBuilder();
 
     public static VibrationManager getInstance() {
@@ -57,7 +57,7 @@ public class VibrationManager extends BaseManager<BAcousticVibrationPoint> {
 
     @Override
     public List<String> getObjectAnnotation(BAcousticVibrationPoint p) {
-        if (mOptions.isPlotAnnotation()) {
+        if (mLayerOptions.isPlotAnnotation()) {
             var ext = p.extOrNull();
             return List.of(
                     p.getName(),

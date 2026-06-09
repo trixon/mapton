@@ -44,16 +44,16 @@ import se.trixon.almond.util.swing.SwingHelper;
 public class TunnelvattenLayerBundle extends BfLayerBundle {
 
     private final TmoAttributeManager mAttributeManager = TmoAttributeManager.getInstance();
-    private final TunnelvattenManager mManager = TunnelvattenManager.getInstance();
-    private final TunnelvattenOptionsView mOptionsView;
     private final GraphicRenderer mGraphicRenderer;
-    private final TunnelvattenOptions mOptions = TunnelvattenOptions.getInstance();
+    private final TunnelvattenLayerOptions mLayerOptions = TunnelvattenLayerOptions.getInstance();
+    private final TunnelvattenLayerOptionsView mLayerOptionsView;
+    private final TunnelvattenManager mManager = TunnelvattenManager.getInstance();
 
     public TunnelvattenLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new TunnelvattenOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicsCheckModel());
+        mLayerOptionsView = new TunnelvattenLayerOptionsView(this);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mLayerOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -61,7 +61,7 @@ public class TunnelvattenLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -75,7 +75,7 @@ public class TunnelvattenLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+        mLayerOptions.getPreferences().addPreferenceChangeListener(pce -> {
             SwingHelper.runLaterDelayed(50, () -> {
                 resetPaintDelayedResetRunner();
             });
@@ -102,7 +102,7 @@ public class TunnelvattenLayerBundle extends BfLayerBundle {
             if (!mLayer.isEnabled()) {
                 return;
             }
-            var pointBy = mOptions.getPointBy();
+            var pointBy = mLayerOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -121,7 +121,7 @@ public class TunnelvattenLayerBundle extends BfLayerBundle {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
 
-                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);

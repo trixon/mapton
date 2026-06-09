@@ -95,7 +95,7 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
     }
 
     @Deprecated(forRemoval = true)
-    public void plot(U p, U selectedItem, Position position, ArrayList<AVListImpl> mapObjects, BOptionsView optionsView) {
+    public void plot(U p, U selectedItem, Position position, ArrayList<AVListImpl> mapObjects, BLayerOptionsView optionsView) {
         if (optionsView.isPlotSelected()) {
             if (p.equals(selectedItem)) {
                 plot(p, position, mapObjects);
@@ -115,7 +115,7 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
         }
     }
 
-    public void plot(U p, U selectedItem, Position position, ArrayList<AVListImpl> mapObjects, BOptionsBase options) {
+    public void plot(U p, U selectedItem, Position position, ArrayList<AVListImpl> mapObjects, BLayerOptions options) {
         if (options.isPlotSelected()) {
             if (p.equals(selectedItem)) {
                 plot(p, position, mapObjects);

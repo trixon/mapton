@@ -175,7 +175,7 @@ public class InsarAttributeManager extends BaseAttributeManager {
     }
 
     private InsarColorBy getColorBy() {
-        return InsarOptions.getInstance().getColorBy();
+        return InsarLayerOptions.getInstance().getColorBy();
     }
 
     private static class Holder {

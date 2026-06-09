@@ -101,7 +101,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     private ValueLimiter createValueLimiter(BGeoInclinometerPoint p, Double originalValue) {
-        if (mOptions.isScaleByAlarmProperty()) {
+        if (mLayerOptions.isScaleByAlarmProperty()) {
             var defaultMax = 20.0;
             var maxResultInMeters = defaultMax * 1.5;
             var percentI = MathHelper.convertIntegerToInteger(p.ext().getAlarmPercent(BComponent.HEIGHT, 1000 * MathHelper.convertDoubleToDouble(originalValue)));

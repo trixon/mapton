@@ -408,28 +408,28 @@ public enum TopoLabelBy implements LabelBy.Operations {
         return LabelBy.valueZeroZ(p);
     }),
     TREND_1D_A(LabelBy.CAT_TREND, "1d Period", p -> {
-        var options = TopoOptions.getInstance();
-        return LabelBy.trend(p, options.getTrendPeriodA(), BComponent.HEIGHT);
+        var layerOptions = TopoLayerOptions.getInstance();
+        return LabelBy.trend(p, layerOptions.getTrendPeriodA(), BComponent.HEIGHT);
     }),
     TREND_1D_DIFF_C(LabelBy.CAT_TREND, "1d Diff föregående", p -> {
-        var options = TopoOptions.getInstance();
-        return LabelBy.trendDiff(p, options.getTrendPeriodA(), BComponent.HEIGHT);
+        var layerOptions = TopoLayerOptions.getInstance();
+        return LabelBy.trendDiff(p, layerOptions.getTrendPeriodA(), BComponent.HEIGHT);
     }),
     TREND_1D_DIFF_AB(LabelBy.CAT_TREND, "1d Diff referens", p -> {
-        var options = TopoOptions.getInstance();
-        return LabelBy.trendDiff(p, options.getTrendPeriodA(), options.getTrendPeriodB(), BComponent.HEIGHT);
+        var layerOptions = TopoLayerOptions.getInstance();
+        return LabelBy.trendDiff(p, layerOptions.getTrendPeriodA(), layerOptions.getTrendPeriodB(), BComponent.HEIGHT);
     }),
     TREND_2D_A(LabelBy.CAT_TREND, "2d Period", p -> {
-        var options = TopoOptions.getInstance();
-        return LabelBy.trend(p, options.getTrendPeriodA(), BComponent.PLANE);
+        var layerOptions = TopoLayerOptions.getInstance();
+        return LabelBy.trend(p, layerOptions.getTrendPeriodA(), BComponent.PLANE);
     }),
     TREND_2D_DIFF_C(LabelBy.CAT_TREND, "2d Diff föregående", p -> {
-        var options = TopoOptions.getInstance();
-        return LabelBy.trendDiff(p, options.getTrendPeriodA(), BComponent.HEIGHT);
+        var layerOptions = TopoLayerOptions.getInstance();
+        return LabelBy.trendDiff(p, layerOptions.getTrendPeriodA(), BComponent.HEIGHT);
     }),
     TREND_2D_DIFF_AB(LabelBy.CAT_TREND, "2d Diff referens", p -> {
-        var options = TopoOptions.getInstance();
-        return LabelBy.trendDiff(p, options.getTrendPeriodA(), options.getTrendPeriodB(), BComponent.PLANE);
+        var layerOptions = TopoLayerOptions.getInstance();
+        return LabelBy.trendDiff(p, layerOptions.getTrendPeriodA(), layerOptions.getTrendPeriodB(), BComponent.PLANE);
     });
 
     private final String mCategory;

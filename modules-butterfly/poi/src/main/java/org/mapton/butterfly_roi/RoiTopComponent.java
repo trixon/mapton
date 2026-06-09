@@ -72,7 +72,7 @@ public final class RoiTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var roiView = new RoiView();
+        var roiView = new RoiContentView();
 
         return new Scene(roiView.getView());
     }

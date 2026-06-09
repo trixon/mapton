@@ -72,7 +72,7 @@ public final class VattenkemiTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var vattenkemiView = new VattenkemiView();
+        var vattenkemiView = new VattenkemiContentView();
 
         return new Scene(vattenkemiView.getView());
     }

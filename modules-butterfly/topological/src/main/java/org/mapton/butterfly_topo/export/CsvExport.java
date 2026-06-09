@@ -20,7 +20,7 @@ import javafx.scene.control.Button;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.mapton.butterfly_topo.TopoView;
+import org.mapton.butterfly_topo.TopoContentView;
 import org.mapton.core.api.ui.ExportConfiguration;
 import org.mapton.core.api.ui.ExportProvider;
 import org.openide.util.Exceptions;
@@ -35,7 +35,7 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 public class CsvExport extends ExportProvider {
 
     public CsvExport() {
-        super(TopoView.class);
+        super(TopoContentView.class);
         setSupportsEncoding(true);
         setSupportsTransformation(false);
     }

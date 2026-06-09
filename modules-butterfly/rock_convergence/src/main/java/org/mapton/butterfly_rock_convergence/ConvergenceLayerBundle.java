@@ -46,15 +46,15 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
 
     private final ConvergenceAttributeManager mAttributeManager = ConvergenceAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
+    private final ConvergenceLayerOptions mLayerOptions = ConvergenceLayerOptions.getInstance();
+    private final ConvergenceLayerOptionsView mLayerOptionsView;
     private final ConvergenceManager mManager = ConvergenceManager.getInstance();
-    private final ConvergenceOptionsView mOptionsView;
-    private final ConvergenceOptions mOptions = ConvergenceOptions.getInstance();
 
     public ConvergenceLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new ConvergenceOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
+        mLayerOptionsView = new ConvergenceLayerOptionsView(this);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mLayerOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -62,7 +62,7 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -83,8 +83,8 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mOptions.registerLayerBundle(this);
-        mManager.registerLayerBundle(this, mOptionsView);
+        mLayerOptions.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mLayerOptionsView);
     }
 
     private void initRepaint() {
@@ -94,7 +94,7 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
             if (!mLayer.isEnabled()) {
                 return;
             }
-            var pointBy = mOptions.getPointBy();
+            var pointBy = mLayerOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -112,13 +112,13 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
-                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(p, position, labelPlacemark));
 
-                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
+                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mLayerOptions);
                         addClickArea(position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {

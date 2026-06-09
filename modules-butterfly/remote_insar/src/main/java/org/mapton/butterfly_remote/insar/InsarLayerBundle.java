@@ -53,15 +53,15 @@ public class InsarLayerBundle extends BfLayerBundle {
 
     private final InsarAttributeManager mAttributeManager = InsarAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
+    private final InsarLayerOptions mLayerOptions = InsarLayerOptions.getInstance();
+    private final InsarLayerOptionsView mLayerOptionsView;
     private final InsarManager mManager = InsarManager.getInstance();
-    private final InsarOptionsView mOptionsView;
-    private final InsarOptions mOptions = InsarOptions.getInstance();
 
     public InsarLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new InsarOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
+        mLayerOptionsView = new InsarLayerOptionsView(this);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mLayerOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -69,7 +69,7 @@ public class InsarLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -88,8 +88,8 @@ public class InsarLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mOptions.registerLayerBundle(this);
-        mManager.registerLayerBundle(this, mOptionsView);
+        mLayerOptions.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mLayerOptionsView);
     }
 
     private void initRepaint() {
@@ -101,7 +101,7 @@ public class InsarLayerBundle extends BfLayerBundle {
                 return;
             }
 
-            var pointBy = mOptions.getPointBy();
+            var pointBy = mLayerOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -123,14 +123,14 @@ public class InsarLayerBundle extends BfLayerBundle {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
-                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(p, position, labelPlacemark));
                         mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
 
-                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
+                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mLayerOptions);
                         addClickArea(position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {
@@ -153,7 +153,7 @@ public class InsarLayerBundle extends BfLayerBundle {
                 }
             }
 
-            if (mOptionsView.getGraphicsCheckModel().isChecked(GraphicItem.HEAT_MAP)) {
+            if (mLayerOptionsView.getGraphicsCheckModel().isChecked(GraphicItem.HEAT_MAP)) {
                 var values = mManager.getTimeFilteredItems().stream()
                         .map(p -> new GridValue(p.getLat(), p.getLon(), p.ext().deltaZero().getDeltaZ() * 1000))
                         //                        .map(p -> new GridValue(p.getLat(), p.getLon(), p.getVelocity()))
@@ -212,7 +212,7 @@ public class InsarLayerBundle extends BfLayerBundle {
     private ArrayList<AVListImpl> plotSymbol(BRemoteInsarPoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
         var attrs = mAttributeManager.getSymbolAttributes(p);
-        var value = switch (mOptions.getColorBy()) {
+        var value = switch (mLayerOptions.getColorBy()) {
             case ACCELERATION ->
                 p.getAcceleration();
             case ALARM, DISPLACEMENT ->

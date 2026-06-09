@@ -60,7 +60,7 @@ public final class CrackTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var crackView = new CrackView();
+        var crackView = new CrackContentView();
 
         return new Scene(crackView.getView());
     }

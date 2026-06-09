@@ -48,12 +48,12 @@ public class ActLayerBundle extends BfLayerBundle {
 
     private final ActAttributeManager mAttributeManager = ActAttributeManager.getInstance();
     private final ActManager mManager = ActManager.getInstance();
-    private final ActOptionsView mOptionsView;
+    private final ActLayerOptionsView mOptionsView;
 
     public ActLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new ActOptionsView(this);
+        mOptionsView = new ActLayerOptionsView(this);
 
         initListeners();
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));

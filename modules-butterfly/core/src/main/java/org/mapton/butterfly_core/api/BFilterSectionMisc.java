@@ -28,10 +28,13 @@ import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
+import org.controlsfx.tools.Borders;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.MBaseFilterSection;
@@ -54,6 +57,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
     private final CheckBox mDeformationCheckbox = new CheckBox("Deformationsdefinitioner");
     private RangeSliderPane mDeltaHRangeSlider;
     private SliderPane mDeltaRSlider;
+    private SliderPane mLimitSliderPane;
     private final DistanceMeasure mDistanceMeasure;
     private final FormFilter<? extends MBaseDataManager> mFilter;
     private final CheckBox mInvertCheckbox = new CheckBox();
@@ -85,6 +89,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         super.clear();
         mDeltaHRangeSlider.clear();
         mDeltaRSlider.clear();
+        mLimitSliderPane.clear();
         FxHelper.setSelected(false,
                 mDeformationCheckbox,
                 mInvertCheckbox,
@@ -159,6 +164,15 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         return internalBox;
     }
 
+    public long getLimit() {
+        var value = mLimitSliderPane.getValue();
+        if (mLimitSliderPane.isSelected() && value > 0) {
+            return value.longValue();
+        } else {
+            return Long.MAX_VALUE;
+        }
+    }
+
     public CheckBox getdEFORMATIONCheckbox() {
         return mDeformationCheckbox;
     }
@@ -183,7 +197,8 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
             rangeSlider.minProperty().addListener(changeListener);
         });
         List.of(
-                mDeltaRSlider
+                mDeltaRSlider,
+                mLimitSliderPane
         ).forEach(slider -> {
             slider.selectedProperty().addListener(changeListener);
             slider.valueProperty().addListener(changeListener);
@@ -202,6 +217,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         mDeltaHRangeSlider.initSession(getKeyFilter("distanceH"), sessionManager);
 //        mDeltaRRangeSlider.initSession(getKeyFilter("DeltaR"), sessionManager);
         mDeltaRSlider.initSession(getKeyFilter("distanceR"), sessionManager);
+        mLimitSliderPane.initSession(getKeyFilter("limit"), sessionManager);
 
         sessionManager.register(getKeyFilter("autocluster"), mClusterCheckbox.selectedProperty());
         sessionManager.register(getKeyFilter("DEFORMATION"), mDeformationCheckbox.selectedProperty());
@@ -229,16 +245,35 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
     }
 
     private void createUI() {
+        mLimitSliderPane = new SliderPane("Begränsa resultat", 0, 1000, true, true, true, 10);
+        var limitSlider = mLimitSliderPane.getSlider();
+        limitSlider.setMajorTickUnit(100);
+        limitSlider.setMinorTickCount(1);
         mDeltaHRangeSlider = new RangeSliderPane("Höjd, intervall", 0, 20);
 //        mDeltaRRangeSlider = new RangeSliderPane("Plan, intervall", 0, 20);
         mDeltaRSlider = new SliderPane("Plan, maxavstånd", 20);
+        var sub = new VBox(mDeltaRSlider, mDeltaHRangeSlider);
+        var wrappedContent = Borders.wrap(sub)
+                .etchedBorder()
+                .title("")
+                .innerPadding(FxHelper.getUIScaled(16), FxHelper.getUIScaled(8.0), FxHelper.getUIScaled(8.0), FxHelper.getUIScaled(8.0))
+                //                .innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding)
+                //                .outerPadding(0, 0, 0, 0)
+                .raised()
+                .build()
+                .build();
+        mClusterCheckbox.setStyle("-fx-background-color: -fx-background; -fx-padding: 0 5 0 5;");
+        sub.disableProperty().bind(mClusterCheckbox.selectedProperty().not());
+        var deformationBorderdCheckBox = new StackPane();
+        deformationBorderdCheckBox.getChildren().addAll(wrappedContent, mClusterCheckbox);
 
+        // Placera bockrutan i det övre vänstra hörnet ovanpå ControlsFX-noden
+        StackPane.setAlignment(mClusterCheckbox, Pos.TOP_LEFT);
+        StackPane.setMargin(mClusterCheckbox, FxHelper.getUIScaledInsets(0, 0, 0, 8));
         int row = 0;
         mRoot.addRow(row++, mDeformationCheckbox);
-        mRoot.addRow(row++, mClusterCheckbox);
-        mRoot.addRow(row++, mDeltaRSlider);
-//        mRoot.addRow(row++, mDeltaRRangeSlider);
-        mRoot.addRow(row++, mDeltaHRangeSlider);
+        mRoot.addRow(row++, deformationBorderdCheckBox);
+        mRoot.addRow(row++, mLimitSliderPane);
 
         mDeltaHRangeSlider.disableProperty().bind(mClusterCheckbox.selectedProperty().not());
 //        mDeltaRRangeSlider.disableProperty().bind(mClusterCheckbox.selectedProperty().not());

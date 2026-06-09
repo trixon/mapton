@@ -60,7 +60,7 @@ public final class ActTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var hydroView = new ActView();
+        var hydroView = new ActContentView();
 
         return new Scene(hydroView.getView());
     }

@@ -45,15 +45,15 @@ public class MonLayerBundle extends BfLayerBundle {
 
     private final MonAttributeManager mAttributeManager = MonAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
+    private final MonLayerOptions mLayerOptions = MonLayerOptions.getInstance();
+    private final MonLayerOptionsView mLayerOptionsView;
     private final MonManager mManager = MonManager.getInstance();
-    private final MonOptionsView mOptionsView;
-    private final MonOptions mOptions = MonOptions.getInstance();
 
     public MonLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new MonOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicsCheckModel());
+        mLayerOptionsView = new MonLayerOptionsView(this);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mLayerOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -61,7 +61,7 @@ public class MonLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class MonLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+        mLayerOptions.getPreferences().addPreferenceChangeListener(pce -> {
             SwingHelper.runLaterDelayed(50, () -> {
                 resetPaintDelayedResetRunner();
             });
@@ -107,7 +107,7 @@ public class MonLayerBundle extends BfLayerBundle {
                 return;
             }
 
-            var pointBy = mOptions.getPointBy();
+            var pointBy = mLayerOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -142,7 +142,7 @@ public class MonLayerBundle extends BfLayerBundle {
 
                     if (ObjectUtils.allNotNull(mon.getLat(), mon.getLon())) {
                         var position = Position.fromDegrees(mon.getLat(), mon.getLon());
-                        var labelPlacemark = plotLabel(mon, mOptions.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(mon, mLayerOptions.getLabelBy(), position);
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(mon, position, labelPlacemark, stationIndex));

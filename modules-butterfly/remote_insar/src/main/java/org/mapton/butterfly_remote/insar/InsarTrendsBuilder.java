@@ -25,7 +25,7 @@ import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
-import org.mapton.butterfly_topo.BTrendsBuilder;
+import org.mapton.butterfly_core.api.BTrendsBuilder;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;

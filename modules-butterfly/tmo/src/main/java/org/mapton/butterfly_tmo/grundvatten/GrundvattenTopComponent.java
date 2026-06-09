@@ -72,7 +72,7 @@ public final class GrundvattenTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var grundvattenView = new GrundvattenView();
+        var grundvattenView = new GrundvattenContentView();
 
         return new Scene(grundvattenView.getView());
     }

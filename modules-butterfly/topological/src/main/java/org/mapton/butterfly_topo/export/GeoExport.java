@@ -22,7 +22,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MOptions;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_topo.TopoView;
+import org.mapton.butterfly_topo.TopoContentView;
 import org.mapton.core.api.ui.ExportConfiguration;
 import org.mapton.core.api.ui.ExportProvider;
 import org.openide.util.Exceptions;
@@ -41,7 +41,7 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 public class GeoExport extends BaseExportProvider {
 
     public GeoExport() {
-        super(TopoView.class);
+        super(TopoContentView.class);
         setSupportsEncoding(false);
         setSupportsTransformation(true);
     }

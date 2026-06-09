@@ -72,7 +72,7 @@ public final class RorelseTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var grundvattenView = new RorelseView();
+        var grundvattenView = new RorelseContentView();
 
         return new Scene(grundvattenView.getView());
     }

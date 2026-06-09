@@ -28,10 +28,10 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class ManagerOptionsView extends MOptionsView {
 
-    private final ComboBox<BDimension> mModeComboBox = new ComboBox<>();
-    private final DistanceOptions mOptions = DistanceOptions.getInstance();
+    private final DistanceLayerOptions mLayerOptions = DistanceLayerOptions.getInstance();
 //    private final MPresetPopOver mPresetPopOver;
 //    private final ResourceBundle mBundle = NbBundle.getBundle(ManagerOptionsView.class);
+    private final ComboBox<BDimension> mModeComboBox = new ComboBox<>();
 
     public ManagerOptionsView() {
 //        mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_OPTIONS, "annotations");
@@ -64,7 +64,7 @@ public class ManagerOptionsView extends MOptionsView {
 
     private void initSession() {
 //        BindingHelper.bindBidirectional(mLimitSpinner.getValueFactory().valueProperty(), mOptions.limitProperty());
-        mModeComboBox.valueProperty().bindBidirectional(mOptions.distanceModeProperty());
+        mModeComboBox.valueProperty().bindBidirectional(mLayerOptions.distanceModeProperty());
 //        mTimeOutComboBox.valueProperty().bindBidirectional(mOptions.timeoutProperty());
     }
 }

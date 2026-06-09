@@ -60,7 +60,7 @@ public final class ExtensoTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var hydroView = new ExtensoView();
+        var hydroView = new ExtensoContentView();
 
         return new Scene(hydroView.getView());
     }

@@ -23,7 +23,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
-import org.mapton.butterfly_geo.inclinometer.InclinoOptions;
+import org.mapton.butterfly_geo.inclinometer.InclinoLayerOptions;
 
 /**
  *
@@ -34,7 +34,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
     protected static IndexedCheckModel<GraphicItem> sCheckModel;
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
-    protected final InclinoOptions mOptions = InclinoOptions.getInstance();
+    protected final InclinoLayerOptions mLayerOptions = InclinoLayerOptions.getInstance();
 
     static {
         for (var renderItem : GraphicItem.values()) {

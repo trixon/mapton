@@ -77,7 +77,7 @@ public final class GradeVTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var gradeView = new GradeVView();
+        var gradeView = new GradeVContentView();
 
         return new Scene(gradeView.getView());
     }

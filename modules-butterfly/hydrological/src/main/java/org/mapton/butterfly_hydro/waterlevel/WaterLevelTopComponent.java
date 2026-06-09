@@ -60,7 +60,7 @@ public final class WaterLevelTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var groundwaterView = new WaterLevelView();
+        var groundwaterView = new WaterLevelContentView();
 
         return new Scene(groundwaterView.getView());
     }

@@ -40,7 +40,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoAttributeManager;
 import org.mapton.butterfly_topo.TopoLayerBundle;
-import org.mapton.butterfly_topo.TopoOptions;
+import org.mapton.butterfly_topo.TopoLayerOptions;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
@@ -57,8 +57,8 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
     protected final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
+    protected final TopoLayerOptions mLayerOptions = TopoLayerOptions.getInstance();
     protected final TopoManager mManager = TopoManager.getInstance();
-    protected final TopoOptions mOptions = TopoOptions.getInstance();
     protected Integer mScale1dH;
     protected Integer mScale3dH;
     protected Integer mScale3dP;

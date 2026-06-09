@@ -34,7 +34,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class RoiManager extends BaseManager<BRoi> {
 
     private final static String DISRUPTOR_NAME = Bundle.CTL_RoiAction();
-    private final RoiOptions mOptions = RoiOptions.getInstance();
+    private final RoiLayerOptions mLayerOptions = RoiLayerOptions.getInstance();
     private final RoiPropertiesBuilder mPropertiesBuilder = new RoiPropertiesBuilder();
 
     public static RoiManager getInstance() {
@@ -47,7 +47,7 @@ public class RoiManager extends BaseManager<BRoi> {
 
     @Override
     public List<String> getObjectAnnotation(BRoi p) {
-        if (mOptions.isPlotAnnotation()) {
+        if (mLayerOptions.isPlotAnnotation()) {
             var ext = p.extOrNull();
             return List.of(
                     p.getName(),

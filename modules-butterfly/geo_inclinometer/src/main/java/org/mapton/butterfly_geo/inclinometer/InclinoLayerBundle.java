@@ -47,15 +47,15 @@ public class InclinoLayerBundle extends BfLayerBundle {
 
     private final InclinoAttributeManager mAttributeManager = InclinoAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
+    private final InclinoLayerOptions mLayerOptions = InclinoLayerOptions.getInstance();
+    private final InclinoLayerOptionsView mLayerOptionsView;
     private final InclinoManager mManager = InclinoManager.getInstance();
-    private final InclinoOptionsView mOptionsView;
-    private final InclinoOptions mOptions = InclinoOptions.getInstance();
 
     public InclinoLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new InclinoOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
+        mLayerOptionsView = new InclinoLayerOptionsView(this);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mLayerOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -63,7 +63,7 @@ public class InclinoLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -82,8 +82,8 @@ public class InclinoLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mOptions.registerLayerBundle(this);
-        mManager.registerLayerBundle(this, mOptionsView);
+        mLayerOptions.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mLayerOptionsView);
     }
 
     private void initRepaint() {
@@ -95,7 +95,7 @@ public class InclinoLayerBundle extends BfLayerBundle {
                 return;
             }
 
-            var pointBy = mOptions.getPointBy();
+            var pointBy = mLayerOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -117,14 +117,14 @@ public class InclinoLayerBundle extends BfLayerBundle {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
-                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(p, position, labelPlacemark));
                         mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
 
-                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
+                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mLayerOptions);
                         addClickArea(position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {

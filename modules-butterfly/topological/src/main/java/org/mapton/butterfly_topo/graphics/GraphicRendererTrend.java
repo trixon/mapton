@@ -163,8 +163,8 @@ public class GraphicRendererTrend extends GraphicRendererBase {
             return;
         }
 
-        var trendA = map.get(mOptions.getTrendPeriodA());
-        var trendB = map.get(mOptions.getTrendPeriodB());
+        var trendA = map.get(mLayerOptions.getTrendPeriodA());
+        var trendB = map.get(mLayerOptions.getTrendPeriodB());
 
         plotDiff(p, position, graphicItem, trendA, trendB);
     }
@@ -177,8 +177,8 @@ public class GraphicRendererTrend extends GraphicRendererBase {
             return;
         }
 
-        var trendA = map.get(mOptions.getTrendPeriodA());
-        var trendB = mapPrev.get(mOptions.getTrendPeriodA());
+        var trendA = map.get(mLayerOptions.getTrendPeriodA());
+        var trendB = mapPrev.get(mLayerOptions.getTrendPeriodA());
 
         plotDiff(p, position, graphicItem, trendA, trendB);
     }
@@ -198,7 +198,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
             return;
         }
 
-        var trend = map.get(mOptions.getTrendPeriodA());
+        var trend = map.get(mLayerOptions.getTrendPeriodA());
         if (trend != null) {
             var value = TrendHelper.getVelocity(trend);
             var material = ButterflyHelper.getRangeMaterial(value, 10.0);

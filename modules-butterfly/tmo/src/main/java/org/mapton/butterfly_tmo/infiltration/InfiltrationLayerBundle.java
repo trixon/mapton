@@ -44,16 +44,16 @@ import se.trixon.almond.util.swing.SwingHelper;
 public class InfiltrationLayerBundle extends BfLayerBundle {
 
     private final TmoAttributeManager mAttributeManager = TmoAttributeManager.getInstance();
-    private final InfiltrationManager mManager = InfiltrationManager.getInstance();
-    private final InfiltrationOptionsView mOptionsView;
     private final GraphicRenderer mGraphicRenderer;
-    private final InfiltrationOptions mOptions = InfiltrationOptions.getInstance();
+    private final InfiltrationLayerOptions mLayerOptions = InfiltrationLayerOptions.getInstance();
+    private final InfiltrationLayerOptionsView mLayerOptionsView;
+    private final InfiltrationManager mManager = InfiltrationManager.getInstance();
 
     public InfiltrationLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new InfiltrationOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicsCheckModel());
+        mLayerOptionsView = new InfiltrationLayerOptionsView(this);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mLayerOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -61,7 +61,7 @@ public class InfiltrationLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -75,7 +75,7 @@ public class InfiltrationLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+        mLayerOptions.getPreferences().addPreferenceChangeListener(pce -> {
             SwingHelper.runLaterDelayed(50, () -> {
                 resetPaintDelayedResetRunner();
             });
@@ -102,7 +102,7 @@ public class InfiltrationLayerBundle extends BfLayerBundle {
             if (!mLayer.isEnabled()) {
                 return;
             }
-            var pointBy = mOptions.getPointBy();
+            var pointBy = mLayerOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -121,7 +121,7 @@ public class InfiltrationLayerBundle extends BfLayerBundle {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
 
-                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);

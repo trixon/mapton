@@ -17,9 +17,9 @@ package org.mapton.butterfly_topo.api;
 
 import com.sun.jna.platform.KeyboardUtils;
 import java.awt.event.KeyEvent;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -46,7 +46,7 @@ import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
-import org.mapton.butterfly_topo.TopoOptions;
+import org.mapton.butterfly_topo.TopoLayerOptions;
 import org.mapton.butterfly_topo.TopoPropertiesBuilder;
 import org.mapton.butterfly_topo.TopoTrendsBuilder;
 import org.mapton.butterfly_topo.chart.ChartAggregate;
@@ -54,6 +54,7 @@ import org.mapton.butterfly_topo.chart.MultiChartAggregate;
 import org.mapton.butterfly_topo.table.StandardMeasurementPopulator;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
+import se.trixon.almond.util.SystemHelper;
 
 /**
  *
@@ -63,9 +64,9 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
     public static final String KEY_TOPO_POINTS_LOADED = "TopoPointsLoaded";
     private final ChartAggregate mChartAggregate = new ChartAggregate();
+    private final TopoLayerOptions mLayerOptions = TopoLayerOptions.getInstance();
     private double mMinimumZscaled = 0.0;
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
-    private final TopoOptions mOptions = TopoOptions.getInstance();
     private final TopoPropertiesBuilder mPropertiesBuilder = new TopoPropertiesBuilder();
     private final StandardMeasurementPopulator mStandardMeasurementPopulator = new StandardMeasurementPopulator();
     private final TopoTrendsBuilder mTrendsBuilder = new TopoTrendsBuilder();
@@ -84,7 +85,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
     @Override
     public List<String> getObjectAnnotation(BTopoControlPoint p) {
-        return getDefaultAnnotation(mOptions, p);
+        return getDefaultAnnotation(mLayerOptions, p);
     }
 
     @Override
@@ -281,7 +282,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
                 });
             }
         }
-//        System.out.println("Trend calc in " + SystemHelper.age(start));
+        System.out.println("Trend calc in " + SystemHelper.age(start));
 //        }
         setItemsTimeFiltered(timeFilteredItems);
     }
@@ -313,7 +314,9 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             if (period == BTrendPeriod.FIRST || period == BTrendPeriod.ZERO) {
                 return;
             }
-            var prevStartDate = startDate.minusDays(Duration.between(startDate, endDate).toDays());
+
+            var daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+            var prevStartDate = startDate.minusDays(daysBetween);
             var prevEndDate = startDate;
             var trendPrev = TrendHelper.createTrend(p, true, prevStartDate, prevEndDate, function);
             HashMap<BTrendPeriod, Trend> mapPrev = (HashMap<BTrendPeriod, Trend>) p.getValue(mode + "Prev", new HashMap<>());

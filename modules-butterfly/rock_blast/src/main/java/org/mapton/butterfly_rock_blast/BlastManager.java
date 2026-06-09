@@ -36,8 +36,8 @@ import org.openide.util.lookup.ServiceProvider;
 public class BlastManager extends BaseManager<BRockBlast> {
 
     private final static String DISRUPTOR_NAME = Bundle.CTL_BlastAction();
+    private final BlastLayerOptions mLayerOptions = BlastLayerOptions.getInstance();
     private final BlastMultiChartAggregate mMultiChartAggregate = new BlastMultiChartAggregate();
-    private final BlastOptions mOptions = BlastOptions.getInstance();
     private final BlastPropertiesBuilder mPropertiesBuilder = new BlastPropertiesBuilder();
 
     public static BlastManager getInstance() {
@@ -50,7 +50,7 @@ public class BlastManager extends BaseManager<BRockBlast> {
 
     @Override
     public List<String> getObjectAnnotation(BRockBlast p) {
-        if (mOptions.isPlotAnnotation()) {
+        if (mLayerOptions.isPlotAnnotation()) {
             var ext = p.extOrNull();
             return List.of(
                     p.getName(),

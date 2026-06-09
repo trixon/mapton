@@ -43,12 +43,12 @@ import se.trixon.almond.util.CollectionHelper;
  */
 public class MeteoManager extends BaseManager<BMeteoPoint> {
 
+    //    private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
+    private final ChartAggregate mChartAggregate = new ChartAggregate();
     private final MeteoChartBuilder mChartBuilder = new MeteoChartBuilder();
-    private final MeteoOptions mOptions = MeteoOptions.getInstance();
+    private final MeteoLayerOptions mLayerOptions = MeteoLayerOptions.getInstance();
     private final MeteoPropertiesBuilder mPropertiesBuilder = new MeteoPropertiesBuilder();
     private final StandardMeasurementPopulator mStandardMeasurementPopulator = new StandardMeasurementPopulator();
-//    private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
-    private final ChartAggregate mChartAggregate = new ChartAggregate();
 
     public static MeteoManager getInstance() {
         return Holder.INSTANCE;
@@ -60,7 +60,7 @@ public class MeteoManager extends BaseManager<BMeteoPoint> {
 
     @Override
     public List<String> getObjectAnnotation(BMeteoPoint p) {
-        if (mOptions.isPlotAnnotation()) {
+        if (mLayerOptions.isPlotAnnotation()) {
             var ext = p.extOrNull();
             return List.of(
                     p.getName(),

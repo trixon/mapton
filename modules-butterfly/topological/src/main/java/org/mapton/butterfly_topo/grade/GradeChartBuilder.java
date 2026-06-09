@@ -141,13 +141,13 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
             var gradeDiff = p.ext().getDiff(p.getFirstObservation(), p2);
 
             if (p.getAxis() == BAxis.HORIZONTAL) {
-                mTimeSeriesH.add(minute, gradeDiff.getZPerMille());
-                mMinMaxCollection.add(gradeDiff.getZPerMille());
+                mTimeSeriesV.add(minute, gradeDiff.getRPerMille());
+                mMinMaxCollection.add(gradeDiff.getRPerMille());
             }
 
             if (p.getAxis() == BAxis.VERTICAL) {
-                mTimeSeriesV.add(minute, gradeDiff.getRPerMille());
-                mMinMaxCollection.add(gradeDiff.getRPerMille());
+                mTimeSeriesH.add(minute, gradeDiff.getZPerMille());
+                mMinMaxCollection.add(gradeDiff.getZPerMille());
             }
 
             if (p.getAxis() == BAxis.RESULTANT) {
@@ -160,24 +160,32 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
                 }
                 mTimeSeriesD.add(minute, value);
                 mMinMaxCollection.add(value);
+
+                var dz = gradeDiff.getPartialDiffZ() * 1000;
+                var dr = gradeDiff.getPartialDiffR() * 1000;
+
+                mTimeSeriesH.add(minute, dr);
+                mTimeSeriesV.add(minute, dz);
+                mMinMaxCollection.add(dz);
+                mMinMaxCollection.add(dr);
             }
         });
 
         var renderer = plot.getRenderer();
 
-        if (!mTimeSeriesH.isEmpty()) {
-            getDataset().addSeries(mTimeSeriesH);
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesH.getKey()), Color.RED);
-        }
-
         if (!mTimeSeriesV.isEmpty()) {
             getDataset().addSeries(mTimeSeriesV);
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesV.getKey()), Color.BLUE);
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesV.getKey()), Color.RED);
+        }
+
+        if (!mTimeSeriesH.isEmpty()) {
+            getDataset().addSeries(mTimeSeriesH);
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesH.getKey()), Color.GREEN.darker());
         }
 
         if (!mTimeSeriesD.isEmpty()) {
             getDataset().addSeries(mTimeSeriesD);
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesD.getKey()), Color.GREEN.darker());
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesD.getKey()), Color.BLUE);
         }
     }
 

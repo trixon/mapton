@@ -44,15 +44,15 @@ public class ReinforcementLayerBundle extends BfLayerBundle {
 
     private final ReinforcementAttributeManager mAttributeManager = ReinforcementAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
+    private final ReinforcementLayerOptions mLayerOptions = ReinforcementLayerOptions.getInstance();
+    private final ReinforcementLayerOptionsView mLayerOptionsView;
     private final ReinforcementManager mManager = ReinforcementManager.getInstance();
-    private final ReinforcementOptionsView mOptionsView;
-    private final ReinforcementOptions mOptions = ReinforcementOptions.getInstance();
 
     public ReinforcementLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new ReinforcementOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
+        mLayerOptionsView = new ReinforcementLayerOptionsView(this);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mLayerOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -60,7 +60,7 @@ public class ReinforcementLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -80,8 +80,8 @@ public class ReinforcementLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mOptions.registerLayerBundle(this);
-        mManager.registerLayerBundle(this, mOptionsView);
+        mLayerOptions.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mLayerOptionsView);
     }
 
     private void initRepaint() {
@@ -91,7 +91,7 @@ public class ReinforcementLayerBundle extends BfLayerBundle {
             if (!mLayer.isEnabled()) {
                 return;
             }
-            var pointBy = mOptions.getPointBy();
+            var pointBy = mLayerOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -109,13 +109,13 @@ public class ReinforcementLayerBundle extends BfLayerBundle {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
-                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(p, position, labelPlacemark));
 
-                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
+                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mLayerOptions);
                         addClickArea(position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {

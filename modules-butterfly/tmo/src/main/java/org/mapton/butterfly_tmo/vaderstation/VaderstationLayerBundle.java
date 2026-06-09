@@ -42,12 +42,12 @@ public class VaderstationLayerBundle extends BfLayerBundle {
     private final VaderstationAttributeManager mAttributeManager = VaderstationAttributeManager.getInstance();
     private final ComponentRenderer mComponentRenderer;
     private final VaderstationManager mManager = VaderstationManager.getInstance();
-    private final VaderstationOptionsView mOptionsView;
+    private final VaderstationLayerOptionsView mLayerOptionsView;
 
     public VaderstationLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new VaderstationOptionsView(this);
+        mLayerOptionsView = new VaderstationLayerOptionsView(this);
         mComponentRenderer = new ComponentRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer);
         initListeners();
 
@@ -56,7 +56,7 @@ public class VaderstationLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -83,7 +83,7 @@ public class VaderstationLayerBundle extends BfLayerBundle {
             }
         });
 
-        mOptionsView.labelByProperty().addListener((p, o, n) -> {
+        mLayerOptionsView.labelByProperty().addListener((p, o, n) -> {
             repaint();
         });
     }
@@ -95,7 +95,7 @@ public class VaderstationLayerBundle extends BfLayerBundle {
             if (!mLayer.isEnabled()) {
                 return;
             }
-            var pointBy = mOptionsView.getPointBy();
+            var pointBy = mLayerOptionsView.getPointBy();
 //            switch (pointBy) {
 //                case NONE -> {
 //                    mPinLayer.setEnabled(false);
@@ -114,7 +114,7 @@ public class VaderstationLayerBundle extends BfLayerBundle {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
 
-                        var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mLayerOptionsView.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);

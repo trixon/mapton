@@ -44,15 +44,15 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
 
     private final TmoAttributeManager mAttributeManager = TmoAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
+    private final GrundvattenLayerOptions mLayerOptions = GrundvattenLayerOptions.getInstance();
+    private final GrundvattenLayerOptionsView mLayerOptionsView;
     private final GrundvattenManager mManager = GrundvattenManager.getInstance();
-    private final GrundvattenOptionsView mOptionsView;
-    private final GrundvattenOptions mOptions = GrundvattenOptions.getInstance();
 
     public GrundvattenLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new GrundvattenOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicsCheckModel());
+        mLayerOptionsView = new GrundvattenLayerOptionsView(this);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mLayerOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -60,7 +60,7 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -74,7 +74,7 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+        mLayerOptions.getPreferences().addPreferenceChangeListener(pce -> {
             SwingHelper.runLaterDelayed(50, () -> {
                 resetPaintDelayedResetRunner();
             });
@@ -102,7 +102,7 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
                 return;
             }
 
-            var pointBy = mOptions.getPointBy();
+            var pointBy = mLayerOptions.getPointBy();
 
             switch (pointBy) {
                 case NONE -> {
@@ -122,7 +122,7 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
 
-                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);

@@ -60,9 +60,9 @@ public final class AlarmTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var alarmView = new AlarmView();
+        var alarmContentView = new AlarmContentView();
 
-        return new Scene(alarmView.getView());
+        return new Scene(alarmContentView.getView());
     }
 
     void writeProperties(java.util.Properties p) {

@@ -49,15 +49,15 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
     private final GradeAttributeManager mAttributeManager = GradeAttributeManager.getInstance();
     private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
     private final GraphicRenderer mGraphicRenderer;
+    private final GradeHLayerOptions mLayerOptions = GradeHLayerOptions.getInstance();
+    private final GradeHLayerOptionsView mLayerOptionsView;
     private final GradeHManager mManager = GradeHManager.getInstance();
-    private final GradeHOptionsView mOptionsView;
-    private final GradeHOptions mOptions = GradeHOptions.getInstance();
 
     public GradeHLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new GradeHOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
+        mLayerOptionsView = new GradeHLayerOptionsView(this);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mLayerOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -65,7 +65,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -85,8 +85,8 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
     }
 
     private void initListeners() {
-        mOptions.registerLayerBundle(this);
-        mManager.registerLayerBundle(this, mOptionsView);
+        mLayerOptions.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mLayerOptionsView);
     }
 
     private void initRepaint() {
@@ -98,7 +98,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
                 return;
             }
 
-            var pointBy = mOptions.getPointBy();
+            var pointBy = mLayerOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -120,19 +120,19 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
                         //                        .limit(PLOT_LIMIT)
                         .forEachOrdered(p -> {
                             var position = Position.fromDegrees(p.getLat(), p.getLon());
-                            var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
+                            var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                             var mapObjects = new ArrayList<AVListImpl>();
 
                             mapObjects.add(labelPlacemark);
                             mapObjects.add(plotPin(p, position, labelPlacemark));
 //                    mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
-                            if (mOptionsView.isPlotSelected()) {
+                            if (mLayerOptionsView.isPlotSelected()) {
                                 if (p.equals(mManager.getSelectedItem())) {
                                     mGraphicRenderer.plot(p, position, mapObjects);
-                                } else if (mManager.getSelectedItem() != null && mOptionsView.getDistanceSliderPane().selectedProperty().get()) {
+                                } else if (mManager.getSelectedItem() != null && mLayerOptionsView.getDistanceSliderPane().selectedProperty().get()) {
                                     var llP = BCoordinatrix.toLatLon(p);
                                     var llS = BCoordinatrix.toLatLon(mManager.getSelectedItem());
-                                    if (llP.distance(llS) <= mOptionsView.getDistanceSliderPane().valueProperty().doubleValue()) {
+                                    if (llP.distance(llS) <= mLayerOptionsView.getDistanceSliderPane().valueProperty().doubleValue()) {
                                         mGraphicRenderer.plot(p, position, mapObjects);
                                     }
                                 }

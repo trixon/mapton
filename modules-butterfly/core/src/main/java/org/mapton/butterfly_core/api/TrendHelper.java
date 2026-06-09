@@ -16,12 +16,13 @@
 package org.mapton.butterfly_core.api;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.function.Function;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.jfree.data.function.LineFunction2D;
 import org.jfree.data.statistics.Regression;
 import org.jfree.data.time.Day;
@@ -88,33 +89,48 @@ public class TrendHelper {
     }
 
     public static Trend createTrend(BXyzPoint p, boolean dailyMean, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function) throws IllegalArgumentException {
-        var timeSeries = new TimeSeries("-");
+        var startLocalDate = startDate.toLocalDate();
+        var endLocalDatePlusOne = endDate.toLocalDate().plusDays(1);
+        var filteredObservations = new ArrayList<BXyzPointObservation>();
 
         if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
-            ext.getObservationsTimeFiltered().stream()
-                    .filter(o -> DateHelper.isBetween(startDate.toLocalDate(), endDate.toLocalDate().plusDays(1), o.getDate().toLocalDate()))
-                    .forEachOrdered(o -> {
-                        timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), function.apply(o));
-                    });
+            for (var o : ext.getObservationsTimeFiltered()) {
+                if (DateHelper.isBetween(startLocalDate, endLocalDatePlusOne, o.getDate().toLocalDate())) {
+                    filteredObservations.add(o);
+                }
+            }
+        }
+
+        if (filteredObservations.isEmpty()) {
+            throw new IllegalArgumentException("Not enough data");
         }
 
         var dataset = new TimeSeriesCollection();
+
         if (dailyMean) {
             var dailyValues = new HashMap<Day, ArrayList<Double>>();
-            var dailyMedians = new TimeSeries("-");
-            for (int i = 0; i < timeSeries.getItemCount(); i++) {
-                var period = ((Minute) timeSeries.getTimePeriod(i)).getDay();
-                var value = timeSeries.getValue(i).doubleValue();
-                dailyValues.computeIfAbsent(period, k -> new ArrayList<>()).add(value);
+
+            for (var o : filteredObservations) {
+                var day = new Day(Date.from(o.getDate().atZone(ZoneId.systemDefault()).toInstant()));
+                double val = function.apply(o);
+                dailyValues.computeIfAbsent(day, k -> new ArrayList<>()).add(val);
             }
+
+            var dailyMedians = new TimeSeries("-");
+            var median = new Median();
 
             for (var entry : dailyValues.entrySet()) {
                 var values = entry.getValue();
-                Collections.sort(values);
-                dailyMedians.add(entry.getKey(), calculateMedian(values));
+                var targetArray = values.stream().mapToDouble(Double::doubleValue).toArray();
+                var medianValue = median.evaluate(targetArray);
+                dailyMedians.add(entry.getKey(), medianValue);
             }
             dataset.addSeries(dailyMedians);
         } else {
+            var timeSeries = new TimeSeries("-");
+            for (var o : filteredObservations) {
+                timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), function.apply(o));
+            }
             dataset.addSeries(timeSeries);
         }
 
@@ -124,7 +140,7 @@ public class TrendHelper {
                 new LineFunction2D(coefficients[0], coefficients[1]),
                 ChartHelper.convertToMinute(startDate),
                 ChartHelper.convertToMinute(endDate),
-                timeSeries.getItemCount()
+                dataset.getSeries(0).getItemCount()
         );
     }
 
@@ -147,15 +163,6 @@ public class TrendHelper {
             return velocity1 - velocity2;
         } else {
             return null;
-        }
-    }
-
-    private static double calculateMedian(List<Double> values) {
-        int size = values.size();
-        if (size % 2 == 0) {
-            return (values.get(size / 2 - 1) + values.get(size / 2)) / 2.0;
-        } else {
-            return values.get(size / 2);
         }
     }
 

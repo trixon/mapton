@@ -41,17 +41,17 @@ import se.trixon.almond.util.SDict;
 @ServiceProvider(service = LayerBundle.class)
 public class GroundwaterLayerBundle extends BfLayerBundle {
 
-    private final GroundwaterManager mManager = GroundwaterManager.getInstance();
-    private final GroundwaterOptionsView mOptionsView;
-    private final GraphicRenderer mGraphicRenderer;
     private final GroundwaterAttributeManager mAttributeManager = GroundwaterAttributeManager.getInstance();
-    private final GroundwaterOptions mOptions = GroundwaterOptions.getInstance();
+    private final GraphicRenderer mGraphicRenderer;
+    private final GroundwaterLayerOptions mLayerOptions = GroundwaterLayerOptions.getInstance();
+    private final GroundwaterLayerOptionsView mLayerOptionsView;
+    private final GroundwaterManager mManager = GroundwaterManager.getInstance();
 
     public GroundwaterLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new GroundwaterOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicsCheckModel());
+        mLayerOptionsView = new GroundwaterLayerOptionsView(this);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mLayerOptionsView.getGraphicsCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -59,7 +59,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -73,8 +73,8 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mOptions.registerLayerBundle(this);
-        mManager.registerLayerBundle(this, mOptionsView);
+        mLayerOptions.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mLayerOptionsView);
     }
 
     private void initRepaint() {
@@ -85,7 +85,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
                 return;
             }
 
-            var pointBy = mOptions.getPointBy();
+            var pointBy = mLayerOptions.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -101,7 +101,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
                 for (var p : mManager.getTimeFilteredItems()) {
                     if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
-                        var labelPlacemark = plotLabel(p, mOptions.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
@@ -109,7 +109,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
                         //mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
                         //mapObjects.addAll(plotIndicators(p, position));
 
-                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mOptions);
+                        mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mLayerOptions);
                         addClickArea(position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {

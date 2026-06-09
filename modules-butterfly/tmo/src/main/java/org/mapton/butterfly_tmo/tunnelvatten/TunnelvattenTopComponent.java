@@ -72,7 +72,7 @@ public final class TunnelvattenTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var tunnelvattenView = new TunnelvattenView();
+        var tunnelvattenView = new TunnelvattenContentView();
 
         return new Scene(tunnelvattenView.getView());
     }

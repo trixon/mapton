@@ -60,7 +60,7 @@ public final class MonTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var hydroView = new MonView();
+        var hydroView = new MonContentView();
 
         return new Scene(hydroView.getView());
     }

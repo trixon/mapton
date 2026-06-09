@@ -30,7 +30,7 @@ import static org.mapton.butterfly_rock_earthquake.QuakeColorBy.MAGNITUDE;
  */
 public class QuakeHelper {
 
-    public static QuakeOptions sOptions = QuakeOptions.getInstance();
+    public static QuakeLayerOptions sLayerOptions = QuakeLayerOptions.getInstance();
     private static final Color sColorsOfDay[] = {
         Color.RED,
         Color.ORANGE,
@@ -43,7 +43,7 @@ public class QuakeHelper {
     public static Color getColor(BRockEarthquake quake) {
         var elapsedDays = Duration.between(quake.getDateLatest(), LocalDateTime.now()).toMillis() / TimeUnit.DAYS.toMillis(1);
 
-        switch (sOptions.getColorBy()) {
+        switch (sLayerOptions.getColorBy()) {
             case AGE:
                 return sColorsOfDay[Math.min((int) elapsedDays, sColorsOfDay.length - 1)];
             case MAGNITUDE:

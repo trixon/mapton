@@ -23,7 +23,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.mapton.api.MDisruptorProvider;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_activities.ActPropertiesBuilder;
-import org.mapton.butterfly_activities.ActView;
+import org.mapton.butterfly_activities.ActContentView;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BAreaActivity;
@@ -37,7 +37,7 @@ import org.openide.util.lookup.ServiceProvider;
  */
 public class ActManager extends BaseManager<BAreaActivity> {
 
-    private final static String DISRUPTOR_NAME = NbBundle.getMessage(ActView.class, "CTL_ActAction");
+    private final static String DISRUPTOR_NAME = NbBundle.getMessage(ActContentView.class, "CTL_ActAction");
     private final ActPropertiesBuilder mPropertiesBuilder = new ActPropertiesBuilder();
 
     public static ActManager getInstance() {

@@ -126,6 +126,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         mFilterSectionMeas.createInfoContent(map);
         mFilterSectionDisruptor.createInfoContent(map);
         mFilterSectionTrend.createInfoContent(map);
+        mFilterSectionAlarm.createInfoContent(map);
 
         return createHtmlFilterInfo(map);
     }

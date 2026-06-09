@@ -43,12 +43,12 @@ public class AlarmLayerBundle extends BfLayerBundle {
 
     private final AlarmAttributeManager mAttributeManager = AlarmAttributeManager.getInstance();
     private final AlarmManager mManager = AlarmManager.getInstance();
-    private final AlarmOptionsView mOptionsView;
+    private final AlarmLayerOptionsView mLayerOptionsView;
 
     public AlarmLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new AlarmOptionsView(this);
+        mLayerOptionsView = new AlarmLayerOptionsView(this);
 
         initListeners();
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -56,7 +56,7 @@ public class AlarmLayerBundle extends BfLayerBundle {
 
     @Override
     public Node getOptionsView() {
-        return mOptionsView.getUI();
+        return mLayerOptionsView.getUI();
     }
 
     @Override
@@ -88,7 +88,7 @@ public class AlarmLayerBundle extends BfLayerBundle {
             }
         });
 
-        mOptionsView.labelByProperty().addListener((p, o, n) -> {
+        mLayerOptionsView.labelByProperty().addListener((p, o, n) -> {
             repaint();
         });
     }
@@ -100,7 +100,7 @@ public class AlarmLayerBundle extends BfLayerBundle {
                 return;
             }
 
-            var pointBy = mOptionsView.getPointBy();
+            var pointBy = mLayerOptionsView.getPointBy();
             switch (pointBy) {
                 case NONE -> {
                     mPinLayer.setEnabled(false);
@@ -117,7 +117,7 @@ public class AlarmLayerBundle extends BfLayerBundle {
                     var mapObjects = new ArrayList<AVListImpl>();
                     if (ObjectUtils.allNotNull(alarm.getLat(), alarm.getLon())) {
                         var position = Position.fromDegrees(alarm.getLat(), alarm.getLon());
-                        var labelPlacemark = plotLabel(alarm, mOptionsView.getLabelBy(), position);
+                        var labelPlacemark = plotLabel(alarm, mLayerOptionsView.getLabelBy(), position);
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(alarm, position, labelPlacemark));

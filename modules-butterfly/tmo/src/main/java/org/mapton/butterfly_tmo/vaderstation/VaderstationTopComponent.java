@@ -72,7 +72,7 @@ public final class VaderstationTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var grundvattenView = new VaderstationView();
+        var grundvattenView = new VaderstationContentView();
 
         return new Scene(grundvattenView.getView());
     }

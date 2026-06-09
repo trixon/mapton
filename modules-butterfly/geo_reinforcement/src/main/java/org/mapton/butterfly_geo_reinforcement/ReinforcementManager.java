@@ -36,8 +36,8 @@ import org.openide.util.lookup.ServiceProvider;
 public class ReinforcementManager extends BaseManager<BGeoReinforcementPoint> {
 
     private final static String DISRUPTOR_NAME = Bundle.CTL_ReinforcementAction();
+    private final ReinforcementLayerOptions mLayerOptions = ReinforcementLayerOptions.getInstance();
     private final ReinforcementMultiChartAggregate mMultiChartAggregate = new ReinforcementMultiChartAggregate();
-    private final ReinforcementOptions mOptions = ReinforcementOptions.getInstance();
     private final ReinforcementPropertiesBuilder mPropertiesBuilder = new ReinforcementPropertiesBuilder();
 
     public static ReinforcementManager getInstance() {
@@ -50,7 +50,7 @@ public class ReinforcementManager extends BaseManager<BGeoReinforcementPoint> {
 
     @Override
     public List<String> getObjectAnnotation(BGeoReinforcementPoint p) {
-        if (mOptions.isPlotAnnotation()) {
+        if (mLayerOptions.isPlotAnnotation()) {
             var ext = p.extOrNull();
             return List.of(
                     p.getName(),
