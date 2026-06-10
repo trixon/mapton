@@ -73,6 +73,8 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
     private final StringProperty mFreeTextProperty = new SimpleStringProperty();
     private final MInfoPopOver mInfoPopOver = new MInfoPopOver() {
     };
+    private final MListSortPopOver mListSortPopOver = new MListSortPopOver() {
+    };
     private final MBaseDataManager mManager;
     private final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
     private final BooleanProperty mPolygonFilterProperty = new SimpleBooleanProperty(false);
@@ -144,6 +146,10 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
     public MInfoPopOver getInfoPopOver() {
         return mInfoPopOver;
+    }
+
+    public MListSortPopOver getListSortPopOver() {
+        return mListSortPopOver;
     }
 
     public String makeInfo(ObservableList<String> list) {

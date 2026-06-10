@@ -36,7 +36,7 @@ public class BackgroundImageOptionsView extends MOptionsView {
     private final MPresetPopOver mPresetPopOver;
 
     public BackgroundImageOptionsView() {
-        mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_OPTIONS, "backgroundImage");
+        mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_LAYER_OPTIONS, "backgroundImage");
         createUI();
         initSession();
     }

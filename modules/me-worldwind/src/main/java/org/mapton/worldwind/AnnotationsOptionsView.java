@@ -42,7 +42,7 @@ public class AnnotationsOptionsView extends MOptionsView {
     private final ResourceBundle mBundle = NbBundle.getBundle(AnnotationsOptionsView.class);
 
     public AnnotationsOptionsView() {
-        mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_OPTIONS, "annotations");
+        mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_LAYER_OPTIONS, "annotations");
         createUI();
         initSession();
     }

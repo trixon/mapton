@@ -22,6 +22,7 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
@@ -48,6 +49,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
 
     private static Object sLastOfAnyObject;
+    private final Label mFooterLabel = new Label();
     private long mLastSelection;
     private final ListItemCountLabel mListItemCountLabel = new ListItemCountLabel();
     private final ListView<ItemType> mListView = new ListView<>();
@@ -59,6 +61,10 @@ public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
 
         createUI();
         initListeners();
+    }
+
+    public Label getFooterLabel() {
+        return mFooterLabel;
     }
 
     public ListView<ItemType> getListView() {
@@ -82,7 +88,8 @@ public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
         settingsButton.setDisable(mManager.getOptionsView() == null);
         settingsButton.setTooltip(new Tooltip(Dict.OPTIONS.toString()));
 
-        var hbox = new HBox(settingsButton, new Spacer(), mListItemCountLabel);
+        mFooterLabel.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, FxHelper.getUIScaled(4d)));
+        var hbox = new HBox(settingsButton, mFooterLabel, new Spacer(), mListItemCountLabel);
 
         hbox.setAlignment(Pos.CENTER_LEFT);
         mRoot.setCenter(mListView);

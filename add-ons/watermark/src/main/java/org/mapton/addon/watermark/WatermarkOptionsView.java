@@ -49,7 +49,7 @@ public class WatermarkOptionsView extends MOptionsView {
     private final ComboBox<String> mPatternComboBox = new ComboBox<>();
 
     public WatermarkOptionsView() {
-        mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_OPTIONS, "watermark");
+        mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_LAYER_OPTIONS, "watermark");
         createUI();
         initSession();
     }

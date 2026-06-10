@@ -18,6 +18,7 @@ package org.mapton.core.api.ui;
 import com.dlsc.gemsfx.Spacer;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
@@ -28,6 +29,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.input.KeyCode;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -57,7 +59,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class MPresetPopOver extends MPopOver {
 
     public static final String PARENT_NODE_FILTER = "filterPresets";
-    public static final String PARENT_NODE_OPTIONS = "optionPresets";
+    public static final String PARENT_NODE_LAYER_OPTIONS = "layerOptionPresets";
 
     protected EditableList<DefaultEditableListItem> mEditableList;
     private final ObjectProperty<ObservableList<DefaultEditableListItem>> mItemsFilteredProperty = new SimpleObjectProperty<>();
@@ -140,10 +142,13 @@ public class MPresetPopOver extends MPopOver {
         });
 
         var desktopOpenAction = new Action(Dict.OPEN_DIRECTORY.toString(), actionEvent -> {
-            var file = new File(Places.getUserDirectory(), "config/Preferences" + mPreferences.absolutePath());
+            var directory = new File(Places.getUserDirectory(), "config/Preferences" + mPreferences.absolutePath());
             try {
-                SystemHelper.desktopOpen(file);
-            } catch (Exception e) {
+                if (!directory.isDirectory()) {
+                    FileUtils.forceMkdir(directory);
+                }
+                SystemHelper.desktopOpen(directory);
+            } catch (IOException e) {
                 System.out.println(e);
             }
         });

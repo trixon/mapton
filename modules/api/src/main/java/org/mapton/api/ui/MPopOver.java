@@ -76,6 +76,35 @@ public class MPopOver extends PopOver {
         });
     }
 
+    public MPopOver(String title) {
+        setHeaderAlwaysVisible(true);
+        setCloseButtonEnabled(false);
+        setDetachable(true);
+        setAnimated(true);
+
+        mAction = new Action(title, actionEvent -> {
+            if (isShowing()) {
+                hide();
+            } else {
+                var mousePoint = MouseInfo.getPointerInfo().getLocation();
+                var screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                var x = mousePoint.getX();
+                var quota = x / screenSize.getWidth();
+                if (quota < 0.2) {
+                    setArrowLocation(ArrowLocation.TOP_LEFT);
+                } else if (quota > 0.8) {
+                    setArrowLocation(ArrowLocation.TOP_RIGHT);
+                } else {
+                    setArrowLocation(ArrowLocation.TOP_CENTER);
+                }
+
+                var node = (ButtonBase) actionEvent.getSource();
+                show(node);
+                PopOverWatcher.getInstance().registerPopOver(this, node);
+            }
+        });
+    }
+
     public Action getAction() {
         return mAction;
     }

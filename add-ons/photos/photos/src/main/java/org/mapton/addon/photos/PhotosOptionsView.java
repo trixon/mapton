@@ -50,7 +50,7 @@ public class PhotosOptionsView extends MOptionsView {
     private final Spinner<Double> mWidthSpinner = new Spinner<>(1.0, 10.0, 1.0, 0.1);
 
     public PhotosOptionsView() {
-        mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_OPTIONS, "photos");
+        mPresetPopOver = new MPresetPopOver(mOptions, MPresetPopOver.PARENT_NODE_LAYER_OPTIONS, "photos");
         createUI();
         initSession();
     }
