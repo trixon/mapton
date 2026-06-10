@@ -108,8 +108,8 @@ public abstract class BLayerOptions<T> extends OptionsBase {
         return mPlotDistanceProperty.get();
     }
 
-    public Preferences getPreferencesForPath(String path) {
-        return NbPreferences.forModule(getClass()).node(path);
+    public Preferences getPreferencesForPath() {
+        return NbPreferences.forModule(getClass()).node("layerOptionPresets");
     }
 
     public BTrendPeriod getTrendPeriodA() {
@@ -130,24 +130,25 @@ public abstract class BLayerOptions<T> extends OptionsBase {
 
     @Override
     public void initSession(SessionManager sessionManager) {
-        sessionManager.register(getKeyOptions("listSortOrder"), mListSortOrderProxyProperty);
-        sessionManager.register(getKeyOptions("pointBy"), mPointByProxyProperty);
-        sessionManager.register(getKeyOptions("colorBy"), mColorByProxyProperty);
-        sessionManager.register(getKeyOptions("labelBy"), mLabelByProxyProperty);
-        sessionManager.register(getKeyOptions("graphics"), mGraphicsProperty);
-        sessionManager.register(getKeyOptions("trendPeriondA"), mTrendPeriodAProxyProperty);
-        sessionManager.register(getKeyOptions("trendPeriondB"), mTrendPeriodBProxyProperty);
-        sessionManager.register(getKeyOptions("trendPeriondC"), mTrendPeriodCProxyProperty);
-        sessionManager.register(getKeyOptions("plotAnnotatiion"), mPlotAnnotationProperty);
-        sessionManager.register(getKeyOptions("plotSelected"), mPlotSelectedProperty);
-        sessionManager.register(getKeyOptions("plotSelectedPlus"), mPlotSelectedPlusProperty);
-        sessionManager.register(getKeyOptions("plotSelectedDistance"), mPlotDistanceProperty);
+        var prefix = "common.";
+        sessionManager.register(prefix + "listSortOrder", mListSortOrderProxyProperty);
+        sessionManager.register(prefix + "pointBy", mPointByProxyProperty);
+        sessionManager.register(prefix + "colorBy", mColorByProxyProperty);
+        sessionManager.register(prefix + "labelBy", mLabelByProxyProperty);
+        sessionManager.register(prefix + "graphics", mGraphicsProperty);
+        sessionManager.register(prefix + "trendPeriondA", mTrendPeriodAProxyProperty);
+        sessionManager.register(prefix + "trendPeriondB", mTrendPeriodBProxyProperty);
+        sessionManager.register(prefix + "trendPeriondC", mTrendPeriodCProxyProperty);
+        sessionManager.register(prefix + "plotAnnotatiion", mPlotAnnotationProperty);
+        sessionManager.register(prefix + "plotSelected", mPlotSelectedProperty);
+        sessionManager.register(prefix + "plotSelectedPlus", mPlotSelectedPlusProperty);
+        sessionManager.register(prefix + "plotSelectedDistance", mPlotDistanceProperty);
 
         if (mPlotDebtProperty != null) {
-            sessionManager.register(getKeyOptions("plotDebt"), mPlotDebtProperty);
+            sessionManager.register(prefix + "plotDebt", mPlotDebtProperty);
         }
         if (mPlotAlarmProperty != null) {
-            sessionManager.register(getKeyOptions("plotAlarm"), mPlotAlarmProperty);
+            sessionManager.register(prefix + "plotAlarm", mPlotAlarmProperty);
         }
     }
 

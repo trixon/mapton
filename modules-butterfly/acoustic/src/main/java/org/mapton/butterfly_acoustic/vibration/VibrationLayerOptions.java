@@ -43,7 +43,7 @@ public class VibrationLayerOptions extends BLayerOptions implements MPresetActio
         initColorProxyProperty(mColorByProperty, VibrationColorBy.class);
         initLabelProxyProperty(mLabelByProperty, VibrationLabelBy.class);
         initPointProxyProperty(mPointByProperty, VibrationPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
         disablePlotAlarm();
         disablePlotDebt();
     }

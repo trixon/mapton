@@ -47,7 +47,7 @@ public class InclinoLayerOptions extends BLayerOptions implements MPresetActions
         initColorProxyProperty(mColorByProperty, InclinoColorBy.class);
         initLabelProxyProperty(mLabelByProperty, InclinoLabelBy.class);
         initPointProxyProperty(mPointByProperty, InclinoPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
     }
 
     public ObjectProperty<InclinoColorBy> colorByProperty() {
@@ -69,7 +69,7 @@ public class InclinoLayerOptions extends BLayerOptions implements MPresetActions
     @Override
     public void initSession(SessionManager sessionManager) {
         super.initSession(sessionManager);
-        sessionManager.register(getKeyOptions("scaleByAlarm"), mScaleByAlarmProperty);
+        sessionManager.register("scaleByAlarm", mScaleByAlarmProperty);
     }
 
     public boolean isScaleByAlarmProperty() {

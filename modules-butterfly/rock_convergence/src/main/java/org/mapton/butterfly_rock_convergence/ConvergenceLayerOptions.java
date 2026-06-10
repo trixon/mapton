@@ -43,7 +43,7 @@ public class ConvergenceLayerOptions extends BLayerOptions implements MPresetAct
         initColorProxyProperty(mColorByProperty, ConvergenceColorBy.class);
         initLabelProxyProperty(mLabelByProperty, ConvergenceLabelBy.class);
         initPointProxyProperty(mPointByProperty, ConvergencePointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
     }
 
     public ObjectProperty<ConvergenceColorBy> colorByProperty() {

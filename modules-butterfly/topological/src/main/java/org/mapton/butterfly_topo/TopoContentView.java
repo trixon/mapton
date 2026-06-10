@@ -59,7 +59,7 @@ public class TopoContentView extends BContentView {
         mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "topo");
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_ControlPointAction());
-        mListForm.bindSortLabel(mLayerOptions.listSortOrderProperty());
+        mListForm.bindFooterLabel(mLayerOptions.listSortOrderProperty());
         var actions = Arrays.asList(
                 mFilter.getListSortPopOver().getAction(),
                 new ExternalSearchAction(mManager),

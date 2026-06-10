@@ -43,7 +43,7 @@ public class TopoLayerOptions extends BLayerOptions implements MPresetActions {
         initLabelProxyProperty(mLabelByProperty, TopoLabelBy.class);
         initPointProxyProperty(mPointByProperty, TopoPointBy.class);
         initColorProxyProperty(mColorByProperty, TopoColorBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
     }
 
     public ObjectProperty<TopoColorBy> colorByProperty() {

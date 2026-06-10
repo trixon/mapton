@@ -43,7 +43,7 @@ public class LoadLayerOptions extends BLayerOptions implements MPresetActions {
         initColorProxyProperty(mColorByProperty, LoadColorBy.class);
         initLabelProxyProperty(mLabelByProperty, LoadLabelBy.class);
         initPointProxyProperty(mPointByProperty, LoadPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
     }
 
     public ObjectProperty<LoadColorBy> colorByProperty() {

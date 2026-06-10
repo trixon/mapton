@@ -43,7 +43,7 @@ public class MeteoLayerOptions extends BLayerOptions implements MPresetActions {
         initColorProxyProperty(mColorByProperty, MeteoColorBy.class);
         initLabelProxyProperty(mLabelByProperty, MeteoLabelBy.class);
         initPointProxyProperty(mPointByProperty, MeteoPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
         disablePlotAlarm();
         disablePlotDebt();
     }

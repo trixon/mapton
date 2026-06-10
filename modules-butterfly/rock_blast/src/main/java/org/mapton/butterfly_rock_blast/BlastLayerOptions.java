@@ -43,7 +43,7 @@ public class BlastLayerOptions extends BLayerOptions implements MPresetActions {
         initColorProxyProperty(mColorByProperty, BlastColorBy.class);
         initLabelProxyProperty(mLabelByProperty, BlastLabelBy.class);
         initPointProxyProperty(mPointByProperty, BlastPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
         disablePlotAlarm();
         disablePlotDebt();
     }

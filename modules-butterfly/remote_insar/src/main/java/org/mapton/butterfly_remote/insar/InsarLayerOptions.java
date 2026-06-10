@@ -43,7 +43,7 @@ public class InsarLayerOptions extends BLayerOptions implements MPresetActions {
         initColorProxyProperty(mColorByProperty, InsarColorBy.class);
         initLabelProxyProperty(mLabelByProperty, InsarLabelBy.class);
         initPointProxyProperty(mPointByProperty, InsarPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
         disablePlotDebt();
     }
 

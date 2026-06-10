@@ -47,7 +47,7 @@ public class DistanceLayerOptions extends BLayerOptions implements MPresetAction
         initColorProxyProperty(mColorByProperty, DistanceColorBy.class);
         initLabelProxyProperty(mLabelByProperty, DistanceLabelBy.class);
         initPointProxyProperty(mPointByProperty, GradePointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
         disablePlotDebt();
     }
 
@@ -78,7 +78,7 @@ public class DistanceLayerOptions extends BLayerOptions implements MPresetAction
     @Override
     public void initSession(SessionManager sessionManager) {
         super.initSession(sessionManager);
-//        sessionManager.register(getKeyOptions("distanceMode"), mDistanceModeProperty);
+//        sessionManager.register("distanceMode", mDistanceModeProperty);
 
     }
 

@@ -37,7 +37,7 @@ public class PresetImportLayerCommandBoxItem extends BasePresetImportCommandBoxI
     public Action getAction() {
         return new Action("Förinställningar - Lageregenskaper", actionEvent -> {
             try {
-                importx(MPresetPopOver.PARENT_NODE_OPTIONS);
+                importx(MPresetPopOver.PARENT_NODE_LAYER_OPTIONS);
             } catch (ZipException ex) {
                 Exceptions.printStackTrace(ex);
             } catch (IOException ex) {

@@ -43,7 +43,7 @@ public class GrundvattenLayerOptions extends BLayerOptions implements MPresetAct
         initColorProxyProperty(mColorByProperty, GrundvattenColorBy.class);
         initLabelProxyProperty(mLabelByProperty, GrundvattenLabelBy.class);
         initPointProxyProperty(mPointByProperty, GrundvattenPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
     }
 
     public ObjectProperty<GrundvattenColorBy> colorByProperty() {

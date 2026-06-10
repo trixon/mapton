@@ -43,7 +43,7 @@ public class GroundwaterLayerOptions extends BLayerOptions implements MPresetAct
         initColorProxyProperty(mColorByProperty, GroundwaterColorBy.class);
         initLabelProxyProperty(mLabelByProperty, GroundwaterLabelBy.class);
         initPointProxyProperty(mPointByProperty, GroundwaterPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
     }
 
     public ObjectProperty<GroundwaterColorBy> colorByProperty() {

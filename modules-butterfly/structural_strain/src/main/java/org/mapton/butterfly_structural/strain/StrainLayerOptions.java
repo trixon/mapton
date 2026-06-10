@@ -43,7 +43,7 @@ public class StrainLayerOptions extends BLayerOptions implements MPresetActions 
         initColorProxyProperty(mColorByProperty, StrainColorBy.class);
         initLabelProxyProperty(mLabelByProperty, StrainLabelBy.class);
         initPointProxyProperty(mPointByProperty, StrainPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
     }
 
     public ObjectProperty<StrainColorBy> colorByProperty() {

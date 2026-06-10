@@ -43,7 +43,7 @@ public class TunnelvattenLayerOptions extends BLayerOptions implements MPresetAc
         initColorProxyProperty(mColorByProperty, TunnelvattenColorBy.class);
         initLabelProxyProperty(mLabelByProperty, TunnelvattenLabelBy.class);
         initPointProxyProperty(mPointByProperty, TunnelvattenPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
     }
 
     public ObjectProperty<TunnelvattenColorBy> colorByProperty() {

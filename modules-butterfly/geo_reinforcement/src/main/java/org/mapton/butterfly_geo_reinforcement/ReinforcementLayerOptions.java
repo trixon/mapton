@@ -43,7 +43,7 @@ public class ReinforcementLayerOptions extends BLayerOptions implements MPresetA
         initColorProxyProperty(mColorByProperty, ReinforcementColorBy.class);
         initLabelProxyProperty(mLabelByProperty, ReinforcementLabelBy.class);
         initPointProxyProperty(mPointByProperty, ReinforcementPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
         disablePlotAlarm();
         disablePlotDebt();
     }

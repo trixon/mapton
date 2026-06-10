@@ -43,7 +43,7 @@ public class CrackLayerOptions extends BLayerOptions implements MPresetActions {
         initColorProxyProperty(mColorByProperty, CrackColorBy.class);
         initLabelProxyProperty(mLabelByProperty, CrackLabelBy.class);
         initPointProxyProperty(mPointByProperty, CrackPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
     }
 
     public ObjectProperty<CrackColorBy> colorByProperty() {

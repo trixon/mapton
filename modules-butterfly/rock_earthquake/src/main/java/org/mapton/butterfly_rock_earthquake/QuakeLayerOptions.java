@@ -43,7 +43,7 @@ public class QuakeLayerOptions extends BLayerOptions implements MPresetActions {
         initColorProxyProperty(mColorByProperty, QuakeColorBy.class);
         initLabelProxyProperty(mLabelByProperty, QuakeLabelBy.class);
         initPointProxyProperty(mPointByProperty, QuakePointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
     }
 
     public ObjectProperty<QuakeColorBy> colorByProperty() {

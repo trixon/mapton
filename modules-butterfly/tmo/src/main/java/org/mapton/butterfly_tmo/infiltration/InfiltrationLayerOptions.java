@@ -43,7 +43,7 @@ public class InfiltrationLayerOptions extends BLayerOptions implements MPresetAc
         initColorProxyProperty(mColorByProperty, InfiltrationColorBy.class);
         initLabelProxyProperty(mLabelByProperty, InfiltrationLabelBy.class);
         initPointProxyProperty(mPointByProperty, InfiltrationPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
     }
 
     public ObjectProperty<InfiltrationColorBy> colorByProperty() {

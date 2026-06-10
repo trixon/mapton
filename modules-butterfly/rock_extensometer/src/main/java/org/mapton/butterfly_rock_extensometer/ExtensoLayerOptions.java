@@ -43,7 +43,7 @@ public class ExtensoLayerOptions extends BLayerOptions implements MPresetActions
         initColorProxyProperty(mColorByProperty, ExtensoColorBy.class);
         initLabelProxyProperty(mLabelByProperty, ExtensoLabelBy.class);
         initPointProxyProperty(mPointByProperty, ExtensoPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
         disablePlotAlarm();
     }
 

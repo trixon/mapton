@@ -43,7 +43,7 @@ public class TiltLayerOptions extends BLayerOptions implements MPresetActions {
         initColorProxyProperty(mColorByProperty, TiltColorBy.class);
         initLabelProxyProperty(mLabelByProperty, TiltLabelBy.class);
         initPointProxyProperty(mPointByProperty, TiltPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
     }
 
     public ObjectProperty<TiltColorBy> colorByProperty() {

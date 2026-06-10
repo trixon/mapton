@@ -43,7 +43,7 @@ public class RoiLayerOptions extends BLayerOptions implements MPresetActions {
         initColorProxyProperty(mColorByProperty, RoiColorBy.class);
         initLabelProxyProperty(mLabelByProperty, RoiLabelBy.class);
         initPointProxyProperty(mPointByProperty, RoiPointBy.class);
-        setPreferences(getPreferencesForPath("optionPresets"));
+        setPreferences(getPreferencesForPath());
         disablePlotAlarm();
         disablePlotDebt();
     }

@@ -70,7 +70,7 @@ public abstract class BLayerOptionsView extends MOptionsView {
 
     public BLayerOptionsView(LayerBundle layerBundle, String title, MPresetActions presetActions, String key) {
         super(layerBundle, title);
-        mPresetPopOver = new MPresetPopOver(presetActions, MPresetPopOver.PARENT_NODE_OPTIONS, key);
+        mPresetPopOver = new MPresetPopOver(presetActions, MPresetPopOver.PARENT_NODE_LAYER_OPTIONS, key);
         mPresetActions = presetActions;
         createUI();
     }
