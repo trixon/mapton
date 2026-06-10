@@ -15,7 +15,11 @@
  */
 package org.mapton.butterfly_core.api;
 
+import javafx.scene.control.ComboBox;
+import javafx.scene.layout.VBox;
+import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.core.api.ui.MPresetPopOver;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionComboBox;
 
 /**
@@ -24,14 +28,40 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public abstract class BContentView {
 
+    protected final BContentOptions mContentOptions;
     protected ButterflyFormFilter mFilter;
     protected BaseTabbedFilterPopOver mFilterPopOver;
+    protected BLayerOptions mLayerOptions;
+    protected final ComboBox<Integer> mListLimitComboBox = new ComboBox<>();
     protected final SessionComboBox<BListSortOrder> mListSortOrderScb = new SessionComboBox<>();
     protected MPresetPopOver mPresetPopOver;
-    protected BLayerOptions mLayerOptions;
 
-    public BContentView() {
+    public BContentView(BContentOptions contentOptions, ButterflyFormFilter filter) {
+        mContentOptions = contentOptions;
+        mFilter = filter;
+        init();
+    }
+
+    protected void bindFooterLabel(SingleListForm mListForm) {
+        mListForm.bindFooterLabel(mContentOptions.listSortOrderProperty());
+    }
+
+    private void init() {
         mListSortOrderScb.getItems().setAll(BListSortOrder.values());
+        mListSortOrderScb.valueProperty().bindBidirectional(mContentOptions.listSortOrderProperty());
+
+        mListLimitComboBox.getItems().setAll(0, 5, 10, 25, 50, 100, 1000, 10000);
+        mListLimitComboBox.setValue(mContentOptions.getListLimitRaw());
+        mListLimitComboBox.valueProperty().addListener((p, o, n) -> {
+            if (n != null) {
+                mContentOptions.listLimitProperty().set(n);
+            }
+        });
+
+        var sortAndLimitPane = new VBox(8, mListSortOrderScb, mListLimitComboBox);
+        mListLimitComboBox.prefWidthProperty().bind(mListSortOrderScb.widthProperty());
+        sortAndLimitPane.setPadding(FxHelper.getUIScaledInsets(8, 16, 16, 16));
+        mFilter.getListSortPopOver().setNode(sortAndLimitPane);
     }
 
 }

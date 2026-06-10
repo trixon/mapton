@@ -72,7 +72,7 @@ public final class BlastTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var blastView = new BlastContentView();
+        var blastView = new BlastContentView(BlastContentOptions.getInstance());
 
         return new Scene(blastView.getView());
     }

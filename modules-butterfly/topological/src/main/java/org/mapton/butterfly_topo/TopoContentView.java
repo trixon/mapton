@@ -15,15 +15,14 @@
  */
 package org.mapton.butterfly_topo;
 
-import org.mapton.butterfly_core.api.BContentView;
 import java.util.Arrays;
 import javafx.collections.ListChangeListener;
-import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_core.api.BContentOptions;
+import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -32,7 +31,6 @@ import org.mapton.core.api.ui.ExportAction;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -43,23 +41,16 @@ public class TopoContentView extends BContentView {
     private final SingleListForm<TopoManager, BTopoControlPoint> mListForm;
     private final TopoManager mManager = TopoManager.getInstance();
 
-    public TopoContentView() {
-        mFilter = new TopoFilter();
+    public TopoContentView(BContentOptions contentOptions) {
+        super(contentOptions, new TopoFilter());
+
         mFilterPopOver = new TopoFilterPopOver(mFilter);
         mLayerOptions = TopoLayerOptions.getInstance();
-        mListSortOrderScb.valueProperty().bindBidirectional(mLayerOptions.listSortOrderProperty());
-        var cb = new ComboBox<Integer>();
-        cb.getItems().setAll(-1, 1, 5, 10, 25, 50, 100, 1000);
-        var box = new VBox(8, mListSortOrderScb, cb);
-        cb.prefWidthProperty().bind(mListSortOrderScb.widthProperty());
-//        BindingHelper.bindWidthForChildrens(box);
-        box.setPadding(FxHelper.getUIScaledInsets(16));
-        mFilter.getListSortPopOver().setNode(box);
 
         mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "topo");
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_ControlPointAction());
-        mListForm.bindFooterLabel(mLayerOptions.listSortOrderProperty());
+        bindFooterLabel(mListForm);
         var actions = Arrays.asList(
                 mFilter.getListSortPopOver().getAction(),
                 new ExternalSearchAction(mManager),

@@ -17,8 +17,7 @@ package org.mapton.butterfly_geo_reinforcement;
 
 import java.util.Objects;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.layout.VBox;
+import org.mapton.butterfly_core.api.BContentListCell;
 import org.mapton.butterfly_format.types.geo.BGeoReinforcementPoint;
 import se.trixon.almond.util.DateHelper;
 
@@ -26,29 +25,18 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-class ReinforcementContentListCell extends ListCell<BGeoReinforcementPoint> {
+class ReinforcementContentListCell extends BContentListCell<BGeoReinforcementPoint> {
 
     private final Label mDateLabel = new Label();
     private final Label mGroupLabel = new Label();
     private final Label mNameLabel = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
-    private VBox mVBox;
 
     public ReinforcementContentListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BGeoReinforcementPoint drillPoint, boolean empty) {
-        super.updateItem(drillPoint, empty);
-        if (drillPoint == null || empty) {
-            clearContent();
-        } else {
-            addContent(drillPoint);
-        }
-    }
-
-    private void addContent(BGeoReinforcementPoint drillPoint) {
+    protected void addContent(BGeoReinforcementPoint drillPoint) {
         setText(null);
         var date = Objects.toString(DateHelper.toDateTimeString(drillPoint.getDateLatest()), "-");
         mNameLabel.setText(drillPoint.getName());
@@ -57,14 +45,9 @@ class ReinforcementContentListCell extends ListCell<BGeoReinforcementPoint> {
         setGraphic(mVBox);
     }
 
-    private void clearContent() {
-        setText(null);
-        setGraphic(null);
-    }
-
     private void createUI() {
         mNameLabel.setStyle(mStyleBold);
-        mVBox = new VBox(
+        mVBox.getChildren().setAll(
                 mNameLabel,
                 mDateLabel,
                 mGroupLabel

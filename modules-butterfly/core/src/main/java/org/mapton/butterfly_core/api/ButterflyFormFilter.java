@@ -15,9 +15,11 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.util.List;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.ui.forms.FormFilter;
+import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
  *
@@ -25,6 +27,7 @@ import org.mapton.api.ui.forms.FormFilter;
  */
 public abstract class ButterflyFormFilter<ManagerType extends MBaseDataManager> extends FormFilter {
 
+    protected BContentOptions mContentOptions;
     protected BFilterSectionAlarm mFilterSectionAlarm;
     protected BFilterSectionDate mFilterSectionDate;
     protected BFilterSectionDisruptor mFilterSectionDisruptor;
@@ -44,5 +47,12 @@ public abstract class ButterflyFormFilter<ManagerType extends MBaseDataManager> 
 
     public SimpleBooleanProperty invisibleProperty() {
         return mInvisibleProperty;
+    }
+
+    protected <T extends BXyzPoint> List<T> sortAndLimit(List<T> filteredItems) {
+        return filteredItems.stream()
+                .sorted(mContentOptions.getListSortOrder().getComparator().thenComparing(BListSortOrder.STANDARD.getComparator()))
+                .limit(mContentOptions.getListLimit())
+                .toList();
     }
 }

@@ -17,8 +17,7 @@ package org.mapton.butterfly_rock_blast;
 
 import java.util.Objects;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.layout.VBox;
+import org.mapton.butterfly_core.api.BContentListCell;
 import org.mapton.butterfly_format.types.rock.BRockBlast;
 import se.trixon.almond.util.DateHelper;
 
@@ -26,45 +25,29 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-class BlastContentListCell extends ListCell<BRockBlast> {
+class BlastContentListCell extends BContentListCell<BRockBlast> {
 
     private final Label mDateLabel = new Label();
     private final Label mGroupLabel = new Label();
     private final Label mNameLabel = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
-    private VBox mVBox;
 
     public BlastContentListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BRockBlast blast, boolean empty) {
-        super.updateItem(blast, empty);
-        if (blast == null || empty) {
-            clearContent();
-        } else {
-            addContent(blast);
-        }
-    }
-
-    private void addContent(BRockBlast blast) {
+    protected void addContent(BRockBlast blast) {
         setText(null);
         var date = Objects.toString(DateHelper.toDateTimeString(blast.getDateLatest()), "-");
         mNameLabel.setText(blast.getName());
-        mDateLabel.setText("%s %s".formatted(date, blast.getComment()));
+        mDateLabel.setText("%s, Z %+.1f m".formatted(date, blast.getZeroZ()));
         mGroupLabel.setText(blast.getGroup());
         setGraphic(mVBox);
     }
 
-    private void clearContent() {
-        setText(null);
-        setGraphic(null);
-    }
-
     private void createUI() {
         mNameLabel.setStyle(mStyleBold);
-        mVBox = new VBox(
+        mVBox.getChildren().setAll(
                 mNameLabel,
                 mDateLabel,
                 mGroupLabel

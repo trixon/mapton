@@ -38,7 +38,7 @@ public class BMeasurementReport {
         mTabs = tabs;
 
         BXyzPoint.Ext<? extends BXyzPointObservation> ext = point.extOrNull();
-        if (ext != null) {
+        if (ext != null && ext.getDateLatest() != null) {
             mFirstDate = ext.getDateFirst().toLocalDate();
             mLastDate = ext.getDateLatest().toLocalDate();
             mNumOfReplacements = ext.getNumOfReplacements();

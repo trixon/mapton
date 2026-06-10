@@ -41,8 +41,16 @@ public enum BListSortOrder {
                 var value = p.extOrNull().deltaZero().getDelta3();
                 return (value == null) ? null : Math.abs(value);
             }, Comparator.nullsLast(Comparator.reverseOrder()))),
+    Z_ASC(Order.ASC, "Z",
+            Comparator.comparing((BXyzPoint p) -> {
+                return p.getZeroZ();
+            }, Comparator.nullsLast(Comparator.naturalOrder()))),
+    Z_DESC(Order.DESC, "Z",
+            Comparator.comparing((BXyzPoint p) -> {
+                return p.getZeroZ();
+            }, Comparator.nullsLast(Comparator.reverseOrder()))),
     DATE_PREV(Order.DESC, "Datum, senaste",
-            Comparator.comparing(BXyzPoint::getDateLatest, Comparator.nullsLast(Comparator.naturalOrder())).reversed()),
+            Comparator.comparing(BXyzPoint::getDateLatest, Comparator.nullsLast(Comparator.reverseOrder()))),
     DATE_NEXT(Order.ASC, "Datum, nästa",
             Comparator.comparing((BXyzPoint p) -> p.extOrNull().getObservationRawNextDate(), Comparator.nullsLast(Comparator.naturalOrder()))),
     NORTH_SOUTH(Order.NONE, "Nord-Syd, Väst-Öst",

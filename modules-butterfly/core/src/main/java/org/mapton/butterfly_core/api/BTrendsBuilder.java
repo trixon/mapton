@@ -37,7 +37,7 @@ public abstract class BTrendsBuilder<T extends BXyzPoint> extends PropertiesBuil
 
     @Override
     public Object build(T p) {
-        if (p == null) {
+        if (p == null || p.extOrNull().getObservationsAllRaw().isEmpty()) {
             return p;
         }
 

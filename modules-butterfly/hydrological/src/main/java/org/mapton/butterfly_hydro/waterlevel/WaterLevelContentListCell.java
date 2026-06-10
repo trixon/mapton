@@ -16,50 +16,33 @@
 package org.mapton.butterfly_hydro.waterlevel;
 
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.layout.VBox;
+import org.mapton.butterfly_core.api.BContentListCell;
 import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-class WaterLevelContentListCell extends ListCell<BHydroWaterLevelPoint> {
+class WaterLevelContentListCell extends BContentListCell<BHydroWaterLevelPoint> {
 
     private final Label mDesc1Label = new Label();
     private final Label mNameLabel = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
-    private VBox mVBox;
 
     public WaterLevelContentListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BHydroWaterLevelPoint gw, boolean empty) {
-        super.updateItem(gw, empty);
-        if (gw == null || empty) {
-            clearContent();
-        } else {
-            addContent(gw);
-        }
-    }
-
-    private void addContent(BHydroWaterLevelPoint gw) {
+    protected void addContent(BHydroWaterLevelPoint gw) {
         setText(null);
         mNameLabel.setText(gw.getName());
         mDesc1Label.setText("%s: %s".formatted(gw.getGroup(), gw.getCategory()));
         setGraphic(mVBox);
     }
 
-    private void clearContent() {
-        setText(null);
-        setGraphic(null);
-    }
-
     private void createUI() {
         mNameLabel.setStyle(mStyleBold);
-        mVBox = new VBox(mNameLabel, mDesc1Label);
+        mVBox.getChildren().setAll(mNameLabel, mDesc1Label);
     }
 
 }

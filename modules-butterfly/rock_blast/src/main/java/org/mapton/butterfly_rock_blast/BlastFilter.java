@@ -41,6 +41,7 @@ public class BlastFilter extends ButterflyFormFilter<BlastManager> implements
 
     public BlastFilter() {
         super(BlastManager.getInstance());
+        mContentOptions = BlastContentOptions.getInstance();
 
         initListeners();
     }
@@ -79,6 +80,8 @@ public class BlastFilter extends ButterflyFormFilter<BlastManager> implements
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -96,7 +99,9 @@ public class BlastFilter extends ButterflyFormFilter<BlastManager> implements
     private void initListeners() {
         List.of(
                 mInvertProperty,
-                mInvisibleProperty
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

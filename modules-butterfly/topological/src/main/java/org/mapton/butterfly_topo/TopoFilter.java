@@ -48,7 +48,6 @@ import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.BFilterSectionTrend;
 import org.mapton.butterfly_core.api.BFilterSectionTrendProvider;
-import org.mapton.butterfly_core.api.BListSortOrder;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
@@ -105,7 +104,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
 
     public TopoFilter() {
         super(TopoManager.getInstance());
-
+        mContentOptions = TopoContentOptions.getInstance();
         initListeners();
     }
 
@@ -311,10 +310,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
             filteredItems = createTopList(filteredItems);
         }
 
-        filteredItems = filteredItems.stream()
-                .sorted(TopoLayerOptions.getInstance().getListSortOrder().getComparator().thenComparing(BListSortOrder.STANDARD.getComparator()))
-                .limit(mFilterSectionMisc.getLimit())
-                .toList();
+        filteredItems = sortAndLimit(filteredItems);
 
         mManager.setItemsFiltered(filteredItems);
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -430,7 +426,8 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 mMeasYoyoCountValueProperty,
                 mMeasYoyoSizeValueProperty,
                 mMeasYoyoProperty,
-                TopoLayerOptions.getInstance().listSortOrderProperty()
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 

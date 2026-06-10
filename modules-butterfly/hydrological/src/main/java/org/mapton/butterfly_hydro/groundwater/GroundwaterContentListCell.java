@@ -16,50 +16,33 @@
 package org.mapton.butterfly_hydro.groundwater;
 
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.layout.VBox;
+import org.mapton.butterfly_core.api.BContentListCell;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-class GroundwaterContentListCell extends ListCell<BHydroGroundwaterPoint> {
+class GroundwaterContentListCell extends BContentListCell<BHydroGroundwaterPoint> {
 
     private final Label mDesc1Label = new Label();
     private final Label mNameLabel = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
-    private VBox mVBox;
 
     public GroundwaterContentListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BHydroGroundwaterPoint gw, boolean empty) {
-        super.updateItem(gw, empty);
-        if (gw == null || empty) {
-            clearContent();
-        } else {
-            addContent(gw);
-        }
-    }
-
-    private void addContent(BHydroGroundwaterPoint gw) {
+    protected void addContent(BHydroGroundwaterPoint gw) {
         setText(null);
         mNameLabel.setText(gw.getName());
         mDesc1Label.setText("%s: %s".formatted(gw.getGroup(), gw.getCategory()));
         setGraphic(mVBox);
     }
 
-    private void clearContent() {
-        setText(null);
-        setGraphic(null);
-    }
-
     private void createUI() {
         mNameLabel.setStyle(mStyleBold);
-        mVBox = new VBox(mNameLabel, mDesc1Label);
+        mVBox.getChildren().setAll(mNameLabel, mDesc1Label);
     }
 
 }

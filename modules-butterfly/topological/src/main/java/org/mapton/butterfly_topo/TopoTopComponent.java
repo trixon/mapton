@@ -60,7 +60,7 @@ public final class TopoTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var topoView = new TopoContentView();
+        var topoView = new TopoContentView(TopoContentOptions.getInstance());
 
         return new Scene(topoView.getView());
     }

@@ -20,6 +20,8 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_core.api.BContentOptions;
+import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.core.api.ui.ExportAction;
@@ -30,17 +32,20 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class BlastContentView {
+public class BlastContentView extends BContentView {
 
-    private final BlastFilter mFilter = new BlastFilter();
-    private final BlastFilterPopOver mFilterPopOver = new BlastFilterPopOver(mFilter);
     private final SingleListForm<BlastManager, BRockBlast> mListForm;
     private final BlastManager mManager = BlastManager.getInstance();
-    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "blast");
 
-    public BlastContentView() {
+    public BlastContentView(BContentOptions contentOptions) {
+        super(contentOptions, new BlastFilter());
+        mFilterPopOver = new BlastFilterPopOver(mFilter);
+        mLayerOptions = BlastLayerOptions.getInstance();
+
+        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "blast");
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         var actions = Arrays.asList(
+                mFilter.getListSortPopOver().getAction(),
                 new ExternalSearchAction(mManager),
                 new ExportAction("Salvor"),
                 ActionUtils.ACTION_SPAN,
@@ -51,6 +56,7 @@ public class BlastContentView {
         );
 
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_BlastAction());
+        bindFooterLabel(mListForm);
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
                 .setToolbarActions(actions);

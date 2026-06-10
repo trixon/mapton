@@ -39,7 +39,6 @@ import se.trixon.almond.util.swing.SwingHelper;
 public abstract class BLayerOptions<T> extends OptionsBase {
 
     public static final String DEFAULT_GRAPHICS = "";
-    public static final BListSortOrder DEFAULT_LIST_SORT_ORDER = BListSortOrder.STANDARD;
     public static final boolean DEFAULT_PLOT_ALARM = false;
     public static final boolean DEFAULT_PLOT_ANNOTATION = false;
     public static final boolean DEFAULT_PLOT_DEBT = false;
@@ -53,8 +52,6 @@ public abstract class BLayerOptions<T> extends OptionsBase {
     private final StringProperty mGraphicsProperty = new SimpleStringProperty(DEFAULT_GRAPHICS);
     private final SimpleObjectProperty<LabelBy.Operations> mLabelByOperationProperty = new SimpleObjectProperty<>();
     private StringProperty mLabelByProxyProperty;
-    private final ObjectProperty<BListSortOrder> mListSortOrderProperty = new SimpleObjectProperty<>(DEFAULT_LIST_SORT_ORDER);
-    private StringProperty mListSortOrderProxyProperty;
     private BooleanProperty mPlotAlarmProperty = new SimpleBooleanProperty(DEFAULT_PLOT_ALARM);
     private final BooleanProperty mPlotAnnotationProperty = new SimpleBooleanProperty(DEFAULT_PLOT_ANNOTATION);
     private BooleanProperty mPlotDebtProperty = new SimpleBooleanProperty(DEFAULT_PLOT_DEBT);
@@ -71,7 +68,6 @@ public abstract class BLayerOptions<T> extends OptionsBase {
 
     public BLayerOptions() {
         initTrendPeriodProxyProperties();
-        mListSortOrderProxyProperty = BindingHelper.createStringEnumProxyProperty(mListSortOrderProperty, BListSortOrder.class);
     }
 
     public StringProperty colorByProxyProperty() {
@@ -98,10 +94,6 @@ public abstract class BLayerOptions<T> extends OptionsBase {
         } catch (IllegalArgumentException e) {
             return defaultValue.getFullName();
         }
-    }
-
-    public BListSortOrder getListSortOrder() {
-        return mListSortOrderProperty.get();
     }
 
     public int getPlotDistance() {
@@ -131,7 +123,6 @@ public abstract class BLayerOptions<T> extends OptionsBase {
     @Override
     public void initSession(SessionManager sessionManager) {
         var prefix = "common.";
-        sessionManager.register(prefix + "listSortOrder", mListSortOrderProxyProperty);
         sessionManager.register(prefix + "pointBy", mPointByProxyProperty);
         sessionManager.register(prefix + "colorBy", mColorByProxyProperty);
         sessionManager.register(prefix + "labelBy", mLabelByProxyProperty);
@@ -178,10 +169,6 @@ public abstract class BLayerOptions<T> extends OptionsBase {
 
     public StringProperty labelByProxyProperty() {
         return mLabelByProxyProperty;
-    }
-
-    public ObjectProperty<BListSortOrder> listSortOrderProperty() {
-        return mListSortOrderProperty;
     }
 
     public BooleanProperty plotAlarmProperty() {
