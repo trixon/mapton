@@ -17,14 +17,13 @@ package org.mapton.butterfly_core.api;
 
 import java.util.Comparator;
 import org.mapton.butterfly_format.types.BXyzPoint;
-import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum BListSortOrder {
-    STANDARD(Order.ASC, Dict.DEFAULT.toString(),
+    STANDARD(Order.ASC, "Ursprung och namn",
             Comparator.comparing(BXyzPoint::getOrigin).thenComparing(Comparator.comparing(BXyzPoint::getName))),
     DELTA_1D(Order.DESC, "Δ1d",
             Comparator.comparing((BXyzPoint p) -> {
@@ -49,10 +48,14 @@ public enum BListSortOrder {
             Comparator.comparing((BXyzPoint p) -> {
                 return p.getZeroZ();
             }, Comparator.nullsLast(Comparator.reverseOrder()))),
-    DATE_PREV(Order.DESC, "Datum, senaste",
+    DATE_PREV_ASC(Order.ASC, "Datum, senaste",
+            Comparator.comparing(BXyzPoint::getDateLatest, Comparator.nullsLast(Comparator.naturalOrder()))),
+    DATE_PREV_DESC(Order.DESC, "Datum, senaste",
             Comparator.comparing(BXyzPoint::getDateLatest, Comparator.nullsLast(Comparator.reverseOrder()))),
-    DATE_NEXT(Order.ASC, "Datum, nästa",
+    DATE_NEXT_ASC(Order.ASC, "Datum, nästa",
             Comparator.comparing((BXyzPoint p) -> p.extOrNull().getObservationRawNextDate(), Comparator.nullsLast(Comparator.naturalOrder()))),
+    DATE_NEXT_DESC(Order.DESC, "Datum, nästa",
+            Comparator.comparing((BXyzPoint p) -> p.extOrNull().getObservationRawNextDate(), Comparator.nullsLast(Comparator.reverseOrder()))),
     NORTH_SOUTH(Order.NONE, "Nord-Syd, Väst-Öst",
             Comparator.comparingDouble(BXyzPoint::getZeroY).reversed().thenComparing(Comparator.comparingDouble(BXyzPoint::getZeroX))),
     WEST_EAST(Order.NONE, "Väst-Öst, Nord-Syd",

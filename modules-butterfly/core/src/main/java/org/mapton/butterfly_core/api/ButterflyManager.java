@@ -436,7 +436,6 @@ public class ButterflyManager {
 
     private MCooTrans getCooTrans() {
         return MCooTrans.getCooTrans(MOptions.getInstance().getMapCooTransName());
-
     }
 
     private void refreshTitle() {
