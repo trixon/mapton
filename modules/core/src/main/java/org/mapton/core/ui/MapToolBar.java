@@ -17,16 +17,20 @@ package org.mapton.core.ui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import javax.swing.SwingUtilities;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
@@ -75,7 +79,10 @@ public class MapToolBar extends BaseToolBar {
     private PopOver mRulerPopOver;
     private FxActionSwing mStyleSwapAction;
     private Action mTemporalAction;
+    private final ImageView mTemporalActionGraphic = MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBarInt());
     private PopOver mTemporalPopOver;
+    private boolean mTemporalState = false;
+    private Timeline mTemporalTimeline;
     private TemporalView mTemporalView;
 
     public MapToolBar() {
@@ -169,6 +176,16 @@ public class MapToolBar extends BaseToolBar {
             getButtonForAction(mPoiAction).setVisible(false);
             getButtonForAction(mBookmarkAction).setVisible(false);
         });
+
+        mTemporalTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+            if (mTemporalState) {
+                mTemporalAction.setGraphic(null);
+            } else {
+                mTemporalAction.setGraphic(mTemporalActionGraphic);
+            }
+            mTemporalState = !mTemporalState;
+        }));
+        mTemporalTimeline.setCycleCount(Animation.INDEFINITE);
     }
 
     private void initActionsFx() {
@@ -219,7 +236,7 @@ public class MapToolBar extends BaseToolBar {
         mTemporalAction = new Action(Dict.Time.DATE.toString(), event -> {
             toogleTemporalPopOver();
         });
-        mTemporalAction.setGraphic(MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBarInt()));
+        mTemporalAction.setGraphic(mTemporalActionGraphic);
         FxHelper.setTooltip(mTemporalAction, new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN));
         mTemporalAction.textProperty().bind(mTemporalView.titleProperty());
 
@@ -285,9 +302,10 @@ public class MapToolBar extends BaseToolBar {
 
         mManager.fullExtentProperty().addListener((p, o, n) -> {
             if (n) {
-                mTemporalAction.setGraphic(MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBarInt()));
+                mTemporalTimeline.stop();
+                mTemporalAction.setGraphic(mTemporalActionGraphic);
             } else {
-                mTemporalAction.setGraphic(MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBarInt(), Color.RED));
+                mTemporalTimeline.play();
             }
         });
     }
