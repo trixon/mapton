@@ -18,6 +18,7 @@ package org.mapton.butterfly_core.api;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import org.apache.commons.lang3.ObjectUtils;
 import org.jfree.data.time.Hour;
 import org.jfree.data.time.Minute;
 import org.mapton.api.ui.forms.PropertiesBuilder;
@@ -60,6 +61,11 @@ public abstract class BTrendsBuilder<T extends BXyzPoint> extends PropertiesBuil
         var trendKeyPrev = component == BComponent.HEIGHT ? BKey.TRENDS_PREV_H : BKey.TRENDS_PREV_P;
         HashMap<BTrendPeriod, TrendHelper.Trend> trendMap = p.getValue(trendKey);
         HashMap<BTrendPeriod, TrendHelper.Trend> trendMapPrev = p.getValue(trendKeyPrev);
+
+        if (ObjectUtils.anyNull(trendMap)) {
+            return;
+        }
+
         var startMinute = new Minute(0, new Hour());
         var now = LocalDateTime.now();
         for (var key : BTrendPeriod.values()) {
