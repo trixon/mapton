@@ -19,13 +19,12 @@ import java.io.IOException;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MUpdater;
 import org.openide.util.Exceptions;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MUpdater.class)
+//@ServiceProvider(service = MUpdater.class)
 public class EarthquakeUpdater extends MUpdater.ByFile {
 
     private final EarthquakeGenerator mGenerator = EarthquakeGenerator.getInstance();
