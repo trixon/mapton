@@ -47,7 +47,7 @@ public class DistanceLayerOptions extends BLayerOptions implements MPresetAction
         initColorProxyProperty(mColorByProperty, DistanceColorBy.class);
         initLabelProxyProperty(mLabelByProperty, DistanceLabelBy.class);
         initPointProxyProperty(mPointByProperty, GradePointBy.class);
-        setPreferences(getPreferencesForPath());
+        setPreferences(getPreferencesForPath("GradeD"));
         disablePlotDebt();
     }
 

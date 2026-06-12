@@ -43,7 +43,7 @@ public class MonLayerOptions extends BLayerOptions implements MPresetActions {
         initColorProxyProperty(mColorByProperty, MonColorBy.class);
         initLabelProxyProperty(mLabelByProperty, MonLabelBy.class);
         initPointProxyProperty(mPointByProperty, MonPointBy.class);
-        setPreferences(getPreferencesForPath());
+        setPreferences(getPreferencesForPath("MonMon"));
         disablePlotAlarm();
         disablePlotDebt();
     }

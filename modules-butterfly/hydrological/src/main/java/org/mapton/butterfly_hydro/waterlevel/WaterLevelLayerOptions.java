@@ -43,7 +43,7 @@ public class WaterLevelLayerOptions extends BLayerOptions implements MPresetActi
         initColorProxyProperty(mColorByProperty, WaterLevelColorBy.class);
         initLabelProxyProperty(mLabelByProperty, WaterLevelLabelBy.class);
         initPointProxyProperty(mPointByProperty, WaterLevelPointBy.class);
-        setPreferences(getPreferencesForPath());
+        setPreferences(getPreferencesForPath("WaterLevel"));
     }
 
     public ObjectProperty<WaterLevelColorBy> colorByProperty() {

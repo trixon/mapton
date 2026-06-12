@@ -100,8 +100,12 @@ public abstract class BLayerOptions<T> extends OptionsBase {
         return mPlotDistanceProperty.get();
     }
 
+    public Preferences getPreferencesForPath(String subModule) {
+        return NbPreferences.forModule(getClass()).node("layerOptionPresets" + subModule);
+    }
+
     public Preferences getPreferencesForPath() {
-        return NbPreferences.forModule(getClass()).node("layerOptionPresets");
+        return getPreferencesForPath("");
     }
 
     public BTrendPeriod getTrendPeriodA() {

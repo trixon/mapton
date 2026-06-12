@@ -44,7 +44,7 @@ public class GradeHLayerOptions extends BLayerOptions implements MPresetActions 
         initColorProxyProperty(mColorByProperty, GradeHColorBy.class);
         initLabelProxyProperty(mLabelByProperty, GradeHLabelBy.class);
         initPointProxyProperty(mPointByProperty, GradePointBy.class);
-        setPreferences(getPreferencesForPath());
+        setPreferences(getPreferencesForPath("GradeH"));
         disablePlotDebt();
     }
 
