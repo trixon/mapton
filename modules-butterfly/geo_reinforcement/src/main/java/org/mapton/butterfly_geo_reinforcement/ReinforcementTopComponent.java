@@ -72,7 +72,7 @@ public final class ReinforcementTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var reinforcementView = new ReinforcementContentView();
+        var reinforcementView = new ReinforcementContentView(ReinforcementContentOptions.getInstance());
 
         return new Scene(reinforcementView.getView());
     }

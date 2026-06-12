@@ -41,6 +41,7 @@ public class ReinforcementFilter extends ButterflyFormFilter<ReinforcementManage
 
     public ReinforcementFilter() {
         super(ReinforcementManager.getInstance());
+        mContentOptions = ReinforcementContentOptions.getInstance();
 
         initListeners();
     }
@@ -79,6 +80,8 @@ public class ReinforcementFilter extends ButterflyFormFilter<ReinforcementManage
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -96,7 +99,8 @@ public class ReinforcementFilter extends ButterflyFormFilter<ReinforcementManage
     private void initListeners() {
         List.of(
                 mInvertProperty,
-                mInvisibleProperty
-        ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

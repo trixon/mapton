@@ -20,6 +20,8 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_core.api.BContentOptions;
+import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.geo.BGeoReinforcementPoint;
 import org.mapton.core.api.ui.ExportAction;
@@ -30,17 +32,20 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class ReinforcementContentView {
+public class ReinforcementContentView extends BContentView {
 
-    private final ReinforcementFilter mFilter = new ReinforcementFilter();
-    private final ReinforcementFilterPopOver mFilterPopOver = new ReinforcementFilterPopOver(mFilter);
     private final SingleListForm<ReinforcementManager, BGeoReinforcementPoint> mListForm;
     private final ReinforcementManager mManager = ReinforcementManager.getInstance();
-    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "reinforcement");
 
-    public ReinforcementContentView() {
+    public ReinforcementContentView(BContentOptions contentOptions) {
+        super(contentOptions, new ReinforcementFilter());
+        mFilterPopOver = new ReinforcementFilterPopOver(mFilter);
+        mLayerOptions = ReinforcementLayerOptions.getInstance();
+
+        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "blast");
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         var actions = Arrays.asList(
+                mFilter.getListSortPopOver().getAction(),
                 new ExternalSearchAction(mManager),
                 new ExportAction("Reinforcement"),
                 ActionUtils.ACTION_SPAN,
@@ -51,6 +56,7 @@ public class ReinforcementContentView {
         );
 
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_ReinforcementAction());
+        bindFooterLabel(mListForm);
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
                 .setToolbarActions(actions);
