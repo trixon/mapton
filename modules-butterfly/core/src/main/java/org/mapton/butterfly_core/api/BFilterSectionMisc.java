@@ -57,7 +57,6 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
     private final CheckBox mDeformationCheckbox = new CheckBox("Deformationsdefinitioner");
     private RangeSliderPane mDeltaHRangeSlider;
     private SliderPane mDeltaRSlider;
-    private SliderPane mLimitSliderPane;
     private final DistanceMeasure mDistanceMeasure;
     private final FormFilter<? extends MBaseDataManager> mFilter;
     private final CheckBox mInvertCheckbox = new CheckBox();
@@ -89,7 +88,6 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         super.clear();
         mDeltaHRangeSlider.clear();
         mDeltaRSlider.clear();
-        mLimitSliderPane.clear();
         FxHelper.setSelected(false,
                 mDeformationCheckbox,
                 mInvertCheckbox,
@@ -164,16 +162,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         return internalBox;
     }
 
-    public long getLimit() {
-        var value = mLimitSliderPane.getValue();
-        if (mLimitSliderPane.isSelected() && value > 0) {
-            return value.longValue();
-        } else {
-            return Long.MAX_VALUE;
-        }
-    }
-
-    public CheckBox getdEFORMATIONCheckbox() {
+    public CheckBox getDeformationCheckbox() {
         return mDeformationCheckbox;
     }
 
@@ -197,8 +186,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
             rangeSlider.minProperty().addListener(changeListener);
         });
         List.of(
-                mDeltaRSlider,
-                mLimitSliderPane
+                mDeltaRSlider
         ).forEach(slider -> {
             slider.selectedProperty().addListener(changeListener);
             slider.valueProperty().addListener(changeListener);
@@ -217,7 +205,6 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         mDeltaHRangeSlider.initSession(getKeyFilter("distanceH"), sessionManager);
 //        mDeltaRRangeSlider.initSession(getKeyFilter("DeltaR"), sessionManager);
         mDeltaRSlider.initSession(getKeyFilter("distanceR"), sessionManager);
-        mLimitSliderPane.initSession(getKeyFilter("limit"), sessionManager);
 
         sessionManager.register(getKeyFilter("autocluster"), mClusterCheckbox.selectedProperty());
         sessionManager.register(getKeyFilter("DEFORMATION"), mDeformationCheckbox.selectedProperty());
@@ -245,10 +232,6 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
     }
 
     private void createUI() {
-        mLimitSliderPane = new SliderPane("Begränsa resultat", 0, 1000, true, true, true, 10);
-        var limitSlider = mLimitSliderPane.getSlider();
-        limitSlider.setMajorTickUnit(100);
-        limitSlider.setMinorTickCount(1);
         mDeltaHRangeSlider = new RangeSliderPane("Höjd, intervall", 0, 20);
 //        mDeltaRRangeSlider = new RangeSliderPane("Plan, intervall", 0, 20);
         mDeltaRSlider = new SliderPane("Plan, maxavstånd", 20);
@@ -273,7 +256,6 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         int row = 0;
         mRoot.addRow(row++, mDeformationCheckbox);
         mRoot.addRow(row++, deformationBorderdCheckBox);
-        mRoot.addRow(row++, mLimitSliderPane);
 
         mDeltaHRangeSlider.disableProperty().bind(mClusterCheckbox.selectedProperty().not());
 //        mDeltaRRangeSlider.disableProperty().bind(mClusterCheckbox.selectedProperty().not());
