@@ -60,6 +60,7 @@ import org.openide.modules.Places;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -91,19 +92,18 @@ public class WorldWindMapEngine extends MEngine {
     public void create(Runnable postCreateRunnable) {
         if (mMainPanel == null) {
             initMainPanel();
-
-            new Thread(() -> {
+            Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
                 init();
                 initListeners();
 
-//                SwingHelper.runLater(() -> {
-                mMainPanel.removeAll();
-                mMainPanel.add(mMap, BorderLayout.CENTER);
-                postCreateRunnable.run();
-                mBasicDragger = new BasicDragger(mMap);
+                SwingHelper.runLater(() -> {
+                    mMainPanel.removeAll();
+                    mMainPanel.add(mMap, BorderLayout.CENTER);
+                    postCreateRunnable.run();
+                    mBasicDragger = new BasicDragger(mMap);
 //                mMap.addSelectListener(mBasicDragger);
-//                });
-            }, getClass().getCanonicalName()).start();
+                });
+            });
         } else {
             postCreateRunnable.run();
         }
@@ -392,15 +392,16 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     private void init() {
-        mMap = new WorldWindowPanel(() -> {
+        mMap = new WorldWindowPanel();
+        mMap.postCreate(() -> {
             var zoom = mOptions.getDouble(KEY_VIEW_ALTITUDE, -1d);
             if (zoom != -1) {
                 if (mMap.getView().getGlobe() != null) {
                     mMap.getView().goTo(WWHelper.positionFromLatLon(options().getMapCenter()), zoom);
                 }
             }
-
         });
+
         mLayerObjectView.refresh(mMap);
         mRulerTabPane.refresh(mMap);
         setImageRenderer(mMap.getImageRenderer());

@@ -108,16 +108,9 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private final HashSet<String> mWmsLoadedLayers = new HashSet<>();
     private final ElevationModel mZeroElevationModel = new ZeroElevationModel();
 
-    public WorldWindowPanel(Runnable postCreateRunnable) {
+    public WorldWindowPanel() {
         MaptonNb.progressStart(MDict.MAP_ENGINE.toString());
         init();
-
-        Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
-            initFinalize();
-            initListeners();
-            postCreateRunnable.run();
-            SwingHelper.runLaterDelayed(5000, () -> updateOverlays());
-        });
     }
 
     public void addCustomLayer(Layer layer) {
@@ -132,6 +125,13 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     public WorldWindow getWwd() {
         return wwd;
+    }
+
+    public void postCreate(Runnable postCreateRunnable) {
+        initFinalize();
+        initListeners();
+        postCreateRunnable.run();
+        SwingHelper.runLaterDelayed(1000, () -> updateOverlays());
     }
 
     public void removeCustomLayer(Layer layer) {
@@ -196,26 +196,26 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private GeographicProjection getProjection() {
-        switch (mOptions.getInt(KEY_MAP_PROJECTION)) {
-            case 1:
-                return new ProjectionMercator();
-            case 2:
-                return new ProjectionPolarEquidistant(AVKey.NORTH);
-            case 3:
-                return new ProjectionPolarEquidistant(AVKey.SOUTH);
-            case 4:
-                return new ProjectionSinusoidal();
-            case 5:
-                return new ProjectionModifiedSinusoidal();
-            case 6:
-                return new ProjectionTransverseMercator(getView().getCurrentEyePosition().getLongitude());
-            case 7:
-                return new ProjectionUPS(AVKey.NORTH);
-            case 8:
-                return new ProjectionUPS(AVKey.SOUTH);
-            default:
-                return new ProjectionEquirectangular();
-        }
+        return switch (mOptions.getInt(KEY_MAP_PROJECTION)) {
+            case 1 ->
+                new ProjectionMercator();
+            case 2 ->
+                new ProjectionPolarEquidistant(AVKey.NORTH);
+            case 3 ->
+                new ProjectionPolarEquidistant(AVKey.SOUTH);
+            case 4 ->
+                new ProjectionSinusoidal();
+            case 5 ->
+                new ProjectionModifiedSinusoidal();
+            case 6 ->
+                new ProjectionTransverseMercator(getView().getCurrentEyePosition().getLongitude());
+            case 7 ->
+                new ProjectionUPS(AVKey.NORTH);
+            case 8 ->
+                new ProjectionUPS(AVKey.SOUTH);
+            default ->
+                new ProjectionEquirectangular();
+        };
     }
 
     private void init() {
@@ -549,10 +549,10 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     .forEachOrdered(id -> {
                         Layer layer = null;
 
-                        for (var wmsSource : wmsSources) {
-                            for (var entry : wmsSource.getLayers().entrySet()) {
-                                var key = entry.getKey();
-                                var val = entry.getValue();
+                for (var wmsSource : wmsSources) {
+                    for (var entry : wmsSource.getLayers().entrySet()) {
+                        var key = entry.getKey();
+                        var val = entry.getValue();
 
                                 if (val.equalsIgnoreCase(id)) {
                                     layer = mWmsLayerLoader.load(id, wmsSource.getUrl(), key);
