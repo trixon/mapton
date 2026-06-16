@@ -16,9 +16,15 @@
 package org.mapton.core.ui;
 
 import com.dlsc.gemsfx.Spacer;
+import com.dlsc.gemsfx.util.SessionManager;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
+import java.util.prefs.Preferences;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -34,12 +40,17 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.util.Duration;
 import org.controlsfx.control.SegmentedButton;
 import org.mapton.api.MTemporalManager;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.forms.DateRangePane;
+import org.openide.util.NbPreferences;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.session.SelectionModelSession;
+import se.trixon.almond.util.fx.session.SpinnerIntegerSession;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -116,14 +127,21 @@ public class TemporalView extends BorderPane {
 
     class AnimatorPane {
 
+        private LocalDate mCurrentDate;
+        private final long mDelay = 1000L;
+        private LocalDate mEndDate;
         private final CheckBox mLoopCheckBox = new CheckBox();
         private final ToggleButton mPlayButton = new ToggleButton();
+        private final Preferences mPreferences = NbPreferences.forModule(AnimatorPane.class).node("animator");
         private final CheckBox mReversedCheckBox = new CheckBox();
         private final GridPane mRoot = new GridPane(0d, FxHelper.getUIScaled(8d));
+        private final SessionManager mSessionManager = new SessionManager(mPreferences);
         private final Slider mSlider = new Slider(0, 0, 0);
         private final ComboBox<String> mSpeedComboBox = new ComboBox<>();
         private final Spinner<Integer> mSpeedSpinner = new Spinner<>(1, 999, 10);
+        private LocalDate mStartDate;
         private final ToggleButton mStopButton = new ToggleButton();
+        private Timeline mTimeline;
 
         public AnimatorPane() {
             createUI();
@@ -131,6 +149,24 @@ public class TemporalView extends BorderPane {
         }
 
         private void createUI() {
+            mTimeline = new Timeline(new KeyFrame(Duration.millis(mDelay), event -> {
+                long speed = getSpeed();
+                if (mReversedCheckBox.isSelected()) {
+                    if (mCurrentDate.isAfter(mStartDate)) {
+                        mCurrentDate = DateHelper.getMax(mCurrentDate.minusDays(speed), mStartDate);
+                        mManager.setLowDate(mCurrentDate);
+                        validateLoop(mStartDate);
+                    }
+                } else {
+                    if (mCurrentDate.isBefore(mEndDate)) {
+                        mCurrentDate = DateHelper.getMin(mCurrentDate.plusDays(speed), mEndDate);
+                        mManager.setHighDate(mCurrentDate);
+                        validateLoop(mEndDate);
+                    }
+                }
+            }));
+            mTimeline.setCycleCount(Animation.INDEFINITE);
+
             mPlayButton.setGraphic(MaterialIcon._Av.PLAY_ARROW.getImageView(getIconSizeToolBarInt()));
             mStopButton.setGraphic(MaterialIcon._Av.STOP.getImageView(getIconSizeToolBarInt()));
             var buttonInsets = FxHelper.getUIScaledInsets(2);
@@ -157,7 +193,7 @@ public class TemporalView extends BorderPane {
             var row = 0;
             mRoot.addRow(row++, new Separator());
             mRoot.addRow(row++, hbox);
-            mRoot.addRow(row++, mSlider);
+//            mRoot.addRow(row++, mSlider);
             mRoot.setPadding(FxHelper.getUIScaledInsets(8, 0, 0, 0));
             mRoot.widthProperty();
             FxHelper.autoSizeColumn(mRoot, 1);
@@ -167,15 +203,52 @@ public class TemporalView extends BorderPane {
             return mRoot;
         }
 
+        private long getSpeed() {
+            var value = mSpeedSpinner.getValue();
+            if (mSpeedComboBox.getSelectionModel().isSelected(0)) {
+                return value * 1000L / mDelay;
+            } else {
+                var days = ChronoUnit.DAYS.between(mStartDate, mEndDate);
+                return (days / value) * 1000L / mDelay;
+            }
+        }
+
         private void initListeners() {
             mPlayButton.setOnAction(ae -> {
                 mPlayButton.setSelected(false);
-                System.out.println("play");
+                initStart();
+                mTimeline.play();
             });
+
             mStopButton.setOnAction(ae -> {
-                mPlayButton.setSelected(false);
-                System.out.println("stop");
+                mStopButton.setSelected(false);
+                mTimeline.stop();
             });
+
+            var speedComboSession = new SelectionModelSession(mSpeedComboBox.getSelectionModel());
+            mSessionManager.register("speedMode", speedComboSession.selectedIndexProperty());
+
+            var speedSpinnerSession = new SpinnerIntegerSession(mSpeedSpinner);
+            mSessionManager.register("speedValue", speedSpinnerSession.valueProperty());
+
+            mSessionManager.register("loop", mLoopCheckBox.selectedProperty());
+            mSessionManager.register("reversed", mReversedCheckBox.selectedProperty());
+        }
+
+        private void initStart() {
+            mStartDate = mManager.getLowDate();
+            mEndDate = mManager.getHighDate();
+            mCurrentDate = mReversedCheckBox.isSelected() ? mEndDate : mStartDate;
+        }
+
+        private void validateLoop(LocalDate targetDate) {
+            if (mCurrentDate.isEqual(targetDate)) {
+                if (mLoopCheckBox.isSelected()) {
+                    initStart();
+                } else {
+                    mTimeline.stop();
+                }
+            }
         }
     }
 }
