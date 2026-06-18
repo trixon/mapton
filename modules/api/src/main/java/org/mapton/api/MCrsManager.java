@@ -56,12 +56,12 @@ public class MCrsManager {
 
     private MCrsManager() {
         mItemsProperty.setValue(FXCollections.observableArrayList());
-        new Thread(() -> {
+        Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
             init();
             initListeners();
 
             updateProviders();
-        }).start();
+        });
     }
 
     public ObservableList<CoordinateReferenceSystem> getAllSystems() {
@@ -134,17 +134,15 @@ public class MCrsManager {
 
         Collections.sort(mSelectedSystems, comparator);
 
-        new Thread(() -> {
-            for (var ac : codes.lines().toList()) {
-                try {
-                    mAllSystems.add(CRS.decode(ac));
-                } catch (FactoryException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                }
+        for (var ac : codes.lines().toList()) {
+            try {
+                mAllSystems.add(CRS.decode(ac));
+            } catch (FactoryException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
             }
+        }
 
-            Collections.sort(mAllSystems, comparator);
-        }).start();
+        Collections.sort(mAllSystems, comparator);
     }
 
     private void initListeners() {

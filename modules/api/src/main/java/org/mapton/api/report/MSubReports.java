@@ -100,8 +100,7 @@ public abstract class MSubReports extends MReport {
         } else {
             mMaskerPane.setVisible(true);
             mWebView.getEngine().loadContent("");
-
-            new Thread(() -> {
+            Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
                 var html = html(
                         head(
                                 title(systemReport.getName())
@@ -117,7 +116,7 @@ public abstract class MSubReports extends MReport {
                 });
 
                 mMaskerPane.setVisible(false);
-            }, getClass().getCanonicalName()).start();
+            });
         }
     }
 

@@ -73,7 +73,7 @@ public abstract class MReport extends MSplitNavMaskerPane {
         getWebView().getEngine().loadContent("");
         mMaskerPane.setVisible(true);
 
-        new Thread(() -> {
+        Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
             try {
                 ContainerTag containerTag = callable.call();
                 Platform.runLater(() -> {
@@ -87,6 +87,6 @@ public abstract class MReport extends MSplitNavMaskerPane {
             } catch (Exception ex) {
                 Exceptions.printStackTrace(ex);
             }
-        }, getClass().getCanonicalName()).start();
+        });
     }
 }

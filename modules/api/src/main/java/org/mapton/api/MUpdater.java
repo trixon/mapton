@@ -169,7 +169,7 @@ public abstract class MUpdater {
         public void initAutoUpdater() {
             final int defaultDelay = (int) getAutoUpdateInterval().toMillis();
             ActionListener actionListener = actionEvent -> {
-                new Thread(() -> {
+                Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
                     if (isAutoUpdateEnabled()) {
                         mPrint.out("%s %s/%s".formatted("AutoUpdate", getCategory(), getName()));
                         getRunnable().run();
@@ -186,7 +186,7 @@ public abstract class MUpdater {
                         mTimer.setInitialDelay(defaultDelay);
                         mTimer.restart();
                     }
-                }, getClass().getCanonicalName()).start();
+                });
             };
 
             mTimer = new Timer(defaultDelay, actionListener);
