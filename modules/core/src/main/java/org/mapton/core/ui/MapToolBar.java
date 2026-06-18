@@ -366,7 +366,7 @@ public class MapToolBar extends BaseToolBar {
     }
 
     private void populateCommands() {
-        new Thread(() -> {
+        Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
             synchronized (this) {
                 mCommandMenuItems.clear();
                 Lookup.getDefault().lookupAll(MToolMapCommand.class).forEach(command -> {
@@ -382,7 +382,7 @@ public class MapToolBar extends BaseToolBar {
                     mCommandMenuItems.sort((o1, o2) -> o1.getText().compareTo(o2.getText()));
                 }
             }
-        }, getClass().getCanonicalName()).start();
+        });
     }
 
     private void refreshEngine() {

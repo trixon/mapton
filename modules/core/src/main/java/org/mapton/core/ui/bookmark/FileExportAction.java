@@ -80,7 +80,7 @@ public class FileExportAction extends FileAction {
                     .createFileChooser();
 
             if (fileChooser.showSaveDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
-                new Thread(() -> {
+                Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
                     mFile = FileChooserHelper.getFileWithProperExt(fileChooser);
                     try {
                         switch (FilenameUtils.getExtension(mFile.getName())) {
@@ -110,7 +110,7 @@ public class FileExportAction extends FileAction {
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                }, getClass().getCanonicalName()).start();
+                });
             }
         });
 

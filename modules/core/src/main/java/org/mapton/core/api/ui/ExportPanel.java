@@ -140,7 +140,7 @@ public class ExportPanel extends FxDialogPanel {
             if (exporter != null) {
                 var exportFile = getFile();
                 if (exportFile != null) {
-                    var thread = new Thread(() -> {
+                    Thread.ofVirtual().name("Exporter").start(() -> {
                         var exportConfiguration = new ExportConfiguration();
                         exportConfiguration.setFile(exportFile);
                         exportConfiguration.setCharset(mCharsetComboBox.getValue());
@@ -163,9 +163,7 @@ public class ExportPanel extends FxDialogPanel {
                         if (mOpenCheckBox.isSelected()) {
                             SystemHelper.desktopOpenOrElseParent(exportFile);
                         }
-                    }, "Exporter");
-
-                    thread.start();
+                    });
                 }
             }
         }

@@ -36,8 +36,8 @@ public final class SysInfoAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        new Thread(() -> {
+        Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
             new NbSystemInformation().displayDialog();
-        }, getClass().getCanonicalName()).start();
+        });
     }
 }

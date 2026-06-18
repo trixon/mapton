@@ -62,7 +62,7 @@ public class UpdaterManager {
     }
 
     public void populate() {
-        new Thread(() -> {
+        Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
             var updaters = new ArrayList<>(Lookup.getDefault().lookupAll(MUpdater.class));
             for (var updater : updaters) {
                 updater.setMarkedForUpdate(updater.isOutOfDate());
@@ -91,7 +91,7 @@ public class UpdaterManager {
                 getItems().setAll(updaters);
                 refreshSelectedProperty();
             });
-        }, getClass().getCanonicalName()).start();
+        });
     }
 
     public void refreshSelectedProperty() {

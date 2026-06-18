@@ -290,7 +290,7 @@ public final class MapTopComponent extends MTopComponent {
     private synchronized void markMapAsInitialized() {
         if (!mMapInitialized) {
             mMapInitialized = true;
-            new Thread(() -> {
+            Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException ex) {
@@ -300,7 +300,7 @@ public final class MapTopComponent extends MTopComponent {
                 Mapton.getExecutionFlow().setReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED);
 
                 NbSnapHelper.checkSnapStatus(Mapton.class, "snap", "mapton", "removable-media");
-            }, getClass().getCanonicalName()).start();
+            });
         }
     }
 

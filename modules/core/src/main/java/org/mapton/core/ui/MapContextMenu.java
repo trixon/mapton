@@ -40,7 +40,6 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import se.trixon.almond.nbp.FileChooserHelper;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
@@ -56,6 +55,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.FileChooserHelper;
 import se.trixon.almond.util.Scaler;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.SystemHelperFx;
@@ -112,7 +112,7 @@ public class MapContextMenu {
 
         FxHelper.runLaterDelayed(10, () -> {
             if (fileChooser.showSaveDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
-                new Thread(() -> {
+                Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
                     var file = FileChooserHelper.getFileWithProperExt(fileChooser);
 
                     try {
@@ -148,7 +148,7 @@ public class MapContextMenu {
                     } catch (Exception ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                }, getClass().getCanonicalName()).start();
+                });
             }
         });
     }
@@ -292,8 +292,7 @@ public class MapContextMenu {
 
     private void whatsHere() {
         Mapton.getGlobalState().put(MEngine.KEY_STATUS_PROGRESS, -1d);
-
-        new Thread(() -> {
+        Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
             var engines = new ArrayList< MWhatsHereEngine>(Lookup.getDefault().lookupAll(MWhatsHereEngine.class));
 
             if (!engines.isEmpty()) {
@@ -311,6 +310,6 @@ public class MapContextMenu {
             } else {
                 //TODO err inf dialog
             }
-        }, getClass().getCanonicalName()).start();
+        });
     }
 }

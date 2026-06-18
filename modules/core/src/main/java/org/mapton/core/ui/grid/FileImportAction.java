@@ -19,13 +19,13 @@ import java.io.IOException;
 import javafx.scene.Node;
 import javax.swing.JFileChooser;
 import org.controlsfx.control.action.Action;
-import se.trixon.almond.nbp.FileChooserHelper;
 import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.FileChooserHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -55,7 +55,7 @@ public class FileImportAction extends FileAction {
                     .createFileChooser();
 
             if (fileChooser.showOpenDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
-                new Thread(() -> {
+                Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
                     var file = fileChooser.getSelectedFile();
                     try {
                         mManager.gridImport(file);
@@ -69,7 +69,7 @@ public class FileImportAction extends FileAction {
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                }, getClass().getCanonicalName()).start();
+                });
             }
         });
 

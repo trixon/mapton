@@ -72,7 +72,7 @@ public class FileImportAction extends FileAction {
                     .createFileChooser();
 
             if (fileChooser.showOpenDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
-                new Thread(() -> {
+                Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
                     mFile = fileChooser.getSelectedFile();
                     mImports = 0;
                     mErrors = 0;
@@ -104,7 +104,7 @@ public class FileImportAction extends FileAction {
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                }, getClass().getCanonicalName()).start();
+                });
             }
         });
 
