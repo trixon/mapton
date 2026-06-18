@@ -33,7 +33,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Separator;
-import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
@@ -136,7 +135,6 @@ public class TemporalView extends BorderPane {
         private final CheckBox mReversedCheckBox = new CheckBox();
         private final GridPane mRoot = new GridPane(0d, FxHelper.getUIScaled(8d));
         private final SessionManager mSessionManager = new SessionManager(mPreferences);
-        private final Slider mSlider = new Slider(0, 0, 0);
         private final ComboBox<String> mSpeedComboBox = new ComboBox<>();
         private final Spinner<Integer> mSpeedSpinner = new Spinner<>(1, 999, 10);
         private LocalDate mStartDate;
@@ -223,6 +221,8 @@ public class TemporalView extends BorderPane {
             mStopButton.setOnAction(ae -> {
                 mStopButton.setSelected(false);
                 mTimeline.stop();
+                mManager.setLowDate(mStartDate);
+                mManager.setHighDate(mEndDate);
             });
 
             var speedComboSession = new SelectionModelSession(mSpeedComboBox.getSelectionModel());
