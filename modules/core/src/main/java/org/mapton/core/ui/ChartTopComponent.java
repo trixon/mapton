@@ -38,6 +38,7 @@ import se.trixon.almond.nbp.core.SelectionLockManager;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  * Generic Property TopComponent
@@ -131,13 +132,13 @@ public final class ChartTopComponent extends MTopComponent {
                 centerObject = node;
             } else if (o instanceof Callable callable) {
                 centerObject = mProgressBar;
-                new Thread(() -> {
+                SwingHelper.runLater(() -> {
                     try {
                         Mapton.getGlobalState().put(MKey.CHART, callable.call());
                     } catch (Exception ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                }).start();
+                });
             } else {
                 centerObject = mInvalidPlaceholderLabel;
             }
