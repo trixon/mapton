@@ -61,7 +61,6 @@ import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.FileChooserHelper;
 import se.trixon.almond.nbp.dialogs.NbSnapHelper;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.swing.DelayedResetRunner;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.SimpleDialog;
@@ -308,6 +307,7 @@ public final class MapTopComponent extends MTopComponent {
     private void setEngine(MEngine engine) {
         var engineName = engine.getName();
         var worldWind = engineName.equalsIgnoreCase("WorldWind");
+        var toolBarPanel = MapToolBarPanel.getInstance().getToolBarPanel();
         setToolTipText("%s: %s".formatted(MDict.MAP_ENGINE.toString(), engineName));
         putClientProperty("print.printable", !worldWind); // NOI18N
 
@@ -320,7 +320,7 @@ public final class MapTopComponent extends MTopComponent {
             }
 
             removeAll();
-            add(MapToolBarPanel.getInstance().getToolBarPanel(), BorderLayout.NORTH);
+            add(toolBarPanel, BorderLayout.NORTH);
             add(mProgressPanel, BorderLayout.CENTER);
 
             Runnable postCreateRunnable = () -> {
@@ -338,23 +338,27 @@ public final class MapTopComponent extends MTopComponent {
                 } catch (NullPointerException e) {
                 }
 
-                revalidate();
-                repaint();
+                {//Fix Swing JavaFx coordinate sync issue in toolbar popover location
+                    var parent = getParent();
+                    if (parent != null && parent.getParent() != null) {
+                        var netbeansContainer = parent.getParent();
+                        var bounds = netbeansContainer.getBounds();
+                        netbeansContainer.setBounds(bounds.x + 1, bounds.y, bounds.width - 1, bounds.height);
+                        netbeansContainer.validate();
+                        netbeansContainer.setBounds(bounds);
+                        netbeansContainer.validate();
+                    }
+                }
 
                 markMapAsInitialized();
             };
 
-//            new Thread(() -> engine.create(postCreateRunnable), "Create Engine").start();
-            var delay = worldWind ? 2000 : 1;
-            Mapton.log("PREPARE TO LOAD ENGINE");
-            SystemHelper.runLaterDelayed(delay, () -> {
-                Mapton.log("LOAD ENGINE");
-                engine.create(postCreateRunnable);
-                Mapton.log("ENGINE LOADED");
-            });
+            Mapton.log("LOAD ENGINE");
+            engine.create(postCreateRunnable);
+            Mapton.log("ENGINE LOADED");
         } else {
             resetFx();
-            add(MapToolBarPanel.getInstance().getToolBarPanel(), BorderLayout.NORTH);
+            add(toolBarPanel, BorderLayout.NORTH);
 
             Runnable postCreateRunnable = () -> {
                 mRoot.setCenter(engine.getMapNode());
