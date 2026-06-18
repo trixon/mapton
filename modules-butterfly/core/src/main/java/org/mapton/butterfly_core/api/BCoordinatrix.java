@@ -17,7 +17,11 @@ package org.mapton.butterfly_core.api;
 
 import gov.nasa.worldwind.geom.Position;
 import java.util.concurrent.ConcurrentHashMap;
+import javafx.geometry.Point3D;
+import org.apache.commons.geometry.euclidean.threed.Vector3D;
+import org.mapton.api.MCooTrans;
 import org.mapton.api.MLatLon;
+import org.mapton.api.MOptions;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.worldwind.api.WWHelper;
@@ -38,12 +42,32 @@ public class BCoordinatrix {
         sPositionWW3d.clear();
     }
 
+    public static MCooTrans getCooTrans() {
+        return MCooTrans.getCooTrans(MOptions.getInstance().getMapCooTransName());
+    }
+
     public static MLatLon toLatLon(BBasePoint p) {
         return sPointToLatLon.computeIfAbsent(p, k -> new MLatLon(k.getLat(), k.getLon()));
     }
 
+    public static Point3D toLocalFromPosition(Position p) {
+        var local = getCooTrans().fromWgs84(p.getLatitude().degrees, p.getLongitude().degrees);
+        return new Point3D(local.getX(), local.getY(), p.elevation);
+    }
+
+    public static Vector3D toVector(Point3D p) {
+        return Vector3D.of(p.getX(), p.getY(), p.getZ());
+    }
+
     public static Position toPositionWW2d(BXyzPoint p) {
         return sPositionWW2d.computeIfAbsent(p, k -> WWHelper.positionFromLatLon(toLatLon(p)));
+    }
+
+    public static Position toPositionWW3d(Vector3D p) {
+        var wgs = getCooTrans().toWgs84(p.getY(), p.getX());
+        var position = Position.fromDegrees(wgs.getY(), wgs.getX(), p.getZ());
+
+        return position;
     }
 
     public static Position toPositionWW3d(BXyzPoint p) {
