@@ -33,7 +33,6 @@ import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -42,9 +41,6 @@ import se.trixon.almond.util.Dict;
 public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
 
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
-    private final TimeSeries mTimeSeriesD = new TimeSeries("Avstånd");
-    private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HORIZONTAL.toString());
-    private final TimeSeries mTimeSeriesV = new TimeSeries(Dict.Geometry.VERTICAL.toString());
 
     public GradeChartBuilder() {
         initChart("mm/m", "0.0");
@@ -121,9 +117,31 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
 
     @Override
     public void updateDataset(BTopoGrade p) {
-        mTimeSeriesH.clear();
-        mTimeSeriesV.clear();
-        mTimeSeriesD.clear();
+        TimeSeries timeSeries1Tmp = null;
+        TimeSeries timeSeries2Tmp = null;
+        TimeSeries timeSeries3Tmp = null;
+
+        switch (p.getAxis()) {
+            case HORIZONTAL:
+                timeSeries1Tmp = new TimeSeries("Differentialsättning");
+                break;
+            case RESULTANT:
+                timeSeries1Tmp = new TimeSeries("Höjd");
+                timeSeries2Tmp = new TimeSeries("Plan");
+                timeSeries3Tmp = new TimeSeries("Avstånd");
+
+                break;
+            case VERTICAL:
+                timeSeries2Tmp = new TimeSeries("Vertikallutning");
+
+                break;
+            default:
+                throw new AssertionError();
+        }
+
+        var timeSeries1 = timeSeries1Tmp;
+        var timeSeries2 = timeSeries2Tmp;
+        var timeSeries3 = timeSeries3Tmp;
 
         var plot = getPlot();
         resetPlot(plot);
@@ -141,13 +159,13 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
             var gradeDiff = p.ext().getDiff(p.getFirstObservation(), p2);
 
             if (p.getAxis() == BAxis.HORIZONTAL) {
-                mTimeSeriesV.add(minute, gradeDiff.getRPerMille());
-                mMinMaxCollection.add(gradeDiff.getRPerMille());
+                timeSeries1.add(minute, gradeDiff.getZPerMille());
+                mMinMaxCollection.add(gradeDiff.getZPerMille());
             }
 
             if (p.getAxis() == BAxis.VERTICAL) {
-                mTimeSeriesH.add(minute, gradeDiff.getZPerMille());
-                mMinMaxCollection.add(gradeDiff.getZPerMille());
+                timeSeries2.add(minute, gradeDiff.getRPerMille());
+                mMinMaxCollection.add(gradeDiff.getRPerMille());
             }
 
             if (p.getAxis() == BAxis.RESULTANT) {
@@ -158,14 +176,14 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
                 } else {
                     value = gradeDiff.getPartialDiffDistance();
                 }
-                mTimeSeriesD.add(minute, value);
+                timeSeries3.add(minute, value);
                 mMinMaxCollection.add(value);
 
                 var dz = gradeDiff.getPartialDiffZ() * 1000;
                 var dr = gradeDiff.getPartialDiffR() * 1000;
 
-                mTimeSeriesH.add(minute, dr);
-                mTimeSeriesV.add(minute, dz);
+                timeSeries1.add(minute, dz);
+                timeSeries2.add(minute, dr);
                 mMinMaxCollection.add(dz);
                 mMinMaxCollection.add(dr);
             }
@@ -173,20 +191,24 @@ public class GradeChartBuilder extends XyzChartBuilder<BTopoGrade> {
 
         var renderer = plot.getRenderer();
 
-        if (!mTimeSeriesV.isEmpty()) {
-            getDataset().addSeries(mTimeSeriesV);
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesV.getKey()), Color.RED);
+        if (isValidTimeSeries(timeSeries1)) {
+            getDataset().addSeries(timeSeries1);
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries1.getKey()), Color.RED);
         }
 
-        if (!mTimeSeriesH.isEmpty()) {
-            getDataset().addSeries(mTimeSeriesH);
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesH.getKey()), Color.GREEN.darker());
+        if (isValidTimeSeries(timeSeries2)) {
+            getDataset().addSeries(timeSeries2);
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries2.getKey()), Color.GREEN.darker());
         }
 
-        if (!mTimeSeriesD.isEmpty()) {
-            getDataset().addSeries(mTimeSeriesD);
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesD.getKey()), Color.BLUE);
+        if (isValidTimeSeries(timeSeries3)) {
+            getDataset().addSeries(timeSeries3);
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries3.getKey()), Color.BLUE);
         }
+    }
+
+    private boolean isValidTimeSeries(TimeSeries timeSeries) {
+        return timeSeries != null && !timeSeries.isEmpty();
     }
 
     private void plotAlarmIndicators(BTopoGrade p) {

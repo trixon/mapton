@@ -159,9 +159,9 @@ public class TopoHelper {
         var gradeDiff = p.ext().getDiff();
         var dZ = gradeDiff.getPartialDiffDistance() / 1000.0;
         if (dZ < 0) {
-            return ButterflyHelper.sVerticalNegColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalNegColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.005, dZ)];
         } else {
-            return ButterflyHelper.sVerticalPosColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalPosMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalPosColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalPosMaterials.length, 0.005, dZ)];
         }
     }
 
@@ -169,9 +169,9 @@ public class TopoHelper {
         var gradeDiff = p.ext().getDiff();
         var dZ = gradeDiff.getPartialDiffZ();
         if (dZ < 0) {
-            return ButterflyHelper.sVerticalNegColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalNegColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.005, dZ)];
         } else {
-            return ButterflyHelper.sVerticalPosColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalPosMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalPosColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalPosMaterials.length, 0.005, dZ)];
         }
     }
 
@@ -179,9 +179,9 @@ public class TopoHelper {
         var gradeDiff = p.ext().getDiff();
         var dZ = gradeDiff.getPartialDiffDistance() / 1000.0;
         if (dZ < 0) {
-            return ButterflyHelper.sVerticalNegMaterials[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalNegMaterials[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.005, dZ)];
         } else {
-            return ButterflyHelper.sVerticalPosMaterials[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalPosMaterials.length, 0.025, dZ)];
+            return ButterflyHelper.sVerticalPosMaterials[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalPosMaterials.length, 0.005, dZ)];
         }
     }
 
