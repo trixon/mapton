@@ -26,6 +26,7 @@ import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionTrend;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.openide.util.NbBundle;
@@ -47,7 +48,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionTrend<BRemoteInsarPoint> mFilterSectionTrend;
     private final InsarManager mManager = InsarManager.getInstance();
 
-    public InsarFilterPopOver(InsarFilter filter) {
+    public InsarFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         var alarmLevelCalculator = new AlarmLevelCalculator(
                 p -> InsarHelper.getAlarmLevel((BRemoteInsarPoint) p),
@@ -60,7 +61,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionTrend = new BFilterSectionTrend<>();
         mFilterSectionMeas = new FilterSectionMeas();
 
-        mFilter = filter;
+        mFilter = (InsarFilter) filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionAlarm);
         mFilter.setFilterSection(mFilterSectionDisruptor);

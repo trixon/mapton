@@ -53,6 +53,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
 
     public InsarFilter() {
         super(InsarManager.getInstance());
+        mContentOptions = InsarContentOptions.getInstance();
 
         initListeners();
     }
@@ -114,6 +115,8 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -134,7 +137,9 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
     private void initListeners() {
         List.of(
                 mInvertProperty,
-                mInvisibleProperty
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
 
         OptionsManager.getInstance().colorProperty().addListener((p, o, n) -> {

@@ -23,6 +23,8 @@ import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_core.api.BContentOptions;
+import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
@@ -35,18 +37,21 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-public class InsarContentView {
+public class InsarContentView extends BContentView {
 
-    private final InsarFilter mFilter = new InsarFilter();
-    private final InsarFilterPopOver mFilterPopOver = new InsarFilterPopOver(mFilter);
-    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "insar");
     private final SingleListForm<InsarManager, BRemoteInsarPoint> mListForm;
     private final InsarManager mManager = InsarManager.getInstance();
     private Action mRefreshAction;
     private Action mClearAction;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
 
-    public InsarContentView() {
+    public InsarContentView(BContentOptions contentOptions) {
+        super(contentOptions, new InsarFilter());
+        mFilterPopOver = new InsarFilterPopOver(mFilter);
+        mLayerOptions = InsarLayerOptions.getInstance();
+
+        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "insar");
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         mRefreshAction = new Action(Dict.REFRESH.toString(), actionEvent -> {
             mRefreshAction.setDisabled(true);
             mManager.load2(mButterflyManager.getButterfly());
@@ -64,6 +69,7 @@ public class InsarContentView {
 
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         var actions = Arrays.asList(
+                mFilter.getListSortPopOver().getAction(),
                 mRefreshAction,
                 mClearAction,
                 //                new ExternalSearchAction(mManager),
@@ -76,6 +82,7 @@ public class InsarContentView {
         );
 
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_InsarAction());
+        bindFooterLabel(mListForm);
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
                 .setToolbarActions(actions);

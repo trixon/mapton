@@ -60,7 +60,7 @@ public final class InsarTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var insarView = new InsarContentView();
+        var insarView = new InsarContentView(InsarContentOptions.getInstance());
 
         return new Scene(insarView.getView());
     }
