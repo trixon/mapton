@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import org.mapton.api.MDisruptorProvider;
@@ -65,6 +67,11 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
     private final InsarPropertiesBuilder mPropertiesBuilder = new InsarPropertiesBuilder();
     private final InsarTrendsBuilder mTrendsBuilder = new InsarTrendsBuilder();
+    private final LongProperty mManualLoadingDoneProperty = new SimpleLongProperty();
+
+    public LongProperty manualLoadingDoneProperty() {
+        return mManualLoadingDoneProperty;
+    }
 
     public static InsarManager getInstance() {
         return Holder.INSTANCE;
@@ -259,6 +266,7 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
                 } catch (Exception e) {
                     Exceptions.printStackTrace(e);
                 }
+                mManualLoadingDoneProperty.set(System.currentTimeMillis());
             });
             if (mFilterPopoverPopulateRunnable != null) {
                 mFilterPopoverPopulateRunnable.run();

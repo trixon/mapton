@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 import org.mapton.butterfly_core.api.BFilterSectionAlarm;
 import org.mapton.butterfly_core.api.BFilterSectionAlarmProvider;
+import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
@@ -42,6 +44,7 @@ import se.trixon.almond.util.fx.FxHelper;
 public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
+        BFilterSectionDateProvider,
         BFilterSectionTrendProvider,
         BFilterSectionDisruptorProvider,
         BFilterSectionAlarmProvider,
@@ -94,6 +97,12 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
     }
 
     @Override
+    public void setFilterSection(BFilterSectionDate filterSectionDate) {
+        mFilterSectionDate = filterSectionDate;
+        mFilterSectionDate.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> p.isVisible() != mInvisibleProperty.get())
@@ -106,6 +115,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
                 .filter(p -> mFilterSectionDisruptor.filter(p))
                 .filter(p -> mFilterSectionTrend.filter(p))
                 .filter(p -> mFilterSectionMeas.filter(p))
+                .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .toList();
 
         if (mInvertProperty.get()) {
