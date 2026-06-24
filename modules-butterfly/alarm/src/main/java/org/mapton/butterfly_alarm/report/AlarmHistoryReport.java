@@ -22,6 +22,7 @@ import static j2html.TagCreator.html;
 import static j2html.TagCreator.pre;
 import j2html.tags.ContainerTag;
 import java.util.ArrayList;
+import java.util.Objects;
 import org.mapton.api.report.MReport;
 import org.mapton.butterfly_core.api.AlarmHistoryManager;
 import org.openide.util.lookup.ServiceProvider;
@@ -53,6 +54,7 @@ public class AlarmHistoryReport extends BaseAlarmReport {
                             a.getField(),
                             a.getOld(),
                             a.getNew(),
+                            Objects.toString(a.getUserId(), ""),
                             ""
                     );
                 });

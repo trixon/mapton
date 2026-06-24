@@ -17,7 +17,6 @@ package org.mapton.butterfly_format.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.mapton.butterfly_format.types.BBase;
 
 /**
  *
@@ -37,6 +36,7 @@ public class BHistory extends BBase {
     @JsonProperty("new")
     private String neww;
     private String old;
+    private Long userId;
 
     public BHistory() {
     }
@@ -53,6 +53,10 @@ public class BHistory extends BBase {
         return old;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
     public void setField(String field) {
         this.field = field;
     }
@@ -63,6 +67,10 @@ public class BHistory extends BBase {
 
     public void setOld(String old) {
         this.old = old;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
 }
