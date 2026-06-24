@@ -23,6 +23,7 @@ import org.openide.modules.Modules;
 import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -59,7 +60,7 @@ public class DoOnShowing implements Runnable {
         var title = "Mapton Butterfly v%s".formatted(buildDate);
         SwingHelper.runLater(() -> WindowManager.getDefault().getMainWindow().setTitle(title));
 
-        AlarmHistoryManager.getInstance();
+        FxHelper.runLater(() -> AlarmHistoryManager.getInstance());
     }
 
 }
