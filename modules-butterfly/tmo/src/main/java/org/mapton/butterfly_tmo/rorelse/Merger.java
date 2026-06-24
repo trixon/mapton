@@ -16,7 +16,7 @@
 package org.mapton.butterfly_tmo.rorelse;
 
 import java.util.ArrayList;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BMeasurementMode;
@@ -42,8 +42,8 @@ public class Merger {
         var tempTmoOperator = "TMO-MERGER";
         var prefix = "TMO_";
         var butterfly = mButterflyManager.getButterfly();
-        butterfly.topo().getControlPoints().removeIf(p -> StringUtils.equals(p.getOperator(), tempTmoOperator));
-        butterfly.topo().getControlPointsObservations().removeIf(o -> StringUtils.equals(o.getOperator(), tempTmoOperator));
+        butterfly.topo().getControlPoints().removeIf(p -> Strings.CI.equals(p.getOperator(), tempTmoOperator));
+        butterfly.topo().getControlPointsObservations().removeIf(o -> Strings.CI.equals(o.getOperator(), tempTmoOperator));
 
         var topoObservations = new ArrayList<BTopoControlPointObservation>();
         butterfly.tmo().getRorelseObservations().forEach(r -> {
@@ -71,7 +71,7 @@ public class Merger {
             p.setZeroX(r.getX());
             p.setZeroY(r.getY());
             var obs = topoObservations.stream()
-                    .filter(o -> StringUtils.equals(o.getName(), p.getName()))
+                    .filter(o -> Strings.CI.equals(o.getName(), p.getName()))
                     .toList();
 
             if (!obs.isEmpty()) {
@@ -80,10 +80,10 @@ public class Merger {
 
                 p.setZeroZ(first.getMeasuredZ());
                 p.setDateLatest(last.getDate());
+                p.setDateZero(obs.getFirst().getDate().toLocalDate());
 
             }
 //                    .findFirst().orElse(0.0);
-
             p.setOperator(tempTmoOperator);
             p.setComment(r.getAnmärkning());
             p.setMeta("");
@@ -92,7 +92,7 @@ public class Merger {
             p.setNumOfDecXY(3);
             p.setNumOfDecZ(3);
             p.setOrigin(prefix + "TMO");
-
+            p.setClassification("TMO");
             switch (r.getStatus()) {
                 case "Aktiv" ->
                     p.setStatus("S1");
