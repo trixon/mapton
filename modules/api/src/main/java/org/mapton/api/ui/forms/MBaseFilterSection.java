@@ -158,7 +158,11 @@ public abstract class MBaseFilterSection {
     }
 
     public boolean validateCheck(IndexedCheckModel checkModel, Object o) {
-        return checkModel.isEmpty() || checkModel.isChecked(o);
+        try {
+            return checkModel.isEmpty() || checkModel.isChecked(o);
+        } catch (IndexOutOfBoundsException e) {
+            return true;
+        }
     }
 
     public boolean validateCheckContains(IndexedCheckModel checkModel, String s) {
