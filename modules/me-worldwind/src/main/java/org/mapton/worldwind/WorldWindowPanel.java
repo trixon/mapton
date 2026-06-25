@@ -131,7 +131,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         initFinalize();
         initListeners();
         postCreateRunnable.run();
-        SwingHelper.runLaterDelayed(1000, () -> updateOverlays());
+        SwingHelper.runLaterDelayed(5000, () -> updateOverlays());
     }
 
     public void removeCustomLayer(Layer layer) {
@@ -255,7 +255,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         MaptonNb.progressStop(MDict.MAP_ENGINE.toString());
         Mapton.getExecutionFlow().setReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED);
         updateStyle();
-        updateOverlays();
         initLayerBundles();
 
         customElevationModelRefresh();
@@ -549,10 +548,10 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     .forEachOrdered(id -> {
                         Layer layer = null;
 
-                for (var wmsSource : wmsSources) {
-                    for (var entry : wmsSource.getLayers().entrySet()) {
-                        var key = entry.getKey();
-                        var val = entry.getValue();
+                        for (var wmsSource : wmsSources) {
+                            for (var entry : wmsSource.getLayers().entrySet()) {
+                                var key = entry.getKey();
+                                var val = entry.getValue();
 
                                 if (val.equalsIgnoreCase(id)) {
                                     layer = mWmsLayerLoader.load(id, wmsSource.getUrl(), key);

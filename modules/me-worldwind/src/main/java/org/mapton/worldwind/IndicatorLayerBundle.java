@@ -75,6 +75,7 @@ public class IndicatorLayerBundle extends LayerBundle {
         }, MKey.INDICATOR_LAYER_LOAD);
 
         mCircleFilterManager.addListener(() -> {
+            mLayer.removeRenderable(mCircleFilterRenderer);
             if (mCircleFilterManager.isSet()) {
                 var latlon = mCircleFilterManager.getLatLon();
                 var radius = mCircleFilterManager.getRadius();
@@ -83,8 +84,6 @@ public class IndicatorLayerBundle extends LayerBundle {
                 mCircleFilterRenderer.setAltitudes(0.0, 0.25);
 
                 mLayer.addRenderable(mCircleFilterRenderer);
-            } else {
-                mLayer.removeRenderable(mCircleFilterRenderer);
             }
         });
     }
