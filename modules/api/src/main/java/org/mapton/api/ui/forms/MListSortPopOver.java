@@ -29,8 +29,9 @@ public abstract class MListSortPopOver extends MPopOver {
     public static final String TITLE = "Sortera & begränsa";
 
     public MListSortPopOver() {
-        super(TITLE);
+        super(TITLE, false);
         setTitle(TITLE);
+        setArrowLocation(ArrowLocation.TOP_LEFT);
         getAction().setGraphic(MaterialIcon._Content.SORT.getImageView(getIconSizeToolBarInt()));
     }
 

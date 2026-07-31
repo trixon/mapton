@@ -40,6 +40,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -466,13 +467,15 @@ public abstract class MBaseDataManager<T> {
 
 //            var s = java.time.LocalTime.now().toString() + " CALL CHART " + getClass().getSimpleName() + "\n";
 //            System.out.println(s.repeat(10));
-            var objectChart = getObjectChart(n);
-            if (objectChart != Boolean.FALSE) {
-                Mapton.getGlobalState().put(MKey.CHART, objectChart);
-            }
-
             var mapIndicator = getMapIndicator(n);
             Mapton.getGlobalState().put(MKey.INDICATOR_LAYER_LOAD, mapIndicator);
+
+            SwingHelper.runLater(() -> {
+                var objectChart = getObjectChart(n);
+                if (objectChart != Boolean.FALSE) {
+                    Mapton.getGlobalState().put(MKey.CHART, objectChart);
+                }
+            });
         });
     }
 }
