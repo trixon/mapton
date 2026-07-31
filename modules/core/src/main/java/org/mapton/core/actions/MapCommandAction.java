@@ -35,7 +35,7 @@ public final class MapCommandAction extends BaseAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (isMapActive()) {
-            MapToolBarPanel.getInstance().getToolBar().toogleCommandContextMenu();
+            MapToolBarPanel.getInstance().getToolBar().toogleMoreToolBarPopOver();
         }
     }
 }

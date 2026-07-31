@@ -17,15 +17,13 @@ package org.mapton.core.ui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.geometry.Side;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -43,6 +41,7 @@ import org.mapton.api.MTemporalManager;
 import org.mapton.api.MToolMapCommand;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.mapton.api.ui.MToolBarPopOver;
 import org.mapton.core.api.BaseToolBar;
 import org.mapton.core.ui.bookmark.BookmarksView;
 import org.mapton.core.ui.poi.PoisViewManager;
@@ -66,9 +65,6 @@ public class MapToolBar extends BaseToolBar {
     private AttributionView mAttributionView;
     private Action mBookmarkAction;
     private PopOver mBookmarkPopOver;
-    private Action mCommandAction;
-    private ContextMenu mCommandContextMenu;
-    private ObservableList<MenuItem> mCommandMenuItems;
     private FxActionSwing mHomeAction;
     private FxActionSwing mLayerAction;
     private PopOver mLayerPopOver;
@@ -78,12 +74,15 @@ public class MapToolBar extends BaseToolBar {
     private Action mRulerAction;
     private PopOver mRulerPopOver;
     private FxActionSwing mStyleSwapAction;
+    private ToolBar mSubToolBar;
     private Action mTemporalAction;
     private final ImageView mTemporalActionGraphic = MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBarInt());
     private PopOver mTemporalPopOver;
     private boolean mTemporalState = false;
     private Timeline mTemporalTimeline;
     private TemporalView mTemporalView;
+    private Action mToolBarAction;
+    private MToolBarPopOver mToolBarPopOver;
 
     public MapToolBar() {
         initPopOvers();
@@ -104,20 +103,12 @@ public class MapToolBar extends BaseToolBar {
         tooglePopOver(mBookmarkPopOver, mBookmarkAction);
     }
 
-    public void toogleCommandContextMenu() {
-        FxHelper.runLater(() -> {
-            if (mCommandContextMenu.isShowing()) {
-                mCommandContextMenu.hide();
-            } else if (shouldOpen(mCommandContextMenu)) {
-                mCommandContextMenu.show(getButtonForAction(mCommandAction), Side.BOTTOM, 0, 0);
-                getScene().getWindow().requestFocus();
-                mCommandContextMenu.requestFocus();
-            }
-        });
-    }
-
     public void toogleLayerPopOver() {
         tooglePopOver(mLayerPopOver, mLayerAction);
+    }
+
+    public void toogleMoreToolBarPopOver() {
+        tooglePopOver(mToolBarPopOver, mToolBarAction);
     }
 
     public void tooglePoiPopOver() {
@@ -141,7 +132,6 @@ public class MapToolBar extends BaseToolBar {
         var actions = new ArrayList<Action>();
         actions.addAll(Arrays.asList(
                 mHomeAction,
-                mCommandAction,
                 mLayerAction,
                 mStyleSwapAction,
                 mAttributionAction,
@@ -150,7 +140,9 @@ public class MapToolBar extends BaseToolBar {
                 mPoiAction,
                 ActionUtils.ACTION_SPAN,
                 mTemporalAction,
-                mRulerAction
+                mRulerAction,
+                ActionUtils.ACTION_SEPARATOR,
+                mToolBarPopOver.getAction()
         ));
 
         Platform.runLater(() -> {
@@ -163,11 +155,6 @@ public class MapToolBar extends BaseToolBar {
             FxHelper.slimToolBar(this);
             setTextFromActions();
 
-            mCommandContextMenu = new ContextMenu();
-            mCommandContextMenu.setOnHiding(windowEvent -> {
-                onObjectHiding(mCommandContextMenu);
-            });
-            mCommandMenuItems = mCommandContextMenu.getItems();
             Lookup.getDefault().lookupResult(MToolMapCommand.class).addLookupListener(event -> {
                 populateCommands();
             });
@@ -215,12 +202,12 @@ public class MapToolBar extends BaseToolBar {
             }
         });
 
-        //CommandAction
-        mCommandAction = new Action(Dict.COMMANDS.toString(), event -> {
-            toogleCommandContextMenu();
+        mToolBarPopOver = new MToolBarPopOver();
+        mToolBarAction = mToolBarPopOver.getAction();
+
+        mRulerAction = new Action(Dict.RULER.toString(), event -> {
+            toogleRulerPopOver();
         });
-        mCommandAction.setGraphic(MaterialIcon._Image.FLASH_ON.getImageView(getIconSizeToolBarInt()));
-        FxHelper.setTooltip(mCommandAction, new KeyCodeCombination(KeyCode.E, KeyCombination.SHORTCUT_DOWN));
 
         //Ruler
         mRulerAction = new Action(Dict.RULER.toString(), event -> {
@@ -368,19 +355,16 @@ public class MapToolBar extends BaseToolBar {
     private void populateCommands() {
         Thread.ofVirtual().name(getClass().getCanonicalName()).start(() -> {
             synchronized (this) {
-                mCommandMenuItems.clear();
-                Lookup.getDefault().lookupAll(MToolMapCommand.class).forEach(command -> {
-                    var menuItem = new MenuItem(command.getAction().getText());
-                    menuItem.setAccelerator(command.getKeyCodeCombination());
-                    menuItem.setOnAction(actionEvent -> {
-                        command.getAction().handle(null);
-                    });
-                    mCommandMenuItems.add(menuItem);
-                });
+                var actions = Lookup.getDefault().lookupAll(MToolMapCommand.class).stream()
+                        .map(command -> {
+                            var action = command.getAction();
+                            action.setLongText(command.getKeyCodeCombination().getDisplayText());
 
-                if (!mCommandMenuItems.isEmpty()) {
-                    mCommandMenuItems.sort((o1, o2) -> o1.getText().compareTo(o2.getText()));
-                }
+                            return action;
+                        })
+                        .sorted(Comparator.comparing(Action::getText))
+                        .toList();
+                mToolBarPopOver.setToolBar(ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.SHOW));
             }
         });
     }
