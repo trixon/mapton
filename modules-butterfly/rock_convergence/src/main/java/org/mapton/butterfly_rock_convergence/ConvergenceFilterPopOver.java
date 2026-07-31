@@ -23,6 +23,7 @@ import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
 import org.openide.util.NbPreferences;
@@ -40,13 +41,13 @@ public class ConvergenceFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionPoint mFilterSectionPoint;
     private final ConvergenceManager mManager = ConvergenceManager.getInstance();
 
-    public ConvergenceFilterPopOver(ConvergenceFilter filter) {
+    public ConvergenceFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMisc = new BFilterSectionMisc(filter);
 
-        mFilter = filter;
+        mFilter = (ConvergenceFilter) filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
         mFilter.setFilterSection(mFilterSectionDisruptor);

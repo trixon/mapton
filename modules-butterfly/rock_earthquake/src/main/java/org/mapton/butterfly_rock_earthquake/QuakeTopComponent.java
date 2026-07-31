@@ -72,7 +72,7 @@ public final class QuakeTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var quakeView = new QuakeContentView();
+        var quakeView = new QuakeContentView(QuakeContentOptions.getInstance());
 
         return new Scene(quakeView.getView());
     }

@@ -50,6 +50,7 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
 
     public TiltFilter() {
         super(TiltManager.getInstance());
+        mContentOptions = TiltContentOptions.getInstance();
 
         initListeners();
     }
@@ -105,6 +106,8 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -123,7 +126,9 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
     private void initListeners() {
         List.of(
                 mInvertProperty,
-                mInvisibleProperty
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

@@ -60,7 +60,7 @@ public final class TiltTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var tiltView = new TiltContentView();
+        var tiltView = new TiltContentView(TiltContentOptions.getInstance());
 
         return new Scene(tiltView.getView());
     }

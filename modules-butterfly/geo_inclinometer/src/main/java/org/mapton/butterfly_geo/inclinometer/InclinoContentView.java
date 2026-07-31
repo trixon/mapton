@@ -15,14 +15,13 @@
  */
 package org.mapton.butterfly_geo.inclinometer;
 
-import java.util.Arrays;
 import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_core.api.CopyNamesAction;
-import org.mapton.butterfly_core.api.ExternalSearchAction;
+import org.mapton.butterfly_core.api.BContentOptions;
+import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
@@ -31,30 +30,26 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class InclinoContentView {
+public class InclinoContentView extends BContentView {
 
-    private final InclinoFilter mFilter = new InclinoFilter();
-    private final InclinoFilterPopOver mFilterPopOver = new InclinoFilterPopOver(mFilter);
-    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "inclinometer");
     private final SingleListForm<InclinoManager, BGeoInclinometerPoint> mListForm;
     private final InclinoManager mManager = InclinoManager.getInstance();
 
-    public InclinoContentView() {
+    public InclinoContentView(BContentOptions contentOptions) {
+        super(contentOptions, new InclinoFilter());
+        mFilterPopOver = new InclinoFilterPopOver(mFilter);
+        mLayerOptions = InclinoLayerOptions.getInstance();
+
+        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "inclinometer");
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
-        var actions = Arrays.asList(
-                new ExternalSearchAction(mManager),
-                new CopyNamesAction(mManager),
-                ActionUtils.ACTION_SPAN,
-                mManager.geZoomExtentstAction(),
-                mFilter.getInfoPopOver().getAction(),
-                mPresetPopOver.getAction(),
-                mFilterPopOver.getAction()
-        );
+        var config = new SubToolBarConfig(null, false);
+        var subToolBarActions = getDefaultSubToolBarActions(mManager, config);
+        mToolBarPopOver.setToolBar(ActionUtils.createToolBar(subToolBarActions, ActionUtils.ActionTextBehavior.SHOW));
 
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_InclinometerAction());
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
-                .setToolbarActions(actions);
+                .setToolbarActions(getDefaultToolBarActions());
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);

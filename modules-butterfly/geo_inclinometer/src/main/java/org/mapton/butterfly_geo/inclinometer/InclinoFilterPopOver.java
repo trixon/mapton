@@ -24,6 +24,7 @@ import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
@@ -42,13 +43,13 @@ public class InclinoFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionPoint mFilterSectionPoint;
     private final InclinoManager mManager = InclinoManager.getInstance();
 
-    public InclinoFilterPopOver(InclinoFilter filter) {
+    public InclinoFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMisc = new BFilterSectionMisc(filter);
 
-        mFilter = filter;
+        mFilter = (InclinoFilter) filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
         mFilter.setFilterSection(mFilterSectionDisruptor);

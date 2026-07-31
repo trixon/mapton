@@ -41,6 +41,7 @@ public class QuakeFilter extends ButterflyFormFilter<QuakeManager> implements
 
     public QuakeFilter() {
         super(QuakeManager.getInstance());
+        mContentOptions = QuakeContentOptions.getInstance();
 
         initListeners();
     }
@@ -79,6 +80,8 @@ public class QuakeFilter extends ButterflyFormFilter<QuakeManager> implements
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -96,7 +99,9 @@ public class QuakeFilter extends ButterflyFormFilter<QuakeManager> implements
     private void initListeners() {
         List.of(
                 mInvertProperty,
-                mInvisibleProperty
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

@@ -40,6 +40,7 @@ public class RoiFilter extends ButterflyFormFilter<RoiManager> implements
 
     public RoiFilter() {
         super(RoiManager.getInstance());
+        mContentOptions = RoiContentOptions.getInstance();
 
         initListeners();
     }
@@ -78,6 +79,8 @@ public class RoiFilter extends ButterflyFormFilter<RoiManager> implements
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -95,7 +98,9 @@ public class RoiFilter extends ButterflyFormFilter<RoiManager> implements
     private void initListeners() {
         List.of(
                 mInvertProperty,
-                mInvisibleProperty
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

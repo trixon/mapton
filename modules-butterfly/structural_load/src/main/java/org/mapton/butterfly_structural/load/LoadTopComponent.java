@@ -60,7 +60,7 @@ public final class LoadTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var loadView = new LoadContentView();
+        var loadView = new LoadContentView(LoadContentOptions.getInstance());
 
         return new Scene(loadView.getView());
     }

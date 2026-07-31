@@ -46,6 +46,7 @@ public class VibrationFilter extends ButterflyFormFilter<VibrationManager> imple
 
     public VibrationFilter() {
         super(VibrationManager.getInstance());
+        mContentOptions = VibrationContentOptions.getInstance();
 
         initListeners();
     }
@@ -97,6 +98,8 @@ public class VibrationFilter extends ButterflyFormFilter<VibrationManager> imple
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -115,7 +118,9 @@ public class VibrationFilter extends ButterflyFormFilter<VibrationManager> imple
     private void initListeners() {
         List.of(
                 mInvertProperty,
-                mInvisibleProperty
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

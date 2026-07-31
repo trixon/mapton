@@ -23,6 +23,7 @@ import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbPreferences;
 
@@ -40,14 +41,14 @@ public class WaterLevelFilterPopOver extends BaseTabbedFilterPopOver {
     private final WaterLevelManager mManager = WaterLevelManager.getInstance();
     private final FilterSectionMeas mFilterSectionMeas;
 
-    public WaterLevelFilterPopOver(WaterLevelFilter filter) {
+    public WaterLevelFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMeas = new FilterSectionMeas();
         mFilterSectionMisc = new BFilterSectionMisc(filter);
 
-        mFilter = filter;
+        mFilter = (WaterLevelFilter) filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
         mFilter.setFilterSection(mFilterSectionDisruptor);

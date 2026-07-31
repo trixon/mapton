@@ -26,6 +26,7 @@ import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
 import org.openide.util.NbBundle;
@@ -46,7 +47,7 @@ public class LoadFilterPopOver extends BaseTabbedFilterPopOver {
     private final LoadManager mManager = LoadManager.getInstance();
     private final BFilterSectionAlarm mFilterSectionAlarm;
 
-    public LoadFilterPopOver(LoadFilter filter) {
+    public LoadFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         var alarmLevelCalculator = new AlarmLevelCalculator(
                 p -> LoadHelper.getAlarmLevel((BStructuralLoadCellPoint) p),
@@ -58,7 +59,7 @@ public class LoadFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMisc = new BFilterSectionMisc(filter);
 
-        mFilter = filter;
+        mFilter = (LoadFilter) filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionAlarm);
         mFilter.setFilterSection(mFilterSectionDate);

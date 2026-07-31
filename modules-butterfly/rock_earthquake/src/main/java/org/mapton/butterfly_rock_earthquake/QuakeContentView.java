@@ -15,14 +15,13 @@
  */
 package org.mapton.butterfly_rock_earthquake;
 
-import java.util.Arrays;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_core.api.ExternalSearchAction;
+import org.mapton.butterfly_core.api.BContentOptions;
+import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.butterfly_format.types.rock.BRockEarthquake;
-import org.mapton.core.api.ui.ExportAction;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
@@ -30,30 +29,27 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class QuakeContentView {
+public class QuakeContentView extends BContentView {
 
-    private final QuakeFilter mFilter = new QuakeFilter();
-    private final QuakeFilterPopOver mFilterPopOver = new QuakeFilterPopOver(mFilter);
     private final SingleListForm<QuakeManager, BRockEarthquake> mListForm;
     private final QuakeManager mManager = QuakeManager.getInstance();
-    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "earthquakes");
+//    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "earthquakes");
 
-    public QuakeContentView() {
+    public QuakeContentView(BContentOptions contentOptions) {
+        super(contentOptions, new QuakeFilter());
+        mFilterPopOver = new QuakeFilterPopOver(mFilter);
+        mLayerOptions = QuakeLayerOptions.getInstance();
+
+        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "earthquakes");
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
-        var actions = Arrays.asList(
-                new ExternalSearchAction(mManager),
-                new ExportAction("Earthquakes"),
-                ActionUtils.ACTION_SPAN,
-                mManager.geZoomExtentstAction(),
-                mFilter.getInfoPopOver().getAction(),
-                mPresetPopOver.getAction(),
-                mFilterPopOver.getAction()
-        );
+        var config = new SubToolBarConfig(null, false);
+        var subToolBarActions = getDefaultSubToolBarActions(mManager, config);
+        mToolBarPopOver.setToolBar(ActionUtils.createToolBar(subToolBarActions, ActionUtils.ActionTextBehavior.SHOW));
 
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_EarthquakeAction());
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
-                .setToolbarActions(actions);
+                .setToolbarActions(getDefaultToolBarActions());
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);

@@ -101,6 +101,7 @@ public class ReinforcementFilter extends ButterflyFormFilter<ReinforcementManage
                 mInvertProperty,
                 mInvisibleProperty,
                 mContentOptions.listSortOrderProperty(),
-                mContentOptions.listLimitProperty()).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
+                mContentOptions.listLimitProperty()
+        ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

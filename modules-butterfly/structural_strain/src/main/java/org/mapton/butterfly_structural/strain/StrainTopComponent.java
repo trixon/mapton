@@ -60,7 +60,7 @@ public final class StrainTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var strainView = new StrainContentView();
+        var strainView = new StrainContentView(StrainContentOptions.getInstance());
 
         return new Scene(strainView.getView());
     }

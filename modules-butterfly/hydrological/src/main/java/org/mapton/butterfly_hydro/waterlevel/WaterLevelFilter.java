@@ -46,6 +46,7 @@ public class WaterLevelFilter extends ButterflyFormFilter<WaterLevelManager> imp
 
     public WaterLevelFilter() {
         super(WaterLevelManager.getInstance());
+        mContentOptions = WaterLevelContentOptions.getInstance();
 
         initListeners();
     }
@@ -100,6 +101,8 @@ public class WaterLevelFilter extends ButterflyFormFilter<WaterLevelManager> imp
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -119,7 +122,9 @@ public class WaterLevelFilter extends ButterflyFormFilter<WaterLevelManager> imp
     private void initListeners() {
         List.of(
                 mInvertProperty,
-                mInvisibleProperty
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

@@ -46,6 +46,7 @@ public class MeteoFilter extends ButterflyFormFilter<MeteoManager> implements
 
     public MeteoFilter() {
         super(MeteoManager.getInstance());
+        mContentOptions = MeteoContentOptions.getInstance();
 
         initListeners();
     }
@@ -97,6 +98,8 @@ public class MeteoFilter extends ButterflyFormFilter<MeteoManager> implements
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -115,7 +118,9 @@ public class MeteoFilter extends ButterflyFormFilter<MeteoManager> implements
     private void initListeners() {
         List.of(
                 mInvertProperty,
-                mInvisibleProperty
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

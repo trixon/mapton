@@ -72,7 +72,7 @@ public final class VibrationTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var hydroView = new VibrationContentView();
+        var hydroView = new VibrationContentView(VibrationContentOptions.getInstance());
 
         return new Scene(hydroView.getView());
     }

@@ -73,7 +73,7 @@ public final class MeteoTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var meteoView = new MeteoContentView();
+        var meteoView = new MeteoContentView(MeteoContentOptions.getInstance());
 
         return new Scene(meteoView.getView());
     }

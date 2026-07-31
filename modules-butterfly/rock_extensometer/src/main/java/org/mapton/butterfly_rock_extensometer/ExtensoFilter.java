@@ -44,6 +44,7 @@ public class ExtensoFilter extends ButterflyFormFilter<ExtensoManager> implement
 
     public ExtensoFilter() {
         super(ExtensoManager.getInstance());
+        mContentOptions = ExtensoContentOptions.getInstance();
 
         initListeners();
     }
@@ -86,6 +87,8 @@ public class ExtensoFilter extends ButterflyFormFilter<ExtensoManager> implement
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -107,7 +110,9 @@ public class ExtensoFilter extends ButterflyFormFilter<ExtensoManager> implement
     private void initListeners() {
         List.of(
                 mInvertProperty,
-                mInvisibleProperty
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 

@@ -60,7 +60,7 @@ public final class ConvergenceTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var convergenceView = new ConvergenceContentView();
+        var convergenceView = new ConvergenceContentView(ConvergenceContentOptions.getInstance());
 
         return new Scene(convergenceView.getView());
     }

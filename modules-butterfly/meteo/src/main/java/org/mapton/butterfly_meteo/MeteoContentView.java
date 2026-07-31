@@ -15,15 +15,13 @@
  */
 package org.mapton.butterfly_meteo;
 
-import java.util.Arrays;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_core.api.CopyNamesAction;
-import org.mapton.butterfly_core.api.ExternalSearchAction;
+import org.mapton.butterfly_core.api.BContentOptions;
+import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.butterfly_format.types.BMeteoPoint;
-import org.mapton.core.api.ui.ExportAction;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -32,31 +30,26 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public class MeteoContentView {
+public class MeteoContentView extends BContentView {
 
-    private final MeteoFilter mFilter = new MeteoFilter();
-    private final MeteoFilterPopOver mFilterPopOver = new MeteoFilterPopOver(mFilter);
-    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "meteo");
     private final SingleListForm<MeteoManager, BMeteoPoint> mListForm;
     private final MeteoManager mManager = MeteoManager.getInstance();
 
-    public MeteoContentView() {
+    public MeteoContentView(BContentOptions contentOptions) {
+        super(contentOptions, new MeteoFilter());
+        mFilterPopOver = new MeteoFilterPopOver(mFilter);
+        mLayerOptions = MeteoLayerOptions.getInstance();
+
+        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "meteo");
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
-        var actions = Arrays.asList(
-                new ExternalSearchAction(mManager),
-                new ExportAction("Meteo"),
-                new CopyNamesAction(mManager),
-                ActionUtils.ACTION_SPAN,
-                mManager.geZoomExtentstAction(),
-                mFilter.getInfoPopOver().getAction(),
-                mPresetPopOver.getAction(),
-                mFilterPopOver.getAction()
-        );
+        var config = new SubToolBarConfig("Meteo", false);
+        var subToolBarActions = getDefaultSubToolBarActions(mManager, config);
+        mToolBarPopOver.setToolBar(ActionUtils.createToolBar(subToolBarActions, ActionUtils.ActionTextBehavior.SHOW));
 
         mListForm = new SingleListForm<>(mManager, SDict.METEOROLOGY.toString());
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
-                .setToolbarActions(actions);
+                .setToolbarActions(getDefaultToolBarActions());
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);

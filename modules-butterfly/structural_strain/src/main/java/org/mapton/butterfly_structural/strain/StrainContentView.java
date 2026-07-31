@@ -15,14 +15,13 @@
  */
 package org.mapton.butterfly_structural.strain;
 
-import java.util.Arrays;
 import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_core.api.CopyNamesAction;
-import org.mapton.butterfly_core.api.ExternalSearchAction;
+import org.mapton.butterfly_core.api.BContentOptions;
+import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
@@ -31,30 +30,26 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class StrainContentView {
+public class StrainContentView extends BContentView {
 
-    private final StrainFilter mFilter = new StrainFilter();
-    private final StrainFilterPopOver mFilterPopOver = new StrainFilterPopOver(mFilter);
-    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "strain");
     private final SingleListForm<StrainManager, BStructuralStrainGaugePoint> mListForm;
     private final StrainManager mManager = StrainManager.getInstance();
 
-    public StrainContentView() {
+    public StrainContentView(BContentOptions contentOptions) {
+        super(contentOptions, new StrainFilter());
+        mFilterPopOver = new StrainFilterPopOver(mFilter);
+        mLayerOptions = StrainLayerOptions.getInstance();
+
+        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "strain");
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
-        var actions = Arrays.asList(
-                new ExternalSearchAction(mManager),
-                new CopyNamesAction(mManager),
-                ActionUtils.ACTION_SPAN,
-                mManager.geZoomExtentstAction(),
-                mFilter.getInfoPopOver().getAction(),
-                mPresetPopOver.getAction(),
-                mFilterPopOver.getAction()
-        );
+        var config = new SubToolBarConfig(null, false);
+        var subToolBarActions = getDefaultSubToolBarActions(mManager, config);
+        mToolBarPopOver.setToolBar(ActionUtils.createToolBar(subToolBarActions, ActionUtils.ActionTextBehavior.SHOW));
 
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_StrainAction());
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
-                .setToolbarActions(actions);
+                .setToolbarActions(getDefaultToolBarActions());
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);

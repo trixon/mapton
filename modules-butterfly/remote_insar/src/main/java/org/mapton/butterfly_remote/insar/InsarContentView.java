@@ -15,9 +15,10 @@
  */
 package org.mapton.butterfly_remote.insar;
 
-import java.util.Arrays;
+import java.util.List;
 import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Pane;
+import org.apache.commons.collections.ListUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -26,7 +27,6 @@ import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.butterfly_core.api.ButterflyManager;
-import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
@@ -68,24 +68,22 @@ public class InsarContentView extends BContentView {
         });
 
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
-        var actions = Arrays.asList(
-                mFilter.getListSortPopOver().getAction(),
+        var config = new SubToolBarConfig(null, false);
+
+        var defaultSubToolBarActions = getDefaultSubToolBarActions(mManager, config);
+        var customToolBarActions = List.of(
+                ActionUtils.ACTION_SEPARATOR,
                 mRefreshAction,
-                mClearAction,
-                //                new ExternalSearchAction(mManager),
-                new CopyNamesAction(mManager),
-                ActionUtils.ACTION_SPAN,
-                mManager.geZoomExtentstAction(),
-                mFilter.getInfoPopOver().getAction(),
-                mPresetPopOver.getAction(),
-                mFilterPopOver.getAction()
+                mClearAction
         );
+        var subToolBarActions = ListUtils.sum(defaultSubToolBarActions, customToolBarActions);
+        mToolBarPopOver.setToolBar(ActionUtils.createToolBar(subToolBarActions, ActionUtils.ActionTextBehavior.SHOW));
 
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_InsarAction());
         bindFooterLabel(mListForm);
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
-                .setToolbarActions(actions);
+                .setToolbarActions(getDefaultToolBarActions());
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);

@@ -24,6 +24,7 @@ import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPoint.PointElement;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbPreferences;
 
@@ -39,12 +40,12 @@ public class QuakeFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionPoint mFilterSectionPoint;
     private final QuakeManager mManager = QuakeManager.getInstance();
 
-    public QuakeFilterPopOver(QuakeFilter filter) {
+    public QuakeFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionMisc = new BFilterSectionMisc(filter);
 
-        mFilter = filter;
+        mFilter = (QuakeFilter) filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
 

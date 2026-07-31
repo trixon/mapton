@@ -26,6 +26,7 @@ import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.openide.util.NbBundle;
@@ -46,7 +47,7 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
     private final CrackManager mManager = CrackManager.getInstance();
     private final BFilterSectionAlarm mFilterSectionAlarm;
 
-    public CrackFilterPopOver(CrackFilter filter) {
+    public CrackFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         var alarmLevelCalculator = new AlarmLevelCalculator(
                 p -> CrackHelper.getAlarmLevel((BStructuralCrackPoint) p),
@@ -58,7 +59,7 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMisc = new BFilterSectionMisc(filter);
 
-        mFilter = filter;
+        mFilter = (CrackFilter) filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionAlarm);
         mFilter.setFilterSection(mFilterSectionDate);

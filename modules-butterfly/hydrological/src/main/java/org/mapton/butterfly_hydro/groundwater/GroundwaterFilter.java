@@ -49,6 +49,7 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
 
     public GroundwaterFilter() {
         super(GroundwaterManager.getInstance());
+        mContentOptions = GroundwaterContentOptions.getInstance();
 
         initListeners();
     }
@@ -110,6 +111,8 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -129,7 +132,9 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
     private void initListeners() {
         List.of(
                 mInvertProperty,
-                mInvisibleProperty
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

@@ -45,6 +45,7 @@ public class ConvergenceFilter extends ButterflyFormFilter<ConvergenceManager> i
 
     public ConvergenceFilter() {
         super(ConvergenceManager.getInstance());
+        mContentOptions = ConvergenceContentOptions.getInstance();
 
         initListeners();
     }
@@ -87,6 +88,8 @@ public class ConvergenceFilter extends ButterflyFormFilter<ConvergenceManager> i
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -108,7 +111,9 @@ public class ConvergenceFilter extends ButterflyFormFilter<ConvergenceManager> i
     private void initListeners() {
         List.of(
                 mInvertProperty,
-                mInvisibleProperty
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

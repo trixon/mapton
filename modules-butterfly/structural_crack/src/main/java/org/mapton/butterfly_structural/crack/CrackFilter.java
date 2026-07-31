@@ -50,6 +50,7 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
 
     public CrackFilter() {
         super(CrackManager.getInstance());
+        mContentOptions = CrackContentOptions.getInstance();
 
         initListeners();
     }
@@ -104,6 +105,8 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -122,7 +125,10 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
 
     private void initListeners() {
         List.of(
-                mInvertProperty, mInvisibleProperty
+                mInvertProperty,
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

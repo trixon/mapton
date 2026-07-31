@@ -23,6 +23,7 @@ import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
@@ -42,14 +43,14 @@ public class MeteoFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionPoint mFilterSectionPoint;
     private final MeteoManager mManager = MeteoManager.getInstance();
 
-    public MeteoFilterPopOver(MeteoFilter filter) {
+    public MeteoFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
 //        mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMisc = new BFilterSectionMisc(filter);
         mFilterSectionMeas = new FilterSectionMeas();
 
-        mFilter = filter;
+        mFilter = (MeteoFilter) filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
 //        mFilter.setFilterSection(mFilterSectionDisruptor);

@@ -15,14 +15,13 @@
  */
 package org.mapton.butterfly_hydro.groundwater;
 
-import java.util.Arrays;
 import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_core.api.CopyNamesAction;
-import org.mapton.butterfly_core.api.ExternalSearchAction;
+import org.mapton.butterfly_core.api.BContentOptions;
+import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
@@ -31,30 +30,29 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class GroundwaterContentView {
+public class GroundwaterContentView extends BContentView {
 
-    private final GroundwaterFilter mFilter = new GroundwaterFilter();
-    private final GroundwaterFilterPopOver mFilterPopOver = new GroundwaterFilterPopOver(mFilter);
+//    private final GroundwaterFilter mFilter = new GroundwaterFilter();
+//    private final GroundwaterFilterPopOver mFilterPopOver = new GroundwaterFilterPopOver(mFilter);
     private final SingleListForm<GroundwaterManager, BHydroGroundwaterPoint> mListForm;
     private final GroundwaterManager mManager = GroundwaterManager.getInstance();
-    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "hydro.groundwater");
+//    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "hydro.groundwater");
 
-    public GroundwaterContentView() {
+    public GroundwaterContentView(BContentOptions contentOptions) {
+        super(contentOptions, new GroundwaterFilter());
+        mFilterPopOver = new GroundwaterFilterPopOver(mFilter);
+        mLayerOptions = GroundwaterLayerOptions.getInstance();
+
+        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "hydro.groundwater");
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
-        var actions = Arrays.asList(
-                new ExternalSearchAction(mManager),
-                new CopyNamesAction(mManager),
-                ActionUtils.ACTION_SPAN,
-                mManager.geZoomExtentstAction(),
-                mFilter.getInfoPopOver().getAction(),
-                mPresetPopOver.getAction(),
-                mFilterPopOver.getAction()
-        );
+        var config = new SubToolBarConfig(null, false);
+        var subToolBarActions = getDefaultSubToolBarActions(mManager, config);
+        mToolBarPopOver.setToolBar(ActionUtils.createToolBar(subToolBarActions, ActionUtils.ActionTextBehavior.SHOW));
 
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_GroundwaterAction());
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
-                .setToolbarActions(actions);
+                .setToolbarActions(getDefaultToolBarActions());
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);

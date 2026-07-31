@@ -60,7 +60,7 @@ public final class InclinoTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var inclinoView = new InclinoContentView();
+        var inclinoView = new InclinoContentView(InclinoContentOptions.getInstance());
 
         return new Scene(inclinoView.getView());
     }

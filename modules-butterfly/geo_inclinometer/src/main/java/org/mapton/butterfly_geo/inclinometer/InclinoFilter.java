@@ -47,6 +47,7 @@ public class InclinoFilter extends ButterflyFormFilter<InclinoManager> implement
 
     public InclinoFilter() {
         super(InclinoManager.getInstance());
+        mContentOptions = InclinoContentOptions.getInstance();
 
         initListeners();
     }
@@ -94,6 +95,8 @@ public class InclinoFilter extends ButterflyFormFilter<InclinoManager> implement
                     .toList();
         }
 
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -112,7 +115,9 @@ public class InclinoFilter extends ButterflyFormFilter<InclinoManager> implement
     private void initListeners() {
         List.of(
                 mInvertProperty,
-                mInvisibleProperty
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }
