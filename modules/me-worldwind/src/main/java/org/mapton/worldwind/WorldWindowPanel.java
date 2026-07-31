@@ -115,7 +115,10 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     public void addCustomLayer(Layer layer) {
         if (!getLayers().contains(layer)) {
-            Mapton.logLoading("Custom Layer", layer.getName());
+            var name = layer.getName();
+            if (!Strings.CI.equals(name, "Renderable")) {
+                Mapton.logLoading("Custom Layer", name);
+            }
             mCustomLayers.add(layer);
             insertLayerBefore(layer, CompassLayer.class);
 
@@ -136,7 +139,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     public void removeCustomLayer(Layer layer) {
         if (getLayers().contains(layer)) {
-            Mapton.logLoading("Custom Layer", layer.getName());
             mCustomLayers.remove(layer);
             getLayers().remove(layer);
         }
