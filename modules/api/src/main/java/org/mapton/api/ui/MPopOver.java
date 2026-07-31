@@ -48,35 +48,10 @@ public class MPopOver extends PopOver {
     }
 
     public MPopOver() {
-        setHeaderAlwaysVisible(true);
-        setCloseButtonEnabled(false);
-        setDetachable(true);
-        setAnimated(true);
-
-        mAction = new Action(getTitle(), actionEvent -> {
-            if (isShowing()) {
-                hide();
-            } else {
-                var mousePoint = MouseInfo.getPointerInfo().getLocation();
-                var screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                var x = mousePoint.getX();
-                var quota = x / screenSize.getWidth();
-                if (quota < 0.2) {
-                    setArrowLocation(ArrowLocation.TOP_LEFT);
-                } else if (quota > 0.8) {
-                    setArrowLocation(ArrowLocation.TOP_RIGHT);
-                } else {
-                    setArrowLocation(ArrowLocation.TOP_CENTER);
-                }
-
-                var node = (ButtonBase) actionEvent.getSource();
-                show(node);
-                PopOverWatcher.getInstance().registerPopOver(this, node);
-            }
-        });
+        this("", true);
     }
 
-    public MPopOver(String title) {
+    public MPopOver(String title, boolean autoArrowLocation) {
         setHeaderAlwaysVisible(true);
         setCloseButtonEnabled(false);
         setDetachable(true);
@@ -86,16 +61,18 @@ public class MPopOver extends PopOver {
             if (isShowing()) {
                 hide();
             } else {
-                var mousePoint = MouseInfo.getPointerInfo().getLocation();
-                var screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                var x = mousePoint.getX();
-                var quota = x / screenSize.getWidth();
-                if (quota < 0.2) {
-                    setArrowLocation(ArrowLocation.TOP_LEFT);
-                } else if (quota > 0.8) {
-                    setArrowLocation(ArrowLocation.TOP_RIGHT);
-                } else {
-                    setArrowLocation(ArrowLocation.TOP_CENTER);
+                if (autoArrowLocation) {
+                    var mousePoint = MouseInfo.getPointerInfo().getLocation();
+                    var screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                    var x = mousePoint.getX();
+                    var quota = x / screenSize.getWidth();
+                    if (quota < 0.2) {
+                        setArrowLocation(ArrowLocation.TOP_LEFT);
+                    } else if (quota > 0.8) {
+                        setArrowLocation(ArrowLocation.TOP_RIGHT);
+                    } else {
+                        setArrowLocation(ArrowLocation.TOP_CENTER);
+                    }
                 }
 
                 var node = (ButtonBase) actionEvent.getSource();
