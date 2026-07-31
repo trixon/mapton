@@ -15,10 +15,15 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.util.List;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.ui.MToolBarPopOver;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.core.api.ui.ExportAction;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionComboBox;
@@ -36,6 +41,7 @@ public abstract class BContentView {
     protected final ComboBox<Integer> mListLimitComboBox = new ComboBox<>();
     protected final SessionComboBox<BListSortOrder> mListSortOrderScb = new SessionComboBox<>();
     protected MPresetPopOver mPresetPopOver;
+    protected MToolBarPopOver mToolBarPopOver = new MToolBarPopOver();
 
     public BContentView(BContentOptions contentOptions, ButterflyFormFilter filter) {
         mContentOptions = contentOptions;
@@ -45,6 +51,33 @@ public abstract class BContentView {
 
     protected void bindFooterLabel(SingleListForm mListForm) {
         mListForm.bindFooterLabel(mContentOptions.listSortOrderProperty());
+    }
+
+    protected List<Action> getDefaultSubToolBarActions(BaseManager manager, SubToolBarConfig config) {
+        var exportAction = new ExportAction(config.exportLookupKey);
+        exportAction.setDisabled(config.exportLookupKey == null);
+
+        var copyNamesAction = new CopyNamesAction(manager);
+        copyNamesAction.setDisabled(config.disableCopyName);
+
+        return List.of(
+                new ExternalSearchAction(manager),
+                exportAction,
+                copyNamesAction,
+                manager.geZoomExtentstAction()
+        );
+    }
+
+    protected List<Action> getDefaultToolBarActions() {
+        return List.of(
+                mFilterPopOver.getAction(),
+                mPresetPopOver.getAction(),
+                mFilter.getListSortPopOver().getAction(),
+                ActionUtils.ACTION_SPAN,
+                mFilter.getInfoPopOver().getAction(),
+                ActionUtils.ACTION_SEPARATOR,
+                mToolBarPopOver.getAction()
+        );
     }
 
     private void init() {
@@ -80,6 +113,10 @@ public abstract class BContentView {
         mListLimitComboBox.prefWidthProperty().bind(mListSortOrderScb.widthProperty());
         sortAndLimitPane.setPadding(FxHelper.getUIScaledInsets(8, 16, 16, 16));
         mFilter.getListSortPopOver().setNode(sortAndLimitPane);
+    }
+
+    public record SubToolBarConfig(Object exportLookupKey, boolean disableCopyName) {
+
     }
 
 }

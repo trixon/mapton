@@ -28,7 +28,6 @@ import java.util.Locale;
 import java.util.prefs.BackingStoreException;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.util.Duration;
 import javax.swing.border.EmptyBorder;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -38,7 +37,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
-import org.controlsfx.control.action.Action;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.operation.TransformException;
 import org.locationtech.jts.geom.Geometry;
@@ -47,7 +45,6 @@ import org.locationtech.jts.io.WKTReader;
 import org.mapton.api.MArea;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MCooTrans;
-import org.mapton.api.MKey;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.api.MPrint;
@@ -75,6 +72,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.dialogs.NbMessage;
+import se.trixon.almond.nbp.util.NotifocationHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
@@ -122,7 +120,9 @@ public class ButterflyManager {
                 mProgressHandle.finish();
                 mProgressHandle = null;
                 var timeSpent = SystemHelper.age(mStartMilliseconds - delay) / 1000d;
-                Mapton.notification(MKey.NOTIFICATION_FX_INFORMATION, "Butterfly inläst", "Det tog %.1f %s".formatted(timeSpent, Dict.TIME_SECONDS.toLower()), Duration.seconds(5), (Action) null);
+                var title = "Butterfly inläst";
+                var message = "Det tog %.1f %s".formatted(timeSpent, Dict.TIME_SECONDS.toLower());
+                NotifocationHelper.displayTextNotification(title, message, 10_000);
             }
         });
     }
@@ -368,11 +368,19 @@ public class ButterflyManager {
     }
 
     private void calculateLatLons(Butterfly butterfly) {
-        calculateLatLons(butterfly.hydro().getGroundwaterPoints());
-        calculateLatLons(butterfly.hydro().getWaterLevelPoints());
-        calculateLatLons(butterfly.structural().getTiltPoints());
-        calculateLatLons(butterfly.topo().getControlPoints());
-        calculateLatLons(butterfly.rock().getConvergence());
+        List.of(
+                butterfly.hydro().getGroundwaterPoints(),
+                butterfly.hydro().getWaterLevelPoints(),
+                butterfly.structural().getTiltPoints(),
+                butterfly.topo().getControlPoints(),
+                butterfly.rock().getConvergence())
+                .forEach(list -> {
+                    try {
+                        calculateLatLons(list);
+                    } catch (Exception e) {
+                        Exceptions.printStackTrace(e);
+                    }
+                });
 
         butterfly.getAlarms().parallelStream().forEach(alarm -> {
             var points = alarm.ext().getPoints();
