@@ -17,7 +17,6 @@ package org.mapton.butterfly_core.api;
 
 import com.dlsc.gemsfx.util.SessionManager;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -236,7 +235,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mPointFilterUI.initSession(sessionManager);
     }
 
-    public void load(ArrayList<? extends BXyzPoint> items) {
+    public void load(List<? extends BXyzPoint> items) {
         mRollingSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getRollingFormula()));
         mSparseSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getSparse()));
         mGroupSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));

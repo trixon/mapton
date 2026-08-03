@@ -15,8 +15,11 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.util.HashSet;
+import java.util.List;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.Mapton;
+import org.mapton.butterfly_core.api.base.XyzManager;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -30,11 +33,16 @@ public class AddToBasePointsAction extends Action {
     public AddToBasePointsAction(BaseManager manager) {
         super(Dict.ADD.toString());
         setEventHandler(actionEvent -> {
-            manager.getTimeFilteredItems().stream().map(a -> (BXyzPoint) a).forEach(e -> {
-                var p = (BXyzPoint) e;
-                System.out.println(p.getName());
-            });
-            System.out.println("^^^Add points to base points");
+            var xyzManager = XyzManager.getInstance();
+            if (manager != xyzManager) {
+                var items = (List<BXyzPoint>) manager.getTimeFilteredItems();
+                var targetPoints = new HashSet<>(xyzManager.getAllItems());
+                var points = items.stream()
+                        .map(p -> (BXyzPoint) p)
+                        .filter(p -> !targetPoints.contains(p))
+                        .toList();
+                xyzManager.getAllItems().addAll(points);
+            }
         });
         setGraphic(MaterialIcon._Content.ADD.getImageView(Mapton.getIconSizeToolBarInt()));
     }
