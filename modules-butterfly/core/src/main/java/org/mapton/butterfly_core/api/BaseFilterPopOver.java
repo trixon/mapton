@@ -36,7 +36,7 @@ public abstract class BaseFilterPopOver extends MFilterPopOver {
 
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
-    private MPresetPopOver MPresetPopOver;
+    private MPresetPopOver mPresetPopOver;
     private boolean mFirstRun = true;
 
     public static void splitAndCheck(String string, IndexedCheckModel<String> checkModel) {
@@ -73,7 +73,7 @@ public abstract class BaseFilterPopOver extends MFilterPopOver {
     }
 
     public MPresetPopOver getFilterPresetPopOver() {
-        return MPresetPopOver;
+        return mPresetPopOver;
     }
 
     public abstract void load(Butterfly butterfly);
@@ -90,7 +90,7 @@ public abstract class BaseFilterPopOver extends MFilterPopOver {
     }
 
     public void setFilterPresetPopOver(MPresetPopOver filterPresetPopOver) {
-        MPresetPopOver = filterPresetPopOver;
+        mPresetPopOver = filterPresetPopOver;
     }
 
 }

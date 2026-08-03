@@ -19,14 +19,18 @@ import java.util.List;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
+import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.Mapton;
 import org.mapton.api.ui.MToolBarPopOver;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.core.api.ui.ExportAction;
 import org.mapton.core.api.ui.MPresetPopOver;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionComboBox;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -42,6 +46,7 @@ public abstract class BContentView {
     protected final SessionComboBox<BListSortOrder> mListSortOrderScb = new SessionComboBox<>();
     protected MPresetPopOver mPresetPopOver;
     protected MToolBarPopOver mToolBarPopOver = new MToolBarPopOver();
+    private Action mResetStandardAction;
 
     public BContentView(BContentOptions contentOptions, ButterflyFormFilter filter) {
         mContentOptions = contentOptions;
@@ -58,20 +63,35 @@ public abstract class BContentView {
         exportAction.setDisabled(config.exportLookupKey == null);
 
         var copyNamesAction = new CopyNamesAction(manager);
+        var addPointsAction = new AddToBasePointsAction(manager);
+
         copyNamesAction.setDisabled(config.disableCopyName);
 
         return List.of(
                 new ExternalSearchAction(manager),
                 exportAction,
                 copyNamesAction,
+                addPointsAction,
                 manager.geZoomExtentstAction()
         );
     }
 
     protected List<Action> getDefaultToolBarActions() {
+        if (mResetStandardAction == null) {
+            mFilterPopOver.setAutoArrowLocation(false);
+            mFilterPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+            mPresetPopOver.setAutoArrowLocation(false);
+            mPresetPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+            mResetStandardAction = new Action(Dict.DEFAULT.toString(), actionEvent -> {
+                mFilterPopOver.reset();
+            });
+            mResetStandardAction.setGraphic(MaterialIcon._Action.RESTORE_PAGE.getImageView(Mapton.getIconSizeToolBarInt()));
+        }
+
         return List.of(
-                mFilterPopOver.getAction(),
+                mResetStandardAction,
                 mPresetPopOver.getAction(),
+                mFilterPopOver.getAction(),
                 mFilter.getListSortPopOver().getAction(),
                 ActionUtils.ACTION_SPAN,
                 mFilter.getInfoPopOver().getAction(),

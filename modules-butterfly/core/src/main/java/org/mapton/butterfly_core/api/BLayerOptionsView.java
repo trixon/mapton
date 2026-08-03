@@ -23,7 +23,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.butterfly_format.types.BTrendPeriod;
@@ -229,7 +228,6 @@ public abstract class BLayerOptionsView extends MOptionsView {
             };
             var actions = List.of(
                     getRestoreDefaultsAction(restoreDefaultsRunnable),
-                    ActionUtils.ACTION_SPAN,
                     mPresetPopOver.getAction()
             );
             createToolbar(actions);
