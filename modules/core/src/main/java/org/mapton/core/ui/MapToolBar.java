@@ -23,7 +23,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -74,7 +73,6 @@ public class MapToolBar extends BaseToolBar {
     private Action mRulerAction;
     private PopOver mRulerPopOver;
     private FxActionSwing mStyleSwapAction;
-    private ToolBar mSubToolBar;
     private Action mTemporalAction;
     private final ImageView mTemporalActionGraphic = MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBarInt());
     private PopOver mTemporalPopOver;
@@ -358,7 +356,8 @@ public class MapToolBar extends BaseToolBar {
                 var actions = Lookup.getDefault().lookupAll(MToolMapCommand.class).stream()
                         .map(command -> {
                             var action = command.getAction();
-                            action.setLongText(command.getKeyCodeCombination().getDisplayText());
+                            action.setText(action.getText() + "\r  " + command.getKeyCodeCombination().getDisplayText());
+                            action.setLongText(null);
 
                             return action;
                         })

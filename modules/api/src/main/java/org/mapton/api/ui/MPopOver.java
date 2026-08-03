@@ -35,6 +35,7 @@ public class MPopOver extends PopOver {
     public static final int GAP = FxHelper.getUIScaled(8);
     public static final int WIDTH = FxHelper.getUIScaled(128);
     private Action mAction;
+    private boolean mAutoArrowLocation;
 
     public static void autoSize(VBox vBox) {
         for (var node : vBox.getChildren()) {
@@ -52,6 +53,7 @@ public class MPopOver extends PopOver {
     }
 
     public MPopOver(String title, boolean autoArrowLocation) {
+        mAutoArrowLocation = autoArrowLocation;
         setHeaderAlwaysVisible(true);
         setCloseButtonEnabled(false);
         setDetachable(true);
@@ -61,7 +63,7 @@ public class MPopOver extends PopOver {
             if (isShowing()) {
                 hide();
             } else {
-                if (autoArrowLocation) {
+                if (mAutoArrowLocation) {
                     var mousePoint = MouseInfo.getPointerInfo().getLocation();
                     var screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                     var x = mousePoint.getX();
@@ -88,5 +90,9 @@ public class MPopOver extends PopOver {
 
     public void setAction(Action action) {
         mAction = action;
+    }
+
+    public void setAutoArrowLocation(boolean autoArrowLocation) {
+        mAutoArrowLocation = autoArrowLocation;
     }
 }
