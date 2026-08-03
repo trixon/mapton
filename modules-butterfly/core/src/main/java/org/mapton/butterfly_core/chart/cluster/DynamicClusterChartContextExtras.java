@@ -21,9 +21,12 @@ import javafx.event.EventHandler;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_format.types.BClusterChartPoint;
+import org.openide.DialogDescriptor;
+import org.openide.DialogDisplayer;
 import org.openide.awt.Actions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -41,14 +44,29 @@ public class DynamicClusterChartContextExtras extends MContextMenuItem {
     @Override
     public EventHandler<ActionEvent> getAction() {
         return event -> {
-            var p = new BClusterChartPoint();
-            p.setName("Klusterdiagram");
-            p.setDateLatest(LocalDateTime.now());
-            p.ext().setDateFirst(LocalDateTime.now());
-            p.setButterfly(ButterflyManager.getInstance().getButterfly());
-            p.setLat(getLatitude());
-            p.setLon(getLongitude());
-            DynamicClusterChartManager.getInstance().selectedItemProperty().setValue(p);
+            SwingHelper.runLater(() -> {
+                var inputPanel = new InputPanel();
+
+                var d = new DialogDescriptor(
+                        inputPanel,
+                        "Klusterdiagram",
+                        true,
+                        null
+                );
+
+                if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
+                    inputPanel.store();
+
+                    var p = new BClusterChartPoint();
+                    p.setName("Klusterdiagram");
+                    p.setDateLatest(LocalDateTime.now());
+                    p.ext().setDateFirst(LocalDateTime.now());
+                    p.setButterfly(ButterflyManager.getInstance().getButterfly());
+                    p.setLat(getLatitude());
+                    p.setLon(getLongitude());
+                    DynamicClusterChartManager.getInstance().selectedItemProperty().setValue(p);
+                }
+            });
         };
     }
 
