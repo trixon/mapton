@@ -334,11 +334,14 @@
                 <dependency>
                     <groupId>org.mapton</groupId>
                     <artifactId>butterfly-geo-reinforcement</artifactId>
-                    <version>${mapton.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>org.mapton</groupId>
                     <artifactId>butterfly-roi</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.mapton</groupId>
+                    <artifactId>butterfly-misc-xyz</artifactId>
                     <version>${mapton.version}</version>
                 </dependency>
                 <dependency>
