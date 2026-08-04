@@ -55,7 +55,7 @@ public class CrackContentView extends BContentView {
                 Dict.NAME.toString()
         );
 
-        setListCellFactory(CrackContentListCell.class);
+        setListCellFactory(CrackContentListCell::new);
 
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralCrackPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());

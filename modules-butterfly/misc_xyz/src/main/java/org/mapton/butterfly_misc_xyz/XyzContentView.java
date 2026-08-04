@@ -78,7 +78,7 @@ public class XyzContentView extends BContentView {
                 Dict.COMMENT.toString()
         );
 
-        setListCellFactory(XyzContentListCell.class);
+        setListCellFactory(XyzContentListCell::new);
     }
 
 }

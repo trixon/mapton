@@ -16,7 +16,6 @@
 package org.mapton.butterfly_structural.load;
 
 import javafx.collections.ListChangeListener;
-import javafx.scene.control.ListCell;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
@@ -56,7 +55,7 @@ public class LoadContentView extends BContentView {
                 Dict.NAME.toString()
         );
 
-        setListCellFactory(ListCell.class);
+        setListCellFactory(LoadContentListCell::new);
 
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralLoadCellPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());

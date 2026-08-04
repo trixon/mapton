@@ -55,7 +55,7 @@ public class StrainContentView extends BContentView {
                 Dict.NAME.toString()
         );
 
-        setListCellFactory(StrainContentListCell.class);
+        setListCellFactory(StrainContentListCell::new);
 
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralStrainGaugePoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());

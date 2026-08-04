@@ -55,7 +55,7 @@ public class TiltContentView extends BContentView {
                 Dict.NAME.toString()
         );
 
-        setListCellFactory(TiltContentListCell.class);
+        setListCellFactory(TiltContentListCell::new);
 
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralTiltPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());

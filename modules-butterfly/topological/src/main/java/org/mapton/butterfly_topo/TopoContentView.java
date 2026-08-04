@@ -63,7 +63,7 @@ public class TopoContentView extends BContentView {
                 SDict.ALARM.toString()
         );
 
-        setListCellFactory(TopoContentListCell.class);
+        setListCellFactory(TopoContentListCell::new);
 
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());

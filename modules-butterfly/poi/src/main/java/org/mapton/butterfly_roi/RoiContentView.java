@@ -55,7 +55,7 @@ public class RoiContentView extends BContentView {
                 Dict.COMMENT.toString()
         );
 
-        setListCellFactory(RoiContentListCell.class);
+        setListCellFactory(RoiContentListCell::new);
     }
 
 }

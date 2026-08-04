@@ -55,7 +55,7 @@ public class VibrationContentView extends BContentView {
                 Dict.COMMENT.toString()
         );
 
-        setListCellFactory(VibrationContentListCell.class);
+        setListCellFactory(VibrationContentListCell::new);
     }
 
 }

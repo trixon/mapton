@@ -89,7 +89,7 @@ public class InsarContentView extends BContentView {
                 Dict.NAME.toString()
         );
 
-        setListCellFactory(InsarContentListCell.class);
+        setListCellFactory(InsarContentListCell::new);
 
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BRemoteInsarPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());

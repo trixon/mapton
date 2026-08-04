@@ -57,7 +57,7 @@ public class ReinforcementContentView extends BContentView {
                 Dict.COMMENT.toString()
         );
 
-        setListCellFactory(ReinforcementContentListCell.class);
+        setListCellFactory(ReinforcementContentListCell::new);
     }
 
 }

@@ -57,7 +57,7 @@ public class GroundwaterContentView extends BContentView {
                 Dict.GROUP.toString()
         );
 
-        setListCellFactory(GroundwaterContentListCell.class);
+        setListCellFactory(GroundwaterContentListCell::new);
 
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BHydroGroundwaterPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());

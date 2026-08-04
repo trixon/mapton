@@ -57,7 +57,7 @@ public class WaterLevelContentView extends BContentView {
                 Dict.GROUP.toString()
         );
 
-        setListCellFactory(WaterLevelContentListCell.class);
+        setListCellFactory(WaterLevelContentListCell::new);
 
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BHydroWaterLevelPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());

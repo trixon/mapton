@@ -58,6 +58,6 @@ public class GradeVContentView extends GradeContentView {
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
         mListForm.setFreeTextTooltip(Dict.NAME.toString());
-        setListCellFactory(GradeVContentListCell.class);
+        setListCellFactory(GradeVContentListCell::new);
     }
 }

@@ -57,7 +57,7 @@ public class GradeHContentView extends GradeContentView {
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
         mListForm.setFreeTextTooltip(Dict.NAME.toString());
-        setListCellFactory(GradeHContentListCell.class);
+        setListCellFactory(GradeHContentListCell::new);
     }
 
 }

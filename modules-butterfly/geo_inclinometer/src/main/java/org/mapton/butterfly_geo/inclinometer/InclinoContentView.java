@@ -55,7 +55,7 @@ public class InclinoContentView extends BContentView {
                 Dict.NAME.toString()
         );
 
-        setListCellFactory(InclinoContentListCell.class);
+        setListCellFactory(InclinoContentListCell::new);
 
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BGeoInclinometerPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());

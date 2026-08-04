@@ -56,7 +56,7 @@ public class ConvergenceContentView extends BContentView {
                 Dict.COMMENT.toString()
         );
 
-        setListCellFactory(ConvergenceContentListCell.class);
+        setListCellFactory(ConvergenceContentListCell::new);
     }
 
 }

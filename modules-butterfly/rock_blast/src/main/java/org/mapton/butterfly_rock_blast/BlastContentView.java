@@ -18,7 +18,6 @@ package org.mapton.butterfly_rock_blast;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_core.api.BContentListCell;
 import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.core.api.ui.MPresetPopOver;
@@ -58,7 +57,7 @@ public class BlastContentView extends BContentView {
                 Dict.COMMENT.toString()
         );
 
-        setListCellFactory(BContentListCell.class);
+        setListCellFactory(BlastContentListCell::new);
     }
 
 }

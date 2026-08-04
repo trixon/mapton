@@ -53,7 +53,7 @@ public class ExtensoContentView extends BContentView {
                 Dict.NAME.toString()
         );
 
-        setListCellFactory(ExtensoContentListCell.class);
+        setListCellFactory(ExtensoContentListCell::new);
     }
 
 }

@@ -56,7 +56,7 @@ public class MeteoContentView extends BContentView {
                 Dict.COMMENT.toString()
         );
 
-        setListCellFactory(MeteoContentListCell.class);
+        setListCellFactory(MeteoContentListCell::new);
     }
 
 }

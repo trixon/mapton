@@ -57,7 +57,7 @@ public class DistanceContentView extends GradeContentView {
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
         mListForm.setFreeTextTooltip(Dict.NAME.toString());
-        setListCellFactory(DistanceContentListCell.class);
+        setListCellFactory(DistanceContentListCell::new);
     }
 
 }

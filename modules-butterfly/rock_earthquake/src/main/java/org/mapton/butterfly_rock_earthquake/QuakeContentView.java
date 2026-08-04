@@ -55,7 +55,7 @@ public class QuakeContentView extends BContentView {
                 Dict.COMMENT.toString()
         );
 
-        setListCellFactory(QuakeContentListCell.class);
+        setListCellFactory(QuakeContentListCell::new);
     }
 
 }
