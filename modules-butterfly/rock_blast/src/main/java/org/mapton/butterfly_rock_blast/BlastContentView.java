@@ -15,13 +15,12 @@
  */
 package org.mapton.butterfly_rock_blast;
 
-import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_core.api.BContentListCell;
 import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
-import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
@@ -31,7 +30,6 @@ import se.trixon.almond.util.Dict;
  */
 public class BlastContentView extends BContentView {
 
-    private final SingleListForm<BlastManager, BRockBlast> mListForm;
     private final BlastManager mManager = BlastManager.getInstance();
 
     public BlastContentView(BContentOptions contentOptions) {
@@ -53,17 +51,14 @@ public class BlastContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new BlastContentListCell());
 
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),
                 Dict.GROUP.toString(),
                 Dict.COMMENT.toString()
         );
-    }
 
-    public Pane getView() {
-        return mListForm.getView();
+        setListCellFactory(BContentListCell.class);
     }
 
 }

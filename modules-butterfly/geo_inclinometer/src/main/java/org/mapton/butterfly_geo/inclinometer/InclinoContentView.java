@@ -16,7 +16,6 @@
 package org.mapton.butterfly_geo.inclinometer;
 
 import javafx.collections.ListChangeListener;
-import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
@@ -32,7 +31,6 @@ import se.trixon.almond.util.Dict;
  */
 public class InclinoContentView extends BContentView {
 
-    private final SingleListForm<InclinoManager, BGeoInclinometerPoint> mListForm;
     private final InclinoManager mManager = InclinoManager.getInstance();
 
     public InclinoContentView(BContentOptions contentOptions) {
@@ -53,19 +51,15 @@ public class InclinoContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new InclinoContentListCell());
-
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()
         );
 
+        setListCellFactory(InclinoContentListCell.class);
+
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BGeoInclinometerPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());
         });
-    }
-
-    public Pane getView() {
-        return mListForm.getView();
     }
 
 }

@@ -16,7 +16,6 @@
 package org.mapton.butterfly_misc_xyz;
 
 import java.util.List;
-import javafx.scene.layout.Pane;
 import org.apache.commons.collections.ListUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -27,7 +26,6 @@ import org.mapton.butterfly_core.api.AddToBasePointsAction;
 import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.butterfly_core.api.base.XyzManager;
-import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -39,7 +37,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class XyzContentView extends BContentView {
 
     private final Action mClearAction;
-    private final SingleListForm<XyzManager, BXyzPoint> mListForm;
     private final XyzManager mManager = XyzManager.getInstance();
 
     public XyzContentView(BContentOptions contentOptions) {
@@ -75,17 +72,13 @@ public class XyzContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new XyzContentListCell());
-
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),
                 Dict.GROUP.toString(),
                 Dict.COMMENT.toString()
         );
-    }
 
-    public Pane getView() {
-        return mListForm.getView();
+        setListCellFactory(XyzContentListCell.class);
     }
 
 }

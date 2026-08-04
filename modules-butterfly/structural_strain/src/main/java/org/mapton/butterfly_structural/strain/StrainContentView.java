@@ -16,7 +16,6 @@
 package org.mapton.butterfly_structural.strain;
 
 import javafx.collections.ListChangeListener;
-import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
@@ -32,7 +31,6 @@ import se.trixon.almond.util.Dict;
  */
 public class StrainContentView extends BContentView {
 
-    private final SingleListForm<StrainManager, BStructuralStrainGaugePoint> mListForm;
     private final StrainManager mManager = StrainManager.getInstance();
 
     public StrainContentView(BContentOptions contentOptions) {
@@ -53,19 +51,15 @@ public class StrainContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new StrainContentListCell());
-
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()
         );
 
+        setListCellFactory(StrainContentListCell.class);
+
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralStrainGaugePoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());
         });
-    }
-
-    public Pane getView() {
-        return mListForm.getView();
     }
 
 }

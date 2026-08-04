@@ -16,7 +16,6 @@
 package org.mapton.butterfly_structural.crack;
 
 import javafx.collections.ListChangeListener;
-import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
@@ -32,7 +31,6 @@ import se.trixon.almond.util.Dict;
  */
 public class CrackContentView extends BContentView {
 
-    private final SingleListForm<CrackManager, BStructuralCrackPoint> mListForm;
     private final CrackManager mManager = CrackManager.getInstance();
 
     public CrackContentView(BContentOptions contentOptions) {
@@ -53,19 +51,15 @@ public class CrackContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new CrackContentListCell());
-
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()
         );
 
+        setListCellFactory(CrackContentListCell.class);
+
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralCrackPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());
         });
-    }
-
-    public Pane getView() {
-        return mListForm.getView();
     }
 
 }

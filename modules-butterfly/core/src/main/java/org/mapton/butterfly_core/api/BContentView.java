@@ -15,18 +15,23 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.util.Callback;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.Mapton;
 import org.mapton.api.ui.MToolBarPopOver;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.core.api.ui.ExportAction;
 import org.mapton.core.api.ui.MPresetPopOver;
+import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionComboBox;
@@ -42,6 +47,7 @@ public abstract class BContentView {
     protected ButterflyFormFilter mFilter;
     protected BaseTabbedFilterPopOver mFilterPopOver;
     protected BLayerOptions mLayerOptions;
+    protected SingleListForm<? extends BaseManager, ? extends BXyzPoint> mListForm;
     protected final ComboBox<Integer> mListLimitComboBox = new ComboBox<>();
     protected final SessionComboBox<BListSortOrder> mListSortOrderScb = new SessionComboBox<>();
     protected MPresetPopOver mPresetPopOver;
@@ -52,6 +58,27 @@ public abstract class BContentView {
         mContentOptions = contentOptions;
         mFilter = filter;
         init();
+    }
+
+    public Pane getView() {
+        return mListForm.getView();
+    }
+
+    public void setListCellFactory(Class<? extends ListCell> cellClass) {
+        @SuppressWarnings("unchecked")
+        Callback rawCellFactory = listView -> {
+            try {
+                var constructor = cellClass.getDeclaredConstructor();
+                constructor.setAccessible(true);
+
+                return constructor.newInstance();
+            } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
+                Exceptions.printStackTrace(e);
+                return new ListCell<>();
+            }
+        };
+
+        mListForm.getListView().setCellFactory(rawCellFactory);
     }
 
     protected void bindFooterLabel(SingleListForm mListForm) {

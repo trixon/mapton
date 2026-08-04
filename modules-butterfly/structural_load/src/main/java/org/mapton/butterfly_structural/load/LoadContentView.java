@@ -16,7 +16,7 @@
 package org.mapton.butterfly_structural.load;
 
 import javafx.collections.ListChangeListener;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.ListCell;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
@@ -32,7 +32,6 @@ import se.trixon.almond.util.Dict;
  */
 public class LoadContentView extends BContentView {
 
-    private final SingleListForm<LoadManager, BStructuralLoadCellPoint> mListForm;
     private final LoadManager mManager = LoadManager.getInstance();
 
     public LoadContentView(BContentOptions contentOptions) {
@@ -53,19 +52,15 @@ public class LoadContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new LoadContentListCell());
-
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()
         );
 
+        setListCellFactory(ListCell.class);
+
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralLoadCellPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());
         });
-    }
-
-    public Pane getView() {
-        return mListForm.getView();
     }
 
 }

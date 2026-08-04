@@ -15,13 +15,11 @@
  */
 package org.mapton.butterfly_rock_extensometer;
 
-import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
-import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
@@ -31,7 +29,6 @@ import se.trixon.almond.util.Dict;
  */
 public class ExtensoContentView extends BContentView {
 
-    private final SingleListForm<ExtensoManager, BRockExtensometer> mListForm;
     private final ExtensoManager mManager = ExtensoManager.getInstance();
 
     public ExtensoContentView(BContentOptions contentOptions) {
@@ -52,15 +49,11 @@ public class ExtensoContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new ExtensoContentListCell());
-
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()
         );
-    }
 
-    public Pane getView() {
-        return mListForm.getView();
+        setListCellFactory(ExtensoContentListCell.class);
     }
 
 }

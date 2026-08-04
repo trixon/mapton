@@ -16,7 +16,6 @@
 package org.mapton.butterfly_topo;
 
 import javafx.collections.ListChangeListener;
-import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
@@ -34,7 +33,6 @@ import se.trixon.almond.util.SDict;
  */
 public class TopoContentView extends BContentView {
 
-    private final SingleListForm<TopoManager, BTopoControlPoint> mListForm;
     private final TopoManager mManager = TopoManager.getInstance();
 
     public TopoContentView(BContentOptions contentOptions) {
@@ -58,8 +56,6 @@ public class TopoContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new TopoContentListCell());
-
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),
                 Dict.CATEGORY.toString(),
@@ -67,13 +63,11 @@ public class TopoContentView extends BContentView {
                 SDict.ALARM.toString()
         );
 
+        setListCellFactory(TopoContentListCell.class);
+
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());
         });
-    }
-
-    public Pane getView() {
-        return mListForm.getView();
     }
 
 }

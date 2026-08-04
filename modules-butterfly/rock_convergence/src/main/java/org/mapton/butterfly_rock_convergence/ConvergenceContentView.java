@@ -15,13 +15,11 @@
  */
 package org.mapton.butterfly_rock_convergence;
 
-import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
-import org.mapton.butterfly_format.types.rock.BRockConvergence;
 import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
@@ -32,10 +30,6 @@ import se.trixon.almond.util.Dict;
  */
 public class ConvergenceContentView extends BContentView {
 
-//    private final ConvergenceFilter mFilter = new ConvergenceFilter();
-//    private final ConvergenceFilterPopOver mFilterPopOver = new ConvergenceFilterPopOver(mFilter);
-//    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "topo.convergence");
-    private final SingleListForm<ConvergenceManager, BRockConvergence> mListForm;
     private final ConvergenceManager mManager = ConvergenceManager.getInstance();
 
     public ConvergenceContentView(BContentOptions contentOptions) {
@@ -56,17 +50,13 @@ public class ConvergenceContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new ConvergenceContentListCell());
-
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),
                 Dict.GROUP.toString(),
                 Dict.COMMENT.toString()
         );
-    }
 
-    public Pane getView() {
-        return mListForm.getView();
+        setListCellFactory(ConvergenceContentListCell.class);
     }
 
 }

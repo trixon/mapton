@@ -17,7 +17,6 @@ package org.mapton.butterfly_remote.insar;
 
 import java.util.List;
 import javafx.collections.ListChangeListener;
-import javafx.scene.layout.Pane;
 import org.apache.commons.collections.ListUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -39,10 +38,9 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class InsarContentView extends BContentView {
 
-    private final SingleListForm<InsarManager, BRemoteInsarPoint> mListForm;
     private final InsarManager mManager = InsarManager.getInstance();
     private Action mRefreshAction;
-    private Action mClearAction;
+    private final Action mClearAction;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
 
     public InsarContentView(BContentOptions contentOptions) {
@@ -87,19 +85,15 @@ public class InsarContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new InsarContentListCell());
-
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()
         );
 
+        setListCellFactory(InsarContentListCell.class);
+
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BRemoteInsarPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());
         });
-    }
-
-    public Pane getView() {
-        return mListForm.getView();
     }
 
 }

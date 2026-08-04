@@ -15,13 +15,11 @@
  */
 package org.mapton.butterfly_geo_reinforcement;
 
-import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
-import org.mapton.butterfly_format.types.geo.BGeoReinforcementPoint;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
@@ -31,7 +29,6 @@ import se.trixon.almond.util.Dict;
  */
 public class ReinforcementContentView extends BContentView {
 
-    private final SingleListForm<ReinforcementManager, BGeoReinforcementPoint> mListForm;
     private final ReinforcementManager mManager = ReinforcementManager.getInstance();
 
     public ReinforcementContentView(BContentOptions contentOptions) {
@@ -54,17 +51,13 @@ public class ReinforcementContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new ReinforcementContentListCell());
-
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),
                 Dict.GROUP.toString(),
                 Dict.COMMENT.toString()
         );
-    }
 
-    public Pane getView() {
-        return mListForm.getView();
+        setListCellFactory(ReinforcementContentListCell.class);
     }
 
 }

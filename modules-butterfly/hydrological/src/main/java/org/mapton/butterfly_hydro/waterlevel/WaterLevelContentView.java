@@ -16,7 +16,6 @@
 package org.mapton.butterfly_hydro.waterlevel;
 
 import javafx.collections.ListChangeListener;
-import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
@@ -32,7 +31,6 @@ import se.trixon.almond.util.Dict;
  */
 public class WaterLevelContentView extends BContentView {
 
-    private final SingleListForm<WaterLevelManager, BHydroWaterLevelPoint> mListForm;
     private final WaterLevelManager mManager = WaterLevelManager.getInstance();
 
     public WaterLevelContentView(BContentOptions contentOptions) {
@@ -53,22 +51,18 @@ public class WaterLevelContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new WaterLevelContentListCell());
-
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),
                 Dict.CATEGORY.toString(),
                 Dict.GROUP.toString()
         );
 
+        setListCellFactory(WaterLevelContentListCell.class);
+
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BHydroWaterLevelPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());
         });
 
-    }
-
-    public Pane getView() {
-        return mListForm.getView();
     }
 
 }

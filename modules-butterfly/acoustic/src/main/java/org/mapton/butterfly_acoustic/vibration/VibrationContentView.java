@@ -15,13 +15,11 @@
  */
 package org.mapton.butterfly_acoustic.vibration;
 
-import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
-import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
@@ -31,7 +29,6 @@ import se.trixon.almond.util.Dict;
  */
 public class VibrationContentView extends BContentView {
 
-    private final SingleListForm<VibrationManager, BAcousticVibrationPoint> mListForm;
     private final VibrationManager mManager = VibrationManager.getInstance();
 
     public VibrationContentView(BContentOptions contentOptions) {
@@ -52,17 +49,13 @@ public class VibrationContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new VibrationContentListCell());
-
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),
                 Dict.GROUP.toString(),
                 Dict.COMMENT.toString()
         );
-    }
 
-    public Pane getView() {
-        return mListForm.getView();
+        setListCellFactory(VibrationContentListCell.class);
     }
 
 }

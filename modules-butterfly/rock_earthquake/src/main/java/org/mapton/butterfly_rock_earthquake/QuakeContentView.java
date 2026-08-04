@@ -15,13 +15,11 @@
  */
 package org.mapton.butterfly_rock_earthquake;
 
-import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
-import org.mapton.butterfly_format.types.rock.BRockEarthquake;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
@@ -31,9 +29,7 @@ import se.trixon.almond.util.Dict;
  */
 public class QuakeContentView extends BContentView {
 
-    private final SingleListForm<QuakeManager, BRockEarthquake> mListForm;
     private final QuakeManager mManager = QuakeManager.getInstance();
-//    private final MPresetPopOver mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "earthquakes");
 
     public QuakeContentView(BContentOptions contentOptions) {
         super(contentOptions, new QuakeFilter());
@@ -53,17 +49,13 @@ public class QuakeContentView extends BContentView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new QuakeContentListCell());
-
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),
                 Dict.GROUP.toString(),
                 Dict.COMMENT.toString()
         );
-    }
 
-    public Pane getView() {
-        return mListForm.getView();
+        setListCellFactory(QuakeContentListCell.class);
     }
 
 }
