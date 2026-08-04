@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Patrik Karlström.
+ * Copyright 2026 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,17 @@
  */
 package org.mapton.butterfly_topo.grade;
 
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.collections.ListChangeListener;
 import org.controlsfx.control.action.Action;
+import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_core.api.BContentOptions;
+import org.mapton.butterfly_core.api.BContentView;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.core.api.ui.MPresetPopOver;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -31,26 +34,33 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-public class GradeView {
+public abstract class GradeContentView extends BContentView {
 
-    protected ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
-    protected GradeFilter mFilter;
-    protected GradeFilterPopOver mFilterPopOver;
-    protected MPresetPopOver mPresetPopOver;
-    protected SingleListForm mListForm;
+    protected final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
+    protected final GradeFilterConfig mFilterConfig = new GradeFilterConfig();
     protected GradeManagerBase mManager;
-    protected Action mRefreshAction;
-    protected final TopoManager mTopoManager = TopoManager.getInstance();
+    protected final SubToolBarConfig mSubToolBarConfig = new SubToolBarConfig(null, true);
+    private Action mRefreshAction;
 
-    public GradeView() {
+    public GradeContentView(BContentOptions contentOptions, ButterflyFormFilter filter) {
+        super(contentOptions, filter);
+
         mRefreshAction = new Action(Dict.REFRESH.toString(), actionEvent -> {
             mRefreshAction.setDisabled(true);
-//            new Thread(() -> mManager.load()).start();
             mManager.load();
         });
         mRefreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
         initListeners();
+    }
+
+    public ArrayList<Action> getToolBarActions() {
+        var toolBarActions = new ArrayList<>(getDefaultToolBarActions());
+        toolBarActions.get(3).setDisabled(true);
+        toolBarActions.add(4, mRefreshAction);
+        toolBarActions.add(4, ActionUtils.ACTION_SEPARATOR);
+
+        return toolBarActions;
     }
 
     private void initListeners() {

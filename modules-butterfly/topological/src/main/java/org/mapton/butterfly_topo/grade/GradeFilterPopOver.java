@@ -21,6 +21,7 @@ import javafx.scene.layout.BorderPane;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_topo.grade.distance.GradeDManager;
 import org.mapton.butterfly_topo.grade.horizontal.GradeHManager;
@@ -39,7 +40,7 @@ public class GradeFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionMisc mFilterSectionMisc;
     private final GradeManagerBase mManager;
 
-    public GradeFilterPopOver(Class clazz, GradeFilter filter, GradeFilterConfig config) {
+    public GradeFilterPopOver(Class clazz, ButterflyFormFilter filter, GradeFilterConfig config) {
         switch (config.getAxis()) {
             case HORIZONTAL:
                 mManager = GradeHManager.getInstance();
@@ -55,7 +56,7 @@ public class GradeFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMeas = new FilterSectionMeas(config);
         mFilterSectionMisc = new BFilterSectionMisc(filter);
 
-        mFilter = filter;
+        mFilter = (GradeFilter) filter;
         mFilter.setFilterSection(mFilterSectionDate);
         mFilter.setFilterSection(mFilterSectionMeas);
 

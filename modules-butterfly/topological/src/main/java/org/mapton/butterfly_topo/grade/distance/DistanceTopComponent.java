@@ -77,7 +77,7 @@ public final class DistanceTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var gradeView = new DistanceContentView();
+        var gradeView = new DistanceContentView(DistanceContentOptions.getInstance());
 
         return new Scene(gradeView.getView());
     }

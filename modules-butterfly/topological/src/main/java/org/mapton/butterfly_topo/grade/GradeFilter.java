@@ -19,6 +19,7 @@ import j2html.tags.ContainerTag;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
@@ -37,8 +38,10 @@ public class GradeFilter extends ButterflyFormFilter<GradeManagerBase> implement
     private FilterSectionMeas mFilterSectionMeas;
     private final GradeManagerBase mManager;
 
-    public GradeFilter(GradeManagerBase manager) {
+    public GradeFilter(GradeManagerBase manager, BContentOptions contentOptions) {
         super(manager);
+        mContentOptions = contentOptions;
+
         mManager = manager;
         initListeners();
     }

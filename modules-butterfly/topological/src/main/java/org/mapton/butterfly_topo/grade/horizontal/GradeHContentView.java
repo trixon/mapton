@@ -15,16 +15,14 @@
  */
 package org.mapton.butterfly_topo.grade.horizontal;
 
-import java.util.Arrays;
-import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_format.types.BAxis;
+import org.mapton.butterfly_topo.grade.GradeContentView;
 import org.mapton.butterfly_topo.grade.GradeFilter;
-import org.mapton.butterfly_topo.grade.GradeFilterConfig;
 import org.mapton.butterfly_topo.grade.GradeFilterPopOver;
-import org.mapton.butterfly_topo.grade.GradeView;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
@@ -32,41 +30,34 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class GradeHContentView extends GradeView {
+public class GradeHContentView extends GradeContentView {
 
-    public GradeHContentView() {
+    public GradeHContentView(BContentOptions contentOptions) {
+        super(contentOptions, new GradeFilter(GradeHManager.getInstance(), HorizontalContentOptions.getInstance()));
         mManager = GradeHManager.getInstance();
-        mFilter = new GradeFilter(mManager);
-        var config = new GradeFilterConfig();
-        config.setKeyPrefix("_1");
-        config.setMinGradeHorizontal(10.0);
-        config.setMaxDeltaH(10.0);
-        config.setMaxDeltaR(GradeHManager.MAX_RADIAL_DISTANCE);
-        config.setAxis(BAxis.HORIZONTAL);
+        mFilterConfig.setKeyPrefix("_1");
+        mFilterConfig.setMinGradeHorizontal(10.0);
+        mFilterConfig.setMaxDeltaH(10.0);
+        mFilterConfig.setMaxDeltaR(GradeHManager.MAX_RADIAL_DISTANCE);
+        mFilterConfig.setAxis(BAxis.HORIZONTAL);
 
-        mFilterPopOver = new GradeFilterPopOver(getClass(), mFilter, config);
+        mFilterPopOver = new GradeFilterPopOver(getClass(), mFilter, mFilterConfig);
+        mLayerOptions = GradeHLayerOptions.getInstance();
+
         mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "gradeH");
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
+        var subToolBarActions = getDefaultSubToolBarActions(mManager, mSubToolBarConfig);
+        mToolBarPopOver.setToolBar(ActionUtils.createToolBar(subToolBarActions, ActionUtils.ActionTextBehavior.SHOW));
 
-        var actions = Arrays.asList(
-                mRefreshAction,
-                ActionUtils.ACTION_SPAN,
-                mFilter.getInfoPopOver().getAction(),
-                mPresetPopOver.getAction(),
-                mFilterPopOver.getAction()
-        );
         mListForm = new SingleListForm<>(mManager, mBundle.getString("grade_h"));
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
-                .setToolbarActions(actions);
+                .setToolbarActions(getToolBarActions());
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new GradeHContentListCell());
         mListForm.setFreeTextTooltip(Dict.NAME.toString());
+        setListCellFactory(GradeHContentListCell.class);
     }
 
-    public Pane getView() {
-        return mListForm.getView();
-    }
 }
