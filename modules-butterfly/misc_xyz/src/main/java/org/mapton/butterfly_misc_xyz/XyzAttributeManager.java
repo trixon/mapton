@@ -18,7 +18,6 @@ package org.mapton.butterfly_misc_xyz;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
-import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
@@ -35,6 +34,7 @@ public class XyzAttributeManager extends BaseAttributeManager {
     private BasicShapeAttributes mComponentGroundPathAttributes;
     private PointPlacemarkAttributes mSinglePinAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
+    private PointPlacemarkAttributes mPinAttributes;
 
     public static XyzAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -68,16 +68,17 @@ public class XyzAttributeManager extends BaseAttributeManager {
 
     @Override
     public PointPlacemarkAttributes getPinAttributes(Color color) {
-        if (mSinglePinAttributes == null) {
-            mSinglePinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mSinglePinAttributes.setImageAddress("https://maps.google.com/mapfiles/kml/shapes/falling_rocks.png");
-            mSinglePinAttributes.setImageColor(color);
-            mSinglePinAttributes.setScale(Mapton.getScalePinImage());
-            mSinglePinAttributes.setLabelScale(Mapton.getScalePinLabel());
-            mSinglePinAttributes.setImageOffset(Offset.BOTTOM_CENTER);
+        if (mPinAttributes == null) {
+            mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
+            mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
+            mPinAttributes.setImageColor(color);
+            mPinAttributes.setScale(Mapton.getScalePinImage() * 2);
+            mPinAttributes.setLabelScale(Mapton.getScalePinLabel());
         }
 
-        return mSinglePinAttributes;
+        var attrs = new PointPlacemarkAttributes(mPinAttributes);
+
+        return attrs;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {

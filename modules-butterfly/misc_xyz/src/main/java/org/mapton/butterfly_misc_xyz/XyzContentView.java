@@ -23,6 +23,7 @@ import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_core.api.AddToBasePointsAction;
 import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.butterfly_core.api.base.XyzManager;
@@ -38,7 +39,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class XyzContentView extends BContentView {
 
     private final Action mClearAction;
-
     private final SingleListForm<XyzManager, BXyzPoint> mListForm;
     private final XyzManager mManager = XyzManager.getInstance();
 
@@ -57,8 +57,13 @@ public class XyzContentView extends BContentView {
 
         mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "xyz");
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
-        var config = new SubToolBarConfig(null, true);
+        var config = new SubToolBarConfig(null, false);
         var defaultSubToolBarActions = getDefaultSubToolBarActions(mManager, config);
+        defaultSubToolBarActions.forEach(action -> {
+            if (action instanceof AddToBasePointsAction) {
+                action.setDisabled(true);
+            }
+        });
         var subToolBarActions = ListUtils.sum(defaultSubToolBarActions, customToolBarActions);
         mToolBarPopOver.setToolBar(ActionUtils.createToolBar(subToolBarActions, ActionUtils.ActionTextBehavior.SHOW));
 

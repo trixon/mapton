@@ -21,7 +21,6 @@ import org.controlsfx.control.action.Action;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.base.XyzManager;
 import org.mapton.butterfly_format.types.BXyzPoint;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -31,7 +30,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class AddToBasePointsAction extends Action {
 
     public AddToBasePointsAction(BaseManager manager) {
-        super(Dict.ADD.toString());
+        super("Lägg till i 'Baspunkter'");
         setEventHandler(actionEvent -> {
             var xyzManager = XyzManager.getInstance();
             if (manager != xyzManager) {

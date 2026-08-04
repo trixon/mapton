@@ -31,8 +31,8 @@ import org.openide.util.lookup.ServiceProvider;
 public class XyzManager extends BaseManager<BXyzPoint> {
 
     private final static String DISRUPTOR_NAME = "Baspunkt";
-//    private final XyzLayerOptions mLayerOptions = BlastLayerOptions.getInstance();
-//    private final BlastPropertiesBuilder mPropertiesBuilder = new BlastPropertiesBuilder();
+//    private final XyzLayerOptions mLayerOptions = XyzLayerOptions.getInstance();
+    private final XyzPropertiesBuilder mPropertiesBuilder = new XyzPropertiesBuilder();
 
     public static XyzManager getInstance() {
         return Holder.INSTANCE;
@@ -65,8 +65,7 @@ public class XyzManager extends BaseManager<BXyzPoint> {
 
     @Override
     public Object getObjectProperties(BXyzPoint selectedObject) {
-//        return mPropertiesBuilder.build(selectedObject);
-        return null;
+        return mPropertiesBuilder.build(selectedObject);
     }
 
     @Override

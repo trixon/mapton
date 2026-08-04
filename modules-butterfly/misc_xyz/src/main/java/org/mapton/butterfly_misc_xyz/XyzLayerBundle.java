@@ -25,6 +25,7 @@ import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
+import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_core.api.base.XyzManager;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_misc_xyz.graphics.GraphicRenderer;
@@ -151,7 +152,8 @@ public class XyzLayerBundle extends BfLayerBundle {
     }
 
     private PointPlacemark plotPin(BXyzPoint p, Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes(Color.WHITE);
+        var attrs = mAttributeManager.getPinAttributes(Color.MAGENTA.brighter());
+        attrs = PinPaddle.N_STAR.applyToCopy(attrs);
         p.setValue(BKey.PIN_URL, attrs.getImageAddress());
         p.setValue(BKey.PIN_COLOR, attrs.getImageColor());
 

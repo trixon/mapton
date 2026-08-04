@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_misc_xyz;
+package org.mapton.butterfly_core.api.base;
 
 import java.util.LinkedHashMap;
 import java.util.Objects;
@@ -42,9 +42,9 @@ public class XyzPropertiesBuilder extends PropertiesBuilder<BXyzPoint> {
         propertyMap.put(getCatKey(cat1, "Ext.id"), p.getExternalId());
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
+        propertyMap.put(getCatKey(cat1, Dict.CATEGORY.toString()), p.getCategory());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
         propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), date);
-//        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
         propertyMap.put(getCatKey(cat1, "N"), MathHelper.convertDoubleToString(p.getZeroY(), 0));
         propertyMap.put(getCatKey(cat1, "E"), MathHelper.convertDoubleToString(p.getZeroX(), 0));
         propertyMap.put(getCatKey(cat1, "H"), MathHelper.convertDoubleToString(p.getZeroZ(), 1));

@@ -46,7 +46,7 @@ import org.openide.windows.TopComponent;
         preferredID = "XyzTopComponent"
 )
 @Messages({
-    "CTL_XyzAction=Xyz"
+    "CTL_XyzAction=Baspunkter"
 })
 public final class XyzTopComponent extends MTopComponent {
 
