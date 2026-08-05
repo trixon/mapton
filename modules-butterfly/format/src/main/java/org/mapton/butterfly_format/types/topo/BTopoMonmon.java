@@ -13,32 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_format.types.monmon;
+package org.mapton.butterfly_format.types.topo;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_format.types.BBasePoint;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BMonmon extends BBasePoint {
+public class BTopoMonmon extends BTopoControlPoint {
 
-    private final BTopoControlPoint mControlPoint;
     private Ext mExt;
     private final int[] mMeasCount = new int[365];
-    private final int mMeasPerDay;
+    private int mMeasPerDay;
     private String mStationName;
     private BTopoControlPoint mStationPoint;
+    private BTopoControlPoint mControlPoint;
 
-    public BMonmon(BTopoControlPoint controlPoint, int measPerDay, String stationName) {
-        mControlPoint = controlPoint;
+    public BTopoMonmon(int measPerDay, String stationName, BTopoControlPoint controlPoint) {
         mMeasPerDay = measPerDay;
         mStationName = stationName;
+        mControlPoint = controlPoint;
     }
 
+    @Override
     public Ext ext() {
         if (mExt == null) {
             mExt = new Ext();
@@ -51,32 +51,12 @@ public class BMonmon extends BBasePoint {
         return mControlPoint;
     }
 
-    @Override
-    public String getGroup() {
-        return mControlPoint.getGroup();
-    }
-
-    @Override
-    public Double getLat() {
-        return mControlPoint.getLat();
-    }
-
-    @Override
-    public Double getLon() {
-        return mControlPoint.getLon();
-    }
-
     public int[] getMeasCount() {
         return mMeasCount;
     }
 
     public int getMeasPerDay() {
         return mMeasPerDay;
-    }
-
-    @Override
-    public String getName() {
-        return mControlPoint.getName();
     }
 
     public double getQuota(int index) {
@@ -114,23 +94,52 @@ public class BMonmon extends BBasePoint {
     }
 
     public void setStationPoint(BTopoControlPoint stationPoint) {
-        this.mStationPoint = stationPoint;
+        mStationPoint = stationPoint;
     }
 
-    public class Ext extends BBasePoint.Ext<BStructuralCrackPointObservation> {
+    public class Ext extends BTopoControlPoint.Ext {
+
+        @Override
+        public LocalDate getObservationRawFirstDate() {
+            try {
+                var p = BTopoMonmon.this.getButterfly().topo().getControlPointByName(BTopoMonmon.this.getName());
+                return p.ext().getObservationRawFirst().getDate().toLocalDate();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        @Override
+        public LocalDate getObservationRawLastDate() {
+            try {
+                return getTcp().ext().getObservationRawLast().getDate().toLocalDate();
+            } catch (Exception e) {
+                return null;
+            }
+        }
 
         public double getDelta1d() {
-            return Math.abs(mControlPoint.getZeroZ() - mStationPoint.getZeroZ());
+            return Math.abs(getZeroZ() - mStationPoint.getZeroZ());
         }
 
         public double getDelta2d() {
-            double dx = mStationPoint.getZeroX() - mControlPoint.getZeroX();
-            double dy = mStationPoint.getZeroY() - mControlPoint.getZeroY();
+            double dx = mStationPoint.getZeroX() - getZeroX();
+            double dy = mStationPoint.getZeroY() - getZeroY();
             return Math.hypot(dx, dy);
         }
 
         public double getDelta3d() {
             return Math.hypot(getDelta1d(), getDelta2d());
+        }
+
+        @Override
+        public ArrayList<BTopoControlPointObservation> getObservationsAllRaw() {
+            return getTcp().ext().getObservationsAllRaw();
+        }
+
+        private BTopoControlPoint getTcp() {
+            return BTopoMonmon.this.getButterfly().topo().getControlPointByName(BTopoMonmon.this.getName());
+
         }
     }
 

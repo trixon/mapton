@@ -34,6 +34,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
+import org.mapton.butterfly_format.io.DataCloner;
 import org.mapton.butterfly_format.io.ImportFromCsv;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAreaActivity;
@@ -64,7 +65,6 @@ import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
 import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPointObservation;
-import org.mapton.butterfly_format.types.monmon.BMonmon;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPointObservation;
 import org.mapton.butterfly_format.types.remote.RemoteInsarPointDefaultsConfig;
@@ -95,6 +95,7 @@ import org.mapton.butterfly_format.types.tmo.BVaderstation;
 import org.mapton.butterfly_format.types.tmo.BVattenkemi;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
+import org.mapton.butterfly_format.types.topo.BTopoMonmon;
 
 /**
  *
@@ -102,7 +103,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
  */
 public class Butterfly {
 
-    public static final int FORMAT = 7;
+    public static final int FORMAT = 8;
     public static final String KEY_FORMAT = "FORMAT";
     public static final String KEY_TIMESTAMP = "TIMESTAMP";
     public static final String VERSION_FILE = "version.properties";
@@ -122,7 +123,6 @@ public class Butterfly {
     private final Meteo mMeteo = new Meteo();
     private final ArrayList<BMeteoPoint> mMeteoPoints = new ArrayList<>();
     private final ArrayList<BMeteoPointObservation> mMeteoPointsObservations = new ArrayList<>();
-    private final ArrayList<BMonmon> mMonmons = new ArrayList<>();
     private final Noise mNoise = new Noise();
     private final Remote mRemote = new Remote();
     private final ArrayList<BRemoteInsarPoint> mRemoteInsarPoints = new ArrayList<>();
@@ -153,6 +153,7 @@ public class Butterfly {
     private final Topo mTopo = new Topo();
     private final ArrayList<BTopoControlPoint> mTopoControlPoints = new ArrayList<>();
     private final ArrayList<BTopoControlPointObservation> mTopoControlPointsObservations = new ArrayList<>();
+    private final ArrayList<BTopoMonmon> mTopoMonmons = new ArrayList<>();
     private final ArrayList<BAcousticVibrationChannel> mVibrationChannels = new ArrayList<>();
     private final ArrayList<BAcousticVibrationLimit> mVibrationLimits = new ArrayList<>();
     private final ArrayList<BAcousticVibrationObservation> mVibrationObservations = new ArrayList<>();
@@ -192,10 +193,6 @@ public class Butterfly {
 
     public ButterflyManipulator getManipulator() {
         return mManipulator;
-    }
-
-    public ArrayList<BMonmon> getMonmons() {
-        return mMonmons;
     }
 
     public ArrayList<BRoi> getRois() {
@@ -329,6 +326,7 @@ public class Butterfly {
                 mStructuralStrainPoints,
                 mStructuralTiltPoints,
                 mTopoControlPoints,
+                mTopoMonmons,
                 mVibrationPoints
         ).forEach(items -> items.forEach(item -> item.setButterfly(this)));
 
@@ -387,7 +385,8 @@ public class Butterfly {
     }
 
     private void populateMonmon() {
-        var list = new ArrayList<BMonmon>();
+        var dataCloner = new DataCloner();
+        var list = new ArrayList<BTopoMonmon>();
         var config = MonmonConfig.getInstance().getConfig();
         for (var iterator = config.getKeys(); iterator.hasNext();) {
             try {
@@ -399,7 +398,8 @@ public class Butterfly {
                     if (items.length > 1) {
                         belongsTo = items[1];
                     }
-                    var m = new BMonmon(p, Integer.parseInt(items[0]), belongsTo);
+                    var m = new BTopoMonmon(Integer.parseInt(items[0]), belongsTo, p);
+                    dataCloner.convert(m, p);
                     list.add(m);
                 }
             } catch (NumberFormatException e) {
@@ -407,8 +407,8 @@ public class Butterfly {
             }
         }
 
-        mMonmons.clear();
-        mMonmons.addAll(list);
+        mTopoMonmons.clear();
+        mTopoMonmons.addAll(list);
     }
 
     public class Dev {
@@ -913,6 +913,10 @@ public class Butterfly {
 
         public HashSet<String> getDeformationPoints() {
             return mDeformationPoints;
+        }
+
+        public ArrayList<BTopoMonmon> getMonmons() {
+            return mTopoMonmons;
         }
 
         public void initDeformationPoints() {
