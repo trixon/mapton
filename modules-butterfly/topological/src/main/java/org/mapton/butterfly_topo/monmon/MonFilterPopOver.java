@@ -15,15 +15,22 @@
  */
 package org.mapton.butterfly_topo.monmon;
 
+import com.dlsc.gemsfx.util.SessionManager;
 import java.util.prefs.Preferences;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Separator;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import static org.mapton.api.ui.MPopOver.GAP;
 import static org.mapton.api.ui.MPopOver.autoSize;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
-import org.mapton.butterfly_core.api.BaseFilterPopOver;
+import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionMisc;
+import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
+import org.openide.util.NbPreferences;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -32,43 +39,71 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
-public class MonFilterPopOver extends BaseFilterPopOver {
+public class MonFilterPopOver extends BaseTabbedFilterPopOver {
 
     private final double mDefault1 = 0.0;
     private final double mDefault14 = 0.8;
     private final double mDefault7 = 0.5;
     private final MonFilter mFilter;
+    private final BFilterSectionDate mFilterSectionDate;
+    private final BFilterSectionMisc mFilterSectionMisc;
+    private final BFilterSectionPoint mFilterSectionPoint;
     private final CheckBox mLatest14Checkbox = new CheckBox();
     private final SessionDoubleSpinner mLatest14Sds = new SessionDoubleSpinner(-1.0, 1.0, mDefault14, 0.05);
     private final CheckBox mLatest1Checkbox = new CheckBox();
     private final SessionDoubleSpinner mLatest1Sds = new SessionDoubleSpinner(-1.0, 1.0, mDefault1, 0.05);
     private final CheckBox mLatest7Checkbox = new CheckBox();
     private final SessionDoubleSpinner mLatest7Sds = new SessionDoubleSpinner(-1.0, 1.0, mDefault7, 0.05);
+    private final MonManager mManager = MonManager.getInstance();
 
-    public MonFilterPopOver(MonFilter filter) {
-        mFilter = filter;
+    public MonFilterPopOver(ButterflyFormFilter filter) {
+        mFilterSectionPoint = new BFilterSectionPoint();
+        mFilterSectionDate = new BFilterSectionDate();
+        mFilterSectionMisc = new BFilterSectionMisc(filter);
+
+        mFilter = (MonFilter) filter;
+
+        mFilter.setFilterSection(mFilterSectionPoint);
+        mFilter.setFilterSection(mFilterSectionDate);
+        mFilter.setFilterSection(mFilterSectionMisc);
+
+        setFilter(filter);
         createUI();
         initListeners();
-        initSession();
+        initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
+
+        populate();
     }
 
     @Override
     public void clear() {
         setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
-        mLatest1Checkbox.setSelected(false);
-        mLatest1Sds.getValueFactory().setValue(mDefault1);
-        mLatest7Checkbox.setSelected(false);
-        mLatest7Sds.getValueFactory().setValue(mDefault7);
-        mLatest14Checkbox.setSelected(false);
-        mLatest14Sds.getValueFactory().setValue(mDefault14);
+
+        mFilterSectionPoint.clear();
+        mFilterSectionDate.clear();
+        mFilterSectionMisc.clear();
+
+        resetTabs();
+        setUsePolygonFilter(false);
+//        mLatest1Checkbox.setSelected(false);
+//        mLatest1Sds.getValueFactory().setValue(mDefault1);
+//        mLatest7Checkbox.setSelected(false);
+//        mLatest7Sds.getValueFactory().setValue(mDefault7);
+//        mLatest14Checkbox.setSelected(false);
+//        mLatest14Sds.getValueFactory().setValue(mDefault14);
     }
 
     @Override
     public void load(Butterfly butterfly) {
-        mLatest1Sds.load();
-        mLatest7Sds.load();
-        mLatest14Sds.load();
+        var mons = mManager.getAllItems();
+
+        mFilterSectionPoint.load(mons);
+        mFilterSectionDate.load(mManager.getTemporalRange());
+        mFilterSectionMisc.load();
+//        mLatest1Sds.load();
+//        mLatest7Sds.load();
+//        mLatest14Sds.load();
     }
 
     @Override
@@ -77,27 +112,62 @@ public class MonFilterPopOver extends BaseFilterPopOver {
     }
 
     @Override
+    public void onShownFirstTime() {
+        mFilterSectionPoint.onShownFirstTime();
+    }
+
+    @Override
     public void presetRestore(Preferences preferences) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        clear();
+        presetStore(preferences);
     }
 
     @Override
     public void presetStore(Preferences preferences) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
     }
 
     @Override
     public void reset() {
         clear();
-
         if (getFilterPresetPopOver().restoreDefaultIfExists()) {
             //
         } else {
-            //
+            mFilterSectionPoint.reset(null);
+            mFilterSectionMisc.reset(null);
         }
     }
 
     private void createUI() {
+        var root = new BorderPane(getTabPane());
+        root.setTop(getToolBar());
+        populateToolBar(mFilterSectionMisc.getInvertCheckboxToolBarItem(), mFilterSectionMisc.getInvisibleCheckboxToolBarItem());
+
+        getTabPane().getTabs().addAll(
+                mFilterSectionPoint.getTab(),
+                mFilterSectionDate.getTab()
+        );
+
+        setContentNode(root);
+
+//        mFilterSectionPoint.disable(
+//                PointElement.CATEGORY,
+//                PointElement.FREQUENCY,
+//                PointElement.FREQUENCY_DEFAULT,
+//                PointElement.FREQUENCY_DEFAULT_STAT,
+//                PointElement.MEAS_MODE,
+//                PointElement.MEAS_NEXT,
+//                PointElement.STATUS
+//        );
+//
+//        mFilterSectionDate.disable(
+//                DateElement.FIRST,
+//                DateElement.HAS_FROM_TO
+//        );
+    }
+
+    private void createUI_OLD() {
         mLatest1Checkbox.setText("Senaste dygnet");
         mLatest7Checkbox.setText("Senaste veckan");
         mLatest14Checkbox.setText("Senaste två veckorna");
@@ -133,7 +203,13 @@ public class MonFilterPopOver extends BaseFilterPopOver {
     }
 
     private void initListeners() {
-        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
+        activatePasteName(actionEvent -> {
+            mFilter.freeTextProperty().set(mManager.getSelectedItem().getName());
+//            mFilterSectionAlarm.getSameAlarmCheckBox().setSelected(true);
+        });
+
+//        mFilterSectionMeas.initListeners(mFilter);
+        mFilterSectionMisc.initListeners(mFilter);
 
         mFilter.latest1Property().bind(mLatest1Checkbox.selectedProperty());
         mFilter.latest1ValueProperty().bind(mLatest1Sds.sessionValueProperty());
@@ -146,15 +222,24 @@ public class MonFilterPopOver extends BaseFilterPopOver {
         mLatest7Sds.disableProperty().bind(mLatest7Checkbox.selectedProperty().not());
         mLatest14Sds.disableProperty().bind(mLatest14Checkbox.selectedProperty().not());
 
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
         mFilter.initCheckModelListeners();
     }
 
-    private void initSession() {
-        var sessionManager = getSessionManager();
-        getSessionManager().register("filter.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.latest1", mLatest1Checkbox.selectedProperty());
-        sessionManager.register("filter.latest7", mLatest7Checkbox.selectedProperty());
-        sessionManager.register("filter.latest14", mLatest14Checkbox.selectedProperty());
+//    private void initSession() {
+//        var sessionManager = getSessionManager();
+//        getSessionManager().register("filter.freeText", mFilter.freeTextProperty());
+//        sessionManager.register("filter.latest1", mLatest1Checkbox.selectedProperty());
+//        sessionManager.register("filter.latest7", mLatest7Checkbox.selectedProperty());
+//        sessionManager.register("filter.latest14", mLatest14Checkbox.selectedProperty());
+//    }
+    private SessionManager initSession(Preferences preferences) {
+        var sessionManager = new SessionManager(preferences);
+        mFilterSectionPoint.initSession(sessionManager);
+        mFilterSectionDate.initSession(sessionManager);
+        mFilterSectionMisc.initSession(sessionManager);
+
+        return sessionManager;
     }
 
 }

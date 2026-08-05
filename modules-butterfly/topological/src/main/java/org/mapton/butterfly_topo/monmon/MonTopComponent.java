@@ -28,7 +28,7 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.butterfly-monmon//Act//EN",
+        dtd = "-//org.mapton.butterfly-topo//Monmon//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -37,7 +37,7 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
-@ActionID(category = "Butterfly", id = "org.mapton.butterfly-monmon.MonmonTopComponent")
+@ActionID(category = "Butterfly", id = "org.mapton.butterfly-topo.MonmonTopComponent")
 @ActionReferences({
     @ActionReference(path = "Menu/MapTools/Butterfly/Topo", position = 100)
 })
@@ -60,7 +60,7 @@ public final class MonTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var hydroView = new MonContentView();
+        var hydroView = new MonContentView(MonContentOptions.getInstance());
 
         return new Scene(hydroView.getView());
     }

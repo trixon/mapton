@@ -17,55 +17,42 @@ package org.mapton.butterfly_topo.monmon;
 
 import java.util.Objects;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.layout.VBox;
-import org.mapton.butterfly_format.types.monmon.BMonmon;
+import org.mapton.butterfly_core.api.BContentListCell;
+import org.mapton.butterfly_format.types.topo.BTopoMonmon;
 import se.trixon.almond.util.DateHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class MonContentListCell extends ListCell<BMonmon> {
+class MonContentListCell extends BContentListCell<BTopoMonmon> {
 
     private final Label mDateLabel = new Label();
     private final Label mNameLabel = new Label();
     private final Label mStationLabel = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
-    private VBox mVBox;
 
     public MonContentListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BMonmon mon, boolean empty) {
-        super.updateItem(mon, empty);
-        if (mon == null || empty) {
-            clearContent();
-        } else {
-            addContent(mon);
-        }
-    }
-
-    private void addContent(BMonmon mon) {
+    protected void addContent(BTopoMonmon mon) {
         setText(null);
         mNameLabel.setText(mon.getName());
         mStationLabel.setText(mon.getStationName());
-        var firstRaw = Objects.toString(DateHelper.toDateString(mon.getControlPoint().ext().getObservationRawFirstDate()), "");
-        var lastRaw = Objects.toString(DateHelper.toDateString(mon.getControlPoint().ext().getObservationRawLastDate()), "");
+        var firstRaw = Objects.toString(DateHelper.toDateString(mon.ext().getObservationRawFirstDate()), "");
+        var lastRaw = Objects.toString(DateHelper.toDateString(mon.ext().getObservationRawLastDate()), "");
         mDateLabel.setText("%s — %s".formatted(firstRaw, lastRaw));
         setGraphic(mVBox);
     }
 
-    private void clearContent() {
-        setText(null);
-        setGraphic(null);
-    }
-
     private void createUI() {
         mNameLabel.setStyle(mStyleBold);
-        mVBox = new VBox(mNameLabel, mStationLabel, mDateLabel);
+        mVBox.getChildren().setAll(
+                mNameLabel,
+                mStationLabel,
+                mDateLabel
+        );
     }
 
 }

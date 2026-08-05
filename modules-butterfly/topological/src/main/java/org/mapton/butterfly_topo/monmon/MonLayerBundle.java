@@ -27,7 +27,7 @@ import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
-import org.mapton.butterfly_format.types.monmon.BMonmon;
+import org.mapton.butterfly_format.types.topo.BTopoMonmon;
 import org.mapton.butterfly_topo.monmon.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
@@ -80,13 +80,18 @@ public class MonLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
+        mLayerOptions.registerLayerBundle(this);
+        mManager.registerLayerBundle(this, mLayerOptionsView);
+    }
+
+    private void initListenersXXX() {
         mLayerOptions.getPreferences().addPreferenceChangeListener(pce -> {
             SwingHelper.runLaterDelayed(50, () -> {
                 resetPaintDelayedResetRunner();
             });
         });
 
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BMonmon> c) -> {
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoMonmon> c) -> {
             repaint();
         });
 
@@ -130,7 +135,7 @@ public class MonLayerBundle extends BfLayerBundle {
                 for (var stationName : stationNames) {
                     var min = mManager.getFilteredItems().stream()
                             .filter(m -> m.getStationName().equalsIgnoreCase(stationName) || m.getName().equalsIgnoreCase(stationName))
-                            .mapToDouble(m -> m.getControlPoint().getZeroZ())
+                            .mapToDouble(m -> m.getZeroZ())
                             .min().orElse(0);
 
                     pointToZ.put(stationName, min);
@@ -169,7 +174,7 @@ public class MonLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BMonmon p, MonLabelBy labelBy, Position position) {
+    private PointPlacemark plotLabel(BTopoMonmon p, MonLabelBy labelBy, Position position) {
         if (labelBy == MonLabelBy.NONE) {
             return null;
         } else {
@@ -181,7 +186,7 @@ public class MonLayerBundle extends BfLayerBundle {
         }
     }
 
-    private PointPlacemark plotPin(BMonmon area, Position position, PointPlacemark labelPlacemark, int stationIndex) {
+    private PointPlacemark plotPin(BTopoMonmon area, Position position, PointPlacemark labelPlacemark, int stationIndex) {
         var attrs = mAttributeManager.getPinAttributes(stationIndex);
         var placemark = new PointPlacemark(position);
 

@@ -15,22 +15,35 @@
  */
 package org.mapton.butterfly_topo.monmon;
 
+import j2html.tags.ContainerTag;
+import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ListChangeListener;
-import org.mapton.api.ui.forms.FormFilter;
+import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
+import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
+import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MonFilter extends FormFilter<MonManager> {
+public class MonFilter extends ButterflyFormFilter<MonManager> implements
+        BFilterSectionMiscProvider,
+        BFilterSectionPointProvider,
+        BFilterSectionDateProvider {
 
     private final SimpleBooleanProperty mLatest14Property = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mLatest14ValueProperty = new SimpleDoubleProperty();
-
     private final SimpleBooleanProperty mLatest1Property = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mLatest1ValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mLatest7Property = new SimpleBooleanProperty();
@@ -40,6 +53,7 @@ public class MonFilter extends FormFilter<MonManager> {
 
     public MonFilter() {
         super(MonManager.getInstance());
+        mContentOptions = MonContentOptions.getInstance();
 
         initListeners();
     }
@@ -69,23 +83,58 @@ public class MonFilter extends FormFilter<MonManager> {
     }
 
     @Override
+    public void setFilterSection(BFilterSectionDate filterSectionDate) {
+        mFilterSectionDate = filterSectionDate;
+        mFilterSectionDate.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
+    public void setFilterSection(BFilterSectionPoint filterSection) {
+        mFilterSectionPoint = filterSection;
+        mFilterSectionPoint.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
     public void update() {
+//        var filteredItems = mManager.getAllItems().stream()
+//                .filter(mon -> mTopoManager.getTimeFilteredItemsMap().containsKey(mon.getName()))
+//                .filter(mon -> validateQuota(mLatest1Property, mLatest1ValueProperty, mon.getQuota(1)))
+//                .filter(mon -> validateQuota(mLatest7Property, mLatest7ValueProperty, mon.getQuota(7)))
+//                .filter(mon -> validateQuota(mLatest14Property, mLatest14ValueProperty, mon.getQuota(14)))
         var filteredItems = mManager.getAllItems().stream()
-                .filter(mon -> validateFreeText(mon.getName(), mon.getStationName()))
-                .filter(mon -> mTopoManager.getTimeFilteredItemsMap().containsKey(mon.getName()))
-                .filter(mon -> validateQuota(mLatest1Property, mLatest1ValueProperty, mon.getQuota(1)))
-                .filter(mon -> validateQuota(mLatest7Property, mLatest7ValueProperty, mon.getQuota(7)))
-                .filter(mon -> validateQuota(mLatest14Property, mLatest14ValueProperty, mon.getQuota(14)))
-                //                .filter(mon -> validateCheck(mStatusCheckModel, ActHelper.getStatusAsString(mon.getStatus())))
-                .filter(mon -> validateCoordinateCircle(mon.getLat(), mon.getLon()))
-                .filter(mon -> validateCoordinateArea(mon.getLat(), mon.getLon()))
-                .filter(mon -> validateCoordinateRuler(mon.getLat(), mon.getLon()))
+                .filter(p -> p.isVisible() != mInvisibleProperty.get())
+                .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment(), p.getStationName()))
+                .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
+                .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
+                .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
+                .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
+                .filter(p -> mFilterSectionDate.filter(p.getControlPoint(), p.getControlPoint().ext().getDateFirst()))
                 .toList();
 
+        if (mInvertProperty.get()) {
+            var toBeExluded = new HashSet<>(filteredItems);
+            filteredItems = mManager.getAllItems().stream()
+                    .filter(p -> !toBeExluded.contains(p))
+                    .toList();
+        }
+
+        filteredItems = sortAndLimit(filteredItems);
+
         mManager.setItemsFiltered(filteredItems);
+
+        getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }
 
     void initCheckModelListeners() {
+    }
+
+    private ContainerTag createInfoContent() {
+        var map = new LinkedHashMap<String, String>();
+        map.put(Dict.TEXT.toString(), getFreeText());
+        mFilterSectionPoint.createInfoContent(map);
+        mFilterSectionDate.createInfoContent(map);
+
+        return createHtmlFilterInfo(map);
     }
 
     private void initListeners() {
@@ -99,6 +148,13 @@ public class MonFilter extends FormFilter<MonManager> {
         mTopoManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
             update();
         });
+
+        List.of(
+                mInvertProperty,
+                mInvisibleProperty,
+                mContentOptions.listSortOrderProperty(),
+                mContentOptions.listLimitProperty()
+        ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 
     private boolean validateQuota(SimpleBooleanProperty enabled, SimpleDoubleProperty valueProperty, double quota) {

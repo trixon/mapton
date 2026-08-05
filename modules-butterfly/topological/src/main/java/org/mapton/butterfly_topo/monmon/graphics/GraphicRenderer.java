@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MLatLon;
-import org.mapton.butterfly_format.types.monmon.BMonmon;
-import org.mapton.butterfly_topo.monmon.MonAttributeManager;
+import org.mapton.butterfly_format.types.topo.BTopoMonmon;
 import org.mapton.butterfly_topo.api.TopoManager;
+import org.mapton.butterfly_topo.monmon.MonAttributeManager;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -45,7 +45,7 @@ public class GraphicRenderer {
         mCheckModel = checkModel;
     }
 
-    public void plot(BMonmon mon, Position position, int stationIndex, HashMap<String, Double> pointToZ, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BTopoMonmon mon, Position position, int stationIndex, HashMap<String, Double> pointToZ, ArrayList<AVListImpl> mapObjects) {
         zOffset = 3.0;
         var minZ = pointToZ.get(mon.getStationName());
         if (minZ < 0) {
@@ -74,9 +74,9 @@ public class GraphicRenderer {
         }
     }
 
-    private AVListImpl plotGroundConnector(BMonmon mon, double groundZ) {
+    private AVListImpl plotGroundConnector(BTopoMonmon mon, double groundZ) {
         var p0 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), groundZ);
-        var p1 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), mon.getControlPoint().getZeroZ() + zOffset);
+        var p1 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), mon.getZeroZ() + zOffset);
         var path = new Path(p0, p1);
         path.setAttributes(mAttributeManager.getGroundConnectorAttributes());
         mLayer.addRenderable(path);
@@ -84,9 +84,9 @@ public class GraphicRenderer {
         return path;
     }
 
-    private AVListImpl plotStationConnector(BMonmon mon, int stationIndex) {
+    private AVListImpl plotStationConnector(BTopoMonmon mon, int stationIndex) {
         var stationName = mon.getStationName();
-        var p = mon.getControlPoint();
+        var p = mon;
         var s = TopoManager.getInstance().getAllItemsMap().get(stationName);
         var p0 = WWHelper.positionFromLatLon(new MLatLon(s.getLat(), s.getLon()), s.getZeroZ() + zOffset);
         var p1 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), p.getZeroZ() + zOffset);
@@ -103,9 +103,9 @@ public class GraphicRenderer {
         return path;
     }
 
-    private AVListImpl plotStatus(BMonmon mon, int index, int order) {
+    private AVListImpl plotStatus(BTopoMonmon mon, int index, int order) {
         var size = 1.0;
-        var z = zOffset + mon.getControlPoint().getZeroZ() + size * 2 * order;
+        var z = zOffset + mon.getZeroZ() + size * 2 * order;
         var latLon = new MLatLon(mon.getLat(), mon.getLon());
         var p = WWHelper.positionFromLatLon(latLon, z);
         var ellipsoid = new Ellipsoid(p, size, size, size);

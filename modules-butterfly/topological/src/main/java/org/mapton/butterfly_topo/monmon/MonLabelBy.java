@@ -18,7 +18,7 @@ package org.mapton.butterfly_topo.monmon;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.LabelBy;
-import org.mapton.butterfly_format.types.monmon.BMonmon;
+import org.mapton.butterfly_format.types.topo.BTopoMonmon;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -34,7 +34,7 @@ public enum MonLabelBy implements LabelBy.Operations {
         return "";
     }),
     MISC_LATEST(LabelBy.CAT_DATE, SDict.LATEST.toString(), mon -> {
-        var date = mon.getControlPoint().ext().getObservationFilteredLastDate();
+        var date = mon.ext().getObservationFilteredLastDate();
 
         return date == null ? "-" : date.toString();
     }),
@@ -43,10 +43,10 @@ public enum MonLabelBy implements LabelBy.Operations {
     });
 
     private final String mCategory;
-    private final Function<BMonmon, String> mFunction;
+    private final Function<BTopoMonmon, String> mFunction;
     private final String mName;
 
-    private MonLabelBy(String category, String name, Function<BMonmon, String> function) {
+    private MonLabelBy(String category, String name, Function<BTopoMonmon, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -66,7 +66,7 @@ public enum MonLabelBy implements LabelBy.Operations {
         }
     }
 
-    public String getLabel(BMonmon o) {
+    public String getLabel(BTopoMonmon o) {
         try {
             return mFunction.apply(o);
         } catch (Exception e) {

@@ -18,7 +18,7 @@ package org.mapton.butterfly_topo.monmon;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import org.mapton.api.ui.forms.PropertiesBuilder;
-import org.mapton.butterfly_format.types.monmon.BMonmon;
+import org.mapton.butterfly_format.types.topo.BTopoMonmon;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
@@ -27,29 +27,28 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-public class MonPropertiesBuilder extends PropertiesBuilder<BMonmon> {
+public class MonPropertiesBuilder extends PropertiesBuilder<BTopoMonmon> {
 
     @Override
-    public Object build(BMonmon mon) {
-        if (mon == null) {
-            return mon;
+    public Object build(BTopoMonmon p) {
+        if (p == null) {
+            return p;
         }
-
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
 
-        propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), mon.getName());
-        propertyMap.put(getCatKey(cat1, "Station"), mon.getStationName());
-        var firstRaw = Objects.toString(DateHelper.toDateString(mon.getControlPoint().ext().getObservationRawFirstDate()), "");
-        var lastRaw = Objects.toString(DateHelper.toDateString(mon.getControlPoint().ext().getObservationRawLastDate()), "");
+        propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
+        propertyMap.put(getCatKey(cat1, "Station"), p.getStationName());
+        var firstRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawFirstDate()), "");
+        var lastRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
         propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), "%s — %s".formatted(firstRaw, lastRaw));
-        propertyMap.put(getCatKey(cat1, "Mätningar/dag"), mon.getMeasPerDay());
-        propertyMap.put(getCatKey(cat1, "Senaste dygnet"), mon.getString(1));
-        propertyMap.put(getCatKey(cat1, "Senaste veckan"), mon.getString(7));
-        propertyMap.put(getCatKey(cat1, "Senaste två veckorna"), mon.getString(14));
-        propertyMap.put(getCatKey(cat1, "Lutande längd"), MathHelper.convertDoubleToString(mon.ext().getDelta3d(), 1));
-        propertyMap.put(getCatKey(cat1, "Planavstånd"), MathHelper.convertDoubleToString(mon.ext().getDelta2d(), 1));
-        propertyMap.put(getCatKey(cat1, "Höjdavstånd"), MathHelper.convertDoubleToString(mon.ext().getDelta1d(), 1));
+        propertyMap.put(getCatKey(cat1, "Mätningar/dag"), p.getMeasPerDay());
+        propertyMap.put(getCatKey(cat1, "Senaste dygnet"), p.getString(1));
+        propertyMap.put(getCatKey(cat1, "Senaste veckan"), p.getString(7));
+        propertyMap.put(getCatKey(cat1, "Senaste två veckorna"), p.getString(14));
+        propertyMap.put(getCatKey(cat1, "Lutande längd"), MathHelper.convertDoubleToString(p.ext().getDelta3d(), 1));
+        propertyMap.put(getCatKey(cat1, "Planavstånd"), MathHelper.convertDoubleToString(p.ext().getDelta2d(), 1));
+        propertyMap.put(getCatKey(cat1, "Höjdavstånd"), MathHelper.convertDoubleToString(p.ext().getDelta1d(), 1));
 
         return propertyMap;
     }

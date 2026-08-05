@@ -15,51 +15,48 @@
  */
 package org.mapton.butterfly_topo.monmon;
 
-import java.util.Arrays;
-import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_core.api.ExternalSearchAction;
-import org.mapton.butterfly_format.types.monmon.BMonmon;
+import org.mapton.butterfly_core.api.BContentOptions;
+import org.mapton.butterfly_core.api.BContentView;
+import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MonContentView {
+public class MonContentView extends BContentView {
 
-    private final MonFilter mFilter = new MonFilter();
-    private final MonFilterPopOver mFilterPopOver = new MonFilterPopOver(mFilter);
-    private final SingleListForm<MonManager, BMonmon> mListForm;
     private final MonManager mManager = MonManager.getInstance();
 
-    public MonContentView() {
-//        mFilterPopOver.setFilterPresetPopOver(MPresetPopOver);
-        var actions = Arrays.asList(
-                new ExternalSearchAction(mManager),
-                ActionUtils.ACTION_SPAN,
-                mManager.geZoomExtentstAction(),
-                mFilterPopOver.getAction()
-        );
+    public MonContentView(BContentOptions contentOptions) {
+        super(contentOptions, new MonFilter());
+        mFilterPopOver = new MonFilterPopOver(mFilter);
+        mLayerOptions = MonLayerOptions.getInstance();
+
+        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "monmon");
+        mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
+        var config = new SubToolBarConfig("Salvor", true);
+        var subToolBarActions = getDefaultSubToolBarActions(mManager, config);
+        mToolBarPopOver.setToolBar(ActionUtils.createToolBar(subToolBarActions, ActionUtils.ActionTextBehavior.SHOW));
 
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_MonmonAction());
+        bindFooterLabel(mListForm);
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
-                .setToolbarActions(actions);
+                .setToolbarActions(getDefaultToolBarActions());
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new MonContentListCell());
 
         mListForm.setFreeTextTooltip(
-                Dict.NAME.toString()
+                Dict.NAME.toString(),
+                Dict.GROUP.toString(),
+                Dict.COMMENT.toString()
         );
-    }
 
-    public Pane getView() {
-        return mListForm.getView();
+        setListCellFactory(MonContentListCell::new);
     }
-
 }
