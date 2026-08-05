@@ -37,7 +37,7 @@ public class ExportAction extends Action {
     public ExportAction(Object lookupKey) {
         super(Dict.EXPORT.toString());
         Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {
-            FxHelper.runLater(() -> {
+            FxHelper.runLaterDelayed(10_000, () -> {
                 mExportPanel = new ExportPanel(lookupKey);
                 setEventHandler(actionEvent -> displayExportDialog());
                 setGraphic(MaterialIcon._Content.SAVE.getImageView(Mapton.getIconSizeToolBarInt()));
