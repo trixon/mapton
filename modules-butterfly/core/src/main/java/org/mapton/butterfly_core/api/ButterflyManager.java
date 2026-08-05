@@ -373,6 +373,7 @@ public class ButterflyManager {
                 butterfly.hydro().getWaterLevelPoints(),
                 butterfly.structural().getTiltPoints(),
                 butterfly.topo().getControlPoints(),
+                butterfly.topo().getMonmons(),
                 butterfly.rock().getConvergence())
                 .forEach(list -> {
                     try {
