@@ -29,7 +29,6 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.util.Duration;
 import javax.swing.SwingUtilities;
-import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -40,6 +39,7 @@ import org.mapton.api.MTemporalManager;
 import org.mapton.api.MToolMapCommand;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.mapton.api.ui.MPopOver;
 import org.mapton.api.ui.MToolBarPopOver;
 import org.mapton.core.api.BaseToolBar;
 import org.mapton.core.ui.bookmark.BookmarksView;
@@ -60,22 +60,22 @@ public class MapToolBar extends BaseToolBar {
 
     private final String CSS_FILE = getClass().getResource("toolbar_map.css").toExternalForm();
     private Action mAttributionAction;
-    private PopOver mAttributionPopOver;
+    private MPopOver mAttributionPopOver;
     private AttributionView mAttributionView;
     private Action mBookmarkAction;
-    private PopOver mBookmarkPopOver;
+    private MPopOver mBookmarkPopOver;
     private FxActionSwing mHomeAction;
     private FxActionSwing mLayerAction;
-    private PopOver mLayerPopOver;
+    private MPopOver mLayerPopOver;
     private final MTemporalManager mManager = MTemporalManager.getInstance();
     private Action mPoiAction;
-    private PopOver mPoiPopOver;
+    private MPopOver mPoiPopOver;
     private Action mRulerAction;
-    private PopOver mRulerPopOver;
+    private MPopOver mRulerPopOver;
     private FxActionSwing mStyleSwapAction;
     private Action mTemporalAction;
     private final ImageView mTemporalActionGraphic = MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBarInt());
-    private PopOver mTemporalPopOver;
+    private MPopOver mTemporalPopOver;
     private boolean mTemporalState = false;
     private Timeline mTemporalTimeline;
     private TemporalView mTemporalView;
@@ -296,20 +296,18 @@ public class MapToolBar extends BaseToolBar {
     }
 
     private void initPopOvers() {
-        mBookmarkPopOver = new PopOver();
+        mBookmarkPopOver = new MPopOver();
         initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarksView(mBookmarkPopOver), false);
-        mBookmarkPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
 
-        mPoiPopOver = new PopOver();
+        mPoiPopOver = new MPopOver();
         initPopOver(mPoiPopOver, MDict.POI.toString(), PoisViewManager.getInstance().getPoisView(), false);
         mPoiPopOver.setOnShowing(event -> {
             mPoiPopOver.setContentNode(null);
             mPoiPopOver.setContentNode(PoisViewManager.getInstance().getPoisView());
             setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mPoiPopOver);
         });
-        mPoiPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
 
-        mLayerPopOver = new PopOver();
+        mLayerPopOver = new MPopOver();
         initPopOver(mLayerPopOver, Dict.LAYERS.toString(), null, false);
         mLayerPopOver.setOnShowing(event -> {
             mLayerPopOver.setContentNode(null);
@@ -318,17 +316,17 @@ public class MapToolBar extends BaseToolBar {
         });
         mLayerPopOver.setArrowLocation(ArrowLocation.TOP_LEFT);
 
-        mRulerPopOver = new PopOver();
+        mRulerPopOver = new MPopOver();
         initPopOver(mRulerPopOver, Dict.RULER.toString(), new RulerView(), true);
-        mRulerPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
+        mRulerPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
         mRulerPopOver.setAutoHide(false);
         mRulerPopOver.setCloseButtonEnabled(true);
         mRulerPopOver.setDetachable(true);
 
-        mTemporalPopOver = new PopOver();
+        mTemporalPopOver = new MPopOver();
         mTemporalView = new TemporalView();
         initPopOver(mTemporalPopOver, Dict.Time.DATE.toString(), mTemporalView, true);
-        mTemporalPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
+        mTemporalPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
         mTemporalPopOver.setAutoHide(false);
         mTemporalPopOver.setCloseButtonEnabled(true);
         mTemporalPopOver.setDetachable(true);
@@ -343,10 +341,10 @@ public class MapToolBar extends BaseToolBar {
         setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mBookmarkPopOver, mPoiPopOver);
 
         Platform.runLater(() -> {
-            mAttributionPopOver = new PopOver();
+            mAttributionPopOver = new MPopOver();
             mAttributionView = new AttributionView(mAttributionPopOver);
             initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView, true);
-            mAttributionPopOver.setArrowLocation(ArrowLocation.TOP_LEFT);
+            mAttributionPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
         });
     }
 

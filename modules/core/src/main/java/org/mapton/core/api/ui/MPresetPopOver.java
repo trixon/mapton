@@ -134,9 +134,6 @@ public class MPresetPopOver extends MPopOver {
 
         mEditableList.setPrefSize(FxHelper.getUIScaled(250), FxHelper.getUIScaled(500));
         setContentNode(mEditableList);
-        setAutoHide(true);
-        setCloseButtonEnabled(false);
-        setDetachable(true);
         this.setOnHidden(windowEvent -> {
             mEditableList.getListView().getSelectionModel().select(null);
         });

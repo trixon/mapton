@@ -36,6 +36,7 @@ public abstract class MInfoPopOver extends MPopOver {
     public MInfoPopOver() {
         createUI();
         initListeners();
+        setArrowLocation(ArrowLocation.TOP_RIGHT);
 
         setTitle(Dict.INFORMATION.toString());
         getAction().setGraphic(MaterialIcon._Action.INFO_OUTLINE.getImageView(getIconSizeToolBarInt()));

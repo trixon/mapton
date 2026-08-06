@@ -19,6 +19,7 @@ import java.awt.MouseInfo;
 import java.awt.Toolkit;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Control;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.PopOver;
@@ -58,12 +59,14 @@ public class MPopOver extends PopOver {
         setCloseButtonEnabled(false);
         setDetachable(true);
         setAnimated(true);
+        setHideOnEscape(true);
+        setArrowSize(0);
 
         mAction = new Action(title, actionEvent -> {
             if (isShowing()) {
                 hide();
             } else {
-                if (mAutoArrowLocation) {
+                if (mAutoArrowLocation && false) {//disable for now
                     var mousePoint = MouseInfo.getPointerInfo().getLocation();
                     var screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                     var x = mousePoint.getX();
@@ -78,7 +81,13 @@ public class MPopOver extends PopOver {
                 }
 
                 var node = (ButtonBase) actionEvent.getSource();
-                show(node);
+                var offset = FxHelper.getUIScaled(-10.0);
+
+                if (getContentNode() instanceof ToolBar) {
+                    offset = FxHelper.getUIScaled(-1.0);
+                }
+                show(node, offset);
+
                 PopOverWatcher.getInstance().registerPopOver(this, node);
             }
         });

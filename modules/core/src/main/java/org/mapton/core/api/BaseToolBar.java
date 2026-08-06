@@ -103,7 +103,7 @@ public abstract class BaseToolBar extends ToolBar {
     }
 
     protected void show(PopOver popOver, Object owner) {
-        popOver.show((Node) owner, -6);
+        popOver.show((Node) owner, FxHelper.getUIScaled(-10.0));
         PopOverWatcher.getInstance().registerPopOver(popOver, (Node) owner);
     }
 
