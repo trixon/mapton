@@ -16,6 +16,10 @@
 package org.mapton.butterfly_topo.monmon;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.ShapeAttributes;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.prefs.Preferences;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -34,6 +38,7 @@ public class MonLayerOptions extends BLayerOptions implements MPresetActions {
     private final ObjectProperty<MonColorBy> mColorByProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BY);
     private final ObjectProperty<MonLabelBy> mLabelByProperty = new SimpleObjectProperty<>(DEFAULT_LABEL_BY);
     private final ObjectProperty<MonPointBy> mPointByProperty = new SimpleObjectProperty<>(DEFAULT_POINT_BY);
+    private final Map<String, ShapeAttributes> mNameToAttributesMap = new ConcurrentHashMap<>();
 
     public static MonLayerOptions getInstance() {
         return Holder.INSTANCE;
@@ -95,6 +100,14 @@ public class MonLayerOptions extends BLayerOptions implements MPresetActions {
         mPointByProperty.set(DEFAULT_POINT_BY);
         mColorByProperty.set(DEFAULT_COLOR_BY);
         mLabelByProperty.set(DEFAULT_LABEL_BY);
+    }
+
+    public void putAttributes(String name, ShapeAttributes attributes) {
+        mNameToAttributesMap.put(name, attributes);
+    }
+
+    public ShapeAttributes getAttributes(String name) {
+        return mNameToAttributesMap.getOrDefault(name, new BasicShapeAttributes());
     }
 
     private static class Holder {

@@ -39,6 +39,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.butterfly_topo.TopoLayerBundle;
 import static org.mapton.butterfly_topo.graphics.GraphicRendererBase.sMapObjects;
+import org.mapton.butterfly_topo.monmon.MonLayerOptions;
 import org.mapton.butterfly_topo.monmon.MonManager;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.mapton.worldwind.api.WWHelper;
@@ -50,6 +51,7 @@ import se.trixon.almond.util.MathHelper;
  */
 public class GraphicRendererVector extends GraphicRendererBase {
 
+    private final MonLayerOptions mMonLayerOptions = MonLayerOptions.getInstance();
     private final HashSet<BTopoControlPoint> mPlottedStations = new HashSet<>();
 
     public GraphicRendererVector(RenderableLayer layer, RenderableLayer passiveLayer) {
@@ -297,6 +299,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
         var p1 = WWHelper.positionFromPosition(position, Math.abs(p.getZeroZ()));
         MonManager.getInstance().getAllItems().stream()
                 .filter(m -> m.getControlPoint().equals(p))
+                .filter(m -> m.getStationPoint() != null)
                 .map(m -> m.getStationPoint())
                 .forEachOrdered(s -> {
                     try {
@@ -306,7 +309,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
                         var stn = BCoordinatrix.toPositionWW3d(s);
                         stn = WWHelper.positionFromPosition(stn, Math.abs(s.getZeroZ()));
                         var path = new Path(stn, p1);
-                        var attrs = new BasicShapeAttributes(s.getValue("MONMON_ATTRS"));
+                        var attrs = new BasicShapeAttributes(mMonLayerOptions.getAttributes(s.getName()));
                         if (p.getZeroZ() < 0) {
                             attrs.setOutlineStippleFactor(3);
                         }

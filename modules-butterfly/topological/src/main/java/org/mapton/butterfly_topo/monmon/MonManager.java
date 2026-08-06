@@ -36,6 +36,7 @@ import org.openide.util.Exceptions;
  */
 public class MonManager extends BaseManager<BTopoMonmon> {
 
+    private final MonLayerOptions mMonLayerOptions = MonLayerOptions.getInstance();
     private final MonPropertiesBuilder mPropertiesBuilder = new MonPropertiesBuilder();
     private final TopoManager mTopoManager = TopoManager.getInstance();
 
@@ -104,6 +105,9 @@ public class MonManager extends BaseManager<BTopoMonmon> {
                         p.setVisible(true);
                         p.setButterfly(butterfly);
                         p.setDateLatest(p.ext().getDateLatest());
+                        if (p.isChild()) {
+                            p.setStationPoint(mTopoManager.getItemForKey(p.getStationName()));
+                        }
                     })
                     .filter(m -> {
                         return m != null && ObjectUtils.allNotNull(
@@ -134,22 +138,21 @@ public class MonManager extends BaseManager<BTopoMonmon> {
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
+
         var sortedStations = getAllItems().stream()
                 .filter(m -> m.isParent())
-                .map(m -> m)
                 .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()))
                 .toList();
 
         for (int i = 0; i < sortedStations.size(); i++) {
             var p = sortedStations.get(i);
-            p.setValue("MONMON_ATTRS", MonAttributeManager.getInstance().getStationConnectorAttribute(i));
+            mMonLayerOptions.putAttributes(p.getName(), MonAttributeManager.getInstance().getStationConnectorAttribute(i));
         }
     }
 
     private void updateStats() {
         var now = LocalDateTime.now();
         for (var mon : getAllItems()) {
-            mon.setStationPoint(mTopoManager.getItemForKey(mon.getStationName()));
             var list14 = mon.ext().getObservationsAllRaw().stream()
                     .filter(o -> o.getDate().isAfter(now.minusDays(14))).toList();
 
