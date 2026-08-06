@@ -98,8 +98,12 @@ public class TopoAttributeManager extends BaseAttributeManager {
             offset++;
         }
         var i = alarmLevel + offset;
-
-        return mComponentCircle1dAttributes[i];
+        try {
+            return mComponentCircle1dAttributes[i];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("ArrayIndexOutOfBoundsException in TopoAttribute " + p.getName());
+            return mComponentCircle1dAttributes[i - 1];
+        }
     }
 
     public BasicShapeAttributes getComponentMeasurementsAttributes(BTopoControlPoint p) {

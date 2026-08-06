@@ -20,8 +20,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ListChangeListener;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
@@ -40,14 +38,11 @@ import se.trixon.almond.util.Dict;
 public class MonFilter extends ButterflyFormFilter<MonManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
-        BFilterSectionDateProvider {
+        BFilterSectionDateProvider,
+        FilterSectionMeasProvider {
 
-    private final SimpleBooleanProperty mLatest14Property = new SimpleBooleanProperty();
-    private final SimpleDoubleProperty mLatest14ValueProperty = new SimpleDoubleProperty();
-    private final SimpleBooleanProperty mLatest1Property = new SimpleBooleanProperty();
-    private final SimpleDoubleProperty mLatest1ValueProperty = new SimpleDoubleProperty();
-    private final SimpleBooleanProperty mLatest7Property = new SimpleBooleanProperty();
-    private final SimpleDoubleProperty mLatest7ValueProperty = new SimpleDoubleProperty();
+    private FilterSectionMeas mFilterSectionMeas;
+
     private final MonManager mManager = MonManager.getInstance();
     private final TopoManager mTopoManager = TopoManager.getInstance();
 
@@ -58,28 +53,10 @@ public class MonFilter extends ButterflyFormFilter<MonManager> implements
         initListeners();
     }
 
-    public SimpleBooleanProperty latest14Property() {
-        return mLatest14Property;
-    }
-
-    public SimpleDoubleProperty latest14ValueProperty() {
-        return mLatest14ValueProperty;
-    }
-
-    public SimpleBooleanProperty latest1Property() {
-        return mLatest1Property;
-    }
-
-    public SimpleDoubleProperty latest1ValueProperty() {
-        return mLatest1ValueProperty;
-    }
-
-    public SimpleBooleanProperty latest7Property() {
-        return mLatest7Property;
-    }
-
-    public SimpleDoubleProperty latest7ValueProperty() {
-        return mLatest7ValueProperty;
+    @Override
+    public void setFilterSection(FilterSectionMeas filterSectionMeas) {
+        mFilterSectionMeas = filterSectionMeas;
+        mFilterSectionMeas.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
@@ -98,9 +75,6 @@ public class MonFilter extends ButterflyFormFilter<MonManager> implements
     public void update() {
 //        var filteredItems = mManager.getAllItems().stream()
 //                .filter(mon -> mTopoManager.getTimeFilteredItemsMap().containsKey(mon.getName()))
-//                .filter(mon -> validateQuota(mLatest1Property, mLatest1ValueProperty, mon.getQuota(1)))
-//                .filter(mon -> validateQuota(mLatest7Property, mLatest7ValueProperty, mon.getQuota(7)))
-//                .filter(mon -> validateQuota(mLatest14Property, mLatest14ValueProperty, mon.getQuota(14)))
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> p.isVisible() != mInvisibleProperty.get())
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment(), p.getStationName()))
@@ -109,6 +83,7 @@ public class MonFilter extends ButterflyFormFilter<MonManager> implements
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p.getControlPoint(), p.getControlPoint().ext().getDateFirst()))
+                .filter(p -> mFilterSectionMeas.filter(p))
                 .toList();
 
         if (mInvertProperty.get()) {
@@ -138,13 +113,6 @@ public class MonFilter extends ButterflyFormFilter<MonManager> implements
     }
 
     private void initListeners() {
-        mLatest1Property.addListener(mChangeListenerObject);
-        mLatest1ValueProperty.addListener(mChangeListenerObject);
-        mLatest7Property.addListener(mChangeListenerObject);
-        mLatest7ValueProperty.addListener(mChangeListenerObject);
-        mLatest14Property.addListener(mChangeListenerObject);
-        mLatest14ValueProperty.addListener(mChangeListenerObject);
-
         mTopoManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
             update();
         });
@@ -157,20 +125,4 @@ public class MonFilter extends ButterflyFormFilter<MonManager> implements
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 
-    private boolean validateQuota(SimpleBooleanProperty enabled, SimpleDoubleProperty valueProperty, double quota) {
-        if (enabled.get()) {
-            double lim = valueProperty.get();
-            double value = Math.abs(quota);
-
-            if (lim == 0) {
-                return value == 0;
-            } else if (lim < 0) {
-                return value <= Math.abs(lim);
-            } else {
-                return value >= lim;
-            }
-        } else {
-            return true;
-        }
-    }
 }
