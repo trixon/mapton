@@ -16,13 +16,17 @@
 package org.mapton.butterfly_core.api;
 
 import java.util.List;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import org.controlsfx.control.IndexedCheckModel;
+import org.controlsfx.control.PopOver;
 import org.mapton.api.MDict;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.butterfly_format.types.BTrendPeriod;
@@ -30,7 +34,6 @@ import org.mapton.core.api.ui.MPresetPopOver;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.SliderPane;
 import se.trixon.almond.util.fx.session.SessionCheckBox;
@@ -56,12 +59,14 @@ public abstract class BLayerOptionsView extends MOptionsView {
     protected final Label mTrendPeriodCLabel = new Label("Trendperiod C");
     protected final SessionComboBox<BTrendPeriod> mTrendPeriodCScb = new SessionComboBox<>();
     private GridPane mBottomPane;
+    private final Button mClearGraphicsButton = new Button("Rensa grafik");
     private SliderPane mDistanceSliderPane;
+    private IndexedCheckModel<? extends Object> mGraphicsCheckModel;
     @Deprecated(forRemoval = true)
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty();
     @Deprecated(forRemoval = true)
     private final SimpleObjectProperty<LabelBy.Operations> mLabelByProperty = new SimpleObjectProperty<>();
-    private final SessionCheckBox mPlotAlarmScbx = new SessionCheckBox(SDict.ALARMS.toString());
+    private final SessionCheckBox mPlotAlarmScbx = new SessionCheckBox("Animera >150%");
     private final SessionCheckBox mPlotAnnotationScbx = new SessionCheckBox(MDict.ANNOTATIONS.toString());
     private final SessionCheckBox mPlotDebtScbx = new SessionCheckBox("Skuld");
     private final SessionCheckBox mPlotSelectedScbx = new SessionCheckBox("Bara valt");
@@ -70,6 +75,7 @@ public abstract class BLayerOptionsView extends MOptionsView {
     public BLayerOptionsView(LayerBundle layerBundle, String title, MPresetActions presetActions, String key) {
         super(layerBundle, title);
         mPresetPopOver = new MPresetPopOver(presetActions, MPresetPopOver.PARENT_NODE_LAYER_OPTIONS, key);
+        mPresetPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
         mPresetActions = presetActions;
         createUI();
     }
@@ -91,6 +97,10 @@ public abstract class BLayerOptionsView extends MOptionsView {
 
     public void activateAnnotation() {
         mPlotAnnotationScbx.setDisable(false);
+    }
+
+    public Button getClearGraphicsButton() {
+        return mClearGraphicsButton;
     }
 
     public SliderPane getDistanceSliderPane() {
@@ -192,6 +202,11 @@ public abstract class BLayerOptionsView extends MOptionsView {
         mLabelByIdProperty.set(labelBy.name());
     }
 
+    public void setGraphicsModel(IndexedCheckModel<? extends Object> graphicsCheckModel) {
+        mGraphicsCheckModel = graphicsCheckModel;
+        mClearGraphicsButton.disableProperty().bind(Bindings.isEmpty(graphicsCheckModel.getCheckedIndices()));
+    }
+
     protected void initSession(BLayerOptions options) {
         mTrendPeriodAScb.valueProperty().bindBidirectional(options.trendPeriodAProperty());
         mTrendPeriodBScb.valueProperty().bindBidirectional(options.trendPeriodBProperty());
@@ -251,14 +266,19 @@ public abstract class BLayerOptionsView extends MOptionsView {
         mBottomPane = createGridPane();
         mBottomPane.setDisable(true);
 
+        var subPane = createGridPane();
+        subPane.setPadding(Insets.EMPTY);
+        subPane.addRow(0, mPlotDebtScbx, mPlotAlarmScbx);
+        subPane.addRow(1, mPlotSelectedScbx, mPlotAnnotationScbx);
         row = 0;
-        var hbox = new HBox(FxHelper.getUIScaled(16.0), mPlotSelectedScbx, mPlotAnnotationScbx, mPlotDebtScbx, mPlotAlarmScbx);
-        mBottomPane.addRow(row++, hbox);
+        mBottomPane.addRow(row++, subPane);
         mBottomPane.addRow(row++, mDistanceSliderPane);
         FxHelper.autoSizeColumn(mBottomPane, 1);
 
         setLabelPadding(mLabelLabel, mGraphicLabel);
         setBottom(mBottomPane);
+
+        mClearGraphicsButton.setOnAction(evt -> mGraphicsCheckModel.clearChecks());
     }
 
 }
