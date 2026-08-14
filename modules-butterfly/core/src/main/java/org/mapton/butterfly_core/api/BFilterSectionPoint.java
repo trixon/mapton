@@ -588,7 +588,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mCategorySccb,
                     mTagSccb,
                     mRollingSccb,
-                    mSparseSccb
+                    mSparseSccb,
+                    mClassificationSccb
             );
         }
 

@@ -22,7 +22,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
-import org.controlsfx.control.PopOver;
+import org.controlsfx.control.PopOver.ArrowLocation;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.Mapton;
@@ -94,10 +94,8 @@ public abstract class BContentView {
 
     protected List<Action> getDefaultToolBarActions() {
         if (mResetStandardAction == null) {
-            mFilterPopOver.setAutoArrowLocation(false);
-            mFilterPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-            mPresetPopOver.setAutoArrowLocation(false);
-            mPresetPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+            mFilterPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
+            mPresetPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
             mResetStandardAction = new Action(Dict.DEFAULT.toString(), actionEvent -> {
                 mFilterPopOver.reset();
             });

@@ -16,6 +16,7 @@
 package org.mapton.butterfly_core.api;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -39,6 +40,10 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public abstract class BContentListCell<T extends BXyzPoint> extends ListCell<T> {
 
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm");
+    public static final DateTimeFormatter DATE_TIME_FORMATTER_UTC = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm 'UTC'");
+
     protected final Label mHeaderLabel = new Label();
     protected final String mStyleBold = "-fx-font-weight: bold;";
     protected final String mStyleMono = "-fx-font-family: monospace;";
@@ -48,6 +53,16 @@ public abstract class BContentListCell<T extends BXyzPoint> extends ListCell<T> 
     public BContentListCell() {
         mHeaderLabel.setStyle(mStyleBold);
         mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
+    }
+
+    public String getDateLatestAndFirst(T p) {
+        var dateLatest = p.extOrNull().getDateLatest();
+        var dateFirst = p.extOrNull().getDateFirst();
+        var latest = dateLatest != null ? dateLatest.format(DATE_TIME_FORMATTER) : "-";
+        var first = dateFirst != null ? dateFirst.toLocalDate().toString() : "-";
+        var date = "%s (%s)".formatted(latest, first);
+
+        return date;
     }
 
     public String getDateLatestAndNext(T p) {
@@ -62,6 +77,29 @@ public abstract class BContentListCell<T extends BXyzPoint> extends ListCell<T> 
         }
 
         return sb.toString();
+    }
+
+    public String getDateLatestAndZero(T p, boolean addDebtIndicator) {
+        var dateLatest = p.extOrNull().getDateLatest();
+        var latest = dateLatest != null ? dateLatest.format(DATE_TIME_FORMATTER) : "-";
+        var zeroDate = p.getDateZero();
+        var zero = zeroDate != null ? zeroDate.toString() : "-";
+
+        var debtIndicator = "";
+        //TODO implement addDebtIndicator
+//        var sign = "⇐";
+
+//                var dateSB = new StringBuilder(StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE"));
+//        LocalDate nextDate = null;
+//        if (nextDate != null) {
+//            dateSB.append(" (").append(nextDate.toString()).append(")");
+//            if (nextDate.isBefore(LocalDate.now())) {
+//                dateSB.append(" ").append(sign);
+//            }
+//        }
+        var date = "%s (%s)%s".formatted(latest, zero, debtIndicator);
+
+        return date;
     }
 
     protected void activateTooltip() {

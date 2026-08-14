@@ -30,7 +30,7 @@ import org.openide.util.lookup.ServiceProvider;
  */
 public class XyzManager extends BaseManager<BXyzPoint> {
 
-    private final static String DISRUPTOR_NAME = "Baspunkt";
+    private final static String DISRUPTOR_NAME = "Baspunkter";
 //    private final XyzLayerOptions mLayerOptions = XyzLayerOptions.getInstance();
     private final XyzPropertiesBuilder mPropertiesBuilder = new XyzPropertiesBuilder();
 
