@@ -20,6 +20,7 @@ import internal.org.mapton.butterfly_format.monmon.MonmonConfig;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -339,8 +340,28 @@ public class ButterflyManager {
                 setButterfly(butterfly);
                 mButterflyMonitor.start();
                 refreshTitle();
+
+                try (var directoryStream = Files.newDirectoryStream(getXfilesDir().toPath(), "wms_sources_*.json")) {
+                    var key = "data_sources.wms.sources";
+                    var p = NbPreferences.forModule(Mapton.class);
+                    var newValues = "";
+                    var existingValues = p.get(key, "");
+
+                    for (var path : directoryStream) {
+                        var newValue = path.toString();
+                        if (!Strings.CI.contains(existingValues, newValue)) {
+                            newValues = String.join("\n", newValues, newValue);
+                        }
+                    }
+
+                    if (StringUtils.isNotBlank(newValues)) {
+                        p.put(key, String.join("\n", existingValues, newValues));
+                    }
+                } catch (IOException e) {
+                }
             }
             keepLoadingProgressAlive();
+
         });
 
         thread.start();
@@ -429,6 +450,11 @@ public class ButterflyManager {
         var targetGeometry = cooTrans.transform(geometry);
         targetGeometry = targetGeometry.buffer(buffer);
         return cooTrans.transformInverse(targetGeometry);
+    }
+
+    public File getXfilesDir() {
+        //TODO fix for mode dir
+        return new File(Mapton.getConfigDir(), "butterfly/xfiles");
     }
 
     private void extractXfiles() {
