@@ -226,8 +226,8 @@ public class ParameterEditorBasic extends ParameterEditorBase {
     }
 
     void loadUIParameter(BaseManager<? extends BXyzPoint> manager) {
-        mClassComboBox.getItems().setAll("K0", "K1", "K2", "K3", "K4", "K5");
-        mClassComboBox.getSelectionModel().select("K1");
+//        mClassComboBox.getItems().setAll("K0", "K1", "K2", "K3", "K4", "K5");
+//        mClassComboBox.getSelectionModel().select("K1");
         mStatusComboBox.getItems().setAll("S0", "S1", "S2", "S3", "S4", "S5");
         mStatusComboBox.getSelectionModel().select("S1");
 
@@ -258,6 +258,8 @@ public class ParameterEditorBasic extends ParameterEditorBase {
         mKategoriComboBox.getItems().setAll(kategorier);
         var utforare = new TreeSet<>(manager.getAllItems().stream().map(p -> p.getOperator()).toList());
         mUtforareComboBox.getItems().setAll(utforare);
+        var klassning = new TreeSet<>(manager.getAllItems().stream().map(p -> p.getClassification()).toList());
+        mClassComboBox.getItems().setAll(klassning);
     }
 
     private void createUI() {
@@ -328,7 +330,8 @@ public class ParameterEditorBasic extends ParameterEditorBase {
                 mUtforareComboBox,
                 mStatusComboBox,
                 mLarmHComboBox,
-                mLarmPComboBox
+                mLarmPComboBox,
+                mClassComboBox
         );
     }
 
