@@ -26,7 +26,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
-import org.mapton.butterfly_core.api.base.XyzManager;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_misc_user.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
@@ -46,7 +45,7 @@ public class UserLayerBundle extends BfLayerBundle {
     private final GraphicRenderer mGraphicRenderer;
     private final UserLayerOptions mLayerOptions = UserLayerOptions.getInstance();
     private final UserLayerOptionsView mLayerOptionsView;
-    private final XyzManager mManager = XyzManager.getInstance();
+    private final UserManager mManager = UserManager.getInstance();
 
     public UserLayerBundle() {
         init();

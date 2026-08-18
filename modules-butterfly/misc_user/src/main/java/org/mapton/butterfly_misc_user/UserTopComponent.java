@@ -28,7 +28,7 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.butterfly-misc-xyz//Xyz//EN",
+        dtd = "-//org.mapton.butterfly-misc-user//User//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -37,7 +37,7 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
-@ActionID(category = "Butterfly", id = "org.mapton.butterfly-misc-xyz.UserTopComponent")
+@ActionID(category = "Butterfly", id = "org.mapton.butterfly-misc-user.UserTopComponent")
 @ActionReferences({
     @ActionReference(path = "Menu/MapTools/Butterfly/Misc", position = 1)
 })
@@ -72,8 +72,8 @@ public final class UserTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var xyzView = new UserContentView(UserContentOptions.getInstance());
+        var userView = new UserContentView(UserContentOptions.getInstance());
 
-        return new Scene(xyzView.getView());
+        return new Scene(userView.getView());
     }
 }

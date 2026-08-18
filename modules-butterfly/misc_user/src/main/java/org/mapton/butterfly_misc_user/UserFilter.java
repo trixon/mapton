@@ -25,22 +25,21 @@ import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
-import org.mapton.butterfly_core.api.base.XyzManager;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class UserFilter extends ButterflyFormFilter<XyzManager> implements
+public class UserFilter extends ButterflyFormFilter<UserManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider {
 
-    private final XyzManager mManager = XyzManager.getInstance();
+    private final UserManager mManager = UserManager.getInstance();
 
     public UserFilter() {
-        super(XyzManager.getInstance());
+        super(UserManager.getInstance());
         mContentOptions = UserContentOptions.getInstance();
 
         initListeners();

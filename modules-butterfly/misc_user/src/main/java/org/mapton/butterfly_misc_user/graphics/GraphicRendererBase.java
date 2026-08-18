@@ -24,9 +24,9 @@ import java.util.HashSet;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
-import org.mapton.butterfly_core.api.base.XyzManager;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_misc_user.UserAttributeManager;
+import org.mapton.butterfly_misc_user.UserManager;
 
 /**
  *
@@ -40,7 +40,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
     protected static HashMap<BXyzPoint, Position[]> sPointToPositionMap = new HashMap<>();
     protected final UserAttributeManager mAttributeManager = UserAttributeManager.getInstance();
-    protected final XyzManager mManager = XyzManager.getInstance();
+    protected final UserManager mManager = UserManager.getInstance();
     protected Integer mScale1dH;
     protected Integer mScale3dH;
     protected Integer mScale3dP;

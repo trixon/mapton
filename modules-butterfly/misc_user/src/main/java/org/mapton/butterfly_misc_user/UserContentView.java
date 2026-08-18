@@ -25,7 +25,6 @@ import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.AddToBasePointsAction;
 import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
-import org.mapton.butterfly_core.api.base.XyzManager;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -37,7 +36,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class UserContentView extends BContentView {
 
     private final Action mClearAction;
-    private final XyzManager mManager = XyzManager.getInstance();
+    private final UserManager mManager = UserManager.getInstance();
 
     public UserContentView(BContentOptions contentOptions) {
         super(contentOptions, new UserFilter());
@@ -52,7 +51,7 @@ public class UserContentView extends BContentView {
                 mClearAction
         );
 
-        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "xyz");
+        mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "user");
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
         var config = new SubToolBarConfig(null, false);
         var defaultSubToolBarActions = getDefaultSubToolBarActions(mManager, config);

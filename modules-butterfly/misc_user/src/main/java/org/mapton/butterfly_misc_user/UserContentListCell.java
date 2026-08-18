@@ -18,14 +18,14 @@ package org.mapton.butterfly_misc_user;
 import java.util.Objects;
 import javafx.scene.control.Label;
 import org.mapton.butterfly_core.api.BContentListCell;
-import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.butterfly_format.types.BSystemUser;
 import se.trixon.almond.util.DateHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class UserContentListCell extends BContentListCell<BXyzPoint> {
+class UserContentListCell extends BContentListCell<BSystemUser> {
 
     private final Label mDateLabel = new Label();
     private final Label mGroupLabel = new Label();
@@ -36,12 +36,12 @@ class UserContentListCell extends BContentListCell<BXyzPoint> {
     }
 
     @Override
-    protected void addContent(BXyzPoint xyz) {
+    protected void addContent(BSystemUser user) {
         setText(null);
-        var date = Objects.toString(DateHelper.toDateTimeString(xyz.getDateLatest()), "-");
-        mNameLabel.setText(xyz.getName());
-        mDateLabel.setText("%s, Z %+.1f m".formatted(date, xyz.getZeroZ()));
-        mGroupLabel.setText(xyz.getGroup());
+        var date = Objects.toString(DateHelper.toDateTimeString(user.getDateLatest()), "-");
+        mNameLabel.setText(user.getName());
+        mDateLabel.setText("%s, Z %+.1f m".formatted(date, user.getZeroZ()));
+        mGroupLabel.setText(user.getGroup());
         setGraphic(mVBox);
     }
 

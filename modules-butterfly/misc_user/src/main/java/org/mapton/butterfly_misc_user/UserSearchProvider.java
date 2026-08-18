@@ -17,7 +17,6 @@ package org.mapton.butterfly_misc_user;
 
 import org.mapton.api.MLatLon;
 import org.mapton.api.Mapton;
-import org.mapton.butterfly_core.api.base.XyzManager;
 import org.netbeans.spi.quicksearch.SearchProvider;
 import org.netbeans.spi.quicksearch.SearchRequest;
 import org.netbeans.spi.quicksearch.SearchResponse;
@@ -27,7 +26,7 @@ public class UserSearchProvider implements SearchProvider {
 
     @Override
     public void evaluate(SearchRequest request, SearchResponse response) {
-        for (var o : XyzManager.getInstance().getAllItems()) {
+        for (var o : UserManager.getInstance().getAllItems()) {
             if (StringHelper.matchesSimpleGlob(request.getText(), true, true, o.getName(), o.getGroup())) {
                 if (!response.addResult(() -> {
                     Mapton.getEngine().panTo(new MLatLon(o.getLat(), o.getLon()), .95);

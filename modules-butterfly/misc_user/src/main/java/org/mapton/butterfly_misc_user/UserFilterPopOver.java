@@ -26,9 +26,8 @@ import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPoint.PointElement;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
-import org.mapton.butterfly_core.api.base.XyzManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.butterfly_format.types.BSystemUser;
 import org.openide.util.NbPreferences;
 
 /**
@@ -41,7 +40,7 @@ public class UserFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
-    private final XyzManager mManager = XyzManager.getInstance();
+    private final UserManager mManager = UserManager.getInstance();
 
     public UserFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
@@ -143,7 +142,7 @@ public class UserFilterPopOver extends BaseTabbedFilterPopOver {
         });
 
         mFilterSectionMisc.initListeners(mFilter);
-        mManager.getAllItems().addListener((ListChangeListener.Change<? extends BXyzPoint> c) -> {
+        mManager.getAllItems().addListener((ListChangeListener.Change<? extends BSystemUser> c) -> {
             mFilterSectionPoint.load(mManager.getAllItems());
             mFilterSectionDate.load(mManager.getTemporalRange());
             mFilterSectionMisc.load();
