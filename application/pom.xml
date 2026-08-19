@@ -341,6 +341,11 @@
                 </dependency>
                 <dependency>
                     <groupId>org.mapton</groupId>
+                    <artifactId>butterfly-misc-user</artifactId>
+                    <version>${mapton.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.mapton</groupId>
                     <artifactId>butterfly-misc-xyz</artifactId>
                     <version>${mapton.version}</version>
                 </dependency>

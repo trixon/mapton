@@ -56,6 +56,7 @@ limitations under the License.
         <module>remote</module>
         <module>remote_insar</module>
         <module>poi</module>
+        <module>misc_user</module>
         <module>misc_xyz</module>
     </modules>
 </project>

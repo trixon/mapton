@@ -109,10 +109,6 @@ limitations under the License.
             <groupId>${project.groupId}</groupId>
             <artifactId>butterfly-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>butterfly-rock</artifactId>
-        </dependency>
 
         <!--Other-->
     </dependencies>
