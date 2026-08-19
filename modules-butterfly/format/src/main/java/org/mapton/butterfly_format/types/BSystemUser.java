@@ -25,14 +25,13 @@ import java.time.LocalDateTime;
  */
 @JsonPropertyOrder({
     "id",
-    "project",
+    "origin",
     "accessLevel",
     "created",
     "expires",
     "name",
-    "organisation",
+    "operator",
     "email",
-    "domain",
     "initials",
     "lastLoginAdmin",
     "lastLoginProj",
@@ -41,14 +40,11 @@ import java.time.LocalDateTime;
     "loginsProj",
     "loginsView"
 })
-public class BSystemUser {
+public class BSystemUser extends BXyzPoint {
 
     private int accessLevel;
-    private LocalDateTime created;
-    private String domain;
     private String email;
     private LocalDate expires;
-    private Long id;
     private String initials;
     private LocalDateTime lastLoginAdmin;
     private LocalDateTime lastLoginProj;
@@ -56,20 +52,19 @@ public class BSystemUser {
     private int loginsAdmin;
     private int loginsProj;
     private int loginsView;
-    private String name;
-    private String organisation;
-    private String project;
+    private transient Ext mExt;
+
+    @Override
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
+    }
 
     public int getAccessLevel() {
         return accessLevel;
-    }
-
-    public LocalDateTime getCreated() {
-        return created;
-    }
-
-    public String getDomain() {
-        return domain;
     }
 
     public String getEmail() {
@@ -78,10 +73,6 @@ public class BSystemUser {
 
     public LocalDate getExpires() {
         return expires;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getInitials() {
@@ -112,28 +103,8 @@ public class BSystemUser {
         return loginsView;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getOrganisation() {
-        return organisation;
-    }
-
-    public String getProject() {
-        return project;
-    }
-
     public void setAccessLevel(int accessLevel) {
         this.accessLevel = accessLevel;
-    }
-
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
-    }
-
-    public void setDomain(String domain) {
-        this.domain = domain;
     }
 
     public void setEmail(String eail) {
@@ -142,10 +113,6 @@ public class BSystemUser {
 
     public void setExpires(LocalDate expires) {
         this.expires = expires;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public void setInitials(String initials) {
@@ -176,15 +143,8 @@ public class BSystemUser {
         this.loginsView = loginsView;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public class Ext extends BXyzPoint.Ext<BSystemUserObservation> {
+
     }
 
-    public void setOrganisation(String organisation) {
-        this.organisation = organisation;
-    }
-
-    public void setProject(String project) {
-        this.project = project;
-    }
 }

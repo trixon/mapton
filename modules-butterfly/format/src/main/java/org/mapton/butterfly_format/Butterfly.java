@@ -50,6 +50,7 @@ import org.mapton.butterfly_format.types.BMeteoPointObservation;
 import org.mapton.butterfly_format.types.BRoi;
 import org.mapton.butterfly_format.types.BSystemKeyVal;
 import org.mapton.butterfly_format.types.BSystemSearchProvider;
+import org.mapton.butterfly_format.types.BSystemUser;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationChannel;
@@ -149,6 +150,7 @@ public class Butterfly {
     private final Sys mSys = new Sys();
     private final ArrayList<BSystemKeyVal> mSystemKeyVals = new ArrayList<>();
     private final ArrayList<BSystemSearchProvider> mSystemSearchProviders = new ArrayList<>();
+    private final ArrayList<BSystemUser> mSystemUsers = new ArrayList<>();
     private final Tmo mTmo = new Tmo();
     private final Topo mTopo = new Topo();
     private final ArrayList<BTopoControlPoint> mTopoControlPoints = new ArrayList<>();
@@ -300,6 +302,7 @@ public class Butterfly {
         // System
         tasks.add(new ImportTask<>(BSystemKeyVal.class, "systemKeyValStore.csv", mSystemKeyVals));
         tasks.add(new ImportTask<>(BSystemSearchProvider.class, "systemSearchProviders.csv", mSystemSearchProviders));
+        tasks.add(new ImportTask<>(BSystemUser.class, "systemUsers.csv", mSystemUsers));
         int cores = Runtime.getRuntime().availableProcessors();
 
         try (ExecutorService executor = Executors.newFixedThreadPool(cores)) {
@@ -785,6 +788,10 @@ public class Butterfly {
 
         public ArrayList<BSystemSearchProvider> getSearchProviders() {
             return mSystemSearchProviders;
+        }
+
+        public ArrayList<BSystemUser> getUsers() {
+            return mSystemUsers;
         }
 
         public String getVal(String origin, String key) {
