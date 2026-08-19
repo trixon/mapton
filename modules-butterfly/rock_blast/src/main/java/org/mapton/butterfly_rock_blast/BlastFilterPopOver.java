@@ -70,18 +70,6 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
     }
 
     @Override
-    public void presetRestore(Preferences preferences) {
-        clear();
-        presetStore(preferences);
-    }
-
-    @Override
-    public void presetStore(Preferences preferences) {
-        var sessionManager = initSession(preferences);
-        sessionManager.unregisterAll();
-    }
-
-    @Override
     public void load(Butterfly butterfly) {
         var blasts = butterfly.rock().getBlasts();
 
@@ -98,6 +86,18 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
     @Override
     public void onShownFirstTime() {
         mFilterSectionPoint.onShownFirstTime();
+    }
+
+    @Override
+    public void presetRestore(Preferences preferences) {
+        clear();
+        presetStore(preferences);
+    }
+
+    @Override
+    public void presetStore(Preferences preferences) {
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
     }
 
     @Override
