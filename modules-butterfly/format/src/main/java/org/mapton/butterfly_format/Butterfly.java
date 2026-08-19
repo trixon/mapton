@@ -311,6 +311,8 @@ public class Butterfly {
 
             tasks.forEach(task -> executor.submit(() -> task.execute(sourceDir)));
         }
+
+        BBasePointObservation.clearCache();
     }
 
     void postLoad() {

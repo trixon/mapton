@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_format.types;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 /**
  *
  * @author Patrik Karlström <patrik@trixon.se>
@@ -55,16 +57,19 @@ public abstract class BBaseControlPointObservation extends BBasePointObservation
         return zeroMeasurement;
     }
 
+    @JsonSetter
     public void setComment(String comment) {
-        this.comment = comment;
+        this.comment = cacheString(comment);
     }
 
+    @JsonSetter
     public void setInstrument(String instrument) {
-        this.instrument = instrument;
+        this.instrument = cacheString(instrument);
     }
 
+    @JsonSetter
     public void setOperator(String operator) {
-        this.operator = operator;
+        this.operator = cacheString(operator);
     }
 
     public void setReplacementMeasurement(boolean replacementMeasurement) {

@@ -15,7 +15,9 @@
  */
 package org.mapton.butterfly_format.types;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import java.time.LocalDateTime;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -23,8 +25,21 @@ import java.time.LocalDateTime;
  */
 public abstract class BBasePointObservation {
 
+    protected static final ConcurrentHashMap<String, String> CELL_CACHE = new ConcurrentHashMap<>(4096);
+
     private LocalDateTime date;
     private String name;
+
+    protected String cacheString(String input) {
+        if (input == null) {
+            return null;
+        }
+        return CELL_CACHE.computeIfAbsent(input, s -> s);
+    }
+
+    public static void clearCache() {
+        CELL_CACHE.clear();
+    }
 
     public BBasePointObservation() {
     }
@@ -41,8 +56,9 @@ public abstract class BBasePointObservation {
         this.date = date;
     }
 
+    @JsonSetter
     public void setName(String name) {
-        this.name = name;
+        this.name = cacheString(name);
     }
 
 }

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
@@ -55,6 +56,7 @@ public abstract class ImportFromCsv<T> {
         SHARED_MAPPER = CsvMapper.builder()
                 .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
                 .enable(StreamReadFeature.USE_FAST_DOUBLE_PARSER)
+                .enable(CsvParser.Feature.TRIM_SPACES)
                 .addModule(new JavaTimeModule())
                 .addModule(simpleModule)
                 .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
