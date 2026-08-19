@@ -20,10 +20,11 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MDisruptorProvider;
-import org.mapton.api.MLatLon;
+import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.CryptoHelper;
 import org.mapton.butterfly_format.types.BSystemUser;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
@@ -71,6 +72,18 @@ public class UserManager extends BaseManager<BSystemUser> {
     @Override
     public void load(Butterfly butterfly) {
         try {
+            for (var user : butterfly.sys().getUsers()) {
+                user.setName(decrypt(user.getName()));
+                user.setGroup(decrypt(user.getGroup()));
+                user.setOperator(decrypt(user.getOperator()));
+                user.setOrigin(decrypt(user.getOrigin()));
+                user.setEmail(decrypt(user.getEmail()));
+                user.setInitials(decrypt(user.getInitials()));
+                user.setCategory(decrypt(user.getCategory()));
+                user.extOrNull().setDateFirst(user.getDateCreated());
+                user.extOrNull().setDateLatest(user.getDateLatest());
+            }
+
             initAllItems(butterfly.sys().getUsers());
             var items = getAllItems();
             var dates = new TreeSet<>(items.stream()
@@ -82,13 +95,25 @@ public class UserManager extends BaseManager<BSystemUser> {
                 setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
             }
 
-//            for (var item : items) {
+            for (var item : items) {
 //                item.ext().setDateLatest(item.getDateLatest());
 //                item.ext().setDateFirst(item.getDateLatest());
-//            }
+            }
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
+    }
+
+    private String decrypt(String s) {
+        try {
+            return CryptoHelper.decrypt(s, getKey());
+        } catch (Exception ex) {
+            return "KRYPTERAD";
+        }
+    }
+
+    private String getKey() {
+        return MSimpleObjectStorageManager.getInstance().getString(UserApiKeyProvider.class, null);
     }
 
     @Override
@@ -97,8 +122,6 @@ public class UserManager extends BaseManager<BSystemUser> {
                 .filter(p -> p.getDateLatest() == null ? true : getTemporalManager().isValid(p.getDateLatest()))
                 .toList();
 
-        var latLonDisruptors = timeFilteredItems.stream().map(p -> new MLatLon(p.getLat(), p.getLon())).toList();
-        mDisruptorManager.putLatLons(DISRUPTOR_NAME, latLonDisruptors);
         setItemsTimeFiltered(timeFilteredItems);
     }
 

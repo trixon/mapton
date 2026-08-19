@@ -15,11 +15,7 @@
  */
 package org.mapton.butterfly_misc_user;
 
-import java.util.List;
-import org.apache.commons.collections.ListUtils;
-import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.AddToBasePointsAction;
@@ -27,7 +23,6 @@ import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -35,21 +30,12 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class UserContentView extends BContentView {
 
-    private final Action mClearAction;
     private final UserManager mManager = UserManager.getInstance();
 
     public UserContentView(BContentOptions contentOptions) {
         super(contentOptions, new UserFilter());
         mFilterPopOver = new UserFilterPopOver(mFilter);
         mLayerOptions = UserLayerOptions.getInstance();
-        mClearAction = new Action(Dict.CLEAR.toString(), actionEvent -> {
-            mManager.clear();
-        });
-        mClearAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt()));
-        var customToolBarActions = List.of(
-                ActionUtils.ACTION_SEPARATOR,
-                mClearAction
-        );
 
         mPresetPopOver = new MPresetPopOver(mFilterPopOver, MPresetPopOver.PARENT_NODE_FILTER, "user");
         mFilterPopOver.setFilterPresetPopOver(mPresetPopOver);
@@ -60,8 +46,7 @@ public class UserContentView extends BContentView {
                 action.setDisabled(true);
             }
         });
-        var subToolBarActions = ListUtils.sum(defaultSubToolBarActions, customToolBarActions);
-        mToolBarPopOver.setToolBar(ActionUtils.createToolBar(subToolBarActions, ActionUtils.ActionTextBehavior.SHOW));
+        mToolBarPopOver.setToolBar(ActionUtils.createToolBar(defaultSubToolBarActions, ActionUtils.ActionTextBehavior.SHOW));
 
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_UserAction());
         bindFooterLabel(mListForm);

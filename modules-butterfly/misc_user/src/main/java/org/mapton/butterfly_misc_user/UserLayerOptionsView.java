@@ -38,7 +38,7 @@ public class UserLayerOptionsView extends BLayerOptionsView {
     private final SessionComboBox<UserPointBy> mPointScb = new SessionComboBox<>();
 
     public UserLayerOptionsView(UserLayerBundle layerBundle) {
-        super(layerBundle, Bundle.CTL_UserAction(), UserLayerOptions.getInstance(), "xyz");
+        super(layerBundle, Bundle.CTL_UserAction(), UserLayerOptions.getInstance(), "user");
         createUI();
 
         initListerners();

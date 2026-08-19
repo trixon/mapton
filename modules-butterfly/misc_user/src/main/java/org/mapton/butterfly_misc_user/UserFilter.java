@@ -65,11 +65,11 @@ public class UserFilter extends ButterflyFormFilter<UserManager> implements
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> p.isVisible() != mInvisibleProperty.get())
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment(), p.getExternalId()))
-                .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
-                .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
-                .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
-                //                .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
-                //                .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
+                //                .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
+                //                .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
+                //                .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
+                .filter(p -> mFilterSectionPoint.filter(p, 0L))
+                .filter(p -> mFilterSectionDate.filter(p, p.getDateCreated()))
                 .toList();
 
         if (mInvertProperty.get()) {

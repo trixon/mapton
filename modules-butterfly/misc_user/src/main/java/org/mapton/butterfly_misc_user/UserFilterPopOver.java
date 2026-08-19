@@ -17,7 +17,6 @@ package org.mapton.butterfly_misc_user;
 
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.prefs.Preferences;
-import javafx.collections.ListChangeListener;
 import javafx.scene.layout.BorderPane;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDate.DateElement;
@@ -27,7 +26,6 @@ import org.mapton.butterfly_core.api.BFilterSectionPoint.PointElement;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.BSystemUser;
 import org.openide.util.NbPreferences;
 
 /**
@@ -85,6 +83,9 @@ public class UserFilterPopOver extends BaseTabbedFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
+        mFilterSectionPoint.load(butterfly.sys().getUsers());
+        mFilterSectionDate.load(mManager.getTemporalRange());
+        mFilterSectionMisc.load();
     }
 
     @Override
@@ -119,15 +120,22 @@ public class UserFilterPopOver extends BaseTabbedFilterPopOver {
         );
 
         setContentNode(root);
-
         mFilterSectionPoint.disable(
-                PointElement.CATEGORY,
+                PointElement.TAG,
+                PointElement.CLASSIFICATION,
                 PointElement.FREQUENCY,
+                PointElement.FREQUENCY_INTENSE,
+                PointElement.FREQUENCY_INTENSE_STAT,
                 PointElement.FREQUENCY_DEFAULT,
                 PointElement.FREQUENCY_DEFAULT_STAT,
+                PointElement.UNIT,
+                PointElement.UNIT_DIFF,
+                PointElement.FORMULA_ROLLING,
+                PointElement.FORMULA_SPARSE,
                 PointElement.MEAS_MODE,
+                PointElement.MEAS_MODE_SUB,
                 PointElement.MEAS_NEXT,
-                PointElement.STATUS
+                PointElement.STATUS_STEP
         );
 
         mFilterSectionDate.disable(
@@ -142,11 +150,6 @@ public class UserFilterPopOver extends BaseTabbedFilterPopOver {
         });
 
         mFilterSectionMisc.initListeners(mFilter);
-        mManager.getAllItems().addListener((ListChangeListener.Change<? extends BSystemUser> c) -> {
-            mFilterSectionPoint.load(mManager.getAllItems());
-            mFilterSectionDate.load(mManager.getTemporalRange());
-            mFilterSectionMisc.load();
-        });
 
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
         mFilter.initCheckModelListeners();
