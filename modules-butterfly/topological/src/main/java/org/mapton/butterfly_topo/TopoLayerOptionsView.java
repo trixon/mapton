@@ -40,6 +40,7 @@ public class TopoLayerOptionsView extends BLayerOptionsView implements MRunnable
 
     public TopoLayerOptionsView(TopoLayerBundle layerBundle) {
         super(layerBundle, Bundle.CTL_ControlPointAction(), TopoLayerOptions.getInstance(), "topo");
+        setGraphicsModel(mGraphicSccb.getCheckModel());
         createUI();
 
         initListerners();
@@ -78,9 +79,10 @@ public class TopoLayerOptionsView extends BLayerOptionsView implements MRunnable
         gp.add(mLabelMenuButton, 0, row++, GridPane.REMAINING, 1);
         gp.addRow(row++, mGraphicLabel);
         gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
+        gp.add(getClearGraphicsButton(), 0, row++, GridPane.REMAINING, 1);
         gp.add(mTrendGridPane, 0, row++, GridPane.REMAINING, 1);
 
-        FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
+        FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb, getClearGraphicsButton());
         activateAnnotation();
 
         setCenter(gp);

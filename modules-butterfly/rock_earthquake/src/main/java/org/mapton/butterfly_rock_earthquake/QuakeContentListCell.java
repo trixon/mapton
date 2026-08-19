@@ -15,9 +15,10 @@
  */
 package org.mapton.butterfly_rock_earthquake;
 
-import java.time.format.DateTimeFormatter;
 import javafx.scene.control.Label;
+import org.mapton.api.MOptions;
 import org.mapton.butterfly_core.api.BContentListCell;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_format.types.rock.BRockEarthquake;
 
 /**
@@ -26,11 +27,8 @@ import org.mapton.butterfly_format.types.rock.BRockEarthquake;
  */
 class QuakeContentListCell extends BContentListCell<BRockEarthquake> {
 
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm 'UTC'");
-
     private final Label mDateLabel = new Label();
     private final Label mNameLabel = new Label();
-    private final Label mValueLabel = new Label();
 
     public QuakeContentListCell() {
         createUI();
@@ -39,13 +37,14 @@ class QuakeContentListCell extends BContentListCell<BRockEarthquake> {
     @Override
     protected void addContent(BRockEarthquake quake) {
         setText(null);
-        mNameLabel.setText(quake.getName());
-        mValueLabel.setText("M %.1f %s @%.1f km (%d/1000)".formatted(
+        var distance = MOptions.getInstance().getMapHome().distance(BCoordinatrix.toLatLon(quake));
+        mNameLabel.setText("M %.1f %s @%.1f km (%,.0f km)".formatted(
                 quake.getMag(),
                 quake.getMagType(),
                 quake.getZeroZ(),
-                quake.getSig()));
-        mDateLabel.setText(DATE_TIME_FORMATTER.format(quake.getDateLatest().plusSeconds(30)));
+                distance / 1000.0
+        ));
+        mDateLabel.setText(DATE_TIME_FORMATTER_UTC.format(quake.getDateLatest().plusSeconds(30)));
         setGraphic(mVBox);
     }
 
@@ -53,7 +52,6 @@ class QuakeContentListCell extends BContentListCell<BRockEarthquake> {
         mNameLabel.setStyle(mStyleBold);
         mVBox.getChildren().setAll(
                 mNameLabel,
-                mValueLabel,
                 mDateLabel
         );
     }

@@ -38,7 +38,7 @@ class ReinforcementContentListCell extends BContentListCell<BGeoReinforcementPoi
     @Override
     protected void addContent(BGeoReinforcementPoint drillPoint) {
         setText(null);
-        var date = Objects.toString(DateHelper.toDateTimeString(drillPoint.getDateLatest()), "-");
+        var date = Objects.toString(DateHelper.toDateString(drillPoint.getDateLatest()), "-");
         mNameLabel.setText(drillPoint.getName());
         mDateLabel.setText("%s %s".formatted(date, drillPoint.getComment()));
         mGroupLabel.setText(drillPoint.getGroup());

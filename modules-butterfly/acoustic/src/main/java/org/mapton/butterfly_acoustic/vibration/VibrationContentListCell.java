@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_acoustic.vibration;
 
-import java.time.format.DateTimeFormatter;
 import javafx.scene.control.Label;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BContentListCell;
@@ -31,7 +30,6 @@ class VibrationContentListCell extends BContentListCell<BAcousticVibrationPoint>
     private final Label mDesc2Label = new Label();
     private final Label mDesc4Label = new Label();
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
-    private final DateTimeFormatter mDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm");
 
     public VibrationContentListCell() {
         createUI();
@@ -51,10 +49,7 @@ class VibrationContentListCell extends BContentListCell<BAcousticVibrationPoint>
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getGroup(), "NOVALUE"), StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"));
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
-        var latest = p.ext().getDateLatest().format(mDateTimeFormatter);
-        var first = p.ext().getDateFirst().toLocalDate().toString();
-        var date = "%s (%s)".formatted(latest, first);
-        mDesc2Label.setText(date);
+        mDesc2Label.setText(getDateLatestAndFirst(p));
         mDesc4Label.setText(p.getComment());
 
         setGraphic(mVBox);
