@@ -25,6 +25,8 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 public enum BListSortOrder {
     STANDARD(Order.ASC, "Ursprung och namn",
             Comparator.comparing(BXyzPoint::getOrigin).thenComparing(Comparator.comparing(BXyzPoint::getName))),
+    NAME(Order.ASC, "Namn",
+            Comparator.comparing(BXyzPoint::getName)),
     DELTA_1D(Order.DESC, "Δ1d",
             Comparator.comparing((BXyzPoint p) -> {
                 var value = p.extOrNull().deltaZero().getDelta1();

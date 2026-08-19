@@ -156,6 +156,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put(STATUS, mStatusSccb);
         map.put(STATUS_STEP, mStatusStepSccb);
         map.put(CLASSIFICATION, mClassificationSccb);
+        map.put(TAG, mTagSccb);
         map.put(UNIT, mUnitSccb);
         map.put(UNIT_DIFF, mUnitDiffSccb);
 
@@ -499,6 +500,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         ORIGIN,
         STATUS,
         STATUS_STEP,
+        TAG,
         UNIT,
         UNIT_DIFF;
     }

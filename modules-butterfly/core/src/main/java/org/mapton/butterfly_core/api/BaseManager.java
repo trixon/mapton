@@ -174,7 +174,9 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
     public List<String> getDefaultAnnotation(BLayerOptions options, T t) {
         if (t instanceof BXyzPoint p && options.isPlotAnnotation()) {
             var ext = p.extOrNull();
-            return List.of(p.getName(),
+            return List.of(
+                    p.getName(),
+                    p.getClassification(),
                     ext.getDateLatest() != null ? ext.getDateLatest().toLocalDate().toString() : "-",
                     ext.getAlarmPercentString(ext),
                     ext.deltaZero().getDelta(3)
