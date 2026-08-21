@@ -15,6 +15,7 @@
  */
 package org.mapton.worldwind;
 
+import org.mapton.api.MCoordinateFileManager;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.openide.modules.OnStart;
@@ -35,6 +36,7 @@ public class DoOnStart implements Runnable {
             }, MKey.DATA_SOURCES_WMS_SOURCES);
 
             OverlayManager.getInstance().populateOverlayLayers();
+            MCoordinateFileManager.getInstance().refresh();
         });
     }
 
