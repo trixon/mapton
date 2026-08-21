@@ -58,5 +58,6 @@ limitations under the License.
         <module>poi</module>
         <module>misc_user</module>
         <module>misc_xyz</module>
+        <module>composite</module>
     </modules>
 </project>
