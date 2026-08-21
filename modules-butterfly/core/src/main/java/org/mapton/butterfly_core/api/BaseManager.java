@@ -37,6 +37,7 @@ import org.mapton.api.MTemporalManager;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBase;
+import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.worldwind.api.LayerBundle;
@@ -59,6 +60,7 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
     protected boolean mFirstLoad = true;
     protected OffsetManager mOffsetManager = OffsetManager.getInstance();
     protected int mTrendLoadCounter = 0;
+    protected final WatchlistManager mWatchlistManager = WatchlistManager.getInstance();
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
     private final BooleanProperty mDisabledSearchProperty = new SimpleBooleanProperty(true);
@@ -101,12 +103,18 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
         sInstanciatedManagers.add(this);
         mButterflyManager.butterflyProperty().addListener((p, o, n) -> {
             mButterfly = n;
-            FxHelper.runLater(() -> load(n));
+            FxHelper.runLater(() -> {
+                load(n);
+                postLoad(n);
+            });
         });
 
         if (mButterflyManager.getButterfly() != null) {
             mButterfly = mButterflyManager.getButterfly();
-            FxHelper.runLater(() -> load(mButterfly));
+            FxHelper.runLater(() -> {
+                load(mButterfly);
+                postLoad(mButterfly);
+            });
         }
 
         selectedItemProperty().addListener((p, o, n) -> {
@@ -279,6 +287,16 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
         return new MLatLonBox(latLons);
     }
 
+    private void postLoad(Butterfly butterfly) {
+        if (this instanceof BaseManager<?> wildcardManager) {
+            if (BBaseControlPoint.class.isAssignableFrom(wildcardManager.getTypeParameterClass())) {
+                @SuppressWarnings("unchecked")
+                var manager = (BaseManager<? extends BBaseControlPoint>) wildcardManager;
+                mWatchlistManager.check(manager);
+            }
+        }
+    }
+
     private void storeManagerAndItem(BBase item) {
         if (ObjectUtils.allNotNull(item) && item != sCurrItem) {
             sPrevManager = sCurrManager;
@@ -286,6 +304,5 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
             sCurrManager = (BaseManager<BBase>) this;
             sCurrItem = item;
         }
-
     }
 }

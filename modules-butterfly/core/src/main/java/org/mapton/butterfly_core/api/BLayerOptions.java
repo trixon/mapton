@@ -45,6 +45,8 @@ public abstract class BLayerOptions<T> extends OptionsBase {
     public static final int DEFAULT_PLOT_DISTANCE = 15;
     public static final boolean DEFAULT_PLOT_SELECTED = false;
     public static final boolean DEFAULT_PLOT_SELECTED_PLUS = false;
+    public static final boolean DEFAULT_PLOT_WATCHLIST_CHANGES = false;
+    public static final boolean DEFAULT_PLOT_WATCHLIST_MEMBER = false;
     public static final BTrendPeriod DEFAULT_TREND_PERIOD_A = BTrendPeriod.MONTH;
     public static final BTrendPeriod DEFAULT_TREND_PERIOD_B = BTrendPeriod.ZERO;
     public static final BTrendPeriod DEFAULT_TREND_PERIOD_C = BTrendPeriod.QUARTER;
@@ -58,6 +60,8 @@ public abstract class BLayerOptions<T> extends OptionsBase {
     private final IntegerProperty mPlotDistanceProperty = new SimpleIntegerProperty(DEFAULT_PLOT_DISTANCE);
     private final BooleanProperty mPlotSelectedPlusProperty = new SimpleBooleanProperty(DEFAULT_PLOT_SELECTED_PLUS);
     private final BooleanProperty mPlotSelectedProperty = new SimpleBooleanProperty(DEFAULT_PLOT_SELECTED);
+    private BooleanProperty mPlotWatchlistChangesProperty = new SimpleBooleanProperty(DEFAULT_PLOT_WATCHLIST_CHANGES);
+    private BooleanProperty mPlotWatchlistMemberProperty = new SimpleBooleanProperty(DEFAULT_PLOT_WATCHLIST_MEMBER);
     private StringProperty mPointByProxyProperty;
     private final ObjectProperty<BTrendPeriod> mTrendPeriodAProperty = new SimpleObjectProperty<>(DEFAULT_TREND_PERIOD_A);
     private StringProperty mTrendPeriodAProxyProperty;
@@ -80,6 +84,14 @@ public abstract class BLayerOptions<T> extends OptionsBase {
 
     public void disablePlotDebt() {
         mPlotDebtProperty = null;
+    }
+
+    public void disablePlotWatchlistChanges() {
+        mPlotWatchlistChangesProperty = null;
+    }
+
+    public void disablePlotWatchlistMember() {
+        mPlotWatchlistMemberProperty = null;
     }
 
     public String getGraphics() {
@@ -142,6 +154,12 @@ public abstract class BLayerOptions<T> extends OptionsBase {
         if (mPlotDebtProperty != null) {
             sessionManager.register(prefix + "plotDebt", mPlotDebtProperty);
         }
+        if (mPlotWatchlistMemberProperty != null) {
+            sessionManager.register(prefix + "plotWatchlistMember", mPlotWatchlistMemberProperty);
+        }
+        if (mPlotWatchlistChangesProperty != null) {
+            sessionManager.register(prefix + "plotWatchlistChanges", mPlotWatchlistChangesProperty);
+        }
         if (mPlotAlarmProperty != null) {
             sessionManager.register(prefix + "plotAlarm", mPlotAlarmProperty);
         }
@@ -165,6 +183,14 @@ public abstract class BLayerOptions<T> extends OptionsBase {
 
     public boolean isPlotSelectedPlus() {
         return mPlotSelectedPlusProperty.get();
+    }
+
+    public boolean isPlotWatchlistChanges() {
+        return mPlotWatchlistChangesProperty != null && mPlotWatchlistChangesProperty.get();
+    }
+
+    public boolean isPlotWatchlistMember() {
+        return mPlotWatchlistMemberProperty != null && mPlotWatchlistMemberProperty.get();
     }
 
     public SimpleObjectProperty<LabelBy.Operations> labelByOperationProperty() {
@@ -199,6 +225,14 @@ public abstract class BLayerOptions<T> extends OptionsBase {
         return mPlotSelectedProperty;
     }
 
+    public BooleanProperty plotWatchlistChanges() {
+        return mPlotWatchlistChangesProperty;
+    }
+
+    public BooleanProperty plotWatchlistMember() {
+        return mPlotWatchlistMemberProperty;
+    }
+
     public StringProperty pointByProxyProperty() {
         return mPointByProxyProperty;
     }
@@ -219,6 +253,12 @@ public abstract class BLayerOptions<T> extends OptionsBase {
         mPlotDistanceProperty.set(DEFAULT_PLOT_DISTANCE);
         if (mPlotAnnotationProperty != null) {
             mPlotAnnotationProperty.set(DEFAULT_PLOT_ANNOTATION);
+        }
+        if (mPlotWatchlistMemberProperty != null) {
+            mPlotWatchlistMemberProperty.set(DEFAULT_PLOT_WATCHLIST_MEMBER);
+        }
+        if (mPlotWatchlistChangesProperty != null) {
+            mPlotWatchlistChangesProperty.set(DEFAULT_PLOT_WATCHLIST_CHANGES);
         }
         if (mPlotDebtProperty != null) {
             mPlotDebtProperty.set(DEFAULT_PLOT_DEBT);

@@ -70,6 +70,8 @@ public abstract class BLayerOptionsView extends MOptionsView {
     private final SessionCheckBox mPlotAnnotationScbx = new SessionCheckBox(MDict.ANNOTATIONS.toString());
     private final SessionCheckBox mPlotDebtScbx = new SessionCheckBox("Skuld");
     private final SessionCheckBox mPlotSelectedScbx = new SessionCheckBox("Bara valt");
+    private final SessionCheckBox mPlotWatchlistMemberScbx = new SessionCheckBox("Bevakade");
+    private final SessionCheckBox mPlotWatchlistChangesScbx = new SessionCheckBox("Nya mätningar");
     private MPresetActions mPresetActions;
 
     public BLayerOptionsView(LayerBundle layerBundle, String title, MPresetActions presetActions, String key) {
@@ -130,6 +132,14 @@ public abstract class BLayerOptionsView extends MOptionsView {
 
     public SessionCheckBox getPlotSelectedScbx() {
         return mPlotSelectedScbx;
+    }
+
+    public SessionCheckBox getPlotWatchlistChangesScbx() {
+        return mPlotWatchlistChangesScbx;
+    }
+
+    public SessionCheckBox getPlotWatchlistMemberScbx() {
+        return mPlotWatchlistMemberScbx;
     }
 
     @Deprecated(forRemoval = true)
@@ -228,6 +238,14 @@ public abstract class BLayerOptionsView extends MOptionsView {
         if (options.plotSelectedProperty() != null) {
             mPlotSelectedScbx.selectedProperty().bindBidirectional(options.plotSelectedProperty());
         }
+        if (options.plotWatchlistMember() != null) {
+            mPlotWatchlistMemberScbx.selectedProperty().bindBidirectional(options.plotWatchlistMember());
+            mPlotWatchlistMemberScbx.setDisable(false);
+        }
+        if (options.plotWatchlistChanges() != null) {
+            mPlotWatchlistChangesScbx.selectedProperty().bindBidirectional(options.plotWatchlistChanges());
+            mPlotWatchlistChangesScbx.setDisable(false);
+        }
         mDistanceSliderPane.selectedProperty().bindBidirectional(options.plotSelectedPlusProperty());
         mDistanceSliderPane.valueProperty().bindBidirectional(options.plotDistanceProperty());
     }
@@ -248,6 +266,8 @@ public abstract class BLayerOptionsView extends MOptionsView {
             createToolbar(actions);
         }
 
+        mPlotWatchlistMemberScbx.setDisable(true);
+        mPlotWatchlistChangesScbx.setDisable(true);
         mPlotDebtScbx.setDisable(true);
         mPlotAlarmScbx.setDisable(true);
         mPlotAnnotationScbx.setDisable(true);
@@ -268,8 +288,9 @@ public abstract class BLayerOptionsView extends MOptionsView {
 
         var subPane = createGridPane();
         subPane.setPadding(Insets.EMPTY);
-        subPane.addRow(0, mPlotDebtScbx, mPlotAlarmScbx);
-        subPane.addRow(1, mPlotSelectedScbx, mPlotAnnotationScbx);
+        subPane.addRow(0, mPlotWatchlistMemberScbx, mPlotWatchlistChangesScbx);
+        subPane.addRow(1, mPlotDebtScbx, mPlotAlarmScbx);
+        subPane.addRow(2, mPlotSelectedScbx, mPlotAnnotationScbx);
         row = 0;
         mBottomPane.addRow(row++, subPane);
         mBottomPane.addRow(row++, mDistanceSliderPane);

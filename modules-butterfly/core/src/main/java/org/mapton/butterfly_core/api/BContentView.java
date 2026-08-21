@@ -80,6 +80,8 @@ public abstract class BContentView {
 
         var copyNamesAction = new CopyNamesAction(manager);
         var addPointsAction = new AddToBasePointsAction(manager);
+        var watchlistEditorAction = new WatchlistEditorAction(manager);
+        var watchlistClearAction = new WatchlistClearAction(manager);
 
         copyNamesAction.setDisabled(config.disableCopyName);
 
@@ -88,7 +90,9 @@ public abstract class BContentView {
                 exportAction,
                 copyNamesAction,
                 addPointsAction,
-                manager.geZoomExtentstAction()
+                manager.geZoomExtentstAction(),
+                watchlistEditorAction,
+                watchlistClearAction
         );
     }
 

@@ -134,6 +134,10 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
             plotDebt((BXyzPoint) p, position);
         }
 
+        if (options.isPlotWatchlistMember()) {
+            plotWatchlistMember((BXyzPoint) p, position);
+        }
+
         if (options.isPlotAlarm()) {
             plotAlarmAnnotation((BXyzPoint) p, position);
         }
@@ -294,6 +298,24 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
         addRenderable(cylinder, false, null, null);
     }
 
+    public void plotWatchlistChanges(BXyzPoint p, Position position) {
+        if (p.getValue("watchlistChanged") != Boolean.TRUE) {
+            return;
+        }
+
+        if (p.getValue("watchlistMember") != Boolean.TRUE) {
+            return;
+        }
+
+        var attrs = new BasicShapeAttributes();
+        attrs.setDrawOutline(false);
+        attrs.setDrawInterior(true);
+        attrs.setInteriorMaterial(Material.YELLOW);
+        var cylinder = new Cylinder(position, 0.5, 2.5);
+        cylinder.setAttributes(attrs);
+        addRenderable(cylinder, false, null, null);
+    }
+
     public void postPlot() {
 
     }
@@ -374,5 +396,19 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
         var cylinder = new Cylinder(WWHelper.positionFromPosition(position, 0.1), 0.2, 1.0);
         cylinder.setAttributes(attrs);
         addRenderable(cylinder, true, null, null);
+    }
+
+    protected void plotWatchlistMember(BXyzPoint p, Position position) {
+        if (p.getValue("watchlistMember") != Boolean.TRUE) {
+            return;
+        }
+
+        var attrs = new BasicShapeAttributes();
+        attrs.setDrawOutline(false);
+        attrs.setDrawInterior(true);
+        attrs.setInteriorMaterial(Material.BLUE);
+        var cylinder = new Cylinder(position, 0.25, 5.0);
+        cylinder.setAttributes(attrs);
+        addRenderable(cylinder, false, null, null);
     }
 }
