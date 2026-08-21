@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.Mapton;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
@@ -111,6 +112,18 @@ public class CrackLayerBundle extends BfLayerBundle {
                 }
                 default ->
                     throw new AssertionError();
+            }
+
+            //Plot points with new measurement regardless of filter
+            synchronized (mManager.getAllItems()) {
+                mManager.getAllItems().stream()
+                        .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
+                        .forEach(p -> {
+                            var position = BCoordinatrix.toPositionWW2d(p);
+                            if (mLayerOptions.isPlotWatchlistChanges()) {
+                                mGraphicRenderer.plotWatchlistChanges(p, position);
+                            }
+                        });
             }
 
             synchronized (mManager.getTimeFilteredItems()) {

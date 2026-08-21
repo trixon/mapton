@@ -149,6 +149,18 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                     throw new AssertionError();
             }
 
+            //Plot points with new measurement regardless of filter
+            synchronized (mManager.getAllItems()) {
+                mManager.getAllItems().stream()
+                        .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
+                        .forEach(p -> {
+                            var position = BCoordinatrix.toPositionWW2d(p);
+                            if (mLayerOptions.isPlotWatchlistChanges()) {
+                                mGraphicRenderer.plotWatchlistChanges(p, position);
+                            }
+                        });
+            }
+
             synchronized (mManager.getTimeFilteredItems()) {
                 mManager.getTimeFilteredItems().stream()
                         .sorted((o1, o2) -> Double.compare(o1.ext().getAlarmLevel(), o2.ext().getAlarmLevel()))
