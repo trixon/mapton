@@ -94,26 +94,24 @@ public class UserManager extends BaseManager<BSystemUser> {
             if (!dates.isEmpty()) {
                 setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
             }
-
-            for (var item : items) {
-//                item.ext().setDateLatest(item.getDateLatest());
-//                item.ext().setDateFirst(item.getDateLatest());
-            }
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
     }
 
     private String decrypt(String s) {
-        try {
-            return CryptoHelper.decrypt(s, getKey());
-        } catch (Exception ex) {
-            return "KRYPTERAD";
+        for (var cls : List.of(UserApiKeyProvider.class, UserApiKeyProvider1.class, UserApiKeyProvider2.class)) {
+            try {
+                var key = MSimpleObjectStorageManager.getInstance().getString(cls, null);
+                if (key == null || key.isBlank()) {
+                    continue;
+                }
+                return CryptoHelper.decrypt(s, key);
+            } catch (Exception ex) {
+                //
+            }
         }
-    }
-
-    private String getKey() {
-        return MSimpleObjectStorageManager.getInstance().getString(UserApiKeyProvider.class, null);
+        return "KRYPTERAD";
     }
 
     @Override

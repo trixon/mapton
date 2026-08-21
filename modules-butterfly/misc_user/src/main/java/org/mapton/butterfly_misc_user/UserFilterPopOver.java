@@ -139,7 +139,6 @@ public class UserFilterPopOver extends BaseTabbedFilterPopOver {
         );
 
         mFilterSectionDate.disable(
-                DateElement.FIRST,
                 DateElement.HAS_FROM_TO
         );
     }

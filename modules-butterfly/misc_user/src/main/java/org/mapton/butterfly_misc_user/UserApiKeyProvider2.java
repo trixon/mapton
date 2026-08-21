@@ -23,11 +23,11 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MSimpleObjectStorageString.ApiKey.class)
-public class UserApiKeyProvider extends MSimpleObjectStorageString.ApiKey {
+public class UserApiKeyProvider2 extends MSimpleObjectStorageString.ApiKey {
 
-    public UserApiKeyProvider() {
+    public UserApiKeyProvider2() {
         setGroup("Butterfly");
-        setName("Avkodningsnyckel  #1");
+        setName("Avkodningsnyckel #3");
     }
 
 }
