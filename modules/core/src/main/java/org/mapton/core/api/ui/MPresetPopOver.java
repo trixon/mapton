@@ -89,6 +89,8 @@ public class MPresetPopOver extends MPopOver {
 
         var sessionManager = new SessionManager(mPreferences.parent());
         sessionManager.register("storedFilter_%s".formatted(path), mEditableList.filterTextProperty());
+
+        refreshFilteredItems();
     }
 
     public boolean restoreDefaultIfExists() {
