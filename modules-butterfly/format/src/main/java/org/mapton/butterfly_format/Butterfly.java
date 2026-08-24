@@ -57,6 +57,8 @@ import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationChannel;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationLimit;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationObservation;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
+import org.mapton.butterfly_format.types.composite.BCompositePointObservation;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation.ObservationItem;
@@ -112,6 +114,8 @@ public class Butterfly {
     private final ArrayList<BHistory> mAlarmsHistory = new ArrayList<>();
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
     private final ArrayList<BAreaBase> mAreaFilters = new ArrayList<>();
+    private final ArrayList<BCompositePoint> mCompositePoints = new ArrayList<>();
+    private final ArrayList<BCompositePointObservation> mCompositePointsObservations = new ArrayList<>();
     private final ArrayList<BCoordinate> mCoordinates = new ArrayList<>();
     private final Dev mDev = new Dev();
     private final ArrayList<BGeoInclinometerPoint> mGeoInclinometerPoints = new ArrayList<>();
@@ -193,6 +197,14 @@ public class Butterfly {
         return mAreaFilters;
     }
 
+    public ArrayList<BCompositePoint> getCompositePoints() {
+        return mCompositePoints;
+    }
+
+    public ArrayList<BCompositePointObservation> getCompositePointsObservations() {
+        return mCompositePointsObservations;
+    }
+
     public ButterflyManipulator getManipulator() {
         return mManipulator;
     }
@@ -253,6 +265,7 @@ public class Butterfly {
         List<ImportTask<?>> tasks = new ArrayList<>();
         int observationsCategory = 2_000_000;
 
+        tasks.add(new ImportTask<>(BCompositePoint.class, "compositePoints.csv", mCompositePoints));
         tasks.add(new ImportTask<>(BCoordinate.class, "coordinates.csv", mCoordinates));
         tasks.add(new ImportTask<>(BRoi.class, "roi.csv", mRois));
         tasks.add(new ImportTask<>(BAcousticVibrationPoint.class, "noiseVibrationPoints.csv", mVibrationPoints));
