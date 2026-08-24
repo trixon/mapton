@@ -38,7 +38,7 @@ public class CompositeLayerOptionsView extends BLayerOptionsView {
     private final SessionComboBox<CompositePointBy> mPointScb = new SessionComboBox<>();
 
     public CompositeLayerOptionsView(CompositeLayerBundle layerBundle) {
-        super(layerBundle, Bundle.CTL_CompositeAction(), CompositeLayerOptions.getInstance(), "load");
+        super(layerBundle, Bundle.CTL_CompositeAction(), CompositeLayerOptions.getInstance(), "composite");
         createUI();
 
         initListerners();

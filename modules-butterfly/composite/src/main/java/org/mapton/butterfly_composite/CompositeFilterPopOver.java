@@ -102,7 +102,7 @@ public class CompositeFilterPopOver extends BaseTabbedFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var items = butterfly.structural().getLoadPoints();
+        var items = butterfly.getCompositePoints();
 
         mFilterSectionPoint.load(items);
         mFilterSectionAlarm.load(items);

@@ -60,9 +60,9 @@ public final class CompositeTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var loadView = new CompositeContentView(CompositeContentOptions.getInstance());
+        var compositeView = new CompositeContentView(CompositeContentOptions.getInstance());
 
-        return new Scene(loadView.getView());
+        return new Scene(compositeView.getView());
     }
 
     void writeProperties(java.util.Properties p) {

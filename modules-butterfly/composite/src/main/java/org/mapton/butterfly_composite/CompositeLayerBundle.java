@@ -165,7 +165,7 @@ public class CompositeLayerBundle extends BfLayerBundle {
 
     private PointPlacemark plotPin(BCompositePoint p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(p);
-        attrs = PinPaddle.W_DIAMOND.applyToCopy(attrs);
+        attrs = PinPaddle.N_DIAMOND.applyToCopy(attrs);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

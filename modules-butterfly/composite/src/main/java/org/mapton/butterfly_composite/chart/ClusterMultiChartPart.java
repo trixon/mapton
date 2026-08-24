@@ -29,7 +29,6 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import org.mapton.butterfly_composite.CompositeManager;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.SDict;
 
 /**
  *
@@ -60,7 +59,7 @@ public class ClusterMultiChartPart extends BMultiChartPartCluster {
 
     @Override
     public String getName() {
-        return SDict.LOAD_CELLS.toString();
+        return "Composite";
     }
 
     @Override

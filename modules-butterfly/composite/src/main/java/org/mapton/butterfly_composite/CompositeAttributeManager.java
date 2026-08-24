@@ -28,7 +28,7 @@ import org.mapton.butterfly_format.types.composite.BCompositePoint;
 public class CompositeAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
-    private BasicShapeAttributes mLoadAttribute;
+    private BasicShapeAttributes mCompositeAttribute;
     private BasicShapeAttributes mSurfaceAttributes;
 
     public static CompositeAttributeManager getInstance() {
@@ -49,26 +49,27 @@ public class CompositeAttributeManager extends BaseAttributeManager {
         return mComponentEllipsoidAttributes;
     }
 
+    public BasicShapeAttributes getCompositeAttribute() {
+        if (mCompositeAttribute == null) {
+            mCompositeAttribute = new BasicShapeAttributes();
+            mCompositeAttribute.setDrawOutline(true);
+            mCompositeAttribute.setOutlineMaterial(Material.RED);
+            mCompositeAttribute.setOutlineWidth(4.0);
+            mCompositeAttribute.setOutlineOpacity(1.0);
+        }
+
+        return mCompositeAttribute;
+    }
+
     public PointPlacemarkAttributes getPinAttributes(BCompositePoint p) {
-        var attrs = getPinAttributes(CompositeHelper.getAlarmLevel(p));
+        var attrs = getPinAttributes(1);
+//        var attrs = getPinAttributes(CompositeHelper.getAlarmLevel(p));
 
 //        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
 //            attrs = new PointPlacemarkAttributes(attrs);
 //            attrs.setImageColor(getColor(p));
 //        }
         return attrs;
-    }
-
-    public BasicShapeAttributes getLoadAttribute() {
-        if (mLoadAttribute == null) {
-            mLoadAttribute = new BasicShapeAttributes();
-            mLoadAttribute.setDrawOutline(true);
-            mLoadAttribute.setOutlineMaterial(Material.RED);
-            mLoadAttribute.setOutlineWidth(4.0);
-            mLoadAttribute.setOutlineOpacity(1.0);
-        }
-
-        return mLoadAttribute;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {
