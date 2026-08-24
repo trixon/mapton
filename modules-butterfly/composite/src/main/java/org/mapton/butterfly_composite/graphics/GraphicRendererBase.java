@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicItem, BStructuralLoadCellPoint> {
+public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicItem, BCompositePoint> {
 
     protected static IndexedCheckModel<GraphicItem> sCheckModel;
     protected static ArrayList<AVListImpl> sMapObjects;
@@ -44,7 +44,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         super(layer, passiveLayer, sPlotLimiter);
     }
 
-    protected boolean isPlotLimitReached(BStructuralLoadCellPoint p, Object key, Position position) {
+    protected boolean isPlotLimitReached(BCompositePoint p, Object key, Position position) {
         return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty(), sMapObjects);
     }
 

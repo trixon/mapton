@@ -26,7 +26,7 @@ import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BMultiChartPartCluster;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import org.mapton.butterfly_composite.CompositeManager;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.SDict;
@@ -64,7 +64,7 @@ public class ClusterMultiChartPart extends BMultiChartPartCluster {
     }
 
     @Override
-    public ArrayList<BStructuralLoadCellPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
+    public ArrayList<BCompositePoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = CompositeManager.getInstance().getTimeFilteredItems().stream()
                 .filter(p -> {
                     return hasValidGeometry(latLon, BCoordinatrix.toLatLon(p), getDefaultDistance());

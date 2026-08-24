@@ -27,7 +27,7 @@ import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
@@ -48,7 +48,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
     }
 
     @Override
-    public void updateDataset(BStructuralLoadCellPoint p) {
+    public void updateDataset(BCompositePoint p) {
         mTimeSeries1d.clear();
 
         var plot = getPlot();
@@ -78,7 +78,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         }
     }
 
-    private double plot(BStructuralLoadCellPoint p, TimeSeries timeSeries, Color color, Function<BXyzPointObservation, Double> function) {
+    private double plot(BCompositePoint p, TimeSeries timeSeries, Color color, Function<BXyzPointObservation, Double> function) {
         var plot = getPlot();
         var renderer = plot.getRenderer();
         var startDate = isCompleteView() ? LocalDateTime.MIN : LocalDateTime.now().minusDays(getRecentDays());
@@ -133,7 +133,7 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         }
     }
 
-    private void plotMarkers(BStructuralLoadCellPoint p) {
+    private void plotMarkers(BCompositePoint p) {
         var plot = getPlot();
         plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));

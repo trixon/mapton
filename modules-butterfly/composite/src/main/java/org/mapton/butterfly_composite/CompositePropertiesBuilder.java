@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import org.mapton.butterfly_core.api.AlarmHelper;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.Dict;
 
@@ -28,10 +28,10 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class CompositePropertiesBuilder extends BPropertiesBuilder<BStructuralLoadCellPoint> {
+public class CompositePropertiesBuilder extends BPropertiesBuilder<BCompositePoint> {
 
     @Override
-    public Object build(BStructuralLoadCellPoint p) {
+    public Object build(BCompositePoint p) {
         if (p == null) {
             return p;
         }

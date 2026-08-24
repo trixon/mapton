@@ -17,7 +17,7 @@ package org.mapton.butterfly_composite;
 
 import java.awt.Color;
 import org.mapton.butterfly_core.api.ButterflyHelper;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 
 /**
  *
@@ -25,20 +25,22 @@ import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
  */
 public class CompositeHelper {
 
-    public static Color getAlarmColorAwt(BStructuralLoadCellPoint p) {
+    public static Color getAlarmColorAwt(BCompositePoint p) {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
     }
 
-    public static javafx.scene.paint.Color getAlarmColorHeightFx(BStructuralLoadCellPoint p) {
+    public static javafx.scene.paint.Color getAlarmColorHeightFx(BCompositePoint p) {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevelHeight(p));
     }
 
-    public static int getAlarmLevel(BStructuralLoadCellPoint p) {
-        return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
+    public static int getAlarmLevel(BCompositePoint p) {
+        return -1;
+//        return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
     }
 
-    public static int getAlarmLevelHeight(BStructuralLoadCellPoint p) {
-        return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
+    public static int getAlarmLevelHeight(BCompositePoint p) {
+        return -1;
+//        return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
     }
 
 }

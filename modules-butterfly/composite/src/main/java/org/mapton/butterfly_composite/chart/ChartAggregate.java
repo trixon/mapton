@@ -20,7 +20,7 @@ import java.util.function.Function;
 import javax.swing.JTabbedPane;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 
 /**
  *
@@ -40,7 +40,7 @@ public class ChartAggregate {
         mTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
     }
 
-    public synchronized Callable<JTabbedPane> build(BStructuralLoadCellPoint p) {
+    public synchronized Callable<JTabbedPane> build(BCompositePoint p) {
         if (p == null) {
             return null;
         }

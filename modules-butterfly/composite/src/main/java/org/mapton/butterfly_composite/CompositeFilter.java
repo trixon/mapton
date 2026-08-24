@@ -16,7 +16,6 @@
 package org.mapton.butterfly_composite;
 
 import j2html.tags.ContainerTag;
-import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -93,8 +92,8 @@ public class CompositeFilter extends ButterflyFormFilter<CompositeManager> imple
                 .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
-                .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
-                .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
+                //                .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
+                //                .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> mFilterSectionAlarm.filter(p))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
                 .toList();

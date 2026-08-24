@@ -19,7 +19,7 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 
 /**
  *
@@ -49,7 +49,7 @@ public class CompositeAttributeManager extends BaseAttributeManager {
         return mComponentEllipsoidAttributes;
     }
 
-    public PointPlacemarkAttributes getPinAttributes(BStructuralLoadCellPoint p) {
+    public PointPlacemarkAttributes getPinAttributes(BCompositePoint p) {
         var attrs = getPinAttributes(CompositeHelper.getAlarmLevel(p));
 
 //        if (mColorBy != null && mColorBy != ColorBy.ALARM) {

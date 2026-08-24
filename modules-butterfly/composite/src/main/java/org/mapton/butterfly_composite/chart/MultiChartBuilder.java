@@ -25,14 +25,14 @@ import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BXyzPoint;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MultiChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint> {
+public class MultiChartBuilder extends XyzChartBuilder<BCompositePoint> {
 
     private LocalDate mDateFirst;
     private LocalDate mDateLast;
@@ -45,7 +45,7 @@ public class MultiChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint>
         initChart(axisLabel, decimalPattern);
     }
 
-    public synchronized Callable<ChartPanel> build(BStructuralLoadCellPoint p, BMultiChartPart multiChartComponent) {
+    public synchronized Callable<ChartPanel> build(BCompositePoint p, BMultiChartPart multiChartComponent) {
         if (p == null) {
             return null;
         }
@@ -66,7 +66,7 @@ public class MultiChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint>
     }
 
     @Override
-    public Object build(BStructuralLoadCellPoint selectedObject) {
+    public Object build(BCompositePoint selectedObject) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -75,7 +75,7 @@ public class MultiChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint>
     }
 
     @Override
-    public void setTitle(BStructuralLoadCellPoint b) {
+    public void setTitle(BCompositePoint b) {
         mChart.setTitle("%s: %s".formatted(mTitlePrefix, b.getName()));
 
 //        setTitle(p, Color.BLUE);
@@ -87,7 +87,7 @@ public class MultiChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint>
     }
 
     @Override
-    public void updateDataset(BStructuralLoadCellPoint p) {
+    public void updateDataset(BCompositePoint p) {
         var plot = getPlot();
         resetPlot(plot);
 

@@ -28,10 +28,10 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPointObservation;
 import org.mapton.butterfly_composite.CompositeAttributeManager;
+import org.mapton.butterfly_format.types.BComponent;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
+import org.mapton.butterfly_format.types.composite.BCompositePointObservation;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -48,7 +48,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     @Override
-    public void plot(BStructuralLoadCellPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BCompositePoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
 
         if (sCheckModel.isChecked(GraphicItem.ALARM_CONSUMPTION)) {
@@ -60,7 +60,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
     }
 
-    private void plotAlarmConsumption(BStructuralLoadCellPoint p, Position position) {
+    private void plotAlarmConsumption(BCompositePoint p, Position position) {
         if (isPlotLimitReached(p, GraphicItem.ALARM_CONSUMPTION, position) || p.ext().getObservationFilteredLast() == null) {
             return;
         }
@@ -91,7 +91,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         plotPercentageRod(position, p.ext().getAlarmPercent());
     }
 
-    private void plotTrace(BStructuralLoadCellPoint p, Position position) {
+    private void plotTrace(BCompositePoint p, Position position) {
         if (isPlotLimitReached(p, GraphicItem.TRACE, position)) {
             return;
         }
@@ -99,17 +99,17 @@ public class GraphicRenderer extends GraphicRendererBase {
         var weeklyAverages = p.ext().getObservationsTimeFiltered().stream()
                 .collect(Collectors.groupingBy(
                         o -> o.getDate().toLocalDate().with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1),
-                        Collectors.averagingDouble(BStructuralLoadCellPointObservation::getMeasuredZ)
+                        Collectors.averagingDouble(BCompositePointObservation::getMeasuredZ)
                 ));
 
         var reversedList = weeklyAverages.entrySet().stream()
                 .map(entry -> {
-                    var o = new BStructuralLoadCellPointObservation();
+                    var o = new BCompositePointObservation();
                     o.setDate(entry.getKey().atStartOfDay());
                     o.ext().setDeltaZ(entry.getValue());
                     return o;
                 })
-                .sorted(Comparator.comparing(BStructuralLoadCellPointObservation::getDate).reversed())
+                .sorted(Comparator.comparing(BCompositePointObservation::getDate).reversed())
                 .toList();
 
         var prevDate = LocalDateTime.now();

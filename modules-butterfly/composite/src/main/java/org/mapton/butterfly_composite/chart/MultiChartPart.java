@@ -21,13 +21,13 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
+import org.mapton.butterfly_composite.CompositeManager;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPointObservation;
-import org.mapton.butterfly_composite.CompositeManager;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
+import org.mapton.butterfly_format.types.composite.BCompositePointObservation;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -54,7 +54,7 @@ public abstract class MultiChartPart extends BMultiChartPart {
 
     @Override
     public String getCategory() {
-        return BStructuralLoadCellPoint.class.getName();
+        return BCompositePoint.class.getName();
     }
 
     @Override
@@ -68,7 +68,7 @@ public abstract class MultiChartPart extends BMultiChartPart {
     }
 
     @Override
-    public ArrayList<BStructuralLoadCellPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
+    public ArrayList<BCompositePoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = CompositeManager.getInstance().getTimeFilteredItems().stream()
                 .filter(p -> {
                     switch (mDimension) {
@@ -101,13 +101,13 @@ public abstract class MultiChartPart extends BMultiChartPart {
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        var pointsToExclude = new ArrayList<BStructuralLoadCellPoint>();
+        var pointsToExclude = new ArrayList<BCompositePoint>();
 
         for (var p : pointList) {
             var observations = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
                     .map(o -> {
-                        var oo = new BStructuralLoadCellPointObservation();
+                        var oo = new BCompositePointObservation();
                         oo.setDate(o.getDate());
                         oo.setMeasuredX(o.getMeasuredX());
                         oo.setMeasuredY(o.getMeasuredY());

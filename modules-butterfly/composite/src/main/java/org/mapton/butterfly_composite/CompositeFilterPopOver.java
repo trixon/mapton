@@ -28,7 +28,7 @@ import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
@@ -50,8 +50,8 @@ public class CompositeFilterPopOver extends BaseTabbedFilterPopOver {
     public CompositeFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         var alarmLevelCalculator = new AlarmLevelCalculator(
-                p -> CompositeHelper.getAlarmLevel((BStructuralLoadCellPoint) p),
-                p -> CompositeHelper.getAlarmLevelHeight((BStructuralLoadCellPoint) p),
+                p -> CompositeHelper.getAlarmLevel((BCompositePoint) p),
+                p -> CompositeHelper.getAlarmLevelHeight((BCompositePoint) p),
                 p -> -1
         );
         mFilterSectionAlarm = new BFilterSectionAlarm(alarmLevelCalculator);

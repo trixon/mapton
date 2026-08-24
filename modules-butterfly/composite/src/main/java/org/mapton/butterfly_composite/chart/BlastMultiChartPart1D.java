@@ -17,7 +17,7 @@ package org.mapton.butterfly_composite.chart;
 
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -28,7 +28,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class BlastMultiChartPart1D extends BlastMultiChartPart {
 
     public BlastMultiChartPart1D() {
-        super((BStructuralLoadCellPoint p) -> {
+        super((BCompositePoint p) -> {
             return p.getDimension() == BDimension._1d;
         });
     }

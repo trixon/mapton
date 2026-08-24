@@ -22,13 +22,13 @@ import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
+import org.mapton.butterfly_composite.CompositeManager;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BMultiChartPartBlast;
 import org.mapton.butterfly_core.api.BaseManager;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPointObservation;
-import org.mapton.butterfly_composite.CompositeManager;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
+import org.mapton.butterfly_format.types.composite.BCompositePointObservation;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -38,9 +38,9 @@ import se.trixon.almond.util.MathHelper;
  */
 public abstract class BlastMultiChartPart extends BMultiChartPartBlast {
 
-    private final Predicate<BStructuralLoadCellPoint> mPredicate;
+    private final Predicate<BCompositePoint> mPredicate;
 
-    public BlastMultiChartPart(Predicate<BStructuralLoadCellPoint> predicate) {
+    public BlastMultiChartPart(Predicate<BCompositePoint> predicate) {
         mPredicate = predicate;
     }
 
@@ -60,7 +60,7 @@ public abstract class BlastMultiChartPart extends BMultiChartPartBlast {
     }
 
     @Override
-    public ArrayList<BStructuralLoadCellPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
+    public ArrayList<BCompositePoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = CompositeManager.getInstance().getTimeFilteredItems().stream()
                 .filter(mPredicate)
                 .filter(p -> {
@@ -77,13 +77,13 @@ public abstract class BlastMultiChartPart extends BMultiChartPartBlast {
                     return hasValidGeometry(latLon, BCoordinatrix.toLatLon(p), LIMIT_DISTANCE_BLAST);
                 }).collect(Collectors.toCollection(ArrayList::new));
 
-        var pointsToExclude = new ArrayList<BStructuralLoadCellPoint>();
+        var pointsToExclude = new ArrayList<BCompositePoint>();
         for (var p : pointList) {
             var observations = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
                     .filter(o -> o.getMeasuredZ() != null)
                     .map(o -> {
-                        var oo = new BStructuralLoadCellPointObservation();
+                        var oo = new BCompositePointObservation();
                         oo.setDate(o.getDate());
                         oo.setMeasuredZ(o.getMeasuredZ());
                         oo.ext().setAccuZ(o.ext().getAccuZ());

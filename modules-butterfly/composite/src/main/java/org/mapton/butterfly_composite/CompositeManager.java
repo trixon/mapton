@@ -24,13 +24,13 @@ import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
-import org.mapton.butterfly_core.api.BaseManager;
-import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPointObservation;
 import org.mapton.butterfly_composite.chart.ChartAggregate;
 import org.mapton.butterfly_composite.chart.CompositeChartBuilder;
 import org.mapton.butterfly_composite.chart.MultiChartAggregate;
+import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
+import org.mapton.butterfly_format.types.composite.BCompositePointObservation;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -38,7 +38,7 @@ import se.trixon.almond.util.CollectionHelper;
  *
  * @author Patrik Karlström
  */
-public class CompositeManager extends BaseManager<BStructuralLoadCellPoint> {
+public class CompositeManager extends BaseManager<BCompositePoint> {
 
     private final CompositeChartBuilder mChartBuilder = new CompositeChartBuilder();
     private final CompositePropertiesBuilder mPropertiesBuilder = new CompositePropertiesBuilder();
@@ -50,11 +50,11 @@ public class CompositeManager extends BaseManager<BStructuralLoadCellPoint> {
     }
 
     private CompositeManager() {
-        super(BStructuralLoadCellPoint.class);
+        super(BCompositePoint.class);
     }
 
     @Override
-    public Object getObjectChart(BStructuralLoadCellPoint selectedObject) {
+    public Object getObjectChart(BCompositePoint selectedObject) {
         if (KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
             return mChartBuilder.build(selectedObject);
         } else {
@@ -68,22 +68,22 @@ public class CompositeManager extends BaseManager<BStructuralLoadCellPoint> {
     }
 
     @Override
-    public Object getObjectProperties(BStructuralLoadCellPoint selectedObject) {
+    public Object getObjectProperties(BCompositePoint selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.structural().getLoadPoints());
+            initAllItems(butterfly.getCompositePoints());
             initObjectToItemMap();
 
-            var nameToObservations = new LinkedHashMap<String, ArrayList<BStructuralLoadCellPointObservation>>();
-            for (var o : butterfly.structural().getLoadPointsObservations()) {
+            var nameToObservations = new LinkedHashMap<String, ArrayList<BCompositePointObservation>>();
+            for (var o : butterfly.getCompositePointsObservations()) {
                 nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
             }
 
-            for (var p : butterfly.structural().getLoadPoints()) {
+            for (var p : butterfly.getCompositePoints()) {
                 var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
                 if (!observations.isEmpty()) {
                     p.ext().setDateFirst(observations.getFirst().getDate());
@@ -129,7 +129,7 @@ public class CompositeManager extends BaseManager<BStructuralLoadCellPoint> {
     @Override
     protected void applyTemporalFilter() {
         var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
-        var timeFilteredItems = new ArrayList<BStructuralLoadCellPoint>();
+        var timeFilteredItems = new ArrayList<BCompositePoint>();
 
         p:
         for (var p : getFilteredItems()) {
@@ -166,7 +166,7 @@ public class CompositeManager extends BaseManager<BStructuralLoadCellPoint> {
     }
 
     @Override
-    protected void load(ArrayList<BStructuralLoadCellPoint> items) {
+    protected void load(ArrayList<BCompositePoint> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

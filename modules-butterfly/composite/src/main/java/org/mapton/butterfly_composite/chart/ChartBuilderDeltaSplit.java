@@ -18,7 +18,7 @@ package org.mapton.butterfly_composite.chart;
 import java.util.concurrent.Callable;
 import javax.swing.JPanel;
 import org.mapton.butterfly_core.api.BChartSplit;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 
 /**
  *
@@ -32,7 +32,7 @@ public class ChartBuilderDeltaSplit extends BChartSplit {
     public ChartBuilderDeltaSplit() {
     }
 
-    public synchronized Callable<JPanel> build(BStructuralLoadCellPoint p) {
+    public synchronized Callable<JPanel> build(BCompositePoint p) {
         if (p == null) {
             return null;
         }

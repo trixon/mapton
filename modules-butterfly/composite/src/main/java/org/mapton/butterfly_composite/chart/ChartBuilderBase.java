@@ -21,7 +21,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import org.mapton.butterfly_composite.CompositeHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -29,7 +29,7 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralLoadCellPoint> {
+public abstract class ChartBuilderBase extends XyzChartBuilder<BCompositePoint> {
 
     protected Minute mSubSetLastMinute;
     protected Minute mSubSetZeroMinute;
@@ -40,7 +40,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralLoadCe
     }
 
     @Override
-    public synchronized Callable<ChartPanel> build(BStructuralLoadCellPoint p) {
+    public synchronized Callable<ChartPanel> build(BCompositePoint p) {
         if (p == null) {
             return null;
         }
@@ -70,7 +70,7 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralLoadCe
     }
 
     @Override
-    public void setTitle(BStructuralLoadCellPoint p) {
+    public void setTitle(BCompositePoint p) {
         setTitle(p, CompositeHelper.getAlarmColorAwt(p));
 
         if (isCompleteView()) {

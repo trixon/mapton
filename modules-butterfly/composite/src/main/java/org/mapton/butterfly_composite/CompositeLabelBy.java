@@ -18,7 +18,7 @@ package org.mapton.butterfly_composite;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.LabelBy;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -131,15 +131,15 @@ public enum CompositeLabelBy implements LabelBy.Operations {
     }),
     MEAS_NEED_FREQ(LabelBy.CAT_MEAS, "%s (%s)".formatted(Dict.NEED.toString(), SDict.FREQUENCY.toString()), p -> {
         return LabelBy.measNeedFreq(p);
-    }),
-    VALUE_DELTA_ZERO(LabelBy.CAT_VALUE, Dict.VALUE.toString(), p -> {
-        return "%.0f".formatted(p.ext().getObservationFilteredLast().getMeasuredZ());
+//    }),
+//    VALUE_DELTA_ZERO(LabelBy.CAT_VALUE, Dict.VALUE.toString(), p -> {
+//        return "%.0f".formatted(p.ext().getObservationFilteredLast().getMeasuredZ());
     });
     private final String mCategory;
-    private final Function<BStructuralLoadCellPoint, String> mFunction;
+    private final Function<BCompositePoint, String> mFunction;
     private final String mName;
 
-    private CompositeLabelBy(String category, String name, Function<BStructuralLoadCellPoint, String> function) {
+    private CompositeLabelBy(String category, String name, Function<BCompositePoint, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -159,7 +159,7 @@ public enum CompositeLabelBy implements LabelBy.Operations {
         }
     }
 
-    public String getLabel(BStructuralLoadCellPoint o) {
+    public String getLabel(BCompositePoint o) {
         try {
             return mFunction.apply(o);
         } catch (Exception e) {

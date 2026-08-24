@@ -27,7 +27,7 @@ import org.mapton.butterfly_composite.graphics.GraphicRenderer;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -151,7 +151,7 @@ public class CompositeLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BStructuralLoadCellPoint p, CompositeLabelBy labelBy, Position position) {
+    private PointPlacemark plotLabel(BCompositePoint p, CompositeLabelBy labelBy, Position position) {
         if (labelBy == CompositeLabelBy.NONE) {
             return null;
         } else {
@@ -163,7 +163,7 @@ public class CompositeLayerBundle extends BfLayerBundle {
         }
     }
 
-    private PointPlacemark plotPin(BStructuralLoadCellPoint p, Position position, PointPlacemark labelPlacemark) {
+    private PointPlacemark plotPin(BCompositePoint p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(p);
         attrs = PinPaddle.W_DIAMOND.applyToCopy(attrs);
 
@@ -185,7 +185,7 @@ public class CompositeLayerBundle extends BfLayerBundle {
         return placemark;
     }
 
-    private ArrayList<AVListImpl> plotSymbol(BStructuralLoadCellPoint p, Position position, PointPlacemark labelPlacemark) {
+    private ArrayList<AVListImpl> plotSymbol(BCompositePoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
         var cylinder = new Cylinder(position, SYMBOL_HEIGHT, SYMBOL_RADIUS);
         var attrs = mAttributeManager.getAlarmInteriorAttributes(CompositeHelper.getAlarmLevel(p));

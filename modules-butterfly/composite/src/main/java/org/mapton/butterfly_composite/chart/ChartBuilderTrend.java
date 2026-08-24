@@ -28,7 +28,7 @@ import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -50,7 +50,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
     }
 
     @Override
-    public void updateDataset(BStructuralLoadCellPoint p) {
+    public void updateDataset(BCompositePoint p) {
         mTimeSeries.clear();
 
         var plot = getPlot();
@@ -116,7 +116,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         setRange(1.05, p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
     }
 
-    private void plot(BStructuralLoadCellPoint p, String title, LocalDateTime startDate, LocalDateTime limitDate, Color color, int index, Integer percentile) {
+    private void plot(BCompositePoint p, String title, LocalDateTime startDate, LocalDateTime limitDate, Color color, int index, Integer percentile) {
         if (startDate.isBefore(limitDate)) {
             return;
         }

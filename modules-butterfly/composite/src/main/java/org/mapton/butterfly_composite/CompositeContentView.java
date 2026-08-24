@@ -21,7 +21,7 @@ import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
@@ -57,7 +57,7 @@ public class CompositeContentView extends BContentView {
 
         setListCellFactory(CompositeContentListCell::new);
 
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralLoadCellPoint> c) -> {
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BCompositePoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());
         });
     }

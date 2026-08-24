@@ -21,10 +21,10 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.data.time.TimeSeries;
+import org.mapton.butterfly_composite.CompositeHelper;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
-import org.mapton.butterfly_composite.CompositeHelper;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -32,7 +32,7 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-public class CompositeChartBuilder extends XyzChartBuilder<BStructuralLoadCellPoint> {
+public class CompositeChartBuilder extends XyzChartBuilder<BCompositePoint> {
 
     private final TimeSeries mTimeSeriesZ = new TimeSeries("kN");
 
@@ -41,7 +41,7 @@ public class CompositeChartBuilder extends XyzChartBuilder<BStructuralLoadCellPo
     }
 
     @Override
-    public synchronized Callable<ChartPanel> build(BStructuralLoadCellPoint p) {
+    public synchronized Callable<ChartPanel> build(BCompositePoint p) {
         if (p == null) {
             return null;
         }
@@ -64,7 +64,7 @@ public class CompositeChartBuilder extends XyzChartBuilder<BStructuralLoadCellPo
     }
 
     @Override
-    public void setTitle(BStructuralLoadCellPoint p) {
+    public void setTitle(BCompositePoint p) {
         setTitle(p, CompositeHelper.getAlarmColorAwt(p));
 
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
@@ -72,12 +72,12 @@ public class CompositeChartBuilder extends XyzChartBuilder<BStructuralLoadCellPo
         var date = "(%s) → %s".formatted(dateFirst, dateLast);
         getLeftSubTextTitle().setText(date);
 
-        var rightTitle = "%s: %s".formatted(p.getAlarm1Id(), p.ext().getDeltaZero());
-        getRightSubTextTitle().setText(rightTitle);
+//        var rightTitle = "%s: %s".formatted(p.getAlarm1Id(), p.ext().getDeltaZero());
+//        getRightSubTextTitle().setText(rightTitle);
     }
 
     @Override
-    public synchronized void updateDataset(BStructuralLoadCellPoint p) {
+    public synchronized void updateDataset(BCompositePoint p) {
         clear(mTimeSeriesZ);
         var plot = getPlot();
         resetPlot(plot);

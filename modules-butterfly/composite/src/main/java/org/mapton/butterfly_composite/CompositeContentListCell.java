@@ -19,14 +19,14 @@ import java.time.LocalDate;
 import javafx.scene.control.Label;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BContentListCell;
-import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import se.trixon.almond.util.StringHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class CompositeContentListCell extends BContentListCell<BStructuralLoadCellPoint> {
+class CompositeContentListCell extends BContentListCell<BCompositePoint> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
@@ -39,7 +39,7 @@ class CompositeContentListCell extends BContentListCell<BStructuralLoadCellPoint
     }
 
     @Override
-    protected void addContent(BStructuralLoadCellPoint p) {
+    protected void addContent(BCompositePoint p) {
         setText(null);
         setGraphic(mVBox);
         loadTooltip(p);
@@ -83,14 +83,14 @@ class CompositeContentListCell extends BContentListCell<BStructuralLoadCellPoint
         activateTooltip();
     }
 
-    private class AlarmIndicator extends BAlarmIndicator<BStructuralLoadCellPoint> {
+    private class AlarmIndicator extends BAlarmIndicator<BCompositePoint> {
 
         public AlarmIndicator() {
             addNodes(m1dShape);
         }
 
         @Override
-        public void update(BStructuralLoadCellPoint p) {
+        public void update(BCompositePoint p) {
             m1dShape.setFill(CompositeHelper.getAlarmColorHeightFx(p));
         }
     }
