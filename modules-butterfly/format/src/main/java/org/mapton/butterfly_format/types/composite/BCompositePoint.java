@@ -15,7 +15,11 @@
  */
 package org.mapton.butterfly_format.types.composite;
 
+import java.util.ArrayList;
 import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 
 /**
  *
@@ -53,7 +57,22 @@ public class BCompositePoint extends BXyzPoint {
     }
 
     public class Ext extends BXyzPoint.Ext<BCompositePointObservation> {
-        //TODO map or list of managers and their points
+
+        private final ArrayList<BTopoControlPoint> mTopoPoints = new ArrayList();
+        private final ArrayList<BStructuralLoadCellPoint> mLoadPoints = new ArrayList();
+        private final ArrayList<BStructuralStrainGaugePoint> mStrainPoints = new ArrayList();
+
+        public ArrayList<BStructuralLoadCellPoint> getLoadPoints() {
+            return mLoadPoints;
+        }
+
+        public ArrayList<BStructuralStrainGaugePoint> getStrainPoints() {
+            return mStrainPoints;
+        }
+
+        public ArrayList<BTopoControlPoint> getTopoPoints() {
+            return mTopoPoints;
+        }
     }
 
 }
