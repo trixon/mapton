@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.load;
 
+import org.mapton.butterfly_structural.load.api.LoadManager;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;

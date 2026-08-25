@@ -28,7 +28,7 @@ import org.mapton.butterfly_core.api.BMultiChartPartBlast;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPointObservation;
-import org.mapton.butterfly_structural.load.LoadManager;
+import org.mapton.butterfly_structural.load.api.LoadManager;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MathHelper;
 

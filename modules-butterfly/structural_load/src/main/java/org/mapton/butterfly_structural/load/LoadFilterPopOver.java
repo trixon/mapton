@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.load;
 
+import org.mapton.butterfly_structural.load.api.LoadManager;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.load;
+package org.mapton.butterfly_structural.load.api;
 
 import com.sun.jna.platform.KeyboardUtils;
 import java.awt.event.KeyEvent;
@@ -28,6 +28,7 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPointObservation;
+import org.mapton.butterfly_structural.load.LoadPropertiesBuilder;
 import org.mapton.butterfly_structural.load.chart.ChartAggregate;
 import org.mapton.butterfly_structural.load.chart.LoadChartBuilder;
 import org.mapton.butterfly_structural.load.chart.MultiChartAggregate;

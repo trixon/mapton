@@ -27,7 +27,7 @@ import org.mapton.butterfly_core.api.BMultiChartPartCluster;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
-import org.mapton.butterfly_structural.load.LoadManager;
+import org.mapton.butterfly_structural.load.api.LoadManager;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.SDict;
 

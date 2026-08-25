@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.load;
 
+import org.mapton.butterfly_structural.load.api.LoadManager;
 import j2html.tags.ContainerTag;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;

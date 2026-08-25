@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.load;
 
+import org.mapton.butterfly_structural.load.api.LoadManager;
 import javafx.collections.ListChangeListener;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
