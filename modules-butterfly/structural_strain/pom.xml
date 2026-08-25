@@ -30,7 +30,11 @@ limitations under the License.
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
-                <configuration></configuration>
+                <configuration>
+                    <publicPackages>
+                        <publicPackage>org.mapton.butterfly_structural.strain.api</publicPackage>
+                    </publicPackages>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -28,7 +28,7 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePointObservation;
-import org.mapton.butterfly_structural.strain.StrainManager;
+import org.mapton.butterfly_structural.strain.api.StrainManager;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MathHelper;
 

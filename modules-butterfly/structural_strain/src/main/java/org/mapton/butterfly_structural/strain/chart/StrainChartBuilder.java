@@ -25,7 +25,7 @@ import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.butterfly_structural.strain.StrainHelper;
-import org.mapton.butterfly_structural.strain.StrainManager;
+import org.mapton.butterfly_structural.strain.api.StrainManager;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.CircularInt;
 import se.trixon.almond.util.DateHelper;

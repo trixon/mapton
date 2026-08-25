@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.strain;
 
+import org.mapton.butterfly_structural.strain.api.StrainManager;
 import javafx.collections.ListChangeListener;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
