@@ -21,16 +21,23 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_composite.chart.ChartAggregate;
 import org.mapton.butterfly_composite.chart.CompositeChartBuilder;
 import org.mapton.butterfly_composite.chart.MultiChartAggregate;
 import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.composite.BCompositePoint;
 import org.mapton.butterfly_format.types.composite.BCompositePointObservation;
+import org.mapton.butterfly_structural.load.api.LoadManager;
+import org.mapton.butterfly_structural.strain.api.StrainManager;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -40,10 +47,10 @@ import se.trixon.almond.util.CollectionHelper;
  */
 public class CompositeManager extends BaseManager<BCompositePoint> {
 
-    private final CompositeChartBuilder mChartBuilder = new CompositeChartBuilder();
-    private final CompositePropertiesBuilder mPropertiesBuilder = new CompositePropertiesBuilder();
     private final ChartAggregate mChartAggregate = new ChartAggregate();
+    private final CompositeChartBuilder mChartBuilder = new CompositeChartBuilder();
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
+    private final CompositePropertiesBuilder mPropertiesBuilder = new CompositePropertiesBuilder();
 
     public static CompositeManager getInstance() {
         return Holder.INSTANCE;
@@ -51,6 +58,10 @@ public class CompositeManager extends BaseManager<BCompositePoint> {
 
     private CompositeManager() {
         super(BCompositePoint.class);
+
+        ButterflyManager.getInstance().loadCounterProperty().addListener((pp, o, n) -> {
+            postLoad();
+        });
     }
 
     @Override
@@ -168,6 +179,26 @@ public class CompositeManager extends BaseManager<BCompositePoint> {
     @Override
     protected void load(ArrayList<BCompositePoint> items) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private <T extends BBaseControlPoint> boolean addPointIfPresent(String name, BaseManager<T> manager, List<T> targetList) {
+        T point = manager.getItemForKey(name);
+        if (point != null && !targetList.contains(point)) {
+            targetList.add(point);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void postLoad() {
+        for (var p : getAllItems()) {
+            for (var name : StringUtils.split(p.getPointNames(), ",")) {
+                addPointIfPresent(name, TopoManager.getInstance(), p.ext().getTopoPoints());
+                addPointIfPresent(name, LoadManager.getInstance(), p.ext().getLoadPoints());
+                addPointIfPresent(name, StrainManager.getInstance(), p.ext().getStrainPoints());
+            }
+        }
     }
 
     private static class Holder {

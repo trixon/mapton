@@ -102,14 +102,18 @@ limitations under the License.
             <artifactId>butterfly-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>butterfly-structural</artifactId>
-        </dependency>
-
-        <!--Other-->
-        <dependency>
             <groupId>org.mapton</groupId>
             <artifactId>butterfly-topo</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>butterfly-structural-load</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>butterfly-structural-strain</artifactId>
+        </dependency>
+
+        <!--Other-->
     </dependencies>
 </project>
