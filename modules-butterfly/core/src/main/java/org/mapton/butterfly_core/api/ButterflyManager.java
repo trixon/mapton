@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.prefs.BackingStoreException;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javax.swing.border.EmptyBorder;
 import net.lingala.zip4j.ZipFile;
@@ -109,9 +111,14 @@ public class ButterflyManager {
     private final WKTReader mWktReader = new WKTReader();
     private final ZipHelper mZipHelper = ZipHelper.getInstance();
     private long mStartMilliseconds;
+    private final IntegerProperty mLoadCounter = new SimpleIntegerProperty(0);
 
     public static ButterflyManager getInstance() {
         return Holder.INSTANCE;
+    }
+
+    public IntegerProperty loadCounterProperty() {
+        return mLoadCounter;
     }
 
     private ButterflyManager() {
@@ -124,6 +131,7 @@ public class ButterflyManager {
                 var title = "Butterfly inläst";
                 var message = "Det tog %.1f %s".formatted(timeSpent, Dict.TIME_SECONDS.toLower());
                 NotifocationHelper.displayTextNotification(title, message, 10_000);
+                mLoadCounter.set(mLoadCounter.get() + 1);
             }
         });
     }

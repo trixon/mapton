@@ -109,6 +109,21 @@ public abstract class BContentListCell<T extends BXyzPoint> extends ListCell<T> 
 
     protected abstract void addContent(T p);
 
+    protected String getHeader(BXyzPoint p) {
+        return getHeader(p, true);
+    }
+
+    protected String getHeader(BXyzPoint p, boolean withStatus) {
+        var header = "%s  %s".formatted(p.getOrigin(), p.getName());
+        var sta = p.getStatus();
+
+        if (withStatus && StringUtils.isNotBlank(sta)) {
+            header = "%s [%s]".formatted(header, sta);
+        }
+
+        return header;
+    }
+
     protected void loadTooltip(T p) {
         var showDelay = Integer.MAX_VALUE;
         var text = "";

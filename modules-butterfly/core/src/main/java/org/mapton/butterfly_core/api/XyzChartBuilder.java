@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.numbers.core.Precision;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -436,7 +437,13 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     }
 
     public void setTitle(T p, Color color) {
-        setTitle(p.getName(), color);
+        var title = p.getName();
+        var classification = p.getClassification();
+        if (StringUtils.isNotBlank(classification)) {
+            title = "%s    - %s -".formatted(title, classification);
+        }
+
+        setTitle(title, color);
     }
 
     public void setTitle(String title, Color color) {
