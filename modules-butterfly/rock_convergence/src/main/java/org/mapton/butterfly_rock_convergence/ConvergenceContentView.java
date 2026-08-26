@@ -44,6 +44,7 @@ public class ConvergenceContentView extends BContentView {
         mToolBarPopOver.setToolBar(ActionUtils.createToolBar(subToolBarActions, ActionUtils.ActionTextBehavior.SHOW));
 
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_ConvergenceAction());
+        bindFooterLabel(mListForm);
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
                 .setToolbarActions(getDefaultToolBarActions());

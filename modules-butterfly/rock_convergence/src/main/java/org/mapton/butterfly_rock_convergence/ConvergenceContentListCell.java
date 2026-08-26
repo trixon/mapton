@@ -16,7 +16,6 @@
 package org.mapton.butterfly_rock_convergence;
 
 import javafx.scene.control.Label;
-import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BContentListCell;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.rock.BRockConvergence;
@@ -40,24 +39,20 @@ class ConvergenceContentListCell extends BContentListCell<BRockConvergence> {
     }
 
     @Override
-    protected void addContent(BRockConvergence g) {
+    protected void addContent(BRockConvergence p) {
         setText(null);
         setGraphic(mVBox);
-        loadTooltip(g);
-        mAlarmIndicator.update(g);
+        loadTooltip(p);
+        mAlarmIndicator.update(p);
 
-        var header = g.getName();
-        if (StringUtils.isNotBlank(g.getStatus())) {
-            header = "%s [%s]".formatted(header, g.getStatus());
-        }
-        var dateLast = StringHelper.toString(g.getDateLatest() == null ? null : g.getDateLatest().toLocalDate(), "NOVALUE");
-        var dateZero = StringHelper.toString(g.getDateZero(), "NOVALUE");
-        var date = "%s — %s  (%d)".formatted(dateZero, dateLast, g.ext().getPairs().size());
+        var dateLast = StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE");
+        var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
+        var date = "%s — %s  (%d)".formatted(dateZero, dateLast, p.ext().getPairs().size());
 
-        mHeaderLabel.setText(header);
-        mDesc1Label.setText(g.ext().getDeltaString("1d", BRockConvergenceObservation.FUNCTION_1D));
-        mDesc2Label.setText(g.ext().getDeltaString("2d", BRockConvergenceObservation.FUNCTION_2D));
-        mDesc3Label.setText(g.ext().getDeltaString("3d", BRockConvergenceObservation.FUNCTION_3D));
+        mHeaderLabel.setText(getHeader(p));
+        mDesc1Label.setText(p.ext().getDeltaString("1d", BRockConvergenceObservation.FUNCTION_1D));
+        mDesc2Label.setText(p.ext().getDeltaString("2d", BRockConvergenceObservation.FUNCTION_2D));
+        mDesc3Label.setText(p.ext().getDeltaString("3d", BRockConvergenceObservation.FUNCTION_3D));
         mDesc4Label.setText(date);
     }
 
