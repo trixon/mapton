@@ -45,11 +45,6 @@ class CrackContentListCell extends BContentListCell<BStructuralCrackPoint> {
         loadTooltip(p);
         mAlarmIndicator.update(p);
 
-        var header = p.getName();
-        if (StringUtils.isNotBlank(p.getStatus())) {
-            header = "%s [%s]".formatted(header, p.getStatus());
-        }
-
         var sign = "⇐";
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), p.getAlarm1Id());
         var dateSB = new StringBuilder(StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE"));
@@ -70,7 +65,7 @@ class CrackContentListCell extends BContentListCell<BStructuralCrackPoint> {
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
         var dz = p.ext().deltaZero().getDeltaZ() * 1000;
         var desc4 = "%s: %.2f mm".formatted(dateZero, dz);
-        mHeaderLabel.setText(header);
+        mHeaderLabel.setText(getHeader(p));
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(dateSB.toString());
 //        mDesc3Label.setText(desc3);
