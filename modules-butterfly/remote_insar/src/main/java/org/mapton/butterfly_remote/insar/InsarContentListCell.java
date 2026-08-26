@@ -16,7 +16,6 @@
 package org.mapton.butterfly_remote.insar;
 
 import javafx.scene.control.Label;
-import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BContentListCell;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import se.trixon.almond.util.StringHelper;
@@ -45,15 +44,10 @@ class InsarContentListCell extends BContentListCell<BRemoteInsarPoint> {
         loadTooltip(p);
         mAlarmIndicator.update(p);
 
-        var header = p.getName();
-        if (StringUtils.isNotBlank(p.getStatus())) {
-            header = "%s [%s]".formatted(header, p.getStatus());
-        }
-
         var descGrpCat = "%s: %s".formatted(p.getGroup(), p.getCategory());
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
         var dateZeroAndValue = "%s: %s".formatted(dateZero, p.ext().deltaZero().getDelta1(1, 1000, true));
-        mHeaderLabel.setText(header);
+        mHeaderLabel.setText(getHeader(p));
         mDesc1Label.setText(descGrpCat);
         mDesc2Label.setText(mAttributeManager.getValueByColorByWithHeader(p));
         mDesc3Label.setText(getDateLatestAndNext(p));
