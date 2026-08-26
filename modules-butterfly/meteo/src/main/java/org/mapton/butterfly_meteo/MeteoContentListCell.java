@@ -42,13 +42,7 @@ class MeteoContentListCell extends BContentListCell<BMeteoPoint> {
 
     @Override
     protected void addContent(BMeteoPoint p) {
-        setText(null);
-        var header = p.getName();
-        if (StringUtils.isNotBlank(p.getStatus())) {
-            header = "%s [%s]".formatted(header, p.getStatus());
-        }
-
-        mHeaderLabel.setText(header);
+        mHeaderLabel.setText(getHeader(p));
         mDesc1Label.setText(Strings.CI.replace(p.ext().getDateLatestAsString(), "T", " "));
         mDesc2Label.setText(p.ext().getDateFirst().toString());
 
