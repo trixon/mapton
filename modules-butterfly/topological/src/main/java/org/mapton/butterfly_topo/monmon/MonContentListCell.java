@@ -17,6 +17,7 @@ package org.mapton.butterfly_topo.monmon;
 
 import java.util.Objects;
 import javafx.scene.control.Label;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BContentListCell;
 import org.mapton.butterfly_format.types.topo.BTopoMonmon;
 import se.trixon.almond.util.DateHelper;
@@ -36,12 +37,17 @@ class MonContentListCell extends BContentListCell<BTopoMonmon> {
     }
 
     @Override
-    protected void addContent(BTopoMonmon mon) {
+    protected void addContent(BTopoMonmon p) {
         setText(null);
-        mNameLabel.setText(mon.getName());
-        mStationLabel.setText(mon.getStationName());
-        var firstRaw = Objects.toString(DateHelper.toDateString(mon.ext().getObservationRawFirstDate()), "");
-        var lastRaw = Objects.toString(DateHelper.toDateString(mon.ext().getObservationRawLastDate()), "");
+        var header = "%s  %s".formatted(p.getOrigin(), p.getName());
+        var sta = p.getStatus();
+        if (StringUtils.isNotBlank(sta)) {
+            header = "%s [%s]".formatted(header, sta);
+        }
+        mNameLabel.setText(header);
+        mStationLabel.setText(p.getStationName());
+        var firstRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawFirstDate()), "");
+        var lastRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
         mDateLabel.setText("%s — %s".formatted(firstRaw, lastRaw));
         setGraphic(mVBox);
     }

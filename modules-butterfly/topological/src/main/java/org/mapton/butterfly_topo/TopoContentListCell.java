@@ -46,42 +46,23 @@ class TopoContentListCell extends BContentListCell<BTopoControlPoint> {
         loadTooltip(p);
         mAlarmIndicator.update(p);
 
-        var header = "%s  %s".formatted(p.getOrigin(), p.getName());
-        var sta = p.getStatus();
-        var cls = p.getClassification();
-        if (!StringUtils.isAllBlank(sta, cls)) {
-            var sb = new StringBuilder();
-            if (StringUtils.isNotBlank(sta)) {
-                sb.append(sta);
-//                if (StringUtils.isNotBlank(cls)) {
-//                    sb.append(" ");
-//                }
-            }
-//            if (StringUtils.isNotBlank(cls)) {
-//                sb.append(cls);
-//            }
-            header = "%s [%s]".formatted(header, sb.toString());
-        }
-
         var alarms = StringHelper.getJoinedUnique(", ",
                 Strings.CI.removeEnd(p.getAlarm1Id(), "_h"),
                 Strings.CI.removeEnd(p.getAlarm2Id(), "_p")
         );
-        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), alarms);
-
-        var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
-
-        String deltaRolling = p.ext().deltaRolling().getDelta1d2d(3);
-        var desc3 = "%s: %s".formatted(dateRolling, deltaRolling);
+        var desc1 = "%s/%s".formatted(
+                StringUtils.defaultIfBlank(p.getClassification(), "NOVALUE"),
+                StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE")
+        );
 
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
         String deltaZero = p.ext().deltaZero().getDelta1d2d(3);
         var desc4 = "%s: %s".formatted(dateZero, deltaZero);
 
-        mHeaderLabel.setText(header);
+        mHeaderLabel.setText(getHeader(p));
         mDesc1Label.setText(desc1);
-        mDesc2Label.setText(getDateLatestAndNext(p));
-        mDesc3Label.setText(desc3);
+        mDesc2Label.setText(alarms);
+        mDesc3Label.setText(getDateLatestAndNext(p));
         mDesc4Label.setText(desc4);
     }
 
