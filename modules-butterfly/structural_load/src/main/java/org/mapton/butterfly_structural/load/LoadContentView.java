@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_structural.load;
 
-import org.mapton.butterfly_structural.load.api.LoadManager;
 import javafx.collections.ListChangeListener;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
@@ -23,6 +22,7 @@ import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.BContentOptions;
 import org.mapton.butterfly_core.api.BContentView;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_structural.load.api.LoadManager;
 import org.mapton.core.api.ui.MPresetPopOver;
 import se.trixon.almond.util.Dict;
 
@@ -46,6 +46,7 @@ public class LoadContentView extends BContentView {
         mToolBarPopOver.setToolBar(ActionUtils.createToolBar(subToolBarActions, ActionUtils.ActionTextBehavior.SHOW));
 
         mListForm = new SingleListForm<>(mManager, Bundle.CTL_LoadAction());
+        bindFooterLabel(mListForm);
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
                 .setToolbarActions(getDefaultToolBarActions());
