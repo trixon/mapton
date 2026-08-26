@@ -16,6 +16,7 @@
 package org.mapton.butterfly_hydro.waterlevel;
 
 import javafx.scene.control.Label;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BContentListCell;
 import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPoint;
 
@@ -33,10 +34,14 @@ class WaterLevelContentListCell extends BContentListCell<BHydroWaterLevelPoint> 
     }
 
     @Override
-    protected void addContent(BHydroWaterLevelPoint gw) {
-        setText(null);
-        mNameLabel.setText(gw.getName());
-        mDesc1Label.setText("%s: %s".formatted(gw.getGroup(), gw.getCategory()));
+    protected void addContent(BHydroWaterLevelPoint p) {
+        var header = "%s  %s".formatted(p.getOrigin(), p.getName());
+        var sta = p.getStatus();
+        if (StringUtils.isNotBlank(sta)) {
+            header = "%s [%s]".formatted(header, sta);
+        }
+        mNameLabel.setText(header);
+        mDesc1Label.setText("%s: %s".formatted(p.getGroup(), p.getCategory()));
         setGraphic(mVBox);
     }
 
