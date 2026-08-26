@@ -45,11 +45,6 @@ class StrainContentListCell extends BContentListCell<BStructuralStrainGaugePoint
         loadTooltip(p);
         mAlarmIndicator.update(p);
 
-        var header = p.getName();
-        if (StringUtils.isNotBlank(p.getStatus())) {
-            header = "%s [%s]".formatted(header, p.getStatus());
-        }
-
         var sign = "⇐";
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), p.getAlarm1Id());
         var dateSB = new StringBuilder(StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE"));
@@ -67,7 +62,7 @@ class StrainContentListCell extends BContentListCell<BStructuralStrainGaugePoint
 
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
         var desc4 = "%s: %s".formatted(dateZero, p.ext().getDeltaZero());
-        mHeaderLabel.setText(header);
+        mHeaderLabel.setText(getHeader(p));
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(dateSB.toString());
         mDesc3Label.setText(desc3);
