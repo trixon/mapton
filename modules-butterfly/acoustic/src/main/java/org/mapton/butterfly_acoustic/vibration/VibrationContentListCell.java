@@ -41,13 +41,9 @@ class VibrationContentListCell extends BContentListCell<BAcousticVibrationPoint>
         setGraphic(mVBox);
         loadTooltip(p);
         mAlarmIndicator.update(p);
-        var header = p.getName();
-        if (StringUtils.isNotBlank(p.getStatus())) {
-            header = "%s [%s]".formatted(header, p.getStatus());
-        }
 
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getGroup(), "NOVALUE"), StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"));
-        mHeaderLabel.setText(header);
+        mHeaderLabel.setText(getHeader(p));
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(getDateLatestAndFirst(p));
         mDesc4Label.setText(p.getComment());
