@@ -46,25 +46,20 @@ class ExtensoContentListCell extends BContentListCell<BRockExtensometer> {
     }
 
     @Override
-    protected void addContent(BRockExtensometer ext) {
+    protected void addContent(BRockExtensometer p) {
         setText(null);
         setGraphic(mVBox);
-        mAlarmIndicator.update(ext);
+        mAlarmIndicator.update(p);
 
-        var header = ext.getName();
-        if (StringUtils.isNotBlank(ext.getStatus())) {
-            header = "%s [%s]".formatted(header, ext.getStatus());
-        }
-
-        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(ext.getCategory(), "NOVALUE"), ext.getAlarm1Id());
-        var date = ext.getDateLatest();
+        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), p.getAlarm1Id());
+        var date = p.getDateLatest();
         var dateLatest = StringHelper.toString(date == null ? null : date.toLocalDate(), "NOVALUE");
 
-        var dateZero = StringHelper.toString(ext.getDateZero(), "NOVALUE");
-        var list = ext.getPoints().stream().map(point -> "%.1f".formatted(point.ext().getDelta())).toList();
+        var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
+        var list = p.getPoints().stream().map(point -> "%.1f".formatted(point.ext().getDelta())).toList();
 
         String desc4 = String.join(" / ", list);
-        mHeaderLabel.setText(header);
+        mHeaderLabel.setText(getHeader(p));
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(dateLatest);
         mDesc3Label.setText(dateZero);
