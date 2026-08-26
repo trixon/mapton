@@ -49,23 +49,6 @@ class RoiContentListCell extends BContentListCell<BRoi> {
         setText(null);
         setGraphic(mVBox);
 
-        var header = "%s  %s".formatted(p.getOrigin(), p.getName());
-        var sta = p.getStatus();
-        var cls = p.getClassification();
-        if (!StringUtils.isAllBlank(sta, cls)) {
-            var sb = new StringBuilder();
-            if (StringUtils.isNotBlank(sta)) {
-                sb.append(sta);
-                if (StringUtils.isNotBlank(cls)) {
-                    sb.append(" ");
-                }
-            }
-            if (StringUtils.isNotBlank(cls)) {
-                sb.append(cls);
-            }
-            header = "%s [%s]".formatted(header, sb.toString());
-        }
-
         var desc1 = "%s: %s".formatted(
                 StringUtils.defaultIfBlank(p.getGroup(), "NOVALUE"),
                 StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE")
@@ -76,7 +59,7 @@ class RoiContentListCell extends BContentListCell<BRoi> {
 //        mDateLabel.setText("%s %s".formatted(date, p.getComment()));
 //        mGroupLabel.setText(p.getGroup());
 //        setGraphic(mVBox);
-        mHeaderLabel.setText(header);
+        mHeaderLabel.setText(getHeader(p));
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(p.getComment());
     }
