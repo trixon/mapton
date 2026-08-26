@@ -17,6 +17,7 @@ package org.mapton.butterfly_geo_reinforcement;
 
 import java.util.Objects;
 import javafx.scene.control.Label;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BContentListCell;
 import org.mapton.butterfly_format.types.geo.BGeoReinforcementPoint;
 import se.trixon.almond.util.DateHelper;
@@ -36,12 +37,17 @@ class ReinforcementContentListCell extends BContentListCell<BGeoReinforcementPoi
     }
 
     @Override
-    protected void addContent(BGeoReinforcementPoint drillPoint) {
+    protected void addContent(BGeoReinforcementPoint p) {
         setText(null);
-        var date = Objects.toString(DateHelper.toDateString(drillPoint.getDateLatest()), "-");
-        mNameLabel.setText(drillPoint.getName());
-        mDateLabel.setText("%s %s".formatted(date, drillPoint.getComment()));
-        mGroupLabel.setText(drillPoint.getGroup());
+        var date = Objects.toString(DateHelper.toDateString(p.getDateLatest()), "-");
+        var header = "%s  %s".formatted(p.getOrigin(), p.getName());
+        var sta = p.getStatus();
+        if (StringUtils.isNotBlank(sta)) {
+            header = "%s [%s]".formatted(header, sta);
+        }
+        mNameLabel.setText(header);
+        mDateLabel.setText("%s %s".formatted(date, p.getComment()));
+        mGroupLabel.setText(p.getGroup());
         setGraphic(mVBox);
     }
 
