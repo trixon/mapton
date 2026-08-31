@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -42,6 +41,8 @@ import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
+import org.mapton.butterfly_core.api.BFilterSectionMeas;
+import org.mapton.butterfly_core.api.BFilterSectionMeasProvider;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
@@ -70,18 +71,18 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         BFilterSectionDateProvider,
         BFilterSectionTrendProvider,
         BFilterSectionAlarmProvider,
+        BFilterSectionMeasProvider,
         BFilterSectionDisruptorProvider {
 
     DoubleProperty mMeasBearingMaxProperty = new SimpleDoubleProperty();
     DoubleProperty mMeasBearingMinProperty = new SimpleDoubleProperty();
     SimpleBooleanProperty mMeasBearingSelectedProperty = new SimpleBooleanProperty();
-    IndexedCheckModel<String> mMeasCodeCheckModel;
     IndexedCheckModel<String> mMeasOperatorsCheckModel;
     private final SimpleBooleanProperty m1dCloseToAutoProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens1Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens2Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens3Property = new SimpleBooleanProperty();
-    private FilterSectionMeas mFilterSectionMeas;
+    private FilterSectionMeas mFilterSectionMeasLegacy;
     private final TopoManager mManager = TopoManager.getInstance();
     private final SimpleBooleanProperty mMeasDateDiffProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasDateDiffValueProperty = new SimpleDoubleProperty();
@@ -91,8 +92,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private final SimpleDoubleProperty mMeasDiffLatestValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasIncludeWithout = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mMeasLatestOperator = new SimpleBooleanProperty();
-    private final SimpleBooleanProperty mMeasNumOfProperty = new SimpleBooleanProperty();
-    private final SimpleIntegerProperty mMeasNumOfValueProperty = new SimpleIntegerProperty();
     private final SimpleIntegerProperty mMeasTopListLimitProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mMeasTopListProperty = new SimpleBooleanProperty();
     private final SimpleIntegerProperty mMeasTopListSizeValueProperty = new SimpleIntegerProperty();
@@ -100,7 +99,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private final SimpleDoubleProperty mMeasYoyoCountValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasYoyoProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasYoyoSizeValueProperty = new SimpleDoubleProperty();
-    private final SimpleBooleanProperty mSectionMeasProperty = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mSectionMeasLegacyProperty = new SimpleBooleanProperty();
 
     public TopoFilter() {
         super(TopoManager.getInstance());
@@ -125,10 +124,8 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     }
 
     public void initCheckModelListeners() {
-        List.of(
-                mMeasCodeCheckModel,
-                mMeasOperatorsCheckModel
-        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
+//        List.of(
+//        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
     }
 
     public SimpleBooleanProperty measDateDiffProperty() {
@@ -163,14 +160,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         return mMeasLatestOperator;
     }
 
-    public SimpleBooleanProperty measNumOfProperty() {
-        return mMeasNumOfProperty;
-    }
-
-    public SimpleIntegerProperty measNumOfValueProperty() {
-        return mMeasNumOfValueProperty;
-    }
-
     public SimpleIntegerProperty measTopListLimitProperty() {
         return mMeasTopListLimitProperty;
     }
@@ -199,8 +188,8 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         return mMeasYoyoSizeValueProperty;
     }
 
-    public SimpleBooleanProperty sectionMeasProperty() {
-        return mSectionMeasProperty;
+    public SimpleBooleanProperty sectionMeasLegacyProperty() {
+        return mSectionMeasLegacyProperty;
     }
 
     @Override
@@ -240,6 +229,12 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     }
 
     @Override
+    public void setFilterSection(BFilterSectionMeas filterSection) {
+        mFilterSectionMeas = filterSection;
+        mFilterSectionMeas.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> p.isVisible() != mInvisibleProperty.get())
@@ -263,14 +258,12 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 .filter(p -> mFilterSectionDisruptor.filter(p))
                 .filter(p -> mFilterSectionTrend.filter(p))
                 .filter(p -> mFilterSectionMisc.filter(p))
+                .filter(p -> mFilterSectionMeas.filter(p))
                 .filter(p -> {
-                    if (mSectionMeasProperty.get()) {
+                    if (mSectionMeasLegacyProperty.get()) {
                         return validateMeasDisplacementAll(p)
                                 && validateMeasDisplacementLatest(p)
                                 //                                && validateMeasDateDiff(p)
-                                && validateMeasCount(p)
-                                && validateMeasCode(p)
-                                && validateMeasOperators(p)
                                 && validateMeasYoyo(p)
                                 && validateMeasBearing(p);
                     } else {
@@ -317,7 +310,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     }
 
     void setFilterSection(FilterSectionMeas filterSectionMeas) {
-        mFilterSectionMeas = filterSectionMeas;
+        mFilterSectionMeasLegacy = filterSectionMeas;
     }
 
     private ContainerTag createInfoContent() {
@@ -325,19 +318,13 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         map.put(Dict.TEXT.toString(), getFreeText());
         mFilterSectionPoint.createInfoContent(map);
         map.put(SDict.DIMENSION.toString(), makeInfoDimension());
+        mFilterSectionMeas.createInfoContent(map);
         mFilterSectionAlarm.createInfoContent(map);
         mFilterSectionDate.createInfoContent(map);
         mFilterSectionDisruptor.createInfoContent(map);
         mFilterSectionTrend.createInfoContent(map);
 
         try {
-            map.put(mFilterSectionMeas.getTab().getText().toUpperCase(Locale.ROOT), ".");
-            map.put(getBundle().getString("measCodeCheckComboBoxTitle"), makeInfo(mMeasCodeCheckModel.getCheckedItems()));
-
-            if (mMeasNumOfProperty.get()) {
-                var value = mMeasNumOfValueProperty.get();
-                map.put(getBundle().getString("numOfMeasCheckBoxText"), FormHelper.negPosToLtGt(value));
-            }
 
             if (mMeasDiffAllProperty.get()) {
                 map.put(getBundle().getString("diffMeasAllCheckBoxText"), FormHelper.negPosToLtGt(mMeasDiffAllValueProperty.get()));
@@ -402,7 +389,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         List.of(mMeasBearingSelectedProperty,
                 mMeasBearingMinProperty,
                 mMeasBearingMaxProperty,
-                mSectionMeasProperty,
+                mSectionMeasLegacyProperty,
                 mInvertProperty,
                 mInvisibleProperty,
                 mDimens1Property,
@@ -421,8 +408,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 mMeasDateDiffValueProperty,
                 mMeasIncludeWithout,
                 mMeasLatestOperator,
-                mMeasNumOfProperty,
-                mMeasNumOfValueProperty,
                 mMeasYoyoCountValueProperty,
                 mMeasYoyoSizeValueProperty,
                 mMeasYoyoProperty,
@@ -502,49 +487,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         }
     }
 
-    private boolean validateMeasCode(BTopoControlPoint p) {
-        if (mMeasCodeCheckModel.isEmpty() || p.ext().getObservationsAllRaw().isEmpty()) {
-            return true;
-        }
-
-        var firstIsZero = p.ext().getObservationRawFirstDate().equals(p.getDateZero());
-        var chkIsFirstZero = mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeZeroIs"));
-        var chkIsFirstZeroNot = mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeZero"));
-        var chkHasReplacements = mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeReplacement"));
-        var chkHasReplacementsNot = mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeReplacementNot"));
-
-        var validFirstIsZero = chkIsFirstZero ? firstIsZero : true;
-        var validFirstIsZeroNot = chkIsFirstZeroNot ? !firstIsZero : true;
-        var validHasReplacements = chkHasReplacements ? p.ext().getNumOfReplacementsAfterZero() > 0 : true;
-        var validHasReplacementsNot = chkHasReplacementsNot ? p.ext().getNumOfReplacementsAfterZero() == 0 : true;
-
-        var valid = validFirstIsZero
-                && validFirstIsZeroNot
-                && validHasReplacements
-                && validHasReplacementsNot;
-
-        return valid;
-    }
-
-    private boolean validateMeasCount(BTopoControlPoint p) {
-        if (!mMeasNumOfProperty.get()) {
-            return true;
-        }
-
-        var lim = mMeasNumOfValueProperty.get();
-        var value = p.ext().getObservationsAllRaw().size();
-
-        if (lim == 0) {
-            return value == 0;
-        } else if (lim < 0) {
-            return value <= Math.abs(lim) && value != 0;
-        } else if (lim > 0) {
-            return value >= lim;
-        }
-
-        return true;
-    }
-
     private boolean validateMeasDisplacementAll(BTopoControlPoint p) {
         if (mMeasDiffAllProperty.get() && p.ext().deltaZero().getDelta() != null) {
             double lim = mMeasDiffAllValueProperty.get();
@@ -587,26 +529,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 return value >= lim;
             }
         } else {
-            return false;
-        }
-    }
-
-    private boolean validateMeasOperators(BTopoControlPoint p) {
-        if (mMeasOperatorsCheckModel.isEmpty()) {
-            return true;
-        }
-
-        if (mMeasLatestOperator.get()) {
-            return mMeasOperatorsCheckModel.getCheckedItems().contains(p.ext().getObservationsAllRaw().getLast().getOperator());
-        } else {
-            var pointOperators = p.ext().getObservationsAllRaw().stream().map(o -> o.getOperator()).collect(Collectors.toSet());
-
-            for (var operator : mMeasOperatorsCheckModel.getCheckedItems()) {
-                if (pointOperators.contains(operator)) {
-                    return true;
-                }
-            }
-
             return false;
         }
     }

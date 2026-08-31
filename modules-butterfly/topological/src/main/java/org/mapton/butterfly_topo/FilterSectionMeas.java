@@ -17,29 +17,25 @@ package org.mapton.butterfly_topo;
 
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
-import org.mapton.api.ui.forms.NegPosStringConverterInteger;
 import org.mapton.butterfly_core.api.AlarmLevelChangeUnit;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
-import se.trixon.almond.util.fx.BindingHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.RangeSliderPane;
-import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
 import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
 import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
@@ -50,88 +46,73 @@ import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
  */
 class FilterSectionMeas extends MBaseFilterSection {
 
+    private final RangeSliderPane mBearingRangeSlider = new RangeSliderPane(Dict.BEARING.toString(), -90.0, 360.0, false);
     private final DateDiffPane mDateDiffPane;
     private final double mDefaultDiffValue = 0.020;
-    private final int mDefaultMeasTopListLimit = 14;
-    private final int mDefaultMeasTopListSize = 10;
-    private final double mDefaultMeasYoyoCount = 5.0;
-    private final double mDefaultMeasYoyoSize = 0.003;
-    private final int mDefaultNumOfMeasfValue = 1;
-    private final CheckBox mDiffMeasAllCheckbox = new CheckBox();
-    private final SessionDoubleSpinner mDiffMeasAllSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffValue, 0.001);
-    private final CheckBox mDiffMeasLatestCheckbox = new CheckBox();
-    private final SessionDoubleSpinner mDiffMeasLatestSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffValue, 0.001);
-    private final RangeSliderPane mMeasBearingRangeSlider = new RangeSliderPane(Dict.BEARING.toString(), -90.0, 360.0, false);
-    private final SessionCheckComboBox<String> mMeasCodeSccb = new SessionCheckComboBox<>(true);
-    private final CheckBox mMeasLatestOperatorCheckbox = new CheckBox();
-    private final SessionIntegerSpinner mMeasNumOfSis = new SessionIntegerSpinner(Integer.MIN_VALUE, Integer.MAX_VALUE, mDefaultNumOfMeasfValue);
-    private final SessionCheckComboBox<String> mMeasOperatorSccb = new SessionCheckComboBox<>();
-    private final CheckBox mMeasTopListCheckbox = new CheckBox();
-    private final SessionIntegerSpinner mMeasTopListLimitSis = new SessionIntegerSpinner(0, Integer.MAX_VALUE, mDefaultMeasTopListLimit);
-    private final SessionIntegerSpinner mMeasTopListSizeSds = new SessionIntegerSpinner(1, 100, mDefaultMeasTopListSize, 1);
-    private final SessionComboBox<AlarmLevelChangeUnit> mMeasTopListUnitScb = new SessionComboBox<>();
-    private final CheckBox mMeasYoyoCheckbox = new CheckBox();
-    private final SessionDoubleSpinner mMeasYoyoCountSds = new SessionDoubleSpinner(0, 100.0, mDefaultMeasYoyoCount, 1.0);
-    private final SessionDoubleSpinner mMeasYoyoSizeSds = new SessionDoubleSpinner(0, 1.0, mDefaultMeasYoyoSize, 0.001);
-    private final CheckBox mNumOfMeasCheckbox = new CheckBox();
-    private final GridPane mRoot = new GridPane(GAP_H, GAP_V * 4);
+    private final int mDefaultTopListLimit = 14;
+    private final int mDefaultTopListSize = 10;
+    private final double mDefaultYoyoCount = 5.0;
+    private final double mDefaultYoyoSize = 0.003;
+    private final CheckBox mDiffAllCheckbox = new CheckBox();
+    private final SessionDoubleSpinner mDiffAllSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffValue, 0.001);
+    private final CheckBox mDiffLatestCheckbox = new CheckBox();
+    private final SessionDoubleSpinner mDiffLatestSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffValue, 0.001);
+    private VBox mRoot;
+    private final CheckBox mTopListCheckbox = new CheckBox();
+    private final SessionIntegerSpinner mTopListLimitSis = new SessionIntegerSpinner(0, Integer.MAX_VALUE, mDefaultTopListLimit);
+    private final SessionIntegerSpinner mTopListSizeSds = new SessionIntegerSpinner(1, 100, mDefaultTopListSize, 1);
+    private final SessionComboBox<AlarmLevelChangeUnit> mTopListUnitScb = new SessionComboBox<>();
+    private final CheckBox mYoyoCheckbox = new CheckBox();
+    private final SessionDoubleSpinner mYoyoCountSds = new SessionDoubleSpinner(0, 100.0, mDefaultYoyoCount, 1.0);
+    private final SessionDoubleSpinner mYoyoSizeSds = new SessionDoubleSpinner(0, 1.0, mDefaultYoyoSize, 0.001);
 
     public FilterSectionMeas() {
-        super(SDict.MEASUREMENTS.toString());
+        super(SDict.MEASUREMENTS.toString() + "*");
         mDateDiffPane = new DateDiffPane(this);
         init();
-        setContent(mRoot);
     }
 
     @Override
     public void clear() {
         super.clear();
         FxHelper.setSelected(false,
-                mDiffMeasLatestCheckbox,
-                mDiffMeasAllCheckbox,
-                mMeasYoyoCheckbox,
-                mMeasTopListCheckbox,
-                mMeasLatestOperatorCheckbox,
-                mNumOfMeasCheckbox
+                mDiffLatestCheckbox,
+                mDiffAllCheckbox,
+                mYoyoCheckbox,
+                mTopListCheckbox
         );
-        mDiffMeasAllSds.getValueFactory().setValue(mDefaultDiffValue);
-        mDiffMeasLatestSds.getValueFactory().setValue(mDefaultDiffValue);
-        mMeasNumOfSis.getValueFactory().setValue(mDefaultNumOfMeasfValue);
-        mMeasTopListLimitSis.getValueFactory().setValue(mDefaultMeasTopListLimit);
-        mMeasTopListSizeSds.getValueFactory().setValue(mDefaultMeasTopListSize);
-        mMeasYoyoCountSds.getValueFactory().setValue(mDefaultMeasYoyoCount);
-        mMeasYoyoSizeSds.getValueFactory().setValue(mDefaultMeasYoyoSize);
-        mMeasBearingRangeSlider.clear();
-        SessionCheckComboBox.clearChecks(
-                mMeasOperatorSccb,
-                mMeasCodeSccb
-        );
+        mDiffAllSds.getValueFactory().setValue(mDefaultDiffValue);
+        mDiffLatestSds.getValueFactory().setValue(mDefaultDiffValue);
+        mTopListLimitSis.getValueFactory().setValue(mDefaultTopListLimit);
+        mTopListSizeSds.getValueFactory().setValue(mDefaultTopListSize);
+        mYoyoCountSds.getValueFactory().setValue(mDefaultYoyoCount);
+        mYoyoSizeSds.getValueFactory().setValue(mDefaultYoyoSize);
+        mBearingRangeSlider.clear();
     }
 
     public ResourceBundle getBundle() {
         return NbBundle.getBundle(getClass());
     }
 
+    public Region getRoot() {
+        return mRoot;
+    }
+
     @Override
     public void initSession(SessionManager sessionManager) {
         sessionManager.register(getKeyFilter("section"), selectedProperty());
-        sessionManager.register(getKeyFilter("checkedMeasCode"), mMeasCodeSccb.checkedStringProperty());
-        sessionManager.register(getKeyFilter("CheckedOperators"), mMeasOperatorSccb.checkedStringProperty());
-        sessionManager.register(getKeyFilter("diffAll"), mDiffMeasAllCheckbox.selectedProperty());
-        sessionManager.register(getKeyFilter("topList"), mMeasTopListCheckbox.selectedProperty());
-        sessionManager.register(getKeyFilter("topListSizeValue"), mMeasTopListSizeSds.sessionValueProperty());
-        sessionManager.register(getKeyFilter("topListUnit"), mMeasTopListUnitScb.selectedIndexProperty());
-        sessionManager.register(getKeyFilter("topListLimit"), mMeasTopListLimitSis.sessionValueProperty());
-        sessionManager.register(getKeyFilter("yoyo"), mMeasYoyoCheckbox.selectedProperty());
-        sessionManager.register(getKeyFilter("diffAllValue"), mDiffMeasAllSds.sessionValueProperty());
-        sessionManager.register(getKeyFilter("yoyoCountValue"), mMeasYoyoCountSds.sessionValueProperty());
-        sessionManager.register(getKeyFilter("yoyoSizeValue"), mMeasYoyoSizeSds.sessionValueProperty());
-        sessionManager.register(getKeyFilter("diffLatest"), mDiffMeasLatestCheckbox.selectedProperty());
-        sessionManager.register(getKeyFilter("diffLatestValue"), mDiffMeasLatestSds.sessionValueProperty());
-        sessionManager.register(getKeyFilter("latestOperator"), mMeasLatestOperatorCheckbox.selectedProperty());
-        sessionManager.register(getKeyFilter("numOfMeas"), mNumOfMeasCheckbox.selectedProperty());
-        sessionManager.register(getKeyFilter("numOfValue"), mMeasNumOfSis.sessionValueProperty());
-        mMeasBearingRangeSlider.initSession(getKeyFilter("bearing"), sessionManager);
+        sessionManager.register(getKeyFilter("diffAll"), mDiffAllCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("topList"), mTopListCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("topListSizeValue"), mTopListSizeSds.sessionValueProperty());
+        sessionManager.register(getKeyFilter("topListUnit"), mTopListUnitScb.selectedIndexProperty());
+        sessionManager.register(getKeyFilter("topListLimit"), mTopListLimitSis.sessionValueProperty());
+        sessionManager.register(getKeyFilter("yoyo"), mYoyoCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("diffAllValue"), mDiffAllSds.sessionValueProperty());
+        sessionManager.register(getKeyFilter("yoyoCountValue"), mYoyoCountSds.sessionValueProperty());
+        sessionManager.register(getKeyFilter("yoyoSizeValue"), mYoyoSizeSds.sessionValueProperty());
+        sessionManager.register(getKeyFilter("diffLatest"), mDiffLatestCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("diffLatestValue"), mDiffLatestSds.sessionValueProperty());
+        mBearingRangeSlider.initSession(getKeyFilter("bearing"), sessionManager);
         mDateDiffPane.initSession(sessionManager);
     }
 
@@ -144,54 +125,45 @@ class FilterSectionMeas extends MBaseFilterSection {
     }
 
     void initListeners(TopoFilter filter) {
-        filter.measNumOfProperty().bind(mNumOfMeasCheckbox.selectedProperty());
-        filter.measDiffAllProperty().bind(mDiffMeasAllCheckbox.selectedProperty());
-        filter.measYoyoProperty().bind(mMeasYoyoCheckbox.selectedProperty());
-        filter.measTopListProperty().bind(mMeasTopListCheckbox.selectedProperty());
-        filter.measDiffLatestProperty().bind(mDiffMeasLatestCheckbox.selectedProperty());
-        filter.measLatestOperatorProperty().bind(mMeasLatestOperatorCheckbox.selectedProperty());
-        filter.measNumOfValueProperty().bind(mMeasNumOfSis.sessionValueProperty());
-        filter.measDiffAllValueProperty().bind(mDiffMeasAllSds.sessionValueProperty());
-        filter.measYoyoCountValueProperty().bind(mMeasYoyoCountSds.sessionValueProperty());
-        filter.measTopListSizeValueProperty().bind(mMeasTopListSizeSds.sessionValueProperty());
-        filter.measYoyoSizeValueProperty().bind(mMeasYoyoSizeSds.sessionValueProperty());
-        filter.measDiffLatestValueProperty().bind(mDiffMeasLatestSds.sessionValueProperty());
-        filter.measTopListUnitProperty().bind(mMeasTopListUnitScb.getSelectionModel().selectedItemProperty());
-        filter.measTopListLimitProperty().bind(mMeasTopListLimitSis.sessionValueProperty());
-        filter.mMeasOperatorsCheckModel = mMeasOperatorSccb.getCheckModel();
-        filter.mMeasCodeCheckModel = mMeasCodeSccb.getCheckModel();
-        filter.mMeasBearingSelectedProperty.bind(mMeasBearingRangeSlider.selectedProperty());
-        filter.mMeasBearingMinProperty.bind(mMeasBearingRangeSlider.minProperty());
-        filter.mMeasBearingMaxProperty.bind(mMeasBearingRangeSlider.maxProperty());
+        filter.measDiffAllProperty().bind(mDiffAllCheckbox.selectedProperty());
+        filter.measYoyoProperty().bind(mYoyoCheckbox.selectedProperty());
+        filter.measTopListProperty().bind(mTopListCheckbox.selectedProperty());
+        filter.measDiffLatestProperty().bind(mDiffLatestCheckbox.selectedProperty());
+        filter.measDiffAllValueProperty().bind(mDiffAllSds.sessionValueProperty());
+        filter.measYoyoCountValueProperty().bind(mYoyoCountSds.sessionValueProperty());
+        filter.measTopListSizeValueProperty().bind(mTopListSizeSds.sessionValueProperty());
+        filter.measYoyoSizeValueProperty().bind(mYoyoSizeSds.sessionValueProperty());
+        filter.measDiffLatestValueProperty().bind(mDiffLatestSds.sessionValueProperty());
+        filter.measTopListUnitProperty().bind(mTopListUnitScb.getSelectionModel().selectedItemProperty());
+        filter.measTopListLimitProperty().bind(mTopListLimitSis.sessionValueProperty());
+        filter.mMeasBearingSelectedProperty.bind(mBearingRangeSlider.selectedProperty());
+        filter.mMeasBearingMinProperty.bind(mBearingRangeSlider.minProperty());
+        filter.mMeasBearingMaxProperty.bind(mBearingRangeSlider.maxProperty());
 
         mDateDiffPane.initListeners(filter);
     }
 
     void load(ArrayList<BTopoControlPoint> items) {
-        mMeasOperatorSccb.loadAndRestoreCheckItems(items.stream().flatMap(p -> p.ext().getObservationsAllRaw().stream().map(o -> o.getOperator())));
-        mMeasCodeSccb.loadAndRestoreCheckItems();
-        mMeasTopListUnitScb.load();
-        mMeasTopListLimitSis.load();
-        mDiffMeasLatestSds.load();
-        mDiffMeasAllSds.load();
-        mMeasYoyoCountSds.load();
-        mMeasYoyoSizeSds.load();
-        mMeasTopListSizeSds.load();
-        mMeasNumOfSis.load();
-        mMeasNumOfSis.disableProperty().bind(mNumOfMeasCheckbox.selectedProperty().not());
-        mDiffMeasAllSds.disableProperty().bind(mDiffMeasAllCheckbox.selectedProperty().not());
-        mDiffMeasLatestSds.disableProperty().bind(mDiffMeasLatestCheckbox.selectedProperty().not());
-        mMeasTopListSizeSds.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
-        mMeasYoyoCountSds.disableProperty().bind(mMeasYoyoCheckbox.selectedProperty().not());
-        mMeasYoyoSizeSds.disableProperty().bind(mMeasYoyoCheckbox.selectedProperty().not());
-        mMeasTopListLimitSis.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
-        mMeasTopListUnitScb.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
+        mTopListUnitScb.load();
+        mTopListLimitSis.load();
+        mDiffLatestSds.load();
+        mDiffAllSds.load();
+        mYoyoCountSds.load();
+        mYoyoSizeSds.load();
+        mTopListSizeSds.load();
+        mDiffAllSds.disableProperty().bind(mDiffAllCheckbox.selectedProperty().not());
+        mDiffLatestSds.disableProperty().bind(mDiffLatestCheckbox.selectedProperty().not());
+        mTopListSizeSds.disableProperty().bind(mTopListCheckbox.selectedProperty().not());
+        mYoyoCountSds.disableProperty().bind(mYoyoCheckbox.selectedProperty().not());
+        mYoyoSizeSds.disableProperty().bind(mYoyoCheckbox.selectedProperty().not());
+        mTopListLimitSis.disableProperty().bind(mTopListCheckbox.selectedProperty().not());
+        mTopListUnitScb.disableProperty().bind(mTopListCheckbox.selectedProperty().not());
 
         mDateDiffPane.load(items);
     }
 
     private void init() {
-        mMeasYoyoSizeSds.getValueFactory().setConverter(new StringConverter<Double>() {
+        mYoyoSizeSds.getValueFactory().setConverter(new StringConverter<Double>() {
             @Override
             public Double fromString(String string) {
                 return Double.valueOf(StringUtils.replace(string, ",", "."));
@@ -206,66 +178,50 @@ class FilterSectionMeas extends MBaseFilterSection {
                 }
             }
         });
-        FxHelper.setShowCheckedCount(true, mMeasCodeSccb, mMeasOperatorSccb);
-        mMeasCodeSccb.setTitle(getBundle().getString("measCodeCheckComboBoxTitle"));
-        mMeasOperatorSccb.setTitle(SDict.SURVEYORS.toString());
-        mMeasTopListUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
-        mMeasTopListUnitScb.getSelectionModel().selectFirst();
-        mMeasCodeSccb.getItems().setAll(List.of(
-                getBundle().getString("measCodeZeroIs"),
-                getBundle().getString("measCodeZero"),
-                getBundle().getString("measCodeReplacement"),
-                getBundle().getString("measCodeReplacementNot")
-        ));
-        mMeasNumOfSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
-        mDiffMeasLatestCheckbox.setText(getBundle().getString("diffMeasLatestCheckBoxText"));
-        mDiffMeasAllCheckbox.setText(getBundle().getString("diffMeasAllCheckBoxText"));
-        mMeasYoyoCheckbox.setText(getBundle().getString("YoyoCheckBoxText"));
-        mMeasTopListCheckbox.setText(getBundle().getString("TopListCheckBoxText"));
-        mMeasLatestOperatorCheckbox.setText(getBundle().getString("measLatesOperatorCheckBoxText"));
-        mNumOfMeasCheckbox.setText(getBundle().getString("numOfMeasCheckBoxText"));
-        mDiffMeasLatestSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
-        mDiffMeasAllSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
+
+        mTopListUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
+        mTopListUnitScb.getSelectionModel().selectFirst();
+        mDiffLatestCheckbox.setText(getBundle().getString("diffMeasLatestCheckBoxText"));
+        mDiffAllCheckbox.setText(getBundle().getString("diffMeasAllCheckBoxText"));
+        mYoyoCheckbox.setText(getBundle().getString("YoyoCheckBoxText"));
+        mTopListCheckbox.setText(getBundle().getString("TopListCheckBoxText"));
+        mDiffLatestSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
+        mDiffAllSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
         var diffGridPane = new GridPane(GAP_H, GAP_V);
-        diffGridPane.addColumn(0, mDiffMeasAllCheckbox, mDiffMeasAllSds);
-        diffGridPane.addColumn(1, mDiffMeasLatestCheckbox, mDiffMeasLatestSds);
+        diffGridPane.addColumn(0, mDiffAllCheckbox, mDiffAllSds);
+        diffGridPane.addColumn(1, mDiffLatestCheckbox, mDiffLatestSds);
         FxHelper.autoSizeColumn(diffGridPane, 2);
         var diffPercentGridPane = new GridPane(GAP_H, GAP_V);
         FxHelper.autoSizeColumn(diffPercentGridPane, 2);
         var yoyoGridPane = new GridPane(GAP_H, GAP_V);
-        yoyoGridPane.add(mMeasYoyoCheckbox, 0, 0, GridPane.REMAINING, 1);
-        yoyoGridPane.addRow(1, mMeasYoyoCountSds, mMeasYoyoSizeSds);
+        yoyoGridPane.add(mYoyoCheckbox, 0, 0, GridPane.REMAINING, 1);
+        yoyoGridPane.addRow(1, mYoyoCountSds, mYoyoSizeSds);
         FxHelper.autoSizeColumn(yoyoGridPane, 2);
         var displacementGridPane = new GridPane(GAP_H, GAP_V);
-        displacementGridPane.add(mMeasTopListCheckbox, 0, 0, GridPane.REMAINING, 1);
-        displacementGridPane.addRow(1, mMeasTopListSizeSds, new Label(SDict.POINTS.toLower()));
-        displacementGridPane.addRow(2, mMeasTopListLimitSis, mMeasTopListUnitScb);
-        mMeasTopListSizeSds.setPrefWidth(spinnerWidth);
-        mMeasTopListLimitSis.setPrefWidth(spinnerWidth);
+        displacementGridPane.add(mTopListCheckbox, 0, 0, GridPane.REMAINING, 1);
+        displacementGridPane.addRow(1, mTopListSizeSds, new Label(SDict.POINTS.toLower()));
+        displacementGridPane.addRow(2, mTopListLimitSis, mTopListUnitScb);
+        mTopListSizeSds.setPrefWidth(spinnerWidth);
+        mTopListLimitSis.setPrefWidth(spinnerWidth);
         var spinners = new Spinner[]{
-            mDiffMeasAllSds,
-            mDiffMeasLatestSds,
-            mMeasNumOfSis,
-            mMeasYoyoCountSds,
-            mMeasYoyoSizeSds,
-            mMeasTopListSizeSds,
-            mMeasTopListLimitSis
+            mDiffAllSds,
+            mDiffLatestSds,
+            mYoyoCountSds,
+            mYoyoSizeSds,
+            mTopListSizeSds,
+            mTopListLimitSis
         };
         FxHelper.setEditable(true, spinners);
         FxHelper.autoCommitSpinners(spinners);
 
-        var movementBox = new VBox(GAP_V, diffGridPane, diffPercentGridPane, displacementGridPane, yoyoGridPane, mMeasBearingRangeSlider);
-        var miscBox = new VBox(GAP_V, new VBox(titleGap, mNumOfMeasCheckbox, mMeasNumOfSis), new Separator(), mMeasCodeSccb, new VBox(titleGap, mMeasOperatorSccb, mMeasLatestOperatorCheckbox));
-        int row = 0;
+        mRoot = new VBox(GAP_V, diffGridPane, diffPercentGridPane, displacementGridPane, yoyoGridPane, mBearingRangeSlider);
+//        int row = 0;
         mDateDiffPane.getRoot().setDisable(true);
-//        mRoot.add(wrapInTitleBorder("Rörelser under period", mDateDiffPane.getRoot()), 0, row++, 1, 1);
-        mRoot.add(wrapInTitleBorder("Rörelser", movementBox), 0, row++, 1, 1);
-        row = 0;
-        mRoot.add(wrapInTitleBorder("Övrigt", miscBox), 1, row++, 1, 1);
-        FxHelper.autoSizeRegionHorizontal(mMeasTopListUnitScb);
-        BindingHelper.bindWidthForChildrens(movementBox, miscBox);
-        BindingHelper.bindWidthForRegions(movementBox, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasNumOfSis, mMeasOperatorSccb);
-        FxHelper.autoSizeColumn(mRoot, 2);
+//        mRoot.add(movementBox, 0, row++, 1, 1);
+        FxHelper.autoSizeRegionHorizontal(mTopListUnitScb);
+//        BindingHelper.bindWidthForChildrens(movementBox);
+//        BindingHelper.bindWidthForRegions(movementBox, mMeasYoyoCountSds, mMeasYoyoSizeSds);
+//        FxHelper.autoSizeColumn(mRoot, 2);
         mRoot.setMaxWidth(getMaxWidth());
     }
 
