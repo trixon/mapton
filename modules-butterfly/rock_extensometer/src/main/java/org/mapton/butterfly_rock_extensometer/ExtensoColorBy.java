@@ -15,14 +15,14 @@
  */
 package org.mapton.butterfly_rock_extensometer;
 
-import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum ExtensoColorBy {
-    DEFAULT(Dict.DEFAULT.toString());
+    ALARM(SDict.ALARM.toString());
     private final String mName;
 
     private ExtensoColorBy(String name) {

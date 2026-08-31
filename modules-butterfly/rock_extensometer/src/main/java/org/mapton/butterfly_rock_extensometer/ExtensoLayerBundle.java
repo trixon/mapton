@@ -148,7 +148,7 @@ public class ExtensoLayerBundle extends BfLayerBundle {
     }
 
     private PointPlacemark plotPin(BRockExtensometer extenso, Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes(0);
+        var attrs = mAttributeManager.getPinAttributes(extenso);
         attrs = PinPaddle.E_BLANK.applyToCopy(attrs);
         var placemark = new PointPlacemark(position);
 

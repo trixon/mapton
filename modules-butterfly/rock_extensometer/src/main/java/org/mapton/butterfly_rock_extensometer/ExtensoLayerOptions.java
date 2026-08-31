@@ -28,7 +28,7 @@ import org.mapton.butterfly_core.api.BLayerOptions;
  */
 public class ExtensoLayerOptions extends BLayerOptions implements MPresetActions {
 
-    public static final ExtensoColorBy DEFAULT_COLOR_BY = ExtensoColorBy.DEFAULT;
+    public static final ExtensoColorBy DEFAULT_COLOR_BY = ExtensoColorBy.ALARM;
     public static final ExtensoLabelBy DEFAULT_LABEL_BY = ExtensoLabelBy.NAME;
     public static final ExtensoPointBy DEFAULT_POINT_BY = ExtensoPointBy.PIN;
     private final ObjectProperty<ExtensoColorBy> mColorByProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BY);

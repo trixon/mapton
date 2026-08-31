@@ -52,7 +52,6 @@ public class ExtensoLayerOptionsView extends BLayerOptionsView {
     private void createUI() {
         mPointScb.getItems().setAll(ExtensoPointBy.values());
         mColorScb.getItems().setAll(ExtensoColorBy.values());
-        mColorScb.setDisable(true);
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);

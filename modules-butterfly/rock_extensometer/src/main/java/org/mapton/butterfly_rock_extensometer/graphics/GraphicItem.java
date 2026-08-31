@@ -23,10 +23,10 @@ import se.trixon.almond.util.Dict;
  * @author Patrik Karlström
  */
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
-    LABEL_DELTA_Z("\t%s, ΔZ".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
-    LABEL_DEPTH("\t%s, djup".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
-    LABEL_ALARM_LEVELS("\t%s, larmnivåer".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
-    INDICATORS("Indikatorer", Integer.MAX_VALUE);
+    INDICATORS("Indikatorer", Integer.MAX_VALUE),
+    LABEL_DELTA_Z("\t— %s, ΔZ".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
+    LABEL_DEPTH("\t— %s, djup".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
+    LABEL_ALARM_LEVELS("\t— %s, larmnivåer".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 

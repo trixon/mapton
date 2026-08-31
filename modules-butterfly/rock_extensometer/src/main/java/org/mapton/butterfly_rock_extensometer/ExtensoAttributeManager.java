@@ -15,16 +15,13 @@
  */
 package org.mapton.butterfly_rock_extensometer;
 
-import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
-import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
-import gov.nasa.worldwind.render.ShapeAttributes;
 import gov.nasa.worldwind.render.airspaces.BasicAirspaceAttributes;
 import java.awt.Color;
-import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
+import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 
 /**
  *
@@ -32,21 +29,13 @@ import org.mapton.butterfly_core.api.BaseAttributeManager;
  */
 public class ExtensoAttributeManager extends BaseAttributeManager {
 
-    private static final Material[] mAlarmMaterials = new Material[]{
-        Material.GREEN,
-        Material.YELLOW,
-        Material.ORANGE,
-        Material.RED,
-        new Material(Color.decode("#800080")),
-        Material.BLUE
-    };
+    private final ExtensoLayerOptions mLayerOptions = ExtensoLayerOptions.getInstance();
+
     private BasicShapeAttributes[][] mComponentTrace1dAttributes;
 
     private BasicShapeAttributes mGroundConnectorAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
     private BasicShapeAttributes[] mStationConnectorAttributes;
-    private final Color[] mStationConnectorColors = new Color[]{Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.BLACK};
-    private BasicShapeAttributes mStationConnectorEllipsoidAttributes;
     private BasicShapeAttributes[] mVectorAlarmAttributes;
 
     public static ExtensoAttributeManager getInstance() {
@@ -56,65 +45,65 @@ public class ExtensoAttributeManager extends BaseAttributeManager {
     private ExtensoAttributeManager() {
     }
 
-    public BasicShapeAttributes getComponentAlarmAttributes(int level) {
-        if (mVectorAlarmAttributes == null) {
-            mVectorAlarmAttributes = new BasicShapeAttributes[mAlarmMaterials.length];
+//    public BasicShapeAttributes getComponentAlarmAttributes(int level) {
+//        if (mVectorAlarmAttributes == null) {
+//            mVectorAlarmAttributes = new BasicShapeAttributes[mAlarmMaterials.length];
+//
+//            for (int i = 0; i < mAlarmMaterials.length; i++) {
+//                var attrs = new BasicShapeAttributes();
+//                attrs.setDrawOutline(false);
+//                attrs.setInteriorMaterial(mAlarmMaterials[i]);
+//                attrs.setEnableLighting(true);
+    ////                attrs.setInteriorOpacity(0.5);
+//                mVectorAlarmAttributes[i] = attrs;
+//            }
+//        }
+//
+//        if (level == -1) {
+//            level = 5;
+//        }
+//
+//        return mVectorAlarmAttributes[level];
+//    }
 
-            for (int i = 0; i < mAlarmMaterials.length; i++) {
-                var attrs = new BasicShapeAttributes();
-                attrs.setDrawOutline(false);
-                attrs.setInteriorMaterial(mAlarmMaterials[i]);
-                attrs.setEnableLighting(true);
-//                attrs.setInteriorOpacity(0.5);
-                mVectorAlarmAttributes[i] = attrs;
-            }
-        }
-
-        if (level == -1) {
-            level = 5;
-        }
-
-        return mVectorAlarmAttributes[level];
-    }
-
-    public BasicShapeAttributes getComponentTraceAttributes(int level, boolean rise, boolean maximus) {
-        if (mComponentTrace1dAttributes == null) {
-            mComponentTrace1dAttributes = new BasicShapeAttributes[mAlarmMaterials.length][2];
-
-            for (int i = 0; i < mAlarmMaterials.length; i++) {
-                for (int j = 0; j < 2; j++) {
-                    var attrs = new BasicShapeAttributes();
-                    attrs.setDrawOutline(false);
-                    attrs.setInteriorMaterial(mAlarmMaterials[i]);
-                    attrs.setEnableLighting(true);
-
-                    if (j == 1) {
-                        attrs.setDrawOutline(true);
-                        if (i == 4) {
-                            attrs.setOutlineMaterial(Material.YELLOW);
-                        } else {
-                            attrs.setOutlineMaterial(Material.LIGHT_GRAY);
-                        }
-                    }
-
-                    mComponentTrace1dAttributes[i][j] = attrs;
-                }
-            }
-        }
-
-        if (level == -1) {
-            level = 5;
-        }
-
-        if (maximus) {
-            level = 4;
-        }
-
-        var i = level;
-        var j = rise ? 1 : 0;
-
-        return mComponentTrace1dAttributes[i][j];
-    }
+//    public BasicShapeAttributes getComponentTraceAttributes(int level, boolean rise, boolean maximus) {
+//        if (mComponentTrace1dAttributes == null) {
+//            mComponentTrace1dAttributes = new BasicShapeAttributes[mAlarmMaterials.length][2];
+//
+//            for (int i = 0; i < mAlarmMaterials.length; i++) {
+//                for (int j = 0; j < 2; j++) {
+//                    var attrs = new BasicShapeAttributes();
+//                    attrs.setDrawOutline(false);
+//                    attrs.setInteriorMaterial(mAlarmMaterials[i]);
+//                    attrs.setEnableLighting(true);
+//
+//                    if (j == 1) {
+//                        attrs.setDrawOutline(true);
+//                        if (i == 4) {
+//                            attrs.setOutlineMaterial(Material.YELLOW);
+//                        } else {
+//                            attrs.setOutlineMaterial(Material.LIGHT_GRAY);
+//                        }
+//                    }
+//
+//                    mComponentTrace1dAttributes[i][j] = attrs;
+//                }
+//            }
+//        }
+//
+//        if (level == -1) {
+//            level = 5;
+//        }
+//
+//        if (maximus) {
+//            level = 4;
+//        }
+//
+//        var i = level;
+//        var j = rise ? 1 : 0;
+//
+//        return mComponentTrace1dAttributes[i][j];
+//    }
 
     public BasicShapeAttributes getGroundConnectorAttributes() {
         if (mGroundConnectorAttributes == null) {
@@ -126,32 +115,41 @@ public class ExtensoAttributeManager extends BaseAttributeManager {
         return mGroundConnectorAttributes;
     }
 
-    @Override
-    public PointPlacemarkAttributes getPinAttributes(int index) {
-        index = Math.min(index, mStationConnectorColors.length - 1);
+    public PointPlacemarkAttributes getPinAttributes(BRockExtensometer p) {
+        var attrs = getPinAttributes(p.ext().getAlarmLevel());
 
-        if (mPinAttributes == null) {
-            mPinAttributes = new PointPlacemarkAttributes[mStationConnectorColors.length];
-            for (int i = 0; i < mPinAttributes.length; i++) {
-                var attrs = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-                attrs.setScale(Mapton.getScalePinImage());
-                attrs.setLabelScale(Mapton.getScalePinLabel());
-                attrs.setImageAddress("images/pushpins/plain-white.png");
-                attrs.setImageColor(mStationConnectorColors[i]);
-
-                mPinAttributes[i] = attrs;
-            }
-        }
-
-        if (index == -1) {//station
-            var attrs = new PointPlacemarkAttributes(mPinAttributes[0]);
-            attrs.setImageColor(Color.RED);
-            return attrs;
-        } else {
-            return mPinAttributes[index];
-        }
+//        if (mLayerOptions.getColorBy() != null && mLayerOptions.getColorBy() != ExtensoColorBy.DEFAULT) {
+//            attrs = new PointPlacemarkAttributes(attrs);
+//            attrs.setImageColor(getColor(p));
+//        }
+        return attrs;
     }
 
+//    @Override
+//    public PointPlacemarkAttributes getPinAttributes(int index) {
+//        index = Math.min(index, mStationConnectorColors.length - 1);
+//
+//        if (mPinAttributes == null) {
+//            mPinAttributes = new PointPlacemarkAttributes[mStationConnectorColors.length];
+//            for (int i = 0; i < mPinAttributes.length; i++) {
+//                var attrs = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
+//                attrs.setScale(Mapton.getScalePinImage());
+//                attrs.setLabelScale(Mapton.getScalePinLabel());
+//                attrs.setImageAddress("images/pushpins/plain-white.png");
+//                attrs.setImageColor(mStationConnectorColors[i]);
+//
+//                mPinAttributes[i] = attrs;
+//            }
+//        }
+//
+//        if (index == -1) {//station
+//            var attrs = new PointPlacemarkAttributes(mPinAttributes[0]);
+//            attrs.setImageColor(Color.RED);
+//            return attrs;
+//        } else {
+//            return mPinAttributes[index];
+//        }
+//    }
     public BasicAirspaceAttributes getSliceAttributes(double quota) {
         var attrs = new BasicAirspaceAttributes();
         attrs.setEnableLighting(true);
@@ -186,33 +184,31 @@ public class ExtensoAttributeManager extends BaseAttributeManager {
         return attrs;
     }
 
-    public ShapeAttributes getStationConnectorAttribute(int index) {
-        index = Math.min(index, mStationConnectorColors.length - 1);
-
-        if (mStationConnectorAttributes == null) {
-            mStationConnectorAttributes = new BasicShapeAttributes[mStationConnectorColors.length];
-            for (int i = 0; i < mStationConnectorAttributes.length; i++) {
-                var attrs = new BasicShapeAttributes();
-                attrs.setOutlineMaterial(new Material(mStationConnectorColors[i]));
-                attrs.setOutlineWidth(2.0);
-                mStationConnectorAttributes[i] = attrs;
-            }
-        }
-
-        return mStationConnectorAttributes[index];
-    }
-
-    public BasicShapeAttributes getStationConnectorEllipsoidAttributes() {
-        if (mStationConnectorEllipsoidAttributes == null) {
-            mStationConnectorEllipsoidAttributes = new BasicShapeAttributes();
-            mStationConnectorEllipsoidAttributes.setDrawOutline(false);
-            mStationConnectorEllipsoidAttributes.setInteriorMaterial(Material.LIGHT_GRAY);
-            mStationConnectorEllipsoidAttributes.setEnableLighting(true);
-        }
-
-        return mStationConnectorEllipsoidAttributes;
-    }
-
+//    public ShapeAttributes getStationConnectorAttribute(int index) {
+//        index = Math.min(index, mStationConnectorColors.length - 1);
+//
+//        if (mStationConnectorAttributes == null) {
+//            mStationConnectorAttributes = new BasicShapeAttributes[mStationConnectorColors.length];
+//            for (int i = 0; i < mStationConnectorAttributes.length; i++) {
+//                var attrs = new BasicShapeAttributes();
+//                attrs.setOutlineMaterial(new Material(mStationConnectorColors[i]));
+//                attrs.setOutlineWidth(2.0);
+//                mStationConnectorAttributes[i] = attrs;
+//            }
+//        }
+//
+//        return mStationConnectorAttributes[index];
+//    }
+//    public BasicShapeAttributes getStationConnectorEllipsoidAttributes() {
+//        if (mStationConnectorEllipsoidAttributes == null) {
+//            mStationConnectorEllipsoidAttributes = new BasicShapeAttributes();
+//            mStationConnectorEllipsoidAttributes.setDrawOutline(false);
+//            mStationConnectorEllipsoidAttributes.setInteriorMaterial(Material.LIGHT_GRAY);
+//            mStationConnectorEllipsoidAttributes.setEnableLighting(true);
+//        }
+//
+//        return mStationConnectorEllipsoidAttributes;
+//    }
     public BasicShapeAttributes getStatusAttributes(double quota) {
         var attrs = new BasicShapeAttributes();
         attrs.setEnableLighting(true);
