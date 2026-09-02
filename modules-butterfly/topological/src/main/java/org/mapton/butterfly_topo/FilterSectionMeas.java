@@ -16,8 +16,13 @@
 package org.mapton.butterfly_topo;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
@@ -25,13 +30,19 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+import javax.swing.SortOrder;
 import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Strings;
+import org.mapton.api.ui.forms.FormHelper;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.butterfly_core.api.AlarmLevelChangeUnit;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.openide.util.NbBundle;
+import se.trixon.almond.util.CollectionHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -44,7 +55,7 @@ import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
  *
  * @author Patrik Karlström
  */
-class FilterSectionMeas extends MBaseFilterSection {
+public class FilterSectionMeas extends MBaseFilterSection {
 
     private final RangeSliderPane mBearingRangeSlider = new RangeSliderPane(Dict.BEARING.toString(), -90.0, 360.0, false);
     private final DateDiffPane mDateDiffPane;
@@ -90,12 +101,72 @@ class FilterSectionMeas extends MBaseFilterSection {
         mBearingRangeSlider.clear();
     }
 
+    @Override
+    public void createInfoContent(LinkedHashMap<String, String> map) {
+        if (!isSelected()) {
+            return;
+        }
+        try {
+
+            if (mDiffAllCheckbox.isSelected()) {
+                map.put(getBundle().getString("diffMeasAllCheckBoxText"), FormHelper.negPosToLtGt(mDiffAllSds.getValue()));
+            }
+
+            if (mDiffLatestCheckbox.isSelected()) {
+                map.put(getBundle().getString("diffMeasLatestCheckBoxText"), FormHelper.negPosToLtGt(mDiffLatestSds.getValue()));
+            }
+        } catch (NullPointerException e) {
+        }
+    }
+
+    public boolean filter(BTopoControlPoint p) {
+        if (isSelected()) {
+            var valid = true
+                    && validateMeasDisplacementAll(p)
+                    && validateMeasDisplacementLatest(p)
+                    //                                && validateMeasDateDiff(p)
+                    && validateMeasYoyo(p)
+                    && validateMeasBearing(p)
+                    && true;
+            return valid;
+        } else {
+            return true;
+        }
+    }
+
     public ResourceBundle getBundle() {
         return NbBundle.getBundle(getClass());
     }
 
     public Region getRoot() {
         return mRoot;
+    }
+
+    public void initListeners(ChangeListener changeListenerObject, ListChangeListener<Object> listChangeListener) {
+        List.of(
+                selectedProperty(),
+                mDiffAllCheckbox.selectedProperty(),
+                mTopListCheckbox.selectedProperty(),
+                mYoyoCheckbox.selectedProperty(),
+                mDiffLatestCheckbox.selectedProperty(),
+                mDiffAllSds.sessionValueProperty(),
+                mYoyoCountSds.sessionValueProperty(),
+                mTopListSizeSds.sessionValueProperty(),
+                mYoyoSizeSds.sessionValueProperty(),
+                mDiffLatestSds.sessionValueProperty(),
+                mTopListUnitScb.getSelectionModel().selectedItemProperty(),
+                mTopListLimitSis.sessionValueProperty(),
+                mBearingRangeSlider.selectedProperty(),
+                mBearingRangeSlider.minProperty(),
+                mBearingRangeSlider.maxProperty()
+        ).forEach(propertyBase -> propertyBase.addListener(changeListenerObject));
+
+//        List.of(
+//                mInstrumentSccb.getCheckModel(),
+//                mOperatorSccb.getCheckModel(),
+//                mCodeSccb.getCheckModel(),
+//        ).forEach(cm -> cm.getCheckedItems().addListener(listChangeListener));
+//        mDateDiffPane.initListeners(filter);
     }
 
     @Override
@@ -124,23 +195,49 @@ class FilterSectionMeas extends MBaseFilterSection {
     public void reset(PropertiesConfiguration filterConfig) {
     }
 
-    void initListeners(TopoFilter filter) {
-        filter.measDiffAllProperty().bind(mDiffAllCheckbox.selectedProperty());
-        filter.measYoyoProperty().bind(mYoyoCheckbox.selectedProperty());
-        filter.measTopListProperty().bind(mTopListCheckbox.selectedProperty());
-        filter.measDiffLatestProperty().bind(mDiffLatestCheckbox.selectedProperty());
-        filter.measDiffAllValueProperty().bind(mDiffAllSds.sessionValueProperty());
-        filter.measYoyoCountValueProperty().bind(mYoyoCountSds.sessionValueProperty());
-        filter.measTopListSizeValueProperty().bind(mTopListSizeSds.sessionValueProperty());
-        filter.measYoyoSizeValueProperty().bind(mYoyoSizeSds.sessionValueProperty());
-        filter.measDiffLatestValueProperty().bind(mDiffLatestSds.sessionValueProperty());
-        filter.measTopListUnitProperty().bind(mTopListUnitScb.getSelectionModel().selectedItemProperty());
-        filter.measTopListLimitProperty().bind(mTopListLimitSis.sessionValueProperty());
-        filter.mMeasBearingSelectedProperty.bind(mBearingRangeSlider.selectedProperty());
-        filter.mMeasBearingMinProperty.bind(mBearingRangeSlider.minProperty());
-        filter.mMeasBearingMaxProperty.bind(mBearingRangeSlider.maxProperty());
+    public boolean shouldCreateTopList() {
+        return mTopListCheckbox.isSelected();
+    }
 
-        mDateDiffPane.initListeners(filter);
+    List<BTopoControlPoint> createTopList(List<BTopoControlPoint> filteredItems) {
+        var topListMaxSize = mTopListSizeSds.getValue();
+        var limit = mTopListLimitSis.getValue();
+        var unit = mTopListUnitScb.getValue();
+        var pointToDiffMap = new LinkedHashMap<BTopoControlPoint, Double>();
+
+        filteredItems.forEach(p -> {
+            var reversedObservations = p.ext().getObservationsTimeFiltered().reversed();
+            List<BTopoControlPointObservation> limitedObservations;
+            if (limit == 0) {
+                limitedObservations = reversedObservations;
+            } else {
+                if (unit == AlarmLevelChangeUnit.DAYS) {
+                    var arrayList = new ArrayList<BTopoControlPointObservation>();
+                    for (var o : reversedObservations) {
+                        if (o.getDate().isAfter(LocalDateTime.now().minusDays(limit))) {
+                            arrayList.add(o);
+                        } else {
+                            break;
+                        }
+                    }
+                    limitedObservations = arrayList;
+                } else {
+                    limitedObservations = reversedObservations.subList(0, Math.min(limit, reversedObservations.size()));
+                }
+            }
+
+            if (limitedObservations.size() >= 2 && ObjectUtils.allNotNull(limitedObservations.getFirst().ext().getDelta(), limitedObservations.getLast().ext().getDelta())) {
+                var delta = limitedObservations.getFirst().ext().getDelta() - limitedObservations.getLast().ext().getDelta();
+                pointToDiffMap.put(p, Math.abs(delta));
+            }
+        });
+
+        return CollectionHelper.sortByValue(pointToDiffMap, SortOrder.DESCENDING)
+                .entrySet()
+                .stream()
+                .limit(topListMaxSize)
+                .map(entry -> entry.getKey())
+                .toList();
     }
 
     void load(ArrayList<BTopoControlPoint> items) {
@@ -223,6 +320,117 @@ class FilterSectionMeas extends MBaseFilterSection {
         );
 
         mDateDiffPane.getRoot().setDisable(true);
+    }
+
+    private boolean validateMeasBearing(BTopoControlPoint p) {
+        try {
+            var o = p.ext().getObservationsTimeFiltered().getLast();
+            var bearing = o.ext().getBearing();
+            if (mBearingRangeSlider.selectedProperty().get()) {
+                return inRange(bearing, mBearingRangeSlider.minProperty(), mBearingRangeSlider.maxProperty())
+                        || inRange(bearing - 360.0, mBearingRangeSlider.minProperty(), mBearingRangeSlider.maxProperty());
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean validateMeasDisplacementAll(BTopoControlPoint p) {
+        if (mDiffAllCheckbox.isSelected() && p.ext().deltaZero().getDelta() != null) {
+            double lim = mDiffAllSds.getValue();
+            double value = Math.abs(p.ext().deltaZero().getDelta());
+
+            if (lim == 0) {
+                return value == 0;
+            } else if (lim < 0) {
+                return value <= Math.abs(lim);
+            } else {
+                return value >= lim;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    private boolean validateMeasDisplacementLatest(BTopoControlPoint p) {
+        if (!mDiffLatestCheckbox.isSelected()) {
+            return true;
+        }
+
+        var observations = p.ext().getObservationsTimeFiltered();
+        if (observations.size() > 1) {
+            var first = observations.get(observations.size() - 2);
+            var last = observations.get(observations.size() - 1);
+            double lim = mDiffLatestSds.getValue();
+            Double lastDelta = last.ext().getDelta();
+            Double firstDelta = first.ext().getDelta();
+            if (ObjectUtils.anyNull(firstDelta, lastDelta)) {
+                return false;
+            }
+            double value = Math.abs(lastDelta - firstDelta);
+
+            if (lim == 0) {
+                return value == 0;
+            } else if (lim < 0) {
+                return value <= Math.abs(lim);
+            } else {
+                return value >= lim;
+            }
+        } else {
+            return false;
+        }
+    }
+
+//    private boolean validateMeasDateDiff(BTopoControlPoint p) {
+//        if (mMeasDateDiffProperty.get()) {
+    ////        if (mMeasSpeedProperty.get() && p.ext().deltaZero().getDelta() != null && p.ext().deltaZero().getDelta1() != null) {
+//            double lim = mMeasDateDiffValueProperty.get();
+//            double value = Math.abs(p.ext().getSpeed()[0]);
+//
+//            if (lim == 0) {
+//                return value == 0;
+//            } else if (lim < 0) {
+//                return value <= Math.abs(lim);
+//            } else {
+//                return value >= lim;
+//            }
+//        } else {
+//            return true;
+//        }
+//    }
+
+    private boolean validateMeasYoyo(BTopoControlPoint p) {
+        if (!mYoyoCheckbox.isSelected()) {
+            return true;
+        } else if (p.getDimension() == BDimension._2d || p.ext().getObservationsTimeFiltered().size() < 2) {
+            return false;
+        }
+
+        int matches = 0;
+        double prevSignum = 0.0;
+
+        for (int i = 1; i < p.ext().getObservationsTimeFiltered().size(); i++) {
+            var prevMeas = p.ext().getObservationsTimeFiltered().get(i - 1);
+            var currenMeas = p.ext().getObservationsTimeFiltered().get(i);
+            var currentDeltaZ = currenMeas.ext().getDeltaZ();
+            var prevDeltaZ = prevMeas.ext().getDeltaZ();
+
+            if (ObjectUtils.anyNull(currentDeltaZ, prevDeltaZ)) {
+                continue;
+            }
+
+            var signum = Math.signum(currentDeltaZ - prevDeltaZ);
+            boolean directionChange = prevSignum != 0 && prevSignum != signum;
+            prevSignum = signum;
+
+            if (directionChange && Math.abs(currentDeltaZ - prevDeltaZ) >= mYoyoSizeSds.getValue()) {
+                matches++;
+            }
+        }
+
+        return matches >= mYoyoCountSds.getValue();
     }
 
 }

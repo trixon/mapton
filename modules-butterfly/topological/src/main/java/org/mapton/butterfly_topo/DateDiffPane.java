@@ -72,13 +72,15 @@ public class DateDiffPane {
     }
 
     public void initListeners(TopoFilter filter) {
-        filter.measDateDiffProperty().bind(mMeters1dCheckbox.selectedProperty());
-        filter.measDateDiffProperty().bind(mMeters2dCheckbox.selectedProperty());
-//**
-        filter.measDateDiffValueProperty().bind(mMeters1dSds.sessionValueProperty());
-        filter.measDateDiffValueProperty().bind(mMeters2dSds.sessionValueProperty());
-//**
-//        filter.measAlarmLevelChangeModeProperty().bind(mMeasAlarmLevelChangeModeScb.getSelectionModel().selectedItemProperty());
+//        filter.measDateDiffProperty().bind(mMeters1dCheckbox.selectedProperty());
+//        filter.measDateDiffProperty().bind(mMeters2dCheckbox.selectedProperty());
+
+
+    ////**
+//        filter.measDateDiffValueProperty().bind(mMeters1dSds.sessionValueProperty());
+//        filter.measDateDiffValueProperty().bind(mMeters2dSds.sessionValueProperty());
+////**
+////        filter.measAlarmLevelChangeModeProperty().bind(mMeasAlarmLevelChangeModeScb.getSelectionModel().selectedItemProperty());
 
     }
 

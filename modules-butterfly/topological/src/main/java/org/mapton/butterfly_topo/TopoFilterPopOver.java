@@ -59,8 +59,8 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionAlarm mFilterSectionAlarm;
     private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
-    private final FilterSectionMeas mFilterSectionMeasLegacy;
     private final BFilterSectionMeas mFilterSectionMeas;
+    private final FilterSectionMeas mFilterSectionMeasSpecific;
     private final BFilterSectionMisc<BTopoControlPoint> mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final BFilterSectionTrend<BTopoControlPoint> mFilterSectionTrend;
@@ -77,8 +77,8 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionAlarm = new BFilterSectionAlarm(alarmLevelCalculator);
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
-        mFilterSectionMeasLegacy = new FilterSectionMeas();
-        mFilterSectionMeas = new BFilterSectionMeas(mFilterSectionMeasLegacy.getRoot());
+        mFilterSectionMeasSpecific = new FilterSectionMeas();
+        mFilterSectionMeas = new BFilterSectionMeas(mFilterSectionMeasSpecific.getRoot());
         mFilterSectionMisc = new BFilterSectionMisc(filter);
         mFilterSectionTrend = new BFilterSectionTrend<>();
         mFilter = (TopoFilter) filter;
@@ -87,7 +87,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.setFilterSection(mFilterSectionDate);
         mFilter.setFilterSection(mFilterSectionDisruptor);
         mFilter.setFilterSection(mFilterSectionMeas);
-        mFilter.setFilterSection(mFilterSectionMeasLegacy);
+        mFilter.setFilterSection(mFilterSectionMeasSpecific);
         mFilter.setFilterSection(mFilterSectionMisc);
         mFilter.setFilterSection(mFilterSectionTrend);
 
@@ -116,7 +116,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionAlarm.clear();
         mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
-        mFilterSectionMeasLegacy.clear();
+        mFilterSectionMeasSpecific.clear();
         mFilterSectionMeas.clear();
         mFilterSectionMisc.clear();
         mFilterSectionTrend.clear();
@@ -130,7 +130,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilterSectionPoint.load(items);
         mFilterSectionDisruptor.load();
-        mFilterSectionMeasLegacy.load(items);
+        mFilterSectionMeasSpecific.load(items);
         mFilterSectionMeas.load(items);
         mFilterSectionAlarm.load(items);
         mFilterSectionDate.load(mManager.getTemporalRange());
@@ -189,7 +189,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
                 mFilterSectionPoint.getTab(),
                 mFilterSectionDate.getTab(),
                 mFilterSectionMeas.getTab(),
-                //                mFilterSectionMeasLegacy.getTab(),
                 mFilterSectionAlarm.getTab(),
                 mFilterSectionMisc.getTab(),
                 mFilterSectionDisruptor.getTab(),
@@ -220,8 +219,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
             mFilterSectionAlarm.getSameAlarmCheckBox().setSelected(true);
         });
 
-//        mFilterSectionMeas.initListeners(mFilter); Should this one be used?
-        mFilterSectionMeasLegacy.initListeners(mFilter);
         mFilterSectionMisc.initListeners(mFilter);
 
         mFilter.measIncludeWithoutProperty().bind(mMeasIncludeWithoutCheckbox.selectedProperty());
@@ -229,8 +226,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.dimens2Property().bind(mDimens2Checkbox.selectedProperty());
         mFilter.dimens3Property().bind(mDimens3Checkbox.selectedProperty());
         mFilter.closeToAutoProperty().bind(m1dCloseToAutoCheckbox.selectedProperty());
-
-        mFilter.sectionMeasLegacyProperty().bind(mFilterSectionMeasLegacy.selectedProperty());
 
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
         mFilter.initCheckModelListeners();
@@ -243,7 +238,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMeas.initSession(sessionManager);
-        mFilterSectionMeasLegacy.initSession(sessionManager);
+        mFilterSectionMeasSpecific.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
         mFilterSectionTrend.initSession(sessionManager);
 

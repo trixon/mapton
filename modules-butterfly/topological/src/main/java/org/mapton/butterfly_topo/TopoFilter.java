@@ -16,24 +16,13 @@
 package org.mapton.butterfly_topo;
 
 import j2html.tags.ContainerTag;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javax.swing.SortOrder;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.api.ui.forms.FormHelper;
-import org.mapton.butterfly_core.api.AlarmLevelChangeUnit;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BFilterSectionAlarm;
 import org.mapton.butterfly_core.api.BFilterSectionAlarmProvider;
@@ -54,10 +43,8 @@ import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.api.TopoManager;
 import se.trixon.almond.util.BooleanHelper;
-import se.trixon.almond.util.CollectionHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -74,32 +61,13 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         BFilterSectionMeasProvider,
         BFilterSectionDisruptorProvider {
 
-    DoubleProperty mMeasBearingMaxProperty = new SimpleDoubleProperty();
-    DoubleProperty mMeasBearingMinProperty = new SimpleDoubleProperty();
-    SimpleBooleanProperty mMeasBearingSelectedProperty = new SimpleBooleanProperty();
-    IndexedCheckModel<String> mMeasOperatorsCheckModel;
     private final SimpleBooleanProperty m1dCloseToAutoProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens1Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens2Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens3Property = new SimpleBooleanProperty();
-    private FilterSectionMeas mFilterSectionMeasLegacy;
+    private FilterSectionMeas mFilterSectionMeasSpecific;
     private final TopoManager mManager = TopoManager.getInstance();
-    private final SimpleBooleanProperty mMeasDateDiffProperty = new SimpleBooleanProperty();
-    private final SimpleDoubleProperty mMeasDateDiffValueProperty = new SimpleDoubleProperty();
-    private final SimpleBooleanProperty mMeasDiffAllProperty = new SimpleBooleanProperty();
-    private final SimpleDoubleProperty mMeasDiffAllValueProperty = new SimpleDoubleProperty();
-    private final SimpleBooleanProperty mMeasDiffLatestProperty = new SimpleBooleanProperty();
-    private final SimpleDoubleProperty mMeasDiffLatestValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasIncludeWithout = new SimpleBooleanProperty();
-    private final SimpleBooleanProperty mMeasLatestOperator = new SimpleBooleanProperty();
-    private final SimpleIntegerProperty mMeasTopListLimitProperty = new SimpleIntegerProperty();
-    private final SimpleBooleanProperty mMeasTopListProperty = new SimpleBooleanProperty();
-    private final SimpleIntegerProperty mMeasTopListSizeValueProperty = new SimpleIntegerProperty();
-    private final SimpleObjectProperty<AlarmLevelChangeUnit> mMeasTopListUnitProperty = new SimpleObjectProperty();
-    private final SimpleDoubleProperty mMeasYoyoCountValueProperty = new SimpleDoubleProperty();
-    private final SimpleBooleanProperty mMeasYoyoProperty = new SimpleBooleanProperty();
-    private final SimpleDoubleProperty mMeasYoyoSizeValueProperty = new SimpleDoubleProperty();
-    private final SimpleBooleanProperty mSectionMeasLegacyProperty = new SimpleBooleanProperty();
 
     public TopoFilter() {
         super(TopoManager.getInstance());
@@ -128,68 +96,8 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
 //        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
     }
 
-    public SimpleBooleanProperty measDateDiffProperty() {
-        return mMeasDateDiffProperty;
-    }
-
-    public SimpleDoubleProperty measDateDiffValueProperty() {
-        return mMeasDateDiffValueProperty;
-    }
-
-    public SimpleBooleanProperty measDiffAllProperty() {
-        return mMeasDiffAllProperty;
-    }
-
-    public SimpleDoubleProperty measDiffAllValueProperty() {
-        return mMeasDiffAllValueProperty;
-    }
-
-    public SimpleBooleanProperty measDiffLatestProperty() {
-        return mMeasDiffLatestProperty;
-    }
-
-    public SimpleDoubleProperty measDiffLatestValueProperty() {
-        return mMeasDiffLatestValueProperty;
-    }
-
     public SimpleBooleanProperty measIncludeWithoutProperty() {
         return mMeasIncludeWithout;
-    }
-
-    public SimpleBooleanProperty measLatestOperatorProperty() {
-        return mMeasLatestOperator;
-    }
-
-    public SimpleIntegerProperty measTopListLimitProperty() {
-        return mMeasTopListLimitProperty;
-    }
-
-    public SimpleBooleanProperty measTopListProperty() {
-        return mMeasTopListProperty;
-    }
-
-    public SimpleIntegerProperty measTopListSizeValueProperty() {
-        return mMeasTopListSizeValueProperty;
-    }
-
-    public SimpleObjectProperty measTopListUnitProperty() {
-        return mMeasTopListUnitProperty;
-    }
-
-    public SimpleDoubleProperty measYoyoCountValueProperty() {
-        return mMeasYoyoCountValueProperty;
-    }
-
-    public SimpleBooleanProperty measYoyoProperty() {
-        return mMeasYoyoProperty;
-    }
-
-    public SimpleDoubleProperty measYoyoSizeValueProperty() {
-        return mMeasYoyoSizeValueProperty;
-    }
-
-    public SimpleBooleanProperty sectionMeasLegacyProperty() {
-        return mSectionMeasLegacyProperty;
     }
 
     @Override
@@ -234,6 +142,11 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         mFilterSectionMeas.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
+    public void setFilterSection(FilterSectionMeas filterSection) {
+        mFilterSectionMeasSpecific = filterSection;
+        mFilterSectionMeasSpecific.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
@@ -258,18 +171,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 .filter(p -> mFilterSectionDisruptor.filter(p))
                 .filter(p -> mFilterSectionTrend.filter(p))
                 .filter(p -> mFilterSectionMisc.filter(p))
-                .filter(p -> mFilterSectionMeas.filter(p))
-                .filter(p -> {
-                    if (mSectionMeasLegacyProperty.get()) {
-                        return validateMeasDisplacementAll(p)
-                                && validateMeasDisplacementLatest(p)
-                                //                                && validateMeasDateDiff(p)
-                                && validateMeasYoyo(p)
-                                && validateMeasBearing(p);
-                    } else {
-                        return true;
-                    }
-                })
+                .filter(p -> mFilterSectionMeas.filter(p) && mFilterSectionMeasSpecific.filter(p))
                 .filter(p -> validateMeasWithout(p))
                 .toList();
 
@@ -299,8 +201,8 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                     .toList();
         }
 
-        if (mMeasTopListProperty.get()) {
-            filteredItems = createTopList(filteredItems);
+        if (mFilterSectionMeas.isSelected() && mFilterSectionMeasSpecific.shouldCreateTopList()) {
+            filteredItems = mFilterSectionMeasSpecific.createTopList(filteredItems);
         }
 
         filteredItems = sortAndLimit(filteredItems);
@@ -309,108 +211,30 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }
 
-    void setFilterSection(FilterSectionMeas filterSectionMeas) {
-        mFilterSectionMeasLegacy = filterSectionMeas;
-    }
-
     private ContainerTag createInfoContent() {
         var map = new LinkedHashMap<String, String>();
         map.put(Dict.TEXT.toString(), getFreeText());
         mFilterSectionPoint.createInfoContent(map);
         map.put(SDict.DIMENSION.toString(), makeInfoDimension());
         mFilterSectionMeas.createInfoContent(map);
+        mFilterSectionMeasSpecific.createInfoContent(map);
         mFilterSectionAlarm.createInfoContent(map);
         mFilterSectionDate.createInfoContent(map);
         mFilterSectionDisruptor.createInfoContent(map);
         mFilterSectionTrend.createInfoContent(map);
 
-        try {
-
-            if (mMeasDiffAllProperty.get()) {
-                map.put(getBundle().getString("diffMeasAllCheckBoxText"), FormHelper.negPosToLtGt(mMeasDiffAllValueProperty.get()));
-            }
-
-            if (mMeasDiffLatestProperty.get()) {
-                map.put(getBundle().getString("diffMeasLatestCheckBoxText"), FormHelper.negPosToLtGt(mMeasDiffLatestValueProperty.get()));
-            }
-        } catch (NullPointerException e) {
-        }
-
         return createHtmlFilterInfo(map);
     }
 
-    private List<BTopoControlPoint> createTopList(List<BTopoControlPoint> filteredItems) {
-        var topListMaxSize = mMeasTopListSizeValueProperty.get();
-        var limit = mMeasTopListLimitProperty.get();
-        var unit = mMeasTopListUnitProperty.get();
-        var pointToDiffMap = new LinkedHashMap<BTopoControlPoint, Double>();
-
-        filteredItems.forEach(p -> {
-            var reversedObservations = p.ext().getObservationsTimeFiltered().reversed();
-            List<BTopoControlPointObservation> limitedObservations;
-            if (limit == 0) {
-                limitedObservations = reversedObservations;
-            } else {
-                if (unit == AlarmLevelChangeUnit.DAYS) {
-                    var arrayList = new ArrayList<BTopoControlPointObservation>();
-                    for (var o : reversedObservations) {
-                        if (o.getDate().isAfter(LocalDateTime.now().minusDays(limit))) {
-                            arrayList.add(o);
-                        } else {
-                            break;
-                        }
-                    }
-                    limitedObservations = arrayList;
-                } else {
-                    limitedObservations = reversedObservations.subList(0, Math.min(limit, reversedObservations.size()));
-                }
-            }
-
-            if (limitedObservations.size() >= 2 && ObjectUtils.allNotNull(limitedObservations.getFirst().ext().getDelta(), limitedObservations.getLast().ext().getDelta())) {
-                var delta = limitedObservations.getFirst().ext().getDelta() - limitedObservations.getLast().ext().getDelta();
-                pointToDiffMap.put(p, Math.abs(delta));
-            }
-        });
-
-        return CollectionHelper.sortByValue(pointToDiffMap, SortOrder.DESCENDING)
-                .entrySet()
-                .stream()
-                .limit(topListMaxSize)
-                .map(entry -> entry.getKey())
-                .toList();
-    }
-
-    private boolean inRange(double value, DoubleProperty minProperty, DoubleProperty maxProperty) {
-//        value = Math.abs(value);
-        return value >= minProperty.get() && value <= maxProperty.get();
-    }
-
     private void initListeners() {
-        List.of(mMeasBearingSelectedProperty,
-                mMeasBearingMinProperty,
-                mMeasBearingMaxProperty,
-                mSectionMeasLegacyProperty,
+        List.of(
                 mInvertProperty,
                 mInvisibleProperty,
                 mDimens1Property,
                 mDimens2Property,
                 mDimens3Property,
                 m1dCloseToAutoProperty,
-                mMeasTopListProperty,
-                mMeasTopListLimitProperty,
-                mMeasTopListUnitProperty,
-                mMeasTopListSizeValueProperty,
-                mMeasDiffAllProperty,
-                mMeasDiffAllValueProperty,
-                mMeasDiffLatestProperty,
-                mMeasDiffLatestValueProperty,
-                mMeasDateDiffProperty,
-                mMeasDateDiffValueProperty,
                 mMeasIncludeWithout,
-                mMeasLatestOperator,
-                mMeasYoyoCountValueProperty,
-                mMeasYoyoSizeValueProperty,
-                mMeasYoyoProperty,
                 mContentOptions.listSortOrderProperty(),
                 mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
@@ -472,121 +296,10 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         return false;
     }
 
-    private boolean validateMeasBearing(BTopoControlPoint p) {
-        try {
-            var o = p.ext().getObservationsTimeFiltered().getLast();
-            var bearing = o.ext().getBearing();
-            if (mMeasBearingSelectedProperty.get()) {
-                return inRange(bearing, mMeasBearingMinProperty, mMeasBearingMaxProperty)
-                        || inRange(bearing - 360.0, mMeasBearingMinProperty, mMeasBearingMaxProperty);
-            } else {
-                return true;
-            }
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private boolean validateMeasDisplacementAll(BTopoControlPoint p) {
-        if (mMeasDiffAllProperty.get() && p.ext().deltaZero().getDelta() != null) {
-            double lim = mMeasDiffAllValueProperty.get();
-            double value = Math.abs(p.ext().deltaZero().getDelta());
-
-            if (lim == 0) {
-                return value == 0;
-            } else if (lim < 0) {
-                return value <= Math.abs(lim);
-            } else {
-                return value >= lim;
-            }
-        } else {
-            return true;
-        }
-    }
-
-    private boolean validateMeasDisplacementLatest(BTopoControlPoint p) {
-        if (!mMeasDiffLatestProperty.get()) {
-            return true;
-        }
-
-        var observations = p.ext().getObservationsTimeFiltered();
-        if (observations.size() > 1) {
-            var first = observations.get(observations.size() - 2);
-            var last = observations.get(observations.size() - 1);
-            double lim = mMeasDiffLatestValueProperty.get();
-            Double lastDelta = last.ext().getDelta();
-            Double firstDelta = first.ext().getDelta();
-            if (ObjectUtils.anyNull(firstDelta, lastDelta)) {
-                return false;
-            }
-            double value = Math.abs(lastDelta - firstDelta);
-
-            if (lim == 0) {
-                return value == 0;
-            } else if (lim < 0) {
-                return value <= Math.abs(lim);
-            } else {
-                return value >= lim;
-            }
-        } else {
-            return false;
-        }
-    }
-
-//    private boolean validateMeasDateDiff(BTopoControlPoint p) {
-//        if (mMeasDateDiffProperty.get()) {
-    ////        if (mMeasSpeedProperty.get() && p.ext().deltaZero().getDelta() != null && p.ext().deltaZero().getDelta1() != null) {
-//            double lim = mMeasDateDiffValueProperty.get();
-//            double value = Math.abs(p.ext().getSpeed()[0]);
-//
-//            if (lim == 0) {
-//                return value == 0;
-//            } else if (lim < 0) {
-//                return value <= Math.abs(lim);
-//            } else {
-//                return value >= lim;
-//            }
-//        } else {
-//            return true;
-//        }
-//    }
-
     private boolean validateMeasWithout(BTopoControlPoint p) {
         var valid = mMeasIncludeWithout.get() || p.ext().getNumOfObservations() > 0;
 
         return valid;
-    }
-
-    private boolean validateMeasYoyo(BTopoControlPoint p) {
-        if (!mMeasYoyoProperty.get()) {
-            return true;
-        } else if (p.getDimension() == BDimension._2d || p.ext().getObservationsTimeFiltered().size() < 2) {
-            return false;
-        }
-
-        int matches = 0;
-        double prevSignum = 0.0;
-
-        for (int i = 1; i < p.ext().getObservationsTimeFiltered().size(); i++) {
-            var prevMeas = p.ext().getObservationsTimeFiltered().get(i - 1);
-            var currenMeas = p.ext().getObservationsTimeFiltered().get(i);
-            var currentDeltaZ = currenMeas.ext().getDeltaZ();
-            var prevDeltaZ = prevMeas.ext().getDeltaZ();
-
-            if (ObjectUtils.anyNull(currentDeltaZ, prevDeltaZ)) {
-                continue;
-            }
-
-            var signum = Math.signum(currentDeltaZ - prevDeltaZ);
-            boolean directionChange = prevSignum != 0 && prevSignum != signum;
-            prevSignum = signum;
-
-            if (directionChange && Math.abs(currentDeltaZ - prevDeltaZ) >= mMeasYoyoSizeValueProperty.get()) {
-                matches++;
-            }
-        }
-
-        return matches >= mMeasYoyoCountValueProperty.get();
     }
 
 }
