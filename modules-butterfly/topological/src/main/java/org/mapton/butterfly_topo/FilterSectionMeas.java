@@ -26,7 +26,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.butterfly_core.api.AlarmLevelChangeUnit;
@@ -166,7 +166,7 @@ class FilterSectionMeas extends MBaseFilterSection {
         mYoyoSizeSds.getValueFactory().setConverter(new StringConverter<Double>() {
             @Override
             public Double fromString(String string) {
-                return Double.valueOf(StringUtils.replace(string, ",", "."));
+                return Double.valueOf(Strings.CS.replace(string, ",", "."));
             }
 
             @Override
@@ -214,15 +214,15 @@ class FilterSectionMeas extends MBaseFilterSection {
         FxHelper.setEditable(true, spinners);
         FxHelper.autoCommitSpinners(spinners);
 
-        mRoot = new VBox(GAP_V, diffGridPane, diffPercentGridPane, displacementGridPane, yoyoGridPane, mBearingRangeSlider);
-//        int row = 0;
+        mRoot = new VBox(GAP_V,
+                diffGridPane,
+                diffPercentGridPane,
+                displacementGridPane,
+                yoyoGridPane,
+                mBearingRangeSlider
+        );
+
         mDateDiffPane.getRoot().setDisable(true);
-//        mRoot.add(movementBox, 0, row++, 1, 1);
-        FxHelper.autoSizeRegionHorizontal(mTopListUnitScb);
-//        BindingHelper.bindWidthForChildrens(movementBox);
-//        BindingHelper.bindWidthForRegions(movementBox, mMeasYoyoCountSds, mMeasYoyoSizeSds);
-//        FxHelper.autoSizeColumn(mRoot, 2);
-        mRoot.setMaxWidth(getMaxWidth());
     }
 
 }
