@@ -35,6 +35,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.Strings;
 import org.mapton.api.ui.forms.DateRangePane;
@@ -65,13 +66,13 @@ public class BFilterSectionMeas extends MBaseFilterSection {
     private final CheckBox mLatestOperatorCheckbox = new CheckBox();
     private final CheckBox mNumOfCheckbox = new CheckBox();
     private final SessionIntegerSpinner mNumOfSis = new SessionIntegerSpinner(Integer.MIN_VALUE, Integer.MAX_VALUE, DEFAULT_NUM_OF_VALUE);
-    private final CheckBox mQuotaCheckbox = new CheckBox();
-    private final SessionIntegerSpinner mQuotaSis = new SessionIntegerSpinner(-100, 100, DEFAULT_QUOTA_VALUE);
     private final SessionCheckComboBox<String> mOperatorSccb = new SessionCheckComboBox<>();
+    private final CheckBox mQuotaCheckbox = new CheckBox();
+    private final DateRangePane mQuotaDateRangePane = new DateRangePane();
+    private final SessionIntegerSpinner mQuotaSis = new SessionIntegerSpinner(-100, 100, DEFAULT_QUOTA_VALUE);
     private final GridPane mRoot = new GridPane(GAP_H, GAP_V * 4);
     private final Node mSpecificNode;
     private final StackPane mSpecificPlacHolder = new StackPane();
-    private final DateRangePane mQuotaDateRangePane = new DateRangePane();
 
     public BFilterSectionMeas() {
         this(null);
@@ -255,6 +256,7 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         );
         BindingHelper.bindWidthForChildrens(miscBox);
         BindingHelper.bindWidthForRegions(miscBox, mNumOfSis, mOperatorSccb, mQuotaSis);
+        mQuotaDateRangePane.getRoot().setBackground(FxHelper.createBackground(Color.DARKSALMON));
 
         int row = 0;
         var wrappedSpecific = wrapInTitleBorder("Specifikt", mSpecificNode);
@@ -266,7 +268,7 @@ public class BFilterSectionMeas extends MBaseFilterSection {
 
         mRoot.addRow(row, wrapInTitleBorder("Generellt", miscBox), wrappedSpecific);
         mQuotaDateRangePane.setMinMaxDate(LocalDate.now().minusYears(8), LocalDate.now());
-
+        mQuotaDateRangePane.lowDateProperty().set(LocalDate.now().minusMonths(1));
     }
 
     private boolean validateCode(BXyzPoint p) {
@@ -314,6 +316,28 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         return true;
     }
 
+    private boolean validateOperators(BXyzPoint p) {
+        var model = mOperatorSccb.getCheckModel();
+        var ext = p.extOrNull();
+        if (model.isEmpty()) {
+            return true;
+        }
+
+        if (mLatestOperatorCheckbox.isSelected()) {
+            return model.getCheckedItems().contains(ext.getObservationsAllRaw().getLast().getOperator());
+        } else {
+            var pointOperators = ext.getObservationsAllRaw().stream().map(o -> o.getOperator()).collect(Collectors.toSet());
+
+            for (var operator : model.getCheckedItems()) {
+                if (pointOperators.contains(operator)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
     private boolean validateQuota(BXyzPoint p) {
         if (!mQuotaCheckbox.isSelected()) {
             return true;
@@ -348,28 +372,6 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         }
 
         return true;
-    }
-
-    private boolean validateOperators(BXyzPoint p) {
-        var model = mOperatorSccb.getCheckModel();
-        var ext = p.extOrNull();
-        if (model.isEmpty()) {
-            return true;
-        }
-
-        if (mLatestOperatorCheckbox.isSelected()) {
-            return model.getCheckedItems().contains(ext.getObservationsAllRaw().getLast().getOperator());
-        } else {
-            var pointOperators = ext.getObservationsAllRaw().stream().map(o -> o.getOperator()).collect(Collectors.toSet());
-
-            for (var operator : model.getCheckedItems()) {
-                if (pointOperators.contains(operator)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
     }
 
     public enum MeasElement {

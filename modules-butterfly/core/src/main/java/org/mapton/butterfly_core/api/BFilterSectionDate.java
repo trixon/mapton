@@ -26,6 +26,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.StringUtils;
@@ -63,12 +64,12 @@ public class BFilterSectionDate extends MBaseFilterSection {
     public static final String KEY_LAST_TO_END = "lastToEnd";
     private static final String KEY_FORMULA_FIRST = "formula.first";
     private static final String KEY_FORMULA_LAST = "formula.last";
-    private Node mDateFirstBorderBox;
+    private Node mBorderBoxDateFirst;
+    private Node mBorderBoxDateLast;
     private boolean mDateFirstFromStart;
     private boolean mDateFirstToEnd;
     private String mDateFormulaFirst;
     private String mDateFormulaLast;
-    private Node mDateLastBorderBox;
     private boolean mDateLastFromStart;
     private boolean mDateLastToEnd;
     private final DateRangePane mDateRangeFirstPane = new DateRangePane();
@@ -116,8 +117,8 @@ public class BFilterSectionDate extends MBaseFilterSection {
 
     public void disable(DateElement... elements) {
         var map = new HashMap<DateElement, Node>();
-        map.put(FIRST, mDateFirstBorderBox);
-        map.put(LAST, mDateLastBorderBox);
+        map.put(FIRST, mBorderBoxDateFirst);
+        map.put(LAST, mBorderBoxDateLast);
         map.put(HAS_FROM_TO, mHasDateFromToSccb);
 
         for (var element : elements) {
@@ -131,11 +132,11 @@ public class BFilterSectionDate extends MBaseFilterSection {
                     && validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo())
                     && validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo());
 
-            if (valid && mDateFirstBorderBox.isDisabled() == false) {
+            if (valid && mBorderBoxDateFirst.isDisabled() == false) {
                 valid = validateAge(dateFirst, dateFirstLowProperty(), dateFirstHighProperty());
             }
 
-            if (valid && mDateLastBorderBox.isDisabled() == false) {
+            if (valid && mBorderBoxDateLast.isDisabled() == false) {
                 valid = validateAge(p.getDateLatest(), dateLastLowProperty(), dateLastHighProperty());
             }
 
@@ -156,22 +157,8 @@ public class BFilterSectionDate extends MBaseFilterSection {
         }
     }
 
-    public Node getDateFirstBorderBox() {
-        if (mDateFirstBorderBox == null) {
-            mDateFirstBorderBox = Borders.wrap(mDateRangeFirstPane.getRoot()).etchedBorder().title("Period för första mätning").innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding).outerPadding(0).raised().build().build();
-        }
-        return mDateFirstBorderBox;
-    }
-
     public IndexedCheckModel getDateFromToCheckModel() {
         return mHasDateFromToSccb.getCheckModel();
-    }
-
-    public Node getDateLastBorderBox() {
-        if (mDateLastBorderBox == null) {
-            mDateLastBorderBox = Borders.wrap(mDateRangeLastPane.getRoot()).etchedBorder().title("Period för senaste mätning").innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding).outerPadding(0).raised().build().build();
-        }
-        return mDateLastBorderBox;
     }
 
     public SessionCheckComboBox<String> getHasDateFromToSccb() {
@@ -315,6 +302,39 @@ public class BFilterSectionDate extends MBaseFilterSection {
         mLatestAgeHoursSliderPane.setSelected(false);
     }
 
+    private Node createBorderBoxDateFirst() {
+        if (mBorderBoxDateFirst == null) {
+            mBorderBoxDateFirst = Borders.wrap(mDateRangeFirstPane.getRoot())
+                    .etchedBorder()
+                    .title("Period för första mätning")
+                    .innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding)
+                    .outerPadding(0)
+                    .raised()
+                    .build().build();
+            if (mBorderBoxDateFirst instanceof Region r) {
+                r.setPrefWidth(100);
+            }
+        }
+
+        return mBorderBoxDateFirst;
+    }
+
+    private Node createBorderBoxDateLast() {
+        if (mBorderBoxDateLast == null) {
+            mBorderBoxDateLast = Borders.wrap(mDateRangeLastPane.getRoot())
+                    .etchedBorder()
+                    .title("Period för senaste mätning")
+                    .innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding)
+                    .outerPadding(0)
+                    .raised()
+                    .build().build();
+            if (mBorderBoxDateLast instanceof Region r) {
+                r.setPrefWidth(100);
+            }
+        }
+        return mBorderBoxDateLast;
+    }
+
     private void createUI() {
         FxHelper.setShowCheckedCount(true,
                 mHasDateFromToSccb
@@ -332,10 +352,13 @@ public class BFilterSectionDate extends MBaseFilterSection {
         mLatestAgeHoursBeforeAfterScb.setValue(BeforeAfter.BEFORE);
         mLatestAgeHoursBeforeAfterScb.disableProperty().bind(mLatestAgeHoursSliderPane.selectedProperty().not());
         mLatestAgeHoursBeforeAfterScb.prefWidthProperty().bind(mLatestAgeHoursSliderPane.widthProperty());
-        mRoot.setMaxWidth(getMaxWidth());
+
         int row = 0;
-        mRoot.addRow(row++, getDateFirstBorderBox(), getDateLastBorderBox());
+        createBorderBoxDateFirst();
+        createBorderBoxDateLast();
+        mRoot.addRow(row++, mBorderBoxDateFirst, mBorderBoxDateLast);
         mRoot.addRow(row++, getHasDateFromToSccb(), new VBox(mLatestAgeHoursSliderPane, mLatestAgeHoursBeforeAfterScb));
+
         FxHelper.autoSizeColumn(mRoot, 2);
     }
 
