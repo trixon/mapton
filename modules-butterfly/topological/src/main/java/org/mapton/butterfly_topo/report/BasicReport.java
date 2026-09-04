@@ -26,6 +26,7 @@ import static j2html.TagCreator.td;
 import static j2html.TagCreator.th;
 import static j2html.TagCreator.tr;
 import j2html.tags.ContainerTag;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import org.mapton.api.report.MReport;
 import org.mapton.butterfly_core.api.AlarmHelper;
@@ -66,22 +67,30 @@ public class BasicReport extends BaseTopoReport {
                                         th(SDict.ALARM_LEVEL.toString()),
                                         th(SDict.FREQUENCY.toString()),
                                         th(SDict.DIMENSION.toString()),
-                                        th(Dict.STATUS.toString())
+                                        th(Dict.STATUS.toString()),
+                                        th("Första"),
+                                        th("Noll"),
+                                        th("Senaste"),
+                                        th("Ålder")
                                 ),
                                 tbody(
                                         each(mManager.getTimeFilteredItems(), p
                                                 -> tr(
-                                                td(p.getName()),
-                                                td(p.getCategory()),
-                                                td(p.getGroup()),
-                                                td(p.getAlarm1Id()),
-                                                td(AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p)),
-                                                td(p.getAlarm2Id()),
-                                                td(AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p)),
-                                                td(Objects.toString(p.getFrequency(), "")),
-                                                td(Objects.toString(p.getDimension().getName(), "")),
-                                                td(Objects.toString(p.getStatus(), ""))
-                                        )
+                                                        td(p.getName()),
+                                                        td(p.getCategory()),
+                                                        td(p.getGroup()),
+                                                        td(p.getAlarm1Id()),
+                                                        td(AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p)),
+                                                        td(p.getAlarm2Id()),
+                                                        td(AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p)),
+                                                        td(Objects.toString(p.getFrequency(), "")),
+                                                        td(Objects.toString(p.getDimension().getName(), "")),
+                                                        td(Objects.toString(p.getStatus(), "")),
+                                                        td(Objects.toString(p.extOrNull().getObservationFilteredFirstDate(), "-")),
+                                                        td(Objects.toString(p.getDateZero(), "-")),
+                                                        td(Objects.toString(p.getDateLatest().toLocalDate(), "-")),
+                                                        td("%d".formatted(p.extOrNull().getMeasurementAge(ChronoUnit.DAYS)))
+                                                )
                                         )
                                 )
                         )
