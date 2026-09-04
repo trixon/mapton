@@ -180,7 +180,13 @@ public abstract class MBaseFilterSection {
 
     public boolean validateRangeSliderPane(RangeSliderPane rangeSliderPane, double value) {
         if (rangeSliderPane.selectedProperty().get()) {
-            return inRange(value, rangeSliderPane.minProperty(), rangeSliderPane.maxProperty());
+            var inRange = inRange(value, rangeSliderPane.minProperty(), rangeSliderPane.maxProperty());
+            if (rangeSliderPane.isInvertIncluded() && rangeSliderPane.invertedProperty().get()) {
+                return !inRange;
+            } else {
+                return inRange;
+            }
+
         } else {
             return true;
         }

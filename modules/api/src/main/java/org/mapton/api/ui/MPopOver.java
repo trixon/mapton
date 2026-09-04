@@ -58,7 +58,7 @@ public class MPopOver extends PopOver {
         setHeaderAlwaysVisible(true);
         setCloseButtonEnabled(false);
         setDetachable(true);
-        setAnimated(true);
+        setAnimated(false);
         setHideOnEscape(true);
         setArrowSize(0);
 
