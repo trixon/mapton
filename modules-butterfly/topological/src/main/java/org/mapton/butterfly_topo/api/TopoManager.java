@@ -28,6 +28,7 @@ import java.util.TreeSet;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MTemporalRange;
@@ -51,6 +52,7 @@ import org.mapton.butterfly_topo.TopoPropertiesBuilder;
 import org.mapton.butterfly_topo.TopoTrendsBuilder;
 import org.mapton.butterfly_topo.chart.ChartAggregate;
 import org.mapton.butterfly_topo.chart.MultiChartAggregate;
+import org.mapton.butterfly_topo.monmon.MonManager;
 import org.mapton.butterfly_topo.table.StandardMeasurementPopulator;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
@@ -66,6 +68,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     private final ChartAggregate mChartAggregate = new ChartAggregate();
     private final TopoLayerOptions mLayerOptions = TopoLayerOptions.getInstance();
     private double mMinimumZscaled = 0.0;
+    private boolean mMonMonLoaded = false;
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
     private final TopoPropertiesBuilder mPropertiesBuilder = new TopoPropertiesBuilder();
     private final StandardMeasurementPopulator mStandardMeasurementPopulator = new StandardMeasurementPopulator();
@@ -285,6 +288,21 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
         System.out.println("Trend calc in " + SystemHelper.age(start));
 //        }
         setItemsTimeFiltered(timeFilteredItems);
+
+        var monManager = MonManager.getInstance();
+        if (!mMonMonLoaded && !monManager.getAllItems().isEmpty()) {
+            mMonMonLoaded = true;
+            monManager.getAllItems().stream()
+                    .filter(m -> m.getStationPoint() != null)
+                    .forEachOrdered(m -> {
+                        var p = m.getControlPoint();
+                        var s = m.getStationPoint();
+                        var vp = Vector3D.of(p.getZeroX(), p.getZeroY(), p.getZeroZ());
+                        var vs = Vector3D.of(s.getZeroX(), s.getZeroY(), s.getZeroZ());
+                        var delta = vp.subtract(vs);
+                        p.setValue("MONMON", delta);
+                    });
+        }
     }
 
     @Override

@@ -66,6 +66,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private final SimpleBooleanProperty mDimens2Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens3Property = new SimpleBooleanProperty();
     private FilterSectionMeas mFilterSectionMeasSpecific;
+    private FilterSectionMon mFilterSectionMon;
     private final TopoManager mManager = TopoManager.getInstance();
     private final SimpleBooleanProperty mMeasIncludeWithout = new SimpleBooleanProperty();
 
@@ -147,6 +148,11 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         mFilterSectionMeasSpecific.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
+    public void setFilterSection(FilterSectionMon filterSection) {
+        mFilterSectionMon = filterSection;
+        mFilterSectionMon.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
@@ -170,6 +176,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 .filter(p -> mFilterSectionAlarm.filter(p))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
                 .filter(p -> mFilterSectionTrend.filter(p))
+                .filter(p -> mFilterSectionMon.filter(p))
                 .filter(p -> mFilterSectionMisc.filter(p))
                 .filter(p -> mFilterSectionMeas.filter(p) && mFilterSectionMeasSpecific.filter(p))
                 .filter(p -> validateMeasWithout(p))

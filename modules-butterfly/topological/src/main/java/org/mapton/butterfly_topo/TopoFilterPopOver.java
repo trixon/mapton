@@ -66,6 +66,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionTrend<BTopoControlPoint> mFilterSectionTrend;
     private final TopoManager mManager = TopoManager.getInstance();
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
+    private final FilterSectionMon mFilterSectionMon;
 
     public TopoFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
@@ -81,6 +82,8 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMeas = new BFilterSectionMeas(mFilterSectionMeasSpecific.getRoot());
         mFilterSectionMisc = new BFilterSectionMisc(filter);
         mFilterSectionTrend = new BFilterSectionTrend<>();
+        mFilterSectionMon = new FilterSectionMon();
+
         mFilter = (TopoFilter) filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionAlarm);
@@ -89,6 +92,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.setFilterSection(mFilterSectionMeas);
         mFilter.setFilterSection(mFilterSectionMeasSpecific);
         mFilter.setFilterSection(mFilterSectionMisc);
+        mFilter.setFilterSection(mFilterSectionMon);
         mFilter.setFilterSection(mFilterSectionTrend);
 
         setFilter(filter);
@@ -120,6 +124,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMeas.clear();
         mFilterSectionMisc.clear();
         mFilterSectionTrend.clear();
+        mFilterSectionMon.clear();
 
         resetTabs();
     }
@@ -192,7 +197,8 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
                 mFilterSectionAlarm.getTab(),
                 mFilterSectionMisc.getTab(),
                 mFilterSectionDisruptor.getTab(),
-                mFilterSectionTrend.getTab()
+                mFilterSectionTrend.getTab(),
+                mFilterSectionMon.getTab()
         );
 
         setContentNode(root);
@@ -241,6 +247,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMeasSpecific.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
         mFilterSectionTrend.initSession(sessionManager);
+        mFilterSectionMon.initSession(sessionManager);
 
         var filterSectionTopo = new FilterSectionTopo();
         sessionManager.register(filterSectionTopo.getKeyFilter("checkedDimension1"), mDimens1Checkbox.selectedProperty());

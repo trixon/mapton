@@ -80,7 +80,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
     public FilterSectionMeas() {
         super(SDict.MEASUREMENTS.toString() + "*");
         mDateDiffPane = new DateDiffPane(this);
-        init();
+        createUI();
     }
 
     @Override
@@ -120,18 +120,15 @@ public class FilterSectionMeas extends MBaseFilterSection {
     }
 
     public boolean filter(BTopoControlPoint p) {
-        if (isSelected()) {
-            var valid = true
-                    && validateMeasDisplacementAll(p)
-                    && validateMeasDisplacementLatest(p)
-                    //                                && validateMeasDateDiff(p)
-                    && validateMeasYoyo(p)
-                    && validateMeasBearing(p)
-                    && true;
-            return valid;
-        } else {
-            return true;
-        }
+        var valid = true
+                && validateMeasDisplacementAll(p)
+                && validateMeasDisplacementLatest(p)
+                //                                && validateMeasDateDiff(p)
+                && validateMeasYoyo(p)
+                && validateMeasBearing(p)
+                && true;
+
+        return valid;
     }
 
     public ResourceBundle getBundle() {
@@ -259,7 +256,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
         mDateDiffPane.load(items);
     }
 
-    private void init() {
+    private void createUI() {
         mYoyoSizeSds.getValueFactory().setConverter(new StringConverter<Double>() {
             @Override
             public Double fromString(String string) {
