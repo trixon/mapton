@@ -104,21 +104,17 @@ public class ButterflyManager {
     private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
     private LocalDateTime mDataTimestamp = LocalDateTime.now().minusYears(123);
     private final DelayedResetRunner mDelayedResetRunner;
+    private final IntegerProperty mLoadCounter = new SimpleIntegerProperty(0);
     private LogoLoader mLogoLoader;
     private ProgressHandle mProgressHandle;
     private File mSource;
+    private long mStartMilliseconds;
     private final Util mUtil = new Util();
     private final WKTReader mWktReader = new WKTReader();
     private final ZipHelper mZipHelper = ZipHelper.getInstance();
-    private long mStartMilliseconds;
-    private final IntegerProperty mLoadCounter = new SimpleIntegerProperty(0);
 
     public static ButterflyManager getInstance() {
         return Holder.INSTANCE;
-    }
-
-    public IntegerProperty loadCounterProperty() {
-        return mLoadCounter;
     }
 
     private ButterflyManager() {
@@ -203,6 +199,11 @@ public class ButterflyManager {
 
     public File getSource() {
         return mSource;
+    }
+
+    public File getXfilesDir() {
+        //TODO fix for mode dir
+        return new File(Mapton.getConfigDir(), "butterfly/xfiles");
     }
 
     public void keepLoadingProgressAlive() {
@@ -382,6 +383,10 @@ public class ButterflyManager {
         }
     }
 
+    public IntegerProperty loadCounterProperty() {
+        return mLoadCounter;
+    }
+
     public void setButterfly(Butterfly butterfly) {
         mButterflyProperty.set(butterfly);
     }
@@ -460,21 +465,17 @@ public class ButterflyManager {
         return cooTrans.transformInverse(targetGeometry);
     }
 
-    public File getXfilesDir() {
-        //TODO fix for mode dir
-        return new File(Mapton.getConfigDir(), "butterfly/xfiles");
-    }
-
     private void extractXfiles() {
         var xDir = new File(Mapton.getConfigDir(), "butterfly");
         try {
             if (xDir.isDirectory()) {
                 FileUtils.forceDelete(xDir);
             }
-            mZipHelper.extract("xfiles/", xDir.getAbsolutePath());
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
+
+        mZipHelper.extract("xfiles/", xDir.getAbsolutePath());
     }
 
     private MCooTrans getCooTrans() {

@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.numbers.core.Precision;
 import org.jfree.chart.ChartFactory;
@@ -55,6 +56,7 @@ import org.jfree.data.time.Minute;
 import org.jfree.data.time.MovingAverage;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.mapton.api.MAvgPeriod;
 import org.mapton.api.MChartOverlay;
 import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_format.types.BAlarm;
@@ -172,6 +174,63 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         for (var timeSerie : series) {
             timeSerie.clear();
         }
+    }
+
+    public TimeSeries createDifference(TimeSeries series1, TimeSeries series2, String name) {
+        var result = new TimeSeries(name);
+
+        int count = Math.min(series1.getItemCount(), series2.getItemCount());
+
+        for (int i = 0; i < count; i++) {
+            double value1 = series1.getDataItem(i).getValue().doubleValue();
+            double value2 = series2.getDataItem(i).getValue().doubleValue();
+            double diff = value1 - value2;
+            result.add(series1.getDataItem(i).getPeriod(), diff);
+        }
+
+        return result;
+    }
+
+    public TimeSeries createEWMA(LocalDate minDate, TimeSeries source, MAvgPeriod avgPeriod) {
+        var days = avgPeriod.getDays();
+        var result = new TimeSeries("EWMA (%d)".formatted(days));
+        var sourceAfterZero = new TimeSeries(source.getKey());
+
+        for (int i = 0; i < source.getItemCount(); i++) {
+            var item = source.getDataItem(i);
+            var itemDate = item.getPeriod()
+                    .getStart()
+                    .toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+            if (!itemDate.isBefore(minDate)) {
+                sourceAfterZero.add(item);
+            }
+        }
+
+        if (sourceAfterZero.isEmpty()) {
+            return result;
+        }
+
+        double tauMillis = TimeUnit.DAYS.toMillis(days);
+        var first = sourceAfterZero.getDataItem(0);
+        var ewma = first.getValue().doubleValue();
+        result.add(first.getPeriod(), ewma);
+        var previousTime = first.getPeriod().getStart().getTime();
+
+        for (int i = 1; i < sourceAfterZero.getItemCount(); i++) {
+            var item = sourceAfterZero.getDataItem(i);
+            long currentTime = item.getPeriod().getStart().getTime();
+            double value = item.getValue().doubleValue();
+            long deltaMillis = currentTime - previousTime;
+            double alpha = 1.0 - Math.exp(-deltaMillis / tauMillis);
+            ewma = alpha * value + (1.0 - alpha) * ewma;
+            result.add(item.getPeriod(), ewma);
+            previousTime = currentTime;
+        }
+
+        return result;
     }
 
     public TimeSeries createSubSetMovingAverage(TimeSeries timeSeries, Minute start, Minute end, String name, int periodCount, int skip) {
@@ -324,56 +383,65 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     public void setDateRangeBySettings(XYPlot plot, BBaseControlPoint p) {
         var dateAxis = (DateAxis) plot.getDomainAxis();
         var now = LocalDateTime.now();
-        var endDate = now.plusDays(1);
         var chartStartPoint = mChartOptionsManager.getDatePeriod();
         LocalDateTime startDate;
 
-        try {
-            if (!mChartOptionsManager.isDateEndTodayProperty()) {
-                endDate = p.getDateLatest().plusDays(1);
-            }
-
-            if (chartStartPoint == ChartStartPoint.FIRST) {
-                if (p instanceof BXyzPoint xyzPoint) {
-                    startDate = xyzPoint.extOrNull().getDateFirst();
-                } else {
-                    startDate = LocalDateTime.of(1970, Month.JANUARY, 1, 0, 0);
-                }
-            } else if (chartStartPoint == ChartStartPoint.ZERO) {
-                startDate = p.getDateZero().atStartOfDay();
-            } else {
-                startDate = now.minusWeeks(chartStartPoint.getWeeks());
-            }
-            dateAxis.setRange(DateHelper.convertToDate(startDate), DateHelper.convertToDate(endDate));
-        } catch (Exception e) {
-            startDate = now.minusWeeks(chartStartPoint.getWeeks());
-            endDate = now.plusDays(1);
-            if (startDate.isBefore(endDate)) {
-                dateAxis.setRange(DateHelper.convertToDate(startDate), DateHelper.convertToDate(endDate));
-            }
-        }
-
-        if (mChartOptionsManager.isDateResetOnFirst()
-                && !Set.of(ChartStartPoint.FIRST, ChartStartPoint.ZERO).contains(chartStartPoint)) {
+        if (chartStartPoint.getWeeks() < -1) {
             try {
-                dateAxis.setRange(DateHelper.convertToDate(startDate.minusDays(2)), DateHelper.convertToDate(endDate));
+                startDate = p.getDateZero().atStartOfDay();
+                var endDate = startDate.plusWeeks(-1 * chartStartPoint.getWeeks());
+                dateAxis.setRange(DateHelper.convertToDate(startDate), DateHelper.convertToDate(endDate));
             } catch (Exception e) {
-                //nvm
+            }
+        } else {
+            var endDate = now.plusDays(1);
+            try {
+                if (!mChartOptionsManager.isDateEndTodayProperty()) {
+                    endDate = p.getDateLatest().plusDays(1);
+                }
+
+                if (chartStartPoint == ChartStartPoint.FIRST) {
+                    if (p instanceof BXyzPoint xyzPoint) {
+                        startDate = xyzPoint.extOrNull().getDateFirst();
+                    } else {
+                        startDate = LocalDateTime.of(1970, Month.JANUARY, 1, 0, 0);
+                    }
+                } else if (chartStartPoint == ChartStartPoint.ZERO) {
+                    startDate = p.getDateZero().atStartOfDay();
+                } else {
+                    startDate = now.minusWeeks(chartStartPoint.getWeeks());
+                }
+                dateAxis.setRange(DateHelper.convertToDate(startDate), DateHelper.convertToDate(endDate));
+            } catch (Exception e) {
+                startDate = now.minusWeeks(chartStartPoint.getWeeks());
+                endDate = now.plusDays(1);
+                if (startDate.isBefore(endDate)) {
+                    dateAxis.setRange(DateHelper.convertToDate(startDate), DateHelper.convertToDate(endDate));
+                }
             }
 
-            var stroke = new BasicStroke(10.0f);
-            var color = GraphicsHelper.colorAddAlpha(Color.BLACK, 60);
-            var minute = ChartHelper.convertToMinute(startDate);
-            var marker = new ValueMarker(minute.getFirstMillisecond(), color, stroke);
-            var font = new Font("Serif", Font.BOLD, SwingHelper.getUIScaled(24));
-            marker.setLabel("💀");
-            marker.setPaint(color);
-            marker.setLabelPaint(Color.YELLOW);
-            marker.setLabelAnchor(RectangleAnchor.CENTER);
-            marker.setLabelTextAnchor(TextAnchor.CENTER);
-            marker.setLabelFont(font);
+            if (mChartOptionsManager.isDateResetOnFirst()
+                    && !Set.of(ChartStartPoint.FIRST, ChartStartPoint.ZERO).contains(chartStartPoint)) {
+                try {
+                    dateAxis.setRange(DateHelper.convertToDate(startDate.minusDays(2)), DateHelper.convertToDate(endDate));
+                } catch (Exception e) {
+                    //nvm
+                }
 
-            plot.addDomainMarker(marker);
+                var stroke = new BasicStroke(10.0f);
+                var color = GraphicsHelper.colorAddAlpha(Color.BLACK, 60);
+                var minute = ChartHelper.convertToMinute(startDate);
+                var marker = new ValueMarker(minute.getFirstMillisecond(), color, stroke);
+                var font = new Font("Serif", Font.BOLD, SwingHelper.getUIScaled(24));
+                marker.setLabel("💀");
+                marker.setPaint(color);
+                marker.setLabelPaint(Color.YELLOW);
+                marker.setLabelAnchor(RectangleAnchor.CENTER);
+                marker.setLabelTextAnchor(TextAnchor.CENTER);
+                marker.setLabelFont(font);
+
+                plot.addDomainMarker(marker);
+            }
         }
 
         resetAtFirstVisibleConditionally(plot);

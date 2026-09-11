@@ -26,7 +26,6 @@ import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.BXyzPoint;
-import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 
@@ -76,15 +75,11 @@ public abstract class BTrendsBuilder<T extends BXyzPoint> extends PropertiesBuil
             }
 
             if (trend1 != null && !trend1.startMinute().getDay().equals(startMinute.getDay())) {
-                var trend1val1 = trend1.function().getValue(ChartHelper.convertToMinute(now.plusYears(1)).getFirstMillisecond());
-                var trend1val2 = trend1.function().getValue(ChartHelper.convertToMinute(now).getFirstMillisecond());
-                var val1 = (trend1val1 - trend1val2) * 1000;
+                var val1 = trend1.slope();
                 startMinute = trend1.startMinute();
                 var value = "";
                 if (trend2 != null) {
-                    var trend2val1 = trend2.function().getValue(ChartHelper.convertToMinute(now.plusYears(1)).getFirstMillisecond());
-                    var trend2val2 = trend2.function().getValue(ChartHelper.convertToMinute(now).getFirstMillisecond());
-                    var val2 = (trend2val1 - trend2val2) * 1000;
+                    var val2 = trend2.slope();
                     value = "(%+.1f • %+.1f • %+.1f) mm/år (%d • %d)".formatted(val1, val2, val1 - val2, trend1.numOfMeas(), trend2.numOfMeas());
                 } else {
                     value = "%+.1f mm/år (%d)".formatted(val1, trend1.numOfMeas());

@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -41,6 +42,16 @@ import se.trixon.almond.util.DateHelper;
  */
 public class TrendHelper {
 
+    /**
+     *
+     * @param p
+     * @param startDate
+     * @param endDate
+     * @param function
+     * @param percentile
+     * @return
+     * @throws IllegalArgumentException
+     */
     public static Trend createTrend(BXyzPoint p, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function, int percentile) throws IllegalArgumentException {
         if (percentile < -100 || percentile > 100) {
             throw new IllegalArgumentException("percentile must be between -100 and +100.");
@@ -48,6 +59,7 @@ public class TrendHelper {
 
         if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
             var timeFilteredValues = ext.getObservationsTimeFiltered().stream()
+                    .filter(o -> !o.getDate().isBefore(p.getDateZero().atStartOfDay()))
                     .filter(o -> DateHelper.isBetween(startDate.toLocalDate(), endDate.toLocalDate().plusDays(1), o.getDate().toLocalDate()))
                     .toList();
 
@@ -76,10 +88,12 @@ public class TrendHelper {
             var dataset = new TimeSeriesCollection();
             dataset.addSeries(timeSeries);
             var coefficients = Regression.getOLSRegression(dataset, 0);
+            var regression = calculateRegression(dataset.getSeries(0));
 
             return new Trend(
+                    regression.slope,
                     new LineFunction2D(coefficients[0], coefficients[1]),
-                    ChartHelper.convertToMinute(startDate),
+                    ChartHelper.convertToMinute(p.getDateZero().atStartOfDay()),
                     ChartHelper.convertToMinute(endDate),
                     timeSeries.getItemCount()
             );
@@ -95,7 +109,8 @@ public class TrendHelper {
 
         if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
             for (var o : ext.getObservationsTimeFiltered()) {
-                if (DateHelper.isBetween(startLocalDate, endLocalDatePlusOne, o.getDate().toLocalDate())) {
+                var date = o.getDate().toLocalDate();
+                if (DateHelper.isBetween(startLocalDate, endLocalDatePlusOne, date) && !date.isBefore(p.getDateZero())) {
                     filteredObservations.add(o);
                 }
             }
@@ -135,9 +150,17 @@ public class TrendHelper {
         }
 
         var coefficients = Regression.getOLSRegression(dataset, 0);
-
+        var regression = calculateRegression(dataset.getSeries(0));
+        if (p.getName().equalsIgnoreCase("SDB02HA831")) {
+            System.out.println("start " + startDate);
+            System.out.println("end " + endDate);
+            System.out.println("intercept = " + regression.intercept);
+            System.out.println("slope = " + regression.slope());
+        }
         return new Trend(
+                regression.slope,
                 new LineFunction2D(coefficients[0], coefficients[1]),
+                //                new LineFunction2D(regression.intercept, regression.slope),
                 ChartHelper.convertToMinute(startDate),
                 ChartHelper.convertToMinute(endDate),
                 dataset.getSeries(0).getItemCount()
@@ -145,12 +168,9 @@ public class TrendHelper {
     }
 
     public static Double getVelocity(Trend trend) {
-        var now = LocalDateTime.now();
         var startMinute = new Minute(0, new Hour());
         if (trend != null && !trend.startMinute().getDay().equals(startMinute.getDay())) {
-            var val1 = trend.function().getValue(ChartHelper.convertToMinute(now.plusYears(1)).getFirstMillisecond());
-            var val2 = trend.function().getValue(ChartHelper.convertToMinute(now).getFirstMillisecond());
-            return (val1 - val2) * 1000;
+            return trend.slope;
         } else {
             return null;
         }
@@ -166,10 +186,56 @@ public class TrendHelper {
         }
     }
 
+    private static RegressionResult calculateRegression(TimeSeries series) {
+        if (series.getItemCount() < 2) {
+            return new RegressionResult(Double.NaN, Double.NaN);
+        }
+
+        final double MILLIS_PER_YEAR = Duration.ofDays(365).toMillis();
+
+        long t0 = series.getDataItem(0)
+                .getPeriod()
+                .getStart()
+                .getTime();
+
+        double sumX = 0;
+        double sumY = 0;
+        double sumXY = 0;
+        double sumX2 = 0;
+
+        int n = series.getItemCount();
+
+        for (int i = 0; i < n; i++) {
+
+            var item = series.getDataItem(i);
+
+            double x = (item.getPeriod().getStart().getTime() - t0)
+                    / MILLIS_PER_YEAR;
+
+            double y = item.getValue().doubleValue();
+
+            sumX += x;
+            sumY += y;
+            sumXY += x * y;
+            sumX2 += x * x;
+        }
+
+        double slope
+                = (n * sumXY - sumX * sumY)
+                / (n * sumX2 - sumX * sumX);
+
+        double intercept
+                = (sumY - slope * sumX) / n;
+
+        return new RegressionResult(intercept * 1000, slope * 1000);
+    }
+
     private TrendHelper() {
     }
 
-    public record Trend(LineFunction2D function, Minute startMinute, Minute endMinute, int numOfMeas) {
+    public record Trend(double slope, LineFunction2D function, Minute startMinute, Minute endMinute, int numOfMeas) {
 
     }
+
+    record RegressionResult(double intercept, double slope) {}
 }
