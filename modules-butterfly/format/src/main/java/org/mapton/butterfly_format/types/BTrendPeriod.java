@@ -25,8 +25,7 @@ public enum BTrendPeriod {
     QUARTER("3m", "3 månader"),
     HALF_YEAR("6m", "6 månader"),
     YEAR("1y", "1 år"),
-    ZERO("z", "Nollmätning"),
-    FIRST("f", "Första");
+    ZERO("z", "Nollmätning");
     private final String mCode;
     private final String mTitle;
 
