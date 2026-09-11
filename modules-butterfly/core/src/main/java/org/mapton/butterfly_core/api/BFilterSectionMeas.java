@@ -63,6 +63,7 @@ public class BFilterSectionMeas extends MBaseFilterSection {
     private static final int DEFAULT_NUM_OF_VALUE = 1;
     private static final int DEFAULT_QUOTA_VALUE = 80;
     private final SessionCheckComboBox<String> mCodeSccb = new SessionCheckComboBox<>(true);
+    private final SessionCheckComboBox<String> mInstrumentSccb = new SessionCheckComboBox<>();
     private final CheckBox mLatestOperatorCheckbox = new CheckBox();
     private final CheckBox mNumOfCheckbox = new CheckBox();
     private final SessionIntegerSpinner mNumOfSis = new SessionIntegerSpinner(Integer.MIN_VALUE, Integer.MAX_VALUE, DEFAULT_NUM_OF_VALUE);
@@ -101,6 +102,7 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         mQuotaSis.getValueFactory().setValue(DEFAULT_QUOTA_VALUE);
         SessionCheckComboBox.clearChecks(
                 mOperatorSccb,
+                mInstrumentSccb,
                 mCodeSccb
         );
         mQuotaDateRangePane.reset();
@@ -129,6 +131,7 @@ public class BFilterSectionMeas extends MBaseFilterSection {
     public void disable(MeasElement... elements) {
         var map = new HashMap<MeasElement, Node>();
         map.put(CODES, mCodeSccb);
+        map.put(INSTRUMENT, mInstrumentSccb);
         map.put(OPERATOR, mOperatorSccb);
         map.put(COUNT, mNumOfSis);
         map.put(QUOTA, mQuotaSis);
@@ -142,6 +145,7 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         if (isSelected()) {
             var valid = true
                     && validateCode(p)
+                    && validateInstrument(p)
                     && validateOperators(p)
                     && validateCount(p)
                     && validateQuota(p);
@@ -172,6 +176,7 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         ).forEach(propertyBase -> propertyBase.addListener(changeListenerObject));
 
         List.of(
+                mInstrumentSccb.getCheckModel(),
                 mOperatorSccb.getCheckModel(),
                 mCodeSccb.getCheckModel()
         ).forEach(cm -> cm.getCheckedItems().addListener(listChangeListener));
@@ -182,6 +187,7 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         sessionManager.register(getKeyFilter("section"), selectedProperty());
         sessionManager.register(getKeyFilter("checkedCode"), mCodeSccb.checkedStringProperty());
         sessionManager.register(getKeyFilter("CheckedOperators"), mOperatorSccb.checkedStringProperty());
+        sessionManager.register(getKeyFilter("checkedInstrumentss"), mInstrumentSccb.checkedStringProperty());
         sessionManager.register(getKeyFilter("latestOperator"), mLatestOperatorCheckbox.selectedProperty());
         sessionManager.register(getKeyFilter("numOf"), mNumOfCheckbox.selectedProperty());
         sessionManager.register(getKeyFilter("numOfValue"), mNumOfSis.sessionValueProperty());
@@ -207,6 +213,7 @@ public class BFilterSectionMeas extends MBaseFilterSection {
 //                mQuotaDateRangePane.highStringProperty()
 //        ).forEach(property -> sessionManager.unregister(property));
         mOperatorSccb.loadAndRestoreCheckItems(items.stream().flatMap(p -> p.extOrNull().getObservationsAllRaw().stream().map(o -> o.getOperator())));
+        mInstrumentSccb.loadAndRestoreCheckItems(items.stream().flatMap(p -> p.extOrNull().getObservationsAllRaw().stream().map(o -> o.getInstrument())));
         mCodeSccb.loadAndRestoreCheckItems();
         mNumOfSis.load();
         mQuotaSis.load();
@@ -226,9 +233,11 @@ public class BFilterSectionMeas extends MBaseFilterSection {
     private void createUI() {
         FxHelper.setShowCheckedCount(true,
                 mCodeSccb,
+                mInstrumentSccb,
                 mOperatorSccb
         );
         mCodeSccb.setTitle(getBundle().getString("measCodeCheckComboBoxTitle"));
+        mInstrumentSccb.setTitle("Instrument");
         mOperatorSccb.setTitle(SDict.SURVEYORS.toString());
         mCodeSccb.getItems().setAll(List.of(
                 getBundle().getString("measCodeZeroIs"),
@@ -251,11 +260,12 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         var miscBox = new VBox(rowGap,
                 new VBox(titleGap * 2, mNumOfCheckbox, mNumOfSis),
                 mCodeSccb,
+                mInstrumentSccb,
                 new VBox(titleGap * 2, mOperatorSccb, mLatestOperatorCheckbox),
                 new VBox(titleGap * 2, mQuotaCheckbox, mQuotaSis, mQuotaDateRangePane.getRoot())
         );
         BindingHelper.bindWidthForChildrens(miscBox);
-        BindingHelper.bindWidthForRegions(miscBox, mNumOfSis, mOperatorSccb, mQuotaSis);
+        BindingHelper.bindWidthForRegions(miscBox, mNumOfSis, mInstrumentSccb, mOperatorSccb, mQuotaSis);
         mQuotaDateRangePane.getRoot().setBackground(FxHelper.createBackground(Color.DARKSALMON));
 
         int row = 0;
@@ -314,6 +324,24 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         }
 
         return true;
+    }
+
+    private boolean validateInstrument(BXyzPoint p) {
+        var model = mInstrumentSccb.getCheckModel();
+        var ext = p.extOrNull();
+        if (model.isEmpty()) {
+            return true;
+        }
+
+        var pointInstruments = ext.getObservationsAllRaw().stream().map(o -> o.getInstrument()).collect(Collectors.toSet());
+
+        for (var instrument : model.getCheckedItems()) {
+            if (pointInstruments.contains(instrument)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean validateOperators(BXyzPoint p) {
@@ -377,6 +405,7 @@ public class BFilterSectionMeas extends MBaseFilterSection {
     public enum MeasElement {
         COUNT,
         CODES,
+        INSTRUMENT,
         OPERATOR,
         QUOTA;
     }
