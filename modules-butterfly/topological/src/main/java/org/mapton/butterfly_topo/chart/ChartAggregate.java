@@ -29,9 +29,10 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
  */
 public class ChartAggregate {
 
-    private final ChartBuilderDelta mBuilderDeltaAvg = new ChartBuilderDelta(60, null);
-    private final ChartBuilderDeltaSplit mBuilderDeltaSplit = new ChartBuilderDeltaSplit();
+    private final ChartBuilderAvgSplit mBuilderAvg1dSplit;
+    private final ChartBuilderAvgSplit mBuilderAvg2dSplit;
     private final ChartBuilderAzimuth mBuilderDeltaAzimuth = new ChartBuilderAzimuth(true, null);
+    private final ChartBuilderDeltaSplit mBuilderDeltaSplit = new ChartBuilderDeltaSplit();
     private final ChartBuilderTrend mBuilderTrend1d;
     private final ChartBuilderTrend mBuilderTrend2d;
     private final JTabbedPane mTabbedPane;
@@ -39,6 +40,8 @@ public class ChartAggregate {
     public ChartAggregate() {
         final Function<BXyzPointObservation, Double> func1d = (var o) -> o.ext().getDelta1d();
         final Function<BXyzPointObservation, Double> func2d = (var o) -> o.ext().getDelta2d();
+        mBuilderAvg1dSplit = new ChartBuilderAvgSplit(BComponent.HEIGHT);
+        mBuilderAvg2dSplit = new ChartBuilderAvgSplit(BComponent.PLANE);
         mBuilderTrend1d = new ChartBuilderTrend(BComponent.HEIGHT, func1d);
         mBuilderTrend2d = new ChartBuilderTrend(BComponent.PLANE, func2d);
 
@@ -57,7 +60,12 @@ public class ChartAggregate {
                 if (p.ext().getObservationsTimeFiltered().size() > 1) {
                     mTabbedPane.add("Delta", mBuilderDeltaSplit.build(p).call());
 //                    mTabbedPane.add("Delta (bär)", mBuilderDeltaAzimuth.build(p).call());
-                    mTabbedPane.add("Delta (avg %d)".formatted(mBuilderDeltaAvg.getAvgDays()), mBuilderDeltaAvg.build(p).call());
+                    if (p.getDimension() != BDimension._2d) {
+                        mTabbedPane.add("Medel 1d", mBuilderAvg1dSplit.build(p).call());
+                    }
+                    if (p.getDimension() != BDimension._1d) {
+                        mTabbedPane.add("Medel 2d", mBuilderAvg2dSplit.build(p).call());
+                    }
                     if (p.getDimension() != BDimension._2d) {
                         mTabbedPane.add("Trend 1d", mBuilderTrend1d.build(p).call());
                     }
@@ -66,7 +74,11 @@ public class ChartAggregate {
                     }
 
                     if (prevIndex > -1) {
-                        mTabbedPane.setSelectedIndex(prevIndex);
+                        try {
+                            mTabbedPane.setSelectedIndex(prevIndex);
+                        } catch (Exception e) {
+                            mTabbedPane.setSelectedIndex(0);
+                        }
                     }
                 }
 

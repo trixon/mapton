@@ -111,10 +111,6 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         var trendKey = mComponent == BComponent.HEIGHT ? BKey.TRENDS_H : BKey.TRENDS_P;
         plot(p, "▼", trendKey, null, startDateFirst, LocalDateTime.MIN, Color.GREEN, index++, -50);
         plot(p, "▲", trendKey, null, startDateFirst, LocalDateTime.MIN, Color.GREEN, index++, 50);
-        if (startDateFirst.isBefore(startDateZero)) {
-            plot(p, "Första", trendKey, BTrendPeriod.FIRST, startDateFirst, LocalDateTime.MIN, Color.BLACK, index++, null);
-        }
-
         plot(p, "Noll", trendKey, BTrendPeriod.ZERO, startDateZero, LocalDateTime.MIN, Color.MAGENTA, index++, null);
 
         for (var key : List.of(trendKey, trendKey + "Prev")) {

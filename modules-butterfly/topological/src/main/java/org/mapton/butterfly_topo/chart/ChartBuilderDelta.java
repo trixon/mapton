@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Function;
+import org.apache.commons.lang3.ObjectUtils;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
@@ -32,6 +33,7 @@ import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.mapton.core.api.ChartMiscLineMode;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
+import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -40,19 +42,15 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class ChartBuilderDelta extends ChartBuilderBase {
 
-    private final Integer mAvgDays;
-    private boolean mPlotAvg = true;
+    private final BComponent mComponent;
+    private final boolean mPlotAvg;
 
-    public ChartBuilderDelta(Integer avgDays, Integer recentDaysDefault) {
+    public ChartBuilderDelta(BComponent component, boolean plotAvg, Integer recentDaysDefault) {
+        mComponent = component;
         setRecentDaysDefault(recentDaysDefault);
         setRecentDays(recentDaysDefault);
-        mPlotAvg = avgDays != null;
-        mAvgDays = avgDays;
+        mPlotAvg = plotAvg;
         initChart("mm", "0");
-    }
-
-    public Integer getAvgDays() {
-        return mAvgDays;
     }
 
     @Override
@@ -65,10 +63,10 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         plotMarkers(p);
         var delta1d = 0.0;
         var delta2d = 0.0;
-        if (p.getDimension() != BDimension._2d) {
+        if (p.getDimension() != BDimension._2d && mComponent == null || mComponent == BComponent.HEIGHT) {
             delta1d = plot(p, mTimeSeries1d, Color.RED, (BXyzPointObservation o) -> o.ext().getDelta1d());
         }
-        if (p.getDimension() != BDimension._1d) {
+        if (p.getDimension() != BDimension._1d && mComponent == null || mComponent == BComponent.PLANE) {
             delta2d = plot(p, mTimeSeries2d, Color.GREEN, (BXyzPointObservation o) -> o.ext().getDelta2d());
         }
 
@@ -126,7 +124,22 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         }
 
         if (mPlotAvg) {
-            plotAvg(originalTimeSeries, color);
+            if (mChartOptionsManager.isAvgPlotRaw()) {
+                getDataset().addSeries(timeSeries);
+                renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), GraphicsHelper.colorAddAlpha(Color.RED, 128));
+            }
+            var ewma1 = createEWMA(p.getDateZero(), timeSeries, mChartOptionsManager.getAvgPeriod1());
+            var ewma2 = createEWMA(p.getDateZero(), timeSeries, mChartOptionsManager.getAvgPeriod2());
+            if (mChartOptionsManager.isAvgPlotPeriod1()) {
+                plotAvg(ewma1, Color.ORANGE);
+            }
+            if (mChartOptionsManager.isAvgPlotPeriod2()) {
+                plotAvg(ewma2, Color.BLUE);
+            }
+            if (mChartOptionsManager.isAvgPlotDiff() && ObjectUtils.allNotNull(ewma1, ewma2)) {
+                var diff = createDifference(ewma1, ewma2, "Aktivitet");
+                plotAvg(diff, Color.MAGENTA);
+            }
         } else {
             getDataset().addSeries(timeSeries);
             renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
@@ -144,20 +157,15 @@ public class ChartBuilderDelta extends ChartBuilderBase {
             return;
         }
         var plot = getPlot();
-        int avdDaysInMinutes = mAvgDays * 24 * 60;
-        int avgSkipMeasurements = 0;
-        var mavg = createSubSetMovingAverage(timeSeries, mSubSetFirstMinute, mSubSetLastMinute, "%s (avg)".formatted(timeSeries.getKey()), avdDaysInMinutes, avgSkipMeasurements);
-        if (mavg != null) {
+        if (timeSeries != null) {
             try {
-                getDataset().addSeries(mavg);
+                getDataset().addSeries(timeSeries);
                 var renderer = (XYLineAndShapeRenderer) plot.getRenderer();
                 var avgStroke = new BasicStroke(2.0f);
-                int index = getDataset().getSeriesIndex(mavg.getKey());
+                int index = getDataset().getSeriesIndex(timeSeries.getKey());
                 renderer.setSeriesPaint(index, color);
                 renderer.setSeriesStroke(index, avgStroke);
-//                renderer.setDefaultShapesVisible(false);
                 renderer.setSeriesShapesVisible(index, false);
-
             } catch (Exception e) {
                 Exceptions.printStackTrace(e);
             }

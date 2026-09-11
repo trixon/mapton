@@ -18,18 +18,21 @@ package org.mapton.butterfly_topo.chart;
 import java.util.concurrent.Callable;
 import javax.swing.JPanel;
 import org.mapton.butterfly_core.api.BChartSplit;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ChartBuilderDeltaSplit extends BChartSplit {
+public class ChartBuilderAvgSplit extends BChartSplit {
 
-    private final ChartBuilderDelta mCompleteChartBuilder = new ChartBuilderDelta(null, false, null);
-    private final ChartBuilderDelta mLatestChartBuilder = new ChartBuilderDelta(null, false, 7);
+    private final ChartBuilderDelta mCompleteChartBuilder;
+    private final ChartBuilderDelta mLatestChartBuilder;
 
-    public ChartBuilderDeltaSplit() {
+    public ChartBuilderAvgSplit(BComponent component) {
+        mLatestChartBuilder = new ChartBuilderDelta(component, true, 28);
+        mCompleteChartBuilder = new ChartBuilderDelta(component, true, null);
     }
 
     public synchronized Callable<JPanel> build(BTopoControlPoint p) {

@@ -329,7 +329,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             HashMap<BTrendPeriod, Trend> map = (HashMap<BTrendPeriod, Trend>) p.getValue(mode, new HashMap<>());
             map.put(period, trend);
             p.setValue(mode, map);
-            if (period == BTrendPeriod.FIRST || period == BTrendPeriod.ZERO) {
+            if (period == BTrendPeriod.ZERO) {
                 return;
             }
 
@@ -346,7 +346,6 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     }
 
     private void populateTrends(BTopoControlPoint p) {
-        var startDateFirst = p.ext().getDateFirst();
         var startDateZero = p.getDateZero().atStartOfDay();
         var endDate = p.ext().getDateLatest();
         var startDateMinus12m = endDate.minusMonths(12);
@@ -355,7 +354,6 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
         var startDateMinus1m = endDate.minusMonths(1);
         var startDateMinus1w = endDate.minusWeeks(1);
 
-        populateTrend(p, BTrendPeriod.FIRST, startDateFirst, endDate);
         populateTrend(p, BTrendPeriod.ZERO, startDateZero, endDate);
         populateTrend(p, BTrendPeriod.YEAR, startDateMinus12m, endDate);
         populateTrend(p, BTrendPeriod.HALF_YEAR, startDateMinus6m, endDate);
