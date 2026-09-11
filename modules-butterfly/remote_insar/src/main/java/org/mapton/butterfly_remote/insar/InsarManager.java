@@ -297,7 +297,6 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
         var startDateMinus1m = endDate.minusMonths(1);
         var startDateMinus1w = endDate.minusWeeks(1);
 
-        populateTrend(p, BTrendPeriod.FIRST, startDateFirst, endDate);
         populateTrend(p, BTrendPeriod.ZERO, startDateZero, endDate);
         populateTrend(p, BTrendPeriod.HALF_YEAR, startDateMinus6m, endDate);
         populateTrend(p, BTrendPeriod.QUARTER, startDateMinus3m, endDate);
