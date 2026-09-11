@@ -34,6 +34,7 @@ import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.controlsfx.control.ToggleSwitch;
+import org.mapton.api.MAvgPeriod;
 import org.mapton.api.MChartSOSB;
 import org.mapton.api.MDict;
 import org.mapton.api.MKey;
@@ -84,8 +85,10 @@ class ChartPropertiesView extends BorderPane {
         var dateTab = new Tab(Dict.DATE.toString(), dateView);
         var miscView = new MiscView();
         var miscTab = new Tab(Dict.MISCELLANEOUS.toString(), miscView);
+        var avgView = new AvgView();
+        var avgTab = new Tab("Medelvärde", avgView);
 
-        var rootTabPane = new TabPane(overlayTab, dateTab, miscTab);
+        var rootTabPane = new TabPane(overlayTab, dateTab, avgTab, miscTab);
         rootTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         rootTabPane.setSide(Side.LEFT);
         setCenter(rootTabPane);
@@ -147,6 +150,61 @@ class ChartPropertiesView extends BorderPane {
         });
     }
 
+    private class AvgView extends VBox {
+
+        private final SessionComboBox<MAvgPeriod> mPeriod1ComboBox = new SessionComboBox<>();
+        private final SessionComboBox<MAvgPeriod> mPeriod2ComboBox = new SessionComboBox<>();
+        private final SessionCheckBox mPlotDiffScb = new SessionCheckBox("Aktivitet (EWMA 1- EWMA 2)");
+        private final SessionCheckBox mPlotPeriod1Scb = new SessionCheckBox("EWMA 1");
+        private final SessionCheckBox mPlotPeriod2Scb = new SessionCheckBox("EWMA 2");
+        private final SessionCheckBox mPlotRawScb = new SessionCheckBox("Rådata");
+        private final SessionCheckBox mPlotStartZeroScb = new SessionCheckBox("Börja på nollmätning");
+
+        public AvgView() {
+            super(FxHelper.getUIScaled(8));
+            createUI();
+        }
+
+        private void createUI() {
+            setPadding(FxHelper.getUIScaledInsets(12));
+            mPeriod1ComboBox.getItems().setAll(MAvgPeriod.values());
+            mPeriod2ComboBox.getItems().setAll(MAvgPeriod.values());
+            initBindings();
+
+            mPeriod1ComboBox.valueProperty().bindBidirectional(mChartOptionsManager.avgPeriod1Property());
+            mPeriod2ComboBox.valueProperty().bindBidirectional(mChartOptionsManager.avgPeriod2Property());
+            mPlotRawScb.selectedProperty().bindBidirectional(mChartOptionsManager.avgPlotRawProperty());
+            mPlotDiffScb.selectedProperty().bindBidirectional(mChartOptionsManager.avgPlotDiffProperty());
+            mPlotPeriod1Scb.selectedProperty().bindBidirectional(mChartOptionsManager.avgPlotPeriod1Property());
+            mPlotPeriod2Scb.selectedProperty().bindBidirectional(mChartOptionsManager.avgPlotPeriod2Property());
+            mPlotStartZeroScb.setSelected(true);
+            mPlotStartZeroScb.setDisable(true);
+
+            getChildren().addAll(
+                    mPlotRawScb,
+                    //                    mPlotStartZeroScb,
+                    new VBox(FxHelper.getUIScaled(4),
+                            mPlotPeriod1Scb,
+                            mPeriod1ComboBox
+                    ),
+                    new VBox(FxHelper.getUIScaled(4),
+                            mPlotPeriod2Scb,
+                            mPeriod2ComboBox
+                    ),
+                    mPlotDiffScb
+            );
+
+            FxHelper.autoSizeRegionHorizontal(mPeriod1ComboBox, mPeriod2ComboBox);
+        }
+
+        private void initBindings() {
+//            mPeriod1ComboBox.disableProperty().bind(mPlotPeriod1Scb.selectedProperty().not());
+//            mPeriod2ComboBox.disableProperty().bind(mPlotPeriod2Scb.selectedProperty().not());
+//            mPlotDiffScb.disableProperty().bind(mPlotPeriod1Scb.selectedProperty().and(mPlotPeriod2Scb.selectedProperty()).not());
+        }
+
+    }
+
     private class DateView extends VBox {
 
         private final SessionComboBox<ChartStartPoint> mPeriodComboBox = new SessionComboBox<>();
@@ -166,7 +224,7 @@ class ChartPropertiesView extends BorderPane {
             initBindings();
 
             mPeriodComboBox.valueProperty().bindBidirectional(mChartOptionsManager.datePeriodProperty());
-            mResetOnFirstScb.selectedProperty().bindBidirectional(mChartOptionsManager.dateResetOnFirst());
+            mResetOnFirstScb.selectedProperty().bindBidirectional(mChartOptionsManager.dateResetOnFirstProperty());
             chartEndTodayScb.selectedProperty().bindBidirectional(mChartOptionsManager.dateEndTodayProperty());
 
             var vbox = new VBox(

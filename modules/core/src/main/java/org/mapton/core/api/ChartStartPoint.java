@@ -31,6 +31,9 @@ public enum ChartStartPoint {
     LATEST_26("Senaste halvåret", 26),
     LATEST_52("Senaste året", 52),
     LATEST_104("Senaste två åren", 104),
+    FIRST_4("Första månaden", -4),
+    FIRST_8("Första två månaderna", -8),
+    FIRST_12("Första tre månaderna", -12),
     FIRST("Sedan första", -1),;
     private final int mWeeks;
     private final String mTitle;
