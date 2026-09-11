@@ -62,8 +62,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
             BTrendPeriod.MONTH, Material.ORANGE,
             BTrendPeriod.QUARTER, Material.YELLOW,
             BTrendPeriod.HALF_YEAR, Material.CYAN,
-            BTrendPeriod.ZERO, Material.MAGENTA,
-            BTrendPeriod.FIRST, Material.BLACK);
+            BTrendPeriod.ZERO, Material.MAGENTA);
     private double mAltitude;
     private final double mMaxRadius = 10.0;
 
@@ -254,7 +253,7 @@ public class GraphicRendererTrend extends GraphicRendererBase {
                 || (p.getDimension() == BDimension._2d && component == BComponent.HEIGHT)) {
         }
 
-        int slices = 5;
+        int slices = 4;
 
         for (int i = 0; i < slices - 0; i++) {
             var interval = mIndexToIntervalMap.get(i);

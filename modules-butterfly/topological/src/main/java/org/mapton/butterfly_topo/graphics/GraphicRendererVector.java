@@ -234,7 +234,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
             var key = entry.getKey();
             var material = entry.getValue();
             var trend = map.get(key);
-            if (trend == null || entry.getKey() == BTrendPeriod.FIRST) {
+            if (trend == null) {
                 continue;
             }
 

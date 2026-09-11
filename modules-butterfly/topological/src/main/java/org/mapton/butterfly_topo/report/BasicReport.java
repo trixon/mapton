@@ -59,6 +59,7 @@ public class BasicReport extends BaseTopoReport {
                         table(
                                 tr(
                                         th(Dict.NAME.toString()),
+                                        th("Klassning"),
                                         th(Dict.CATEGORY.toString()),
                                         th(Dict.GROUP.toString()),
                                         th(SDict.ALARM_HEIGHT.toString()),
@@ -77,6 +78,7 @@ public class BasicReport extends BaseTopoReport {
                                         each(mManager.getTimeFilteredItems(), p
                                                 -> tr(
                                                         td(p.getName()),
+                                                        td(p.getClassification()),
                                                         td(p.getCategory()),
                                                         td(p.getGroup()),
                                                         td(p.getAlarm1Id()),
