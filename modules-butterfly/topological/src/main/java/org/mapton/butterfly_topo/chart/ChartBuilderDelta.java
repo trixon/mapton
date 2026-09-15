@@ -15,15 +15,11 @@
  */
 package org.mapton.butterfly_topo.chart;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.function.Function;
-import org.apache.commons.lang3.ObjectUtils;
 import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
@@ -31,10 +27,7 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.mapton.core.api.ChartMiscLineMode;
-import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.GraphicsHelper;
-import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -60,7 +53,11 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         mTimeSeries2d.clear();
         var rangeAxis = plot.getRangeAxis();
         resetPlot(plot);
-        plotMarkers(p);
+        var plotMarkerDates = plotMarkers(p);
+        mSubSetFirstMinute = plotMarkerDates.first();
+        mSubSetZeroMinute = plotMarkerDates.zero();
+        mSubSetLastMinute = plotMarkerDates.last();
+
         var delta1d = 0.0;
         var delta2d = 0.0;
         if (p.getDimension() != BDimension._2d && mComponent == null || mComponent == BComponent.HEIGHT) {
@@ -123,80 +120,13 @@ public class ChartBuilderDelta extends ChartBuilderBase {
             }
         }
 
-        if (mPlotAvg) {
-            if (mChartOptionsManager.isAvgPlotRaw()) {
-                getDataset().addSeries(timeSeries);
-                renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), GraphicsHelper.colorAddAlpha(Color.RED, 128));
-            }
-            var ewma1 = createEWMA(p.getDateZero(), timeSeries, mChartOptionsManager.getAvgPeriod1());
-            var ewma2 = createEWMA(p.getDateZero(), timeSeries, mChartOptionsManager.getAvgPeriod2());
-            if (mChartOptionsManager.isAvgPlotPeriod1()) {
-                plotAvg(ewma1, Color.ORANGE);
-            }
-            if (mChartOptionsManager.isAvgPlotPeriod2()) {
-                plotAvg(ewma2, Color.BLUE);
-            }
-            if (mChartOptionsManager.isAvgPlotDiff() && ObjectUtils.allNotNull(ewma1, ewma2)) {
-                var diff = createDifference(ewma1, ewma2, "Aktivitet");
-                plotAvg(diff, Color.MAGENTA);
-            }
-        } else {
-            getDataset().addSeries(timeSeries);
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
-        }
+        plot(p, mPlotAvg, timeSeries, renderer, color);
 
         try {
             return lastDelta - firstDelta;
         } catch (Exception e) {
             return 0;
         }
-    }
-
-    private void plotAvg(TimeSeries timeSeries, Color color) {
-        if (!mPlotAvg) {
-            return;
-        }
-        var plot = getPlot();
-        if (timeSeries != null) {
-            try {
-                getDataset().addSeries(timeSeries);
-                var renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-                var avgStroke = new BasicStroke(2.0f);
-                int index = getDataset().getSeriesIndex(timeSeries.getKey());
-                renderer.setSeriesPaint(index, color);
-                renderer.setSeriesStroke(index, avgStroke);
-                renderer.setSeriesShapesVisible(index, false);
-            } catch (Exception e) {
-                Exceptions.printStackTrace(e);
-            }
-        }
-    }
-
-    private void plotMarkers(BTopoControlPoint p) {
-        SwingHelper.runLater(() -> {
-            var plot = getPlot();
-            plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
-            plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
-
-            try {
-                var firstDate = p.ext().getObservationsTimeFiltered().getFirst().getDate();
-                mSubSetFirstMinute = ChartHelper.convertToMinute(firstDate);
-            } catch (Exception e) {
-            }
-
-            p.ext().getObservationsTimeFiltered().forEach(o -> {
-                addNEMarkers(plot, o, true);
-
-                var minute = ChartHelper.convertToMinute(o.getDate());
-                mSubSetLastMinute = minute;
-                if (o.isZeroMeasurement()) {
-                    mSubSetZeroMinute = minute;
-                }
-
-                mDateEnd = DateHelper.convertToDate(o.getDate());
-            });
-            mChart.fireChartChanged();
-        });
     }
 
 }
