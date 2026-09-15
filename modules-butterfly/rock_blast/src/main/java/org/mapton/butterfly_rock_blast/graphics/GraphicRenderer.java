@@ -19,6 +19,7 @@ import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
@@ -143,14 +144,14 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     private void plotTrace(BRockBlast blast, Position position) {
-        var circle = new SurfaceCircle(position, 5.0);
+        var shape = new Cylinder(position, 0.1, 5.0);
         var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
         attrs.setDrawInterior(true);
         attrs.setDrawOutline(false);
         attrs.setInteriorMaterial(Material.ORANGE);
-        circle.setAttributes(attrs);
+        shape.setAttributes(attrs);
 
-        addRenderable(circle, false, GraphicItem.TRACE, null);
+        addRenderable(shape, true, GraphicItem.TRACE, mMapObjects);
     }
 
 }
