@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BComponent;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_remote.insar.InsarAttributeManager;
 import org.mapton.worldwind.api.WWHelper;
@@ -57,6 +58,41 @@ public class GraphicRenderer extends GraphicRendererBase {
         if (sCheckModel.isChecked(GraphicItem.TRACE)) {
             plotTrace(p, position);
         }
+        if (sCheckModel.isChecked(GraphicItem.CIRCLE_1D) && !(p.getDimension() == BDimension._2d)) {
+            plot1dCircle(p, position);
+        }
+
+    }
+
+    private void plot1dCircle(BRemoteInsarPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicItem.CIRCLE_1D, position)) {
+            return;
+        }
+
+        var height = 0.4;
+        var pos = WWHelper.positionFromPosition(position, height * 0.5 * 2);
+        var maxRadius = 10.0;
+        var o = p.ext().getObservationsTimeFiltered().getLast();
+
+        var dZ = o.ext().getDeltaZ();
+        if (dZ == null) {
+            return;
+        }
+        var radius = Math.min(maxRadius, Math.abs(dZ) * 250 + 0.05);
+        var maximus = radius == maxRadius;
+
+        RigidShape shape;
+        if (dZ > 0) {
+            shape = new Box(pos, radius, height * .5, radius);
+        } else {
+            shape = new Cylinder(pos, height, radius);
+        }
+
+        var alarmLevel = p.ext().getAlarmLevelHeight(o);
+        var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, maximus);
+
+        shape.setAttributes(attrs);
+        addRenderable(shape, true, GraphicItem.CIRCLE_1D, sMapObjects);
     }
 
     private void plotAlarmConsumption(BRemoteInsarPoint p, Position position) {

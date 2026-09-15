@@ -30,6 +30,7 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class InsarAttributeManager extends BaseAttributeManager {
 
+    private BasicShapeAttributes[] mComponentCircle1dAttributes;
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mInsarAttribute;
     private BasicShapeAttributes mSurfaceAttributes;
@@ -68,6 +69,42 @@ public class InsarAttributeManager extends BaseAttributeManager {
 
     public javafx.scene.paint.Color getColorFx(BRemoteInsarPoint p) {
         return SwingHelper.colorToColor(getColor(p));
+    }
+
+    public BasicShapeAttributes getComponentCircle1dAttributes(BRemoteInsarPoint p, int alarmLevel, boolean maximus) {
+        //TODO Make this better
+        if (mComponentCircle1dAttributes == null) {
+            mComponentCircle1dAttributes = new BasicShapeAttributes[5];
+
+            for (int i = 0; i < 5; i++) {
+                var attrs = new BasicShapeAttributes();
+                attrs.setDrawOutline(false);
+                Material material;
+                if (i < 4) {
+                    material = ButterflyHelper.getAlarmMaterial(i - 1);
+                } else {
+                    material = new Material(Color.decode("#800080"));
+                }
+                attrs.setInteriorMaterial(material);
+                attrs.setEnableLighting(true);
+
+                mComponentCircle1dAttributes[i] = attrs;
+            }
+        }
+
+        int offset = 1;
+        if (maximus) {
+            offset++;
+        }
+        var i = alarmLevel + offset;
+        try {
+            BasicShapeAttributes attrs = mComponentCircle1dAttributes[i];
+            attrs.setInteriorMaterial(new Material(getColor(p)));
+            return attrs;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("ArrayIndexOutOfBoundsException in TopoAttribute " + p.getName());
+            return mComponentCircle1dAttributes[i - 1];
+        }
     }
 
     public BasicShapeAttributes getComponentEllipsoidAttributes() {

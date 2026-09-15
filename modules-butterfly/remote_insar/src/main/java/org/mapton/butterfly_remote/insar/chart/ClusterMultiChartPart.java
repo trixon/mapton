@@ -37,7 +37,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = BMultiChartPart.class)
 public class ClusterMultiChartPart extends BMultiChartPartCluster {
 
-    private final Function<BXyzPointObservation, Double> mFunction = o -> o.ext().getDelta1d();
+    private final Function<BXyzPointObservation, Double> mFunction = o -> o.ext().getDelta1d() * 1000;
 
     public ClusterMultiChartPart() {
     }

@@ -28,7 +28,7 @@ import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
  */
 public class ChartAggregate {
 
-    private final ChartBuilderDelta mBuilderDeltaAvg = new ChartBuilderDelta(true, null);
+    private final ChartBuilderAvgSplit mBuilderAvg1dSplit = new ChartBuilderAvgSplit();
     private final ChartBuilderDeltaSplit mBuilderDeltaSplit = new ChartBuilderDeltaSplit();
     private final ChartBuilderTrend mBuilderTrend1d;
     private final JTabbedPane mTabbedPane;
@@ -51,7 +51,7 @@ public class ChartAggregate {
                 mTabbedPane.removeAll();
                 if (p.ext().getObservationsTimeFiltered().size() > 1) {
                     mTabbedPane.add("Delta", mBuilderDeltaSplit.build(p).call());
-                    mTabbedPane.add("Delta (avg)", mBuilderDeltaAvg.build(p).call());
+                    mTabbedPane.add("Medel", mBuilderAvg1dSplit.build(p).call());
                     mTabbedPane.add("Trend", mBuilderTrend1d.build(p).call());
 
                     if (prevIndex > -1) {

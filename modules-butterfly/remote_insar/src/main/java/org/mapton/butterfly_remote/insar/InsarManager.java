@@ -64,14 +64,10 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
     private final ChartAggregate mChartAggregate = new ChartAggregate();
     private final InsarChartBuilder mChartBuilder = new InsarChartBuilder();
     private Runnable mFilterPopoverPopulateRunnable;
+    private final LongProperty mManualLoadingDoneProperty = new SimpleLongProperty();
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
     private final InsarPropertiesBuilder mPropertiesBuilder = new InsarPropertiesBuilder();
     private final InsarTrendsBuilder mTrendsBuilder = new InsarTrendsBuilder();
-    private final LongProperty mManualLoadingDoneProperty = new SimpleLongProperty();
-
-    public LongProperty manualLoadingDoneProperty() {
-        return mManualLoadingDoneProperty;
-    }
 
     public static InsarManager getInstance() {
         return Holder.INSTANCE;
@@ -117,6 +113,10 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
         if (mFirstLoad && autoLoad) {
             load2(butterfly);
         }
+    }
+
+    public LongProperty manualLoadingDoneProperty() {
+        return mManualLoadingDoneProperty;
     }
 
     public void putLatLons(List<? extends BRemoteInsarPoint> list) {
