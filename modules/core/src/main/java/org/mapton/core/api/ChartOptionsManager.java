@@ -40,9 +40,9 @@ public class ChartOptionsManager {
     private final ObjectProperty<MAvgPeriod> mAvgPeriod2Property = new SimpleObjectProperty<>(MAvgPeriod.CALM);
     private final StringProperty mAvgPeriod2ProxyProperty = BindingHelper.createStringEnumProxyProperty(mAvgPeriod2Property, MAvgPeriod.class);
     private final BooleanProperty mAvgPlotDiffProperty = new SimpleBooleanProperty();
-    private final BooleanProperty mAvgPlotPeriod1Property = new SimpleBooleanProperty();
+    private final BooleanProperty mAvgPlotPeriod1Property = new SimpleBooleanProperty(true);
     private final BooleanProperty mAvgPlotPeriod2Property = new SimpleBooleanProperty();
-    private final BooleanProperty mAvgPlotRawProperty = new SimpleBooleanProperty();
+    private final BooleanProperty mAvgPlotRawProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty mDateEndTodayProperty = new SimpleBooleanProperty();
     private final ObjectProperty<ChartStartPoint> mDatePeriodProperty = new SimpleObjectProperty<>(ChartStartPoint.ZERO);
     private final StringProperty mDatePeriodProxyProperty = BindingHelper.createStringEnumProxyProperty(mDatePeriodProperty, ChartStartPoint.class);
