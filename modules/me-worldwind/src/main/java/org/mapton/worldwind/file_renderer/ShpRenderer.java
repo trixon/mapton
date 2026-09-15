@@ -20,11 +20,18 @@ import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.formats.shapefile.ShapefileLayerFactory;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.util.Logging;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.mapton.api.MCoordinateFile;
 import org.mapton.api.file_opener.ShpCoordinateFileOpener;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.worldwind.RandomShapeAttributes;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -56,19 +63,45 @@ public class ShpRenderer extends CoordinateFileRendererWW {
         shapefileLayerFactory.setNormalPointAttributes(mRandomShapeAttributes.asPointAttributes());
         shapefileLayerFactory.setNormalShapeAttributes(mRandomShapeAttributes.asShapeAttributes());
 
-        shapefileLayerFactory.createFromShapefileSource(coordinateFile.getFile(), new ShapefileLayerFactory.CompletionCallback() {
-            @Override
-            public void completion(Object result) {
-                SwingHelper.runLater(() -> {
-                    addLayer(coordinateFile, (Layer) result);
-                });
+        var externalFile = coordinateFile.getFile();
+        try {
+            var tempDir = Files.createTempDirectory("mapton-shape").toFile();
+            var internalFile = new File(tempDir, externalFile.getName());
+            var sourceDir = externalFile.getParentFile();
+            var sourceBase = FilenameUtils.getBaseName(externalFile.getName());
+            var sidecarFiles = sourceDir.list(new PrefixFileFilter(sourceBase + "."));
+
+            if (sidecarFiles != null) {
+                for (var sourceName : sidecarFiles) {
+                    var extension = FilenameUtils.getExtension(sourceName);
+                    var srcFile = new File(sourceDir, sourceName);
+                    var destFile = new File(tempDir, sourceBase + "." + extension);
+                    try {
+                        FileUtils.copyFile(srcFile, destFile);
+                    } catch (IOException e) {
+                        Exceptions.printStackTrace(e);
+                    }
+                }
             }
 
-            @Override
-            public void exception(Exception e) {
-                Logging.logger().log(java.util.logging.Level.SEVERE, e.getMessage(), e);
-            }
-        });
+            shapefileLayerFactory.createFromShapefileSource(internalFile, new ShapefileLayerFactory.CompletionCallback() {
+                @Override
+                public void completion(Object result) {
+                    var keepAlive = tempDir.getAbsolutePath();
+
+                    SwingHelper.runLater(() -> {
+                        addLayer(coordinateFile, (Layer) result);
+                    });
+                }
+
+                @Override
+                public void exception(Exception e) {
+                    Logging.logger().log(java.util.logging.Level.SEVERE, e.getMessage(), e);
+                }
+            });
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     @Override
