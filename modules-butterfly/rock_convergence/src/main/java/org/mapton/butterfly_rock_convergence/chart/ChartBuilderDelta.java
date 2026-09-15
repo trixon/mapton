@@ -17,7 +17,6 @@ package org.mapton.butterfly_rock_convergence.chart;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.TreeMap;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.data.time.TimeSeries;
@@ -69,7 +68,10 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         var plot = getPlot();
         var rangeAxis = plot.getRangeAxis();
         resetPlot(plot);
-        plotMarkers(p);
+        var plotMarkerDates = plotMarkers(p);
+//        mSubSetFirstMinute = plotMarkerDates.first();
+        mSubSetZeroMinute = plotMarkerDates.zero();
+        mSubSetLastMinute = plotMarkerDates.last();
 
         for (var pair : p.ext().getPairs()) {
             updateDataset(pair);
@@ -93,24 +95,6 @@ public class ChartBuilderDelta extends ChartBuilderBase {
             rangeAxis.setLabel("");
             rangeAxis.setAutoRange(true);
         }
-    }
-
-    private void plotMarkers(BRockConvergence p) {
-        var plot = getPlot();
-        plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
-        plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
-
-        p.ext().getObservationsTimeFiltered().forEach(o -> {
-            addNEMarkers(plot, o, true);
-
-            var minute = ChartHelper.convertToMinute(o.getDate());
-            mSubSetLastMinute = minute;
-            if (o.isZeroMeasurement()) {
-                mSubSetZeroMinute = minute;
-            }
-
-            mDateEnd = DateHelper.convertToDate(o.getDate());
-        });
     }
 
     private void updateDataset(BRockConvergencePair pair) {
