@@ -25,6 +25,7 @@ import se.trixon.almond.util.SDict;
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
 
     POC("POC", Integer.MAX_VALUE),
+    INDICATORS("Indikatorer", Integer.MAX_VALUE),
     ALARM_CONSUMPTION("Larmförbrukning", Integer.MAX_VALUE),
     TRACE(SDict.TRACE.toString(), 10_000);
 
