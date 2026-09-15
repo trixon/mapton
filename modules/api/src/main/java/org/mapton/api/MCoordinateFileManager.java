@@ -34,6 +34,7 @@ import javafx.collections.ObservableList;
 import org.apache.commons.io.FileUtils;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -210,8 +211,12 @@ public class MCoordinateFileManager {
 
             @Override
             public void onFileDelete(File file) {
-                removeAll(coordinateFile);
-                refresh();
+                SystemHelper.runLaterDelayed(5_000, () -> {
+                    if (!coordinateFile.getFile().isFile()) {
+                        removeAll(coordinateFile);
+                        refresh();
+                    }
+                });
             }
         });
     }
