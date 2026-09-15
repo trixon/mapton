@@ -15,11 +15,9 @@
  */
 package org.mapton.butterfly_meteo.chart;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.function.Function;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -28,7 +26,6 @@ import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BMeteoPoint;
 import org.mapton.butterfly_format.types.BMeteoPointObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
-import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
 
 /**
@@ -53,7 +50,11 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         var plot = getPlot();
         var rangeAxis = plot.getRangeAxis();
         resetPlot(plot);
-        plotMarkers(p);
+        var plotMarkerDates = plotMarkers(p);
+//        mSubSetFirstMinute = plotMarkerDates.first();
+        mSubSetZeroMinute = plotMarkerDates.zero();
+        mSubSetLastMinute = plotMarkerDates.last();
+
         var delta1d = 0.0;
         if (p.getDimension() != BDimension._2d) {
             delta1d = plot(p, mTimeSeries1d, Color.RED, (BMeteoPointObservation o) -> o.getAirTemperature());
@@ -102,56 +103,12 @@ public class ChartBuilderDelta extends ChartBuilderBase {
 
         getDataset().addSeries(timeSeries);
         renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
-        plotAvg(timeSeries, color);
+//        plotAvg(timeSeries, color);
         try {
             return lastDelta - firstDelta;
         } catch (Exception e) {
             return 0;
         }
-    }
-
-    private void plotAvg(TimeSeries timeSeries, Color color) {
-        if (!mPlotAvg) {
-            return;
-        }
-        var plot = getPlot();
-        int avdDays = 90 * 60 * 24;
-        int avgSkipMeasurements = 0;
-        var mavg = createSubSetMovingAverage(timeSeries, mSubSetZeroMinute, mSubSetLastMinute, "%s (avg)".formatted(timeSeries.getKey()), avdDays, avgSkipMeasurements);
-        if (mavg != null) {
-            try {
-                getDataset().addSeries(mavg);
-                var renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-                var avgStroke = new BasicStroke(2.0f);
-                int index = getDataset().getSeriesIndex(mavg.getKey());
-                renderer.setSeriesPaint(index, color.brighter().brighter());
-                renderer.setSeriesStroke(index, avgStroke);
-//                renderer.setDefaultShapesVisible(false);
-                renderer.setSeriesShapesVisible(index, false);
-
-            } catch (Exception e) {
-                Exceptions.printStackTrace(e);
-            }
-        }
-    }
-
-    private void plotMarkers(BMeteoPoint p) {
-        var plot = getPlot();
-        plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
-        plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
-
-        p.ext().getObservationsTimeFiltered().forEach(o -> {
-            addNEMarkers(plot, o, true);
-
-            var minute = ChartHelper.convertToMinute(o.getDate());
-            mSubSetLastMinute = minute;
-            if (o.isZeroMeasurement()) {
-                mSubSetZeroMinute = minute;
-            }
-
-            mDateEnd = DateHelper.convertToDate(o.getDate());
-        });
-
     }
 
 }
