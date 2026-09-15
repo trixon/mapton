@@ -27,7 +27,9 @@ import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
  */
 public class ChartAggregate {
 
-    private final ChartBuilderDelta mBuilderDeltaAvg = new ChartBuilderDelta(true, null);
+    private final ChartBuilderAvgSplit mBuilderAvgLSplit;
+    private final ChartBuilderAvgSplit mBuilderAvgRSplit;
+    private final ChartBuilderAvgSplit mBuilderAvgTSplit;
     private final ChartBuilderDeltaSplit mBuilderDeltaSplit = new ChartBuilderDeltaSplit();
     private final ChartBuilderTrend mBuilderTrendR;
     private final ChartBuilderTrend mBuilderTrendX;
@@ -38,6 +40,11 @@ public class ChartAggregate {
         final Function<BXyzPointObservation, Double> funcX = (var o) -> o.ext().getDeltaX();
         final Function<BXyzPointObservation, Double> funcY = (var o) -> o.ext().getDeltaY();
         final Function<BXyzPointObservation, Double> funcR = (var o) -> o.ext().getDelta2d();
+
+        mBuilderAvgLSplit = new ChartBuilderAvgSplit(funcY);
+        mBuilderAvgTSplit = new ChartBuilderAvgSplit(funcX);
+        mBuilderAvgRSplit = new ChartBuilderAvgSplit(funcR);
+
         mBuilderTrendX = new ChartBuilderTrend("T", funcX);
         mBuilderTrendY = new ChartBuilderTrend("L", funcY);
         mBuilderTrendR = new ChartBuilderTrend("R", funcR);
@@ -56,7 +63,9 @@ public class ChartAggregate {
                 mTabbedPane.removeAll();
                 if (p.ext().getObservationsTimeFiltered().size() > 1) {
                     mTabbedPane.add("Delta", mBuilderDeltaSplit.build(p).call());
-                    mTabbedPane.add("Delta (avg)", mBuilderDeltaAvg.build(p).call());
+                    mTabbedPane.add("Medel T", mBuilderAvgTSplit.build(p).call());
+                    mTabbedPane.add("Medel L", mBuilderAvgLSplit.build(p).call());
+                    mTabbedPane.add("Medel R", mBuilderAvgRSplit.build(p).call());
                     mTabbedPane.add("Trend T", mBuilderTrendX.build(p).call());
                     mTabbedPane.add("Trend L", mBuilderTrendY.build(p).call());
                     mTabbedPane.add("Trend R", mBuilderTrendR.build(p).call());

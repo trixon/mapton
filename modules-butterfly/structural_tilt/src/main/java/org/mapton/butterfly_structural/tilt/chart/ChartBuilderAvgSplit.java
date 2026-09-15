@@ -16,23 +16,31 @@
 package org.mapton.butterfly_structural.tilt.chart;
 
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 import javax.swing.JPanel;
 import org.mapton.butterfly_core.api.BChartSplit;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ChartBuilderDeltaSplit extends BChartSplit {
+public class ChartBuilderAvgSplit extends BChartSplit {
 
-    private final ChartBuilderDelta mCompleteChartBuilder = new ChartBuilderDelta(null, false, null);
-    private final ChartBuilderDelta mLatestChartBuilder = new ChartBuilderDelta(null, false, 7);
+    private final ChartBuilderDelta mCompleteChartBuilder;
+    private final ChartBuilderDelta mLatestChartBuilder;
 
-    public ChartBuilderDeltaSplit() {
+    public ChartBuilderAvgSplit(Function<BXyzPointObservation, Double> function) {
+        mLatestChartBuilder = new ChartBuilderDelta(function, true, 28);
+        mCompleteChartBuilder = new ChartBuilderDelta(function, true, null);
     }
 
     public synchronized Callable<JPanel> build(BStructuralTiltPoint p) {
+        return build(p, true);
+    }
+
+    public synchronized Callable<JPanel> build(BStructuralTiltPoint p, boolean standardLayout) {
         if (p == null) {
             return null;
         }
