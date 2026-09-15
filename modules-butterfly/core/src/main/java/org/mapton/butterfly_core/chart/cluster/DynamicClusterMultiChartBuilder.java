@@ -50,11 +50,13 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BClusterCha
     private LocalDate mDateFirst;
     private LocalDate mDateLast;
     private BMultiChartPart mMultiChartComponent;
+    private final boolean mPlotAvg;
     private int mPointSize;
     private final String mTitlePrefix;
 
-    public DynamicClusterMultiChartBuilder(String titlePrefix, String axisLabel, String decimalPattern) {
+    public DynamicClusterMultiChartBuilder(String titlePrefix, String axisLabel, String decimalPattern, boolean plotAvg) {
         mTitlePrefix = titlePrefix;
+        mPlotAvg = plotAvg;
         initChart(axisLabel, decimalPattern);
     }
 
@@ -156,7 +158,12 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BClusterCha
                         mDateLast = date.toLocalDate();
                     }
                 }
-                seriesList.add(timeSeries);
+
+                if (mPlotAvg) {
+                    seriesList.add(createEWMA(p.getName(), p.getDateZero(), timeSeries, mChartOptionsManager.getAvgPeriod1()));
+                } else {
+                    seriesList.add(timeSeries);
+                }
             }
         }
 

@@ -49,17 +49,23 @@ public class DynamicClusterMultiChartAggregate {
                 Lookup.getDefault().lookupAll(BMultiChartPart.class).stream()
                         .filter(c -> Strings.CI.equals(c.getCategory(), BKey.CLUSTER_CHART))
                         .sorted(Comparator.comparing(BMultiChartPart::getName))
-                        .forEachOrdered(multiChartComponent -> {
+                        .forEachOrdered(multiChartPart -> {
                             try {
                                 var chartBuilder = new DynamicClusterMultiChartBuilder(
-                                        multiChartComponent.getName(),
-                                        multiChartComponent.getAxisLabel(),
-                                        multiChartComponent.getDecimalPattern()
+                                        multiChartPart.getName(),
+                                        multiChartPart.getAxisLabel(),
+                                        multiChartPart.getDecimalPattern(),
+                                        multiChartPart.isAvg()
                                 );
 
-                                var chartPanel = chartBuilder.build(p, multiChartComponent).call();
+                                var chartPanel = chartBuilder.build(p, multiChartPart).call();
                                 if (chartBuilder.getPointSize() > 0) {
-                                    var tabTitle = "%s (%d)".formatted(multiChartComponent.getName(), chartBuilder.getPointSize());
+                                    var avgTitle = multiChartPart.isAvg() ? " AVG" : "";
+                                    var tabTitle = "%s (%d) %s".formatted(
+                                            multiChartPart.getName(),
+                                            chartBuilder.getPointSize(),
+                                            avgTitle
+                                    );
                                     mTabbedPane.add(tabTitle, chartPanel);
                                 }
                             } catch (Exception ex) {

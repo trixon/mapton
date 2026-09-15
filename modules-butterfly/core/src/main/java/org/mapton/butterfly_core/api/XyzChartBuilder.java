@@ -24,12 +24,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.numbers.core.Precision;
 import org.jfree.chart.ChartFactory;
@@ -42,6 +44,7 @@ import org.jfree.chart.block.BorderArrangement;
 import org.jfree.chart.block.EmptyBlock;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.CompositeTitle;
 import org.jfree.chart.title.TextTitle;
@@ -191,9 +194,10 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         return result;
     }
 
-    public TimeSeries createEWMA(LocalDate minDate, TimeSeries source, MAvgPeriod avgPeriod) {
+    public TimeSeries createEWMA(String title, LocalDate minDate, TimeSeries source, MAvgPeriod avgPeriod) {
         var days = avgPeriod.getDays();
-        var result = new TimeSeries("EWMA (%d)".formatted(days));
+        var name = title != null ? title : "EWMA (%d)".formatted(days);
+        var result = new TimeSeries(name);
         var sourceAfterZero = new TimeSeries(source.getKey());
 
         for (int i = 0; i < source.getItemCount(); i++) {
@@ -578,6 +582,94 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         mChart.addSubtitle(compositeTitle);
     }
 
+    protected void plot(BXyzPoint p, boolean plotAvg, TimeSeries timeSeries, XYItemRenderer renderer, Color color) {
+        if (plotAvg) {
+            if (mChartOptionsManager.isAvgPlotRaw()) {
+                plotAvgRaw(timeSeries, renderer);
+            }
+            plotAvg(p, timeSeries);
+        } else {
+            getDataset().addSeries(timeSeries);
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
+        }
+    }
+
+    protected void plotAvg(TimeSeries timeSeries, Color color) {
+        var plot = getPlot();
+        if (timeSeries != null) {
+            try {
+                getDataset().addSeries(timeSeries);
+                var renderer = (XYLineAndShapeRenderer) plot.getRenderer();
+                var avgStroke = new BasicStroke(2.0f);
+                int index = getDataset().getSeriesIndex(timeSeries.getKey());
+                renderer.setSeriesPaint(index, color);
+                renderer.setSeriesStroke(index, avgStroke);
+                renderer.setSeriesShapesVisible(index, false);
+            } catch (Exception e) {
+                Exceptions.printStackTrace(e);
+            }
+        }
+    }
+
+    protected void plotAvg(BXyzPoint p, TimeSeries timeSeries) {
+        var ewma1 = createEWMA(null, p.getDateZero(), timeSeries, mChartOptionsManager.getAvgPeriod1());
+        var ewma2 = createEWMA(null, p.getDateZero(), timeSeries, mChartOptionsManager.getAvgPeriod2());
+
+        if (mChartOptionsManager.isAvgPlotPeriod1()) {
+            plotAvg(ewma1, Color.ORANGE);
+        }
+
+        if (mChartOptionsManager.isAvgPlotPeriod2()) {
+            plotAvg(ewma2, Color.BLUE);
+        }
+
+        if (mChartOptionsManager.isAvgPlotDiff() && ObjectUtils.allNotNull(ewma1, ewma2)) {
+            var diff = createDifference(ewma1, ewma2, "Aktivitet");
+            plotAvg(diff, Color.MAGENTA);
+        }
+    }
+
+    protected void plotAvgRaw(TimeSeries timeSeries, XYItemRenderer renderer) {
+        getDataset().addSeries(timeSeries);
+        renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), GraphicsHelper.colorAddAlpha(Color.RED, 64));
+    }
+
+    protected PlotMarkerDates plotMarkers(BXyzPoint p) {
+        //TODO Run later EDT?
+//        SwingHelper.runLater(() -> {
+//...
+//            mChart.fireChartChanged();
+//        });
+        var plot = getPlot();
+        plotOverlays(plot, p, p.extOrNull().getObservationFilteredFirstDate());
+        plotMeasNeed(plot, p, p.extOrNull().getMeasurementUntilNext(ChronoUnit.DAYS));
+        LocalDateTime firstDate = LocalDateTime.now();
+        LocalDateTime zeroDate = LocalDateTime.now();
+        LocalDateTime lastDate = LocalDateTime.now();
+
+        try {
+            firstDate = p.extOrNull().getObservationsTimeFiltered().getFirst().getDate();
+        } catch (Exception e) {
+            //
+        }
+
+        for (var o : p.extOrNull().getObservationsTimeFiltered()) {
+            addNEMarkers(plot, o, true);
+            lastDate = o.getDate();
+            if (o.isZeroMeasurement()) {
+                zeroDate = o.getDate();
+            }
+
+            mDateEnd = DateHelper.convertToDate(o.getDate());
+        }
+
+        var firstMinute = ChartHelper.convertToMinute(firstDate);
+        var zeroMinute = ChartHelper.convertToMinute(zeroDate);
+        var lastMinute = ChartHelper.convertToMinute(lastDate);
+
+        return new PlotMarkerDates(firstMinute, zeroMinute, lastMinute);
+    }
+
     private double getMinMaxMax() {
         return Math.max(sMinDefaultValue, mMinMaxCollection.getMax());
     }
@@ -640,5 +732,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
             }
         }
     }
+
+    public static record PlotMarkerDates(Minute first, Minute zero, Minute last) {}
 
 }

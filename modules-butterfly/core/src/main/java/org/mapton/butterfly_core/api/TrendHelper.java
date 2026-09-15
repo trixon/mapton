@@ -151,16 +151,10 @@ public class TrendHelper {
 
         var coefficients = Regression.getOLSRegression(dataset, 0);
         var regression = calculateRegression(dataset.getSeries(0));
-        if (p.getName().equalsIgnoreCase("SDB02HA831")) {
-            System.out.println("start " + startDate);
-            System.out.println("end " + endDate);
-            System.out.println("intercept = " + regression.intercept);
-            System.out.println("slope = " + regression.slope());
-        }
+
         return new Trend(
                 regression.slope,
                 new LineFunction2D(coefficients[0], coefficients[1]),
-                //                new LineFunction2D(regression.intercept, regression.slope),
                 ChartHelper.convertToMinute(startDate),
                 ChartHelper.convertToMinute(endDate),
                 dataset.getSeries(0).getItemCount()
