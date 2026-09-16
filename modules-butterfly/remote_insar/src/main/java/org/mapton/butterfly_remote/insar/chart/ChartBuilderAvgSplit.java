@@ -44,10 +44,11 @@ public class ChartBuilderAvgSplit extends BChartSplit {
         }
 
         var callable = (Callable<JPanel>) () -> {
-            return createSplitPanel(
-                    mLatestChartBuilder.build(p).call(),
-                    mCompleteChartBuilder.build(p).call()
-            );
+            return mCompleteChartBuilder.build(p).call();
+//            return createSplitPanel(
+//                    mLatestChartBuilder.build(p).call(),
+//                    mCompleteChartBuilder.build(p).call()
+//            );
         };
 
         return callable;
