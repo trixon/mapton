@@ -135,6 +135,7 @@ public class BRockExtensometer extends BXyzPoint {
         public Ext() {
         }
 
+        @Override
         public int getAlarmLevel() {
             return getPoints().stream().mapToInt(p -> p.ext().getAlarmLevel()).max().orElse(-1);
         }

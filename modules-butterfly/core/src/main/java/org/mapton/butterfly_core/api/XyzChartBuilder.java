@@ -93,6 +93,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     protected Date mDateEnd;
     protected Date mDateNull;
     protected final MinMaxCollection mMinMaxCollection = new MinMaxCollection();
+    private final XYLineAndShapeRenderer mAvgRenderer = new XYLineAndShapeRenderer(true, false);
     private ChartPanel mChartPanel;
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private Date mDefaultDate;
@@ -201,6 +202,11 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                         }
                     });
         });
+    }
+
+    public XyzChartBuilder() {
+        mAvgRenderer.setSeriesStroke(0, new BasicStroke(2f));
+        mAvgRenderer.setDrawSeriesLineAsPath(true);
     }
 
     public void addNEMarkers(XYPlot plot, BBaseControlPointObservation o, boolean doPlot) {
@@ -585,7 +591,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     protected void plot(BXyzPoint p, boolean plotAvg, TimeSeries timeSeries, XYItemRenderer renderer, Color color) {
         if (plotAvg) {
             if (mChartOptionsManager.isAvgPlotRaw()) {
-                plotAvgRaw(timeSeries, renderer);
+                plotAvgRaw(timeSeries);
             }
             plotAvg(p, timeSeries);
         } else {
@@ -629,9 +635,10 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         }
     }
 
-    protected void plotAvgRaw(TimeSeries timeSeries, XYItemRenderer renderer) {
+    protected void plotAvgRaw(TimeSeries timeSeries) {
+        getPlot().setRenderer(0, mAvgRenderer);
         getDataset().addSeries(timeSeries);
-        renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), GraphicsHelper.colorAddAlpha(Color.RED, 64));
+        mAvgRenderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), GraphicsHelper.colorAddAlpha(Color.RED, 64));
     }
 
     protected PlotMarkerDates plotMarkers(BXyzPoint p) {

@@ -62,7 +62,11 @@ public class ChartBuilderDelta extends ChartBuilderBase {
         var now = LocalDate.now();
         var nowAsDate = DateHelper.convertToDate(now.plusDays(1));
         if (isCompleteView()) {
-            setRange(1.05, CrackHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
+            if (mPlotAvg) {
+                rangeAxis.setAutoRange(true);
+            } else {
+                setRange(1.05, CrackHelper.getScaleFactor(p), p.ext().getAlarm(BComponent.PLANE), p.ext().getAlarm(BComponent.HEIGHT));
+            }
         } else {
             var sb = new StringBuilder();
             sb.append("Δ %+.3f".formatted(delta1d));

@@ -44,6 +44,7 @@ public class UserPropertiesBuilder extends PropertiesBuilder<BSystemUser> {
         propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
         propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), date);
+        propertyMap.put(getCatKey(cat1, "Signatur"), p.getInitials());
 //        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
         propertyMap.put(getCatKey(cat1, "N"), MathHelper.convertDoubleToString(p.getZeroY(), 0));
         propertyMap.put(getCatKey(cat1, "E"), MathHelper.convertDoubleToString(p.getZeroX(), 0));
