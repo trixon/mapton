@@ -23,6 +23,10 @@ public class BKey {
 
     public static final String CLUSTER_CHART = "cluster_chart";
     public static final String CLUSTER_CHART_FUNCTION = "cluster_chart_function";
+    public static final String EWMA_H = "ewmaH";
+    public static final String EWMA_H_RAW = EWMA_H + "raw";
+    public static final String EWMA_P = "ewmaP";
+    public static final String EWMA_P_RAW = EWMA_P + "raw";
     public static final String OBJECT_MEASUREMENTS = "object.measurements";
     public static final String PIN_COLOR = "pin.color";
     public static final String PIN_HOTSPOT = "pin.hotspot";

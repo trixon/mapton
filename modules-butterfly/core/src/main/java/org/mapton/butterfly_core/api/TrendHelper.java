@@ -95,7 +95,8 @@ public class TrendHelper {
                     new LineFunction2D(coefficients[0], coefficients[1]),
                     ChartHelper.convertToMinute(p.getDateZero().atStartOfDay()),
                     ChartHelper.convertToMinute(endDate),
-                    timeSeries.getItemCount()
+                    timeSeries.getItemCount(),
+                    regression.r2()
             );
         }
 
@@ -157,7 +158,8 @@ public class TrendHelper {
                 new LineFunction2D(coefficients[0], coefficients[1]),
                 ChartHelper.convertToMinute(startDate),
                 ChartHelper.convertToMinute(endDate),
-                dataset.getSeries(0).getItemCount()
+                dataset.getSeries(0).getItemCount(),
+                regression.r2()
         );
     }
 
@@ -182,7 +184,7 @@ public class TrendHelper {
 
     private static RegressionResult calculateRegression(TimeSeries series) {
         if (series.getItemCount() < 2) {
-            return new RegressionResult(Double.NaN, Double.NaN);
+            return new RegressionResult(Double.NaN, Double.NaN, Double.NaN);
         }
 
         final double MILLIS_PER_YEAR = Duration.ofDays(365).toMillis();
@@ -192,20 +194,17 @@ public class TrendHelper {
                 .getStart()
                 .getTime();
 
-        double sumX = 0;
-        double sumY = 0;
-        double sumXY = 0;
-        double sumX2 = 0;
+        double sumX = 0.0;
+        double sumY = 0.0;
+        double sumXY = 0.0;
+        double sumX2 = 0.0;
 
         int n = series.getItemCount();
 
         for (int i = 0; i < n; i++) {
-
             var item = series.getDataItem(i);
-
             double x = (item.getPeriod().getStart().getTime() - t0)
                     / MILLIS_PER_YEAR;
-
             double y = item.getValue().doubleValue();
 
             sumX += x;
@@ -214,22 +213,49 @@ public class TrendHelper {
             sumX2 += x * x;
         }
 
-        double slope
-                = (n * sumXY - sumX * sumY)
-                / (n * sumX2 - sumX * sumX);
+        double denominator = n * sumX2 - sumX * sumX;
 
-        double intercept
-                = (sumY - slope * sumX) / n;
+        if (Math.abs(denominator) < 1e-12) {
+            return new RegressionResult(Double.NaN, Double.NaN, Double.NaN);
+        }
 
-        return new RegressionResult(intercept * 1000, slope * 1000);
+        double slope = (n * sumXY - sumX * sumY) / denominator;
+        double intercept = (sumY - slope * sumX) / n;
+
+        double meanY = sumY / n;
+
+        double ssTot = 0.0;
+        double ssRes = 0.0;
+
+        for (int i = 0; i < n; i++) {
+            var item = series.getDataItem(i);
+            double x = (item.getPeriod().getStart().getTime() - t0)
+                    / MILLIS_PER_YEAR;
+            double y = item.getValue().doubleValue();
+            double predicted = intercept + slope * x;
+
+            ssTot += Math.pow(y - meanY, 2);
+            ssRes += Math.pow(y - predicted, 2);
+        }
+
+        double r2 = ssTot == 0.0
+                ? 1.0
+                : 1.0 - ssRes / ssTot;
+
+        r2 = Math.max(0.0, Math.min(1.0, r2));
+
+        return new RegressionResult(
+                intercept * 1000.0,
+                slope * 1000.0,
+                r2);
     }
 
     private TrendHelper() {
     }
 
-    public record Trend(double slope, LineFunction2D function, Minute startMinute, Minute endMinute, int numOfMeas) {
+    public record Trend(double slope, LineFunction2D function, Minute startMinute, Minute endMinute, int numOfMeas, double quality) {
 
     }
 
-    record RegressionResult(double intercept, double slope) {}
+    record RegressionResult(double intercept, double slope, double r2) {}
 }

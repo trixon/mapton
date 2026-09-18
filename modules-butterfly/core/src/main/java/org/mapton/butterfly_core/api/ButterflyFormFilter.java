@@ -28,10 +28,11 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 public abstract class ButterflyFormFilter<ManagerType extends MBaseDataManager> extends FormFilter {
 
     protected BContentOptions mContentOptions;
-    protected BFilterSectionMeas mFilterSectionMeas;
     protected BFilterSectionAlarm mFilterSectionAlarm;
+    protected BFilterSectionAvg mFilterSectionAvg;
     protected BFilterSectionDate mFilterSectionDate;
     protected BFilterSectionDisruptor mFilterSectionDisruptor;
+    protected BFilterSectionMeas mFilterSectionMeas;
     protected BFilterSectionMisc mFilterSectionMisc;
     protected BFilterSectionPoint mFilterSectionPoint;
     protected BFilterSectionTrend mFilterSectionTrend;

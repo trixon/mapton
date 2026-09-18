@@ -80,7 +80,14 @@ public abstract class BTrendsBuilder<T extends BXyzPoint> extends PropertiesBuil
                 var value = "";
                 if (trend2 != null) {
                     var val2 = trend2.slope();
-                    value = "(%+.1f • %+.1f • %+.1f) mm/år (%d • %d)".formatted(val1, val2, val1 - val2, trend1.numOfMeas(), trend2.numOfMeas());
+                    value = "(%+.1f R²=%.2f • %+.1f • %+.1f) mm/år (%d • %d)".formatted(
+                            val1,
+                            trend1.quality(),
+                            val2,
+                            val1 - val2,
+                            trend1.numOfMeas(),
+                            trend2.numOfMeas()
+                    );
                 } else {
                     value = "%+.1f mm/år (%d)".formatted(val1, trend1.numOfMeas());
                 }

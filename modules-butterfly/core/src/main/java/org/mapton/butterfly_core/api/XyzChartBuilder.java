@@ -123,6 +123,49 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         }
     }
 
+    public static TimeSeries createEWMA(String title, LocalDate minDate, TimeSeries source, MAvgPeriod avgPeriod) {
+        var days = avgPeriod.getDays();
+        var name = title != null ? title : "EWMA (%d)".formatted(days);
+        var result = new TimeSeries(name);
+        var sourceAfterZero = new TimeSeries(source.getKey());
+
+        for (int i = 0; i < source.getItemCount(); i++) {
+            var item = source.getDataItem(i);
+            var itemDate = item.getPeriod()
+                    .getStart()
+                    .toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+            if (!itemDate.isBefore(minDate)) {
+                sourceAfterZero.add(item);
+            }
+        }
+
+        if (sourceAfterZero.isEmpty()) {
+            return result;
+        }
+
+        double tauMillis = TimeUnit.DAYS.toMillis(days);
+        var first = sourceAfterZero.getDataItem(0);
+        var ewma = first.getValue().doubleValue();
+        result.add(first.getPeriod(), ewma);
+        var previousTime = first.getPeriod().getStart().getTime();
+
+        for (int i = 1; i < sourceAfterZero.getItemCount(); i++) {
+            var item = sourceAfterZero.getDataItem(i);
+            long currentTime = item.getPeriod().getStart().getTime();
+            double value = item.getValue().doubleValue();
+            long deltaMillis = currentTime - previousTime;
+            double alpha = 1.0 - Math.exp(-deltaMillis / tauMillis);
+            ewma = alpha * value + (1.0 - alpha) * ewma;
+            result.add(item.getPeriod(), ewma);
+            previousTime = currentTime;
+        }
+
+        return result;
+    }
+
     public static void plotMeasNeed(XYPlot plot, BBaseControlPoint p, long days) {
         if (p.getFrequency() > 0 && days < 0) {
             var ldt = LocalDateTime.now().plusDays(days);
@@ -189,49 +232,6 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
             double value2 = series2.getDataItem(i).getValue().doubleValue();
             double diff = value1 - value2;
             result.add(series1.getDataItem(i).getPeriod(), diff);
-        }
-
-        return result;
-    }
-
-    public TimeSeries createEWMA(String title, LocalDate minDate, TimeSeries source, MAvgPeriod avgPeriod) {
-        var days = avgPeriod.getDays();
-        var name = title != null ? title : "EWMA (%d)".formatted(days);
-        var result = new TimeSeries(name);
-        var sourceAfterZero = new TimeSeries(source.getKey());
-
-        for (int i = 0; i < source.getItemCount(); i++) {
-            var item = source.getDataItem(i);
-            var itemDate = item.getPeriod()
-                    .getStart()
-                    .toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
-
-            if (!itemDate.isBefore(minDate)) {
-                sourceAfterZero.add(item);
-            }
-        }
-
-        if (sourceAfterZero.isEmpty()) {
-            return result;
-        }
-
-        double tauMillis = TimeUnit.DAYS.toMillis(days);
-        var first = sourceAfterZero.getDataItem(0);
-        var ewma = first.getValue().doubleValue();
-        result.add(first.getPeriod(), ewma);
-        var previousTime = first.getPeriod().getStart().getTime();
-
-        for (int i = 1; i < sourceAfterZero.getItemCount(); i++) {
-            var item = sourceAfterZero.getDataItem(i);
-            long currentTime = item.getPeriod().getStart().getTime();
-            double value = item.getValue().doubleValue();
-            long deltaMillis = currentTime - previousTime;
-            double alpha = 1.0 - Math.exp(-deltaMillis / tauMillis);
-            ewma = alpha * value + (1.0 - alpha) * ewma;
-            result.add(item.getPeriod(), ewma);
-            previousTime = currentTime;
         }
 
         return result;
