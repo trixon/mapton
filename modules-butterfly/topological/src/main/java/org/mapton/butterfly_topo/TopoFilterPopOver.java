@@ -31,6 +31,7 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.butterfly_core.api.AlarmLevelCalculator;
 import org.mapton.butterfly_core.api.BFilterSectionAlarm;
+import org.mapton.butterfly_core.api.BFilterSectionAvg;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMeas;
@@ -57,16 +58,17 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final CheckBox mDimens3Checkbox = new CheckBox("3");
     private final TopoFilter mFilter;
     private final BFilterSectionAlarm mFilterSectionAlarm;
+    private final BFilterSectionAvg<BTopoControlPoint> mFilterSectionAvg;
     private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
     private final BFilterSectionMeas mFilterSectionMeas;
     private final FilterSectionMeas mFilterSectionMeasSpecific;
     private final BFilterSectionMisc<BTopoControlPoint> mFilterSectionMisc;
+    private final FilterSectionMon mFilterSectionMon;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final BFilterSectionTrend<BTopoControlPoint> mFilterSectionTrend;
     private final TopoManager mManager = TopoManager.getInstance();
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
-    private final FilterSectionMon mFilterSectionMon;
 
     public TopoFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
@@ -82,6 +84,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMeas = new BFilterSectionMeas(mFilterSectionMeasSpecific.getRoot());
         mFilterSectionMisc = new BFilterSectionMisc(filter);
         mFilterSectionTrend = new BFilterSectionTrend<>();
+        mFilterSectionAvg = new BFilterSectionAvg<>();
         mFilterSectionMon = new FilterSectionMon();
 
         mFilter = (TopoFilter) filter;
@@ -94,6 +97,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.setFilterSection(mFilterSectionMisc);
         mFilter.setFilterSection(mFilterSectionMon);
         mFilter.setFilterSection(mFilterSectionTrend);
+        mFilter.setFilterSection(mFilterSectionAvg);
 
         setFilter(filter);
         createUI();
@@ -124,6 +128,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMeas.clear();
         mFilterSectionMisc.clear();
         mFilterSectionTrend.clear();
+        mFilterSectionAvg.clear();
         mFilterSectionMon.clear();
 
         resetTabs();
@@ -141,6 +146,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.load(mManager.getTemporalRange());
         mFilterSectionMisc.load();
         mFilterSectionTrend.load();
+        mFilterSectionAvg.load();
     }
 
     @Override
@@ -197,6 +203,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
                 mFilterSectionAlarm.getTab(),
                 mFilterSectionMisc.getTab(),
                 mFilterSectionDisruptor.getTab(),
+                mFilterSectionAvg.getTab(),
                 mFilterSectionTrend.getTab(),
                 mFilterSectionMon.getTab()
         );
@@ -247,6 +254,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMeasSpecific.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
         mFilterSectionTrend.initSession(sessionManager);
+        mFilterSectionAvg.initSession(sessionManager);
         mFilterSectionMon.initSession(sessionManager);
 
         var filterSectionTopo = new FilterSectionTopo();

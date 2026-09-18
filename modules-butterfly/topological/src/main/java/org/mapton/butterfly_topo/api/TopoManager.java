@@ -30,6 +30,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.lang3.ObjectUtils;
+import org.jfree.data.time.TimeSeries;
+import org.mapton.api.MAvgPeriod;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
@@ -38,10 +40,13 @@ import org.mapton.butterfly_core.api.BMeasurementReport;
 import org.mapton.butterfly_core.api.BMeasurementTab;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_core.api.ButterflyManager;
+import org.mapton.butterfly_core.api.EwmaHelper;
+import org.mapton.butterfly_core.api.EwmaHelper.Ewma;
 import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_core.api.TrendHelper.Trend;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.BDimension;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
@@ -54,6 +59,7 @@ import org.mapton.butterfly_topo.chart.ChartAggregate;
 import org.mapton.butterfly_topo.chart.MultiChartAggregate;
 import org.mapton.butterfly_topo.monmon.MonManager;
 import org.mapton.butterfly_topo.table.StandardMeasurementPopulator;
+import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 import se.trixon.almond.util.SystemHelper;
@@ -281,6 +287,8 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
                                 //System.err.println(e);
                             }
                         }
+
+                        populateEwma(p);
                     }
                 });
             }
@@ -308,6 +316,46 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     @Override
     protected void load(ArrayList<BTopoControlPoint> items) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private void populateEwma(BTopoControlPoint p, String mode, MAvgPeriod period) {
+        var ewma = EwmaHelper.createEwma(p, mode, period);
+        HashMap<MAvgPeriod, Ewma> map = (HashMap<MAvgPeriod, Ewma>) p.getValue(mode, new HashMap<>());
+        map.put(period, ewma);
+        p.setValue(mode, map);
+    }
+
+    private void populateEwma(BTopoControlPoint p) {
+        var timeSeries1 = new TimeSeries(p.getName());
+        var timeSeries2 = new TimeSeries(p.getName());
+
+        for (var o : p.ext().getObservationsTimeFiltered()) {
+            if (p.getDimension() != BDimension._2d) {
+                var delta = o.ext().getDelta1d() * 1000;
+                timeSeries1.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), delta);
+            }
+
+            if (p.getDimension() != BDimension._1d) {
+                var delta = o.ext().getDelta2d() * 1000;
+                timeSeries2.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), delta);
+            }
+        }
+
+        p.setValue(BKey.EWMA_H_RAW, timeSeries1);
+        p.setValue(BKey.EWMA_P_RAW, timeSeries2);
+
+        for (var value : MAvgPeriod.values()) {
+            switch (p.getDimension()) {
+                case _1d ->
+                    populateEwma(p, BKey.EWMA_H, value);
+                case _2d ->
+                    populateEwma(p, BKey.EWMA_P, value);
+                case _3d -> {
+                    populateEwma(p, BKey.EWMA_H, value);
+                    populateEwma(p, BKey.EWMA_P, value);
+                }
+            }
+        }
     }
 
     private void populateTrend(BTopoControlPoint p, BTrendPeriod period, LocalDateTime startDate, LocalDateTime endDate) {

@@ -26,6 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BFilterSectionAlarm;
 import org.mapton.butterfly_core.api.BFilterSectionAlarmProvider;
+import org.mapton.butterfly_core.api.BFilterSectionAvg;
+import org.mapton.butterfly_core.api.BFilterSectionAvgProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
@@ -57,6 +59,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
         BFilterSectionTrendProvider,
+        BFilterSectionAvgProvider,
         BFilterSectionAlarmProvider,
         BFilterSectionMeasProvider,
         BFilterSectionDisruptorProvider {
@@ -138,6 +141,12 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     }
 
     @Override
+    public void setFilterSection(BFilterSectionAvg filterSection) {
+        mFilterSectionAvg = filterSection;
+        mFilterSectionAvg.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
     public void setFilterSection(BFilterSectionMeas filterSection) {
         mFilterSectionMeas = filterSection;
         mFilterSectionMeas.initListeners(mChangeListenerObject, mListChangeListener);
@@ -175,6 +184,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> mFilterSectionAlarm.filter(p))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
+                .filter(p -> mFilterSectionAvg.filter(p))
                 .filter(p -> mFilterSectionTrend.filter(p))
                 .filter(p -> mFilterSectionMon.filter(p))
                 .filter(p -> mFilterSectionMisc.filter(p))
