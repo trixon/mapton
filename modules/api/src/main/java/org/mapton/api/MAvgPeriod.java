@@ -20,11 +20,12 @@ package org.mapton.api;
  * @author Patrik Karlström
  */
 public enum MAvgPeriod {
-    NERVOUS("Nervös", 20),//10
-    SENSITIVE("Känslig", 60),//20
-    NORMAL("Normal", 180),//60
-    CALM("Lugn", 730),//180
-    DEAD_CALM("Kolugn", 3650);//730
+    LABILE("Labil", 7),
+    NERVOUS("Nervös", 20),
+    SENSITIVE("Känslig", 60),
+    NORMAL("Normal", 180),
+    CALM("Lugn", 730),
+    DEAD_CALM("Kolugn", 3650);
     private final int mDays;
     private final String mTitle;
 
