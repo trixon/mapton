@@ -27,7 +27,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import se.trixon.almond.util.Dict;
@@ -66,7 +65,12 @@ public abstract class BMeasurementBasePopulator<T extends BXyzPoint> {
         initContextMenu();
     }
 
+    public void copyRows(StringBuilder sb, ObservableList<BMeasurementRowXyz> rows) {
+    }
+
     public TableView getTableView() {
+        mTableView.getColumns().forEach(c -> c.setReorderable(false));
+
         return mTableView;
     }
 
@@ -123,6 +127,8 @@ public abstract class BMeasurementBasePopulator<T extends BXyzPoint> {
         sb.setLength(sb.length() - 1);
         sb.append("\n");
 
+        copyRows(sb, rows);
+
         var clipboard = Clipboard.getSystemClipboard();
         var content = new ClipboardContent();
         content.putString(sb.toString().trim());
@@ -139,19 +145,18 @@ public abstract class BMeasurementBasePopulator<T extends BXyzPoint> {
     }
 
     private void initContextMenu() {
-        var contextMenu = new ContextMenu();
+        mTableView.setOnMousePressed(e -> {
+            mTableView.getScene().getWindow().requestFocus();
+        });
 
+        var contextMenu = new ContextMenu();
         var copySelected = new MenuItem("Kopiera urval");
         copySelected.setOnAction(e -> copySelectedRows());
 
         var copyAll = new MenuItem("Kopiera alla");
         copyAll.setOnAction(e -> copyAllRows());
 
-        contextMenu.getItems().addAll(copySelected, copyAll);
-        mTableView.setOnMouseClicked(event -> {
-            if (event.isPopupTrigger() || (event.getButton() == MouseButton.SECONDARY)) {
-                contextMenu.show(mTableView, event.getScreenX(), event.getScreenY());
-            }
-        });
+        contextMenu.getItems().addAll(copyAll, copySelected);
+        mTableView.setContextMenu(contextMenu);
     }
 }
