@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo.table;
 
+import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -27,6 +28,7 @@ import org.mapton.butterfly_core.api.BMeasurementRowXyz;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -36,6 +38,7 @@ public class StandardMeasurementPopulator extends BMeasurementBasePopulator<BTop
 
     private final TableColumn<BMeasurementRowXyz, Double> eColumn = new TableColumn<>("E");
     private final TableColumn<BMeasurementRowXyz, Double> hColumn = new TableColumn<>("H");
+    private BTopoControlPoint mPoint;
     private final TableColumn<BMeasurementRowXyz, Double> nColumn = new TableColumn<>("N");
 
     public StandardMeasurementPopulator() {
@@ -45,7 +48,46 @@ public class StandardMeasurementPopulator extends BMeasurementBasePopulator<BTop
     }
 
     @Override
+    public void copyRows(StringBuilder sb, ObservableList<BMeasurementRowXyz> rows) {
+        var dimension = mPoint.getDimension();
+        for (var row : rows) {
+            sb.append(row.date().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm"))).append("\t");
+            if (dimension != BDimension._1d) {
+                sb.append(MathHelper.convertDoubleToString(row.n(), 3)).append("\t")
+                        .append(MathHelper.convertDoubleToString(row.e(), 3)).append("\t");
+            }
+
+            if (dimension != BDimension._2d) {
+                sb.append(MathHelper.convertDoubleToString(row.h(), 3)).append("\t")
+                        .append("%+.3f".formatted(row.delta1d())).append("\t");
+            }
+            if (dimension != BDimension._1d) {
+                sb.append("%+.3f".formatted(row.delta2d())).append("\t");
+            }
+            if (dimension != BDimension._2d) {
+                sb.append(row.percent1d()).append("\t");
+            }
+            if (dimension != BDimension._1d) {
+                sb.append(row.percent2d()).append("\t");
+            }
+
+            var type = "";
+            if (row.codeZero()) {
+                type = "Nollmätning";
+            } else if (row.codeReplacement()) {
+                type = "Ersättningsmätning";
+            }
+            sb.append(row.instrument()).append("\t")
+                    .append(row.oprerator()).append("\t")
+                    .append(row.comment()).append("\t")
+                    .append(type).append("\t")
+                    .append("\n");
+        }
+    }
+
+    @Override
     public void populate(BTopoControlPoint p) {
+        mPoint = p;
         initDecimals(nColumn, 3, false);
         initDecimals(eColumn, 3, false);
         initDecimals(hColumn, 3, false);
