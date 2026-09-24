@@ -43,4 +43,8 @@ public enum MAvgPeriod {
         return "%s (%d)".formatted(mTitle, mDays);
     }
 
+    public static record KeyPair(MAvgPeriod period1, MAvgPeriod period2) {
+
+    }
+
 }
