@@ -25,6 +25,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.mapton.api.MAvgPeriod;
 import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.NbPreferences;
@@ -38,6 +39,8 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public abstract class BLayerOptions<T> extends OptionsBase {
 
+    public static final MAvgPeriod DEFAULT_AVG_PERIOD_A = MAvgPeriod.NERVOUS;
+    public static final MAvgPeriod DEFAULT_AVG_PERIOD_B = MAvgPeriod.CALM;
     public static final String DEFAULT_GRAPHICS = "";
     public static final boolean DEFAULT_PLOT_ALARM = false;
     public static final boolean DEFAULT_PLOT_ANNOTATION = false;
@@ -50,6 +53,10 @@ public abstract class BLayerOptions<T> extends OptionsBase {
     public static final BTrendPeriod DEFAULT_TREND_PERIOD_A = BTrendPeriod.MONTH;
     public static final BTrendPeriod DEFAULT_TREND_PERIOD_B = BTrendPeriod.ZERO;
     public static final BTrendPeriod DEFAULT_TREND_PERIOD_C = BTrendPeriod.QUARTER;
+    private final ObjectProperty<MAvgPeriod> mAvgPeriodAProperty = new SimpleObjectProperty<>(DEFAULT_AVG_PERIOD_A);
+    private StringProperty mAvgPeriodAProxyProperty;
+    private final ObjectProperty<MAvgPeriod> mAvgPeriodBProperty = new SimpleObjectProperty<>(DEFAULT_AVG_PERIOD_B);
+    private StringProperty mAvgPeriodBProxyProperty;
     private StringProperty mColorByProxyProperty;
     private final StringProperty mGraphicsProperty = new SimpleStringProperty(DEFAULT_GRAPHICS);
     private final SimpleObjectProperty<LabelBy.Operations> mLabelByOperationProperty = new SimpleObjectProperty<>();
@@ -74,6 +81,14 @@ public abstract class BLayerOptions<T> extends OptionsBase {
         initTrendPeriodProxyProperties();
     }
 
+    public ObjectProperty<MAvgPeriod> avgPeriodAProperty() {
+        return mAvgPeriodAProperty;
+    }
+
+    public ObjectProperty<MAvgPeriod> avgPeriodBProperty() {
+        return mAvgPeriodBProperty;
+    }
+
     public StringProperty colorByProxyProperty() {
         return mColorByProxyProperty;
     }
@@ -92,6 +107,14 @@ public abstract class BLayerOptions<T> extends OptionsBase {
 
     public void disablePlotWatchlistMember() {
         mPlotWatchlistMemberProperty = null;
+    }
+
+    public MAvgPeriod getAvgPeriodA() {
+        return mAvgPeriodAProperty.get();
+    }
+
+    public MAvgPeriod getAvgPeriodB() {
+        return mAvgPeriodBProperty.get();
     }
 
     public String getGraphics() {
@@ -143,6 +166,8 @@ public abstract class BLayerOptions<T> extends OptionsBase {
         sessionManager.register(prefix + "colorBy", mColorByProxyProperty);
         sessionManager.register(prefix + "labelBy", mLabelByProxyProperty);
         sessionManager.register(prefix + "graphics", mGraphicsProperty);
+        sessionManager.register(prefix + "avgPeriondA", mAvgPeriodAProxyProperty);
+        sessionManager.register(prefix + "avgPeriondB", mAvgPeriodBProxyProperty);
         sessionManager.register(prefix + "trendPeriondA", mTrendPeriodAProxyProperty);
         sessionManager.register(prefix + "trendPeriondB", mTrendPeriodBProxyProperty);
         sessionManager.register(prefix + "trendPeriondC", mTrendPeriodCProxyProperty);
@@ -293,6 +318,8 @@ public abstract class BLayerOptions<T> extends OptionsBase {
     }
 
     protected void initTrendPeriodProxyProperties() {
+        mAvgPeriodAProxyProperty = BindingHelper.createStringEnumProxyProperty(mAvgPeriodAProperty, MAvgPeriod.class);
+        mAvgPeriodBProxyProperty = BindingHelper.createStringEnumProxyProperty(mAvgPeriodBProperty, MAvgPeriod.class);
         mTrendPeriodAProxyProperty = BindingHelper.createStringEnumProxyProperty(mTrendPeriodAProperty, BTrendPeriod.class);
         mTrendPeriodBProxyProperty = BindingHelper.createStringEnumProxyProperty(mTrendPeriodBProperty, BTrendPeriod.class);
         mTrendPeriodCProxyProperty = BindingHelper.createStringEnumProxyProperty(mTrendPeriodCProperty, BTrendPeriod.class);

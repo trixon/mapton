@@ -27,6 +27,7 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.layout.GridPane;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.PopOver;
+import org.mapton.api.MAvgPeriod;
 import org.mapton.api.MDict;
 import org.mapton.api.ui.MPresetActions;
 import org.mapton.butterfly_format.types.BTrendPeriod;
@@ -45,6 +46,10 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public abstract class BLayerOptionsView extends MOptionsView {
 
+    protected final Label mAvgPeriodALabel = new Label("Medelperiod");
+    protected final SessionComboBox<MAvgPeriod> mAvgPeriodAScb = new SessionComboBox<>();
+    protected final Label mAvgPeriodBLabel = new Label("Medelreferens");
+    protected final SessionComboBox<MAvgPeriod> mAvgPeriodBScb = new SessionComboBox<>();
     protected final Label mColorLabel = new Label(Dict.COLOR.toString());
     protected final Label mGraphicLabel = new Label(Dict.GRAPHICS.toString());
     protected final Label mLabelLabel = new Label(Dict.LABEL.toString());
@@ -70,8 +75,8 @@ public abstract class BLayerOptionsView extends MOptionsView {
     private final SessionCheckBox mPlotAnnotationScbx = new SessionCheckBox(MDict.ANNOTATIONS.toString());
     private final SessionCheckBox mPlotDebtScbx = new SessionCheckBox("Skuld");
     private final SessionCheckBox mPlotSelectedScbx = new SessionCheckBox("Bara valt");
-    private final SessionCheckBox mPlotWatchlistMemberScbx = new SessionCheckBox("Bevakade");
     private final SessionCheckBox mPlotWatchlistChangesScbx = new SessionCheckBox("Nya mätningar");
+    private final SessionCheckBox mPlotWatchlistMemberScbx = new SessionCheckBox("Bevakade");
     private MPresetActions mPresetActions;
 
     public BLayerOptionsView(LayerBundle layerBundle, String title, MPresetActions presetActions, String key) {
@@ -218,6 +223,9 @@ public abstract class BLayerOptionsView extends MOptionsView {
     }
 
     protected void initSession(BLayerOptions options) {
+        mAvgPeriodAScb.valueProperty().bindBidirectional(options.avgPeriodAProperty());
+        mAvgPeriodBScb.valueProperty().bindBidirectional(options.avgPeriodBProperty());
+
         mTrendPeriodAScb.valueProperty().bindBidirectional(options.trendPeriodAProperty());
         mTrendPeriodBScb.valueProperty().bindBidirectional(options.trendPeriodBProperty());
 //        mTrendPeriodCScb.valueProperty().bindBidirectional(options.trendPeriodCProperty());
@@ -273,15 +281,25 @@ public abstract class BLayerOptionsView extends MOptionsView {
         mPlotAnnotationScbx.setDisable(true);
         mDistanceSliderPane = new SliderPane("...plus de inom (m)", 50.0, false);
         mDistanceSliderPane.disableProperty().bind(mPlotSelectedScbx.selectedProperty().not());
+        mAvgPeriodAScb.getItems().setAll(MAvgPeriod.values());
+        mAvgPeriodBScb.getItems().setAll(MAvgPeriod.values());
         mTrendPeriodAScb.getItems().setAll(BTrendPeriod.values());
         mTrendPeriodBScb.getItems().setAll(BTrendPeriod.values());
         mTrendPeriodCScb.getItems().setAll(BTrendPeriod.values());
+        //TODO Create mAvgGridPane?
         int row = 0;
+        mTrendGridPane.addRow(row++, mAvgPeriodALabel, mAvgPeriodBLabel);
+        mTrendGridPane.addRow(row++, mAvgPeriodAScb, mAvgPeriodBScb);
         mTrendGridPane.addRow(row++, mTrendPeriodALabel, mTrendPeriodBLabel);
         mTrendGridPane.addRow(row++, mTrendPeriodAScb, mTrendPeriodBScb);
         FxHelper.autoSizeColumn(mTrendGridPane, 2);
         setLabelPadding(mTrendPeriodALabel, mTrendPeriodBLabel);
-        FxHelper.autoSizeRegionHorizontal(mTrendPeriodAScb, mTrendPeriodBScb);
+        FxHelper.autoSizeRegionHorizontal(
+                mAvgPeriodAScb,
+                mAvgPeriodBScb,
+                mTrendPeriodAScb,
+                mTrendPeriodBScb
+        );
 
         mBottomPane = createGridPane();
         mBottomPane.setDisable(true);
