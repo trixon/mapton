@@ -128,5 +128,18 @@
         },
         "name": "Göteborg",
         "url": "https://opengeodata.goteborg.se/services/stadskarta/wms/v4"
+    },
+    {
+        "enabled": true,
+        "layers": {
+            "terrangskuggning": "se.goteborg.terrain_shadow",
+            "terranglutning": "se.goteborg.terrain_slope"
+        },
+        "name": "GöteborgTerrain",
+        "overlays": [
+            "se.goteborg.terrain_shadow",
+            "se.goteborg.terrain_slope"
+        ],
+        "url": "https://opengeodata.goteborg.se/services/hojdmodell/wms/v2"
     }
 ]
