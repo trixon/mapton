@@ -15,8 +15,10 @@
  */
 package org.mapton.ce_jfreechart.api;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.Minute;
 
@@ -35,6 +37,12 @@ public class ChartHelper {
                 ld.getMonthValue(),
                 ld.getYear()
         );
+    }
+
+    public static LocalDateTime convertToLocalDateTime(Minute minute) {
+        return Instant.ofEpochMilli(minute.getFirstMillisecond())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 
     public static Minute convertToMinute(LocalDateTime ldt) {
