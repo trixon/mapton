@@ -160,7 +160,7 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         return NbBundle.getBundle(getClass());
     }
 
-    public void initListeners(ChangeListener changeListenerObject, ListChangeListener<Object> listChangeListener) {
+    public void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
         List.of(
                 selectedProperty(),
                 mNumOfCheckbox.selectedProperty(),
@@ -173,7 +173,7 @@ public class BFilterSectionMeas extends MBaseFilterSection {
                 mQuotaDateRangePane.selectedToEndProperty(),
                 mQuotaDateRangePane.lowStringProperty(),
                 mQuotaDateRangePane.highStringProperty()
-        ).forEach(propertyBase -> propertyBase.addListener(changeListenerObject));
+        ).forEach(propertyBase -> propertyBase.addListener(changeListener));
 
         List.of(
                 mInstrumentSccb.getCheckModel(),

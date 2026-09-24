@@ -16,6 +16,7 @@
 package org.mapton.butterfly_core.api;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,20 +24,23 @@ import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.MAvgPeriod;
+import org.mapton.api.ui.forms.DateRangePane;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.BTrendDirection;
-import static org.mapton.butterfly_format.types.BTrendDirection.PARALLEL;
 import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.NbBundle;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.RangeSliderPane;
@@ -46,23 +50,23 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
+public class BFilterSectionAvg extends MBaseFilterSection {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(BFilterSectionAvg.class);
-    private final SessionComboBox<BTrendDirection> mDirectionScb = new SessionComboBox<>();
     private SessionComboBox<MAvgPeriod> mEwma1PeriodScb;
     private SessionComboBox<MAvgPeriod> mEwma2PeriodScb;
     private AvgComponent mHeightComponent;
     private AvgComponent mPlaneComponent;
     private final GridPane mRoot = new GridPane(columnGap, rowGap);
+    private final TabPane mTabPane = new TabPane();
+    public static final MAvgPeriod DEFAULT_PERIOD_1 = MAvgPeriod.SENSITIVE;
+    public static final MAvgPeriod DEFAULT_PERIOD_2 = MAvgPeriod.CALM;
 
     public BFilterSectionAvg() {
         super("Medel");
 
         createUI();
         setContent(mRoot);
-        mEwma1PeriodScb.getSelectionModel().selectFirst();
-        mEwma2PeriodScb.getSelectionModel().selectLast();
     }
 
     @Override
@@ -70,9 +74,8 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
         super.clear();
         mHeightComponent.clear();
         mPlaneComponent.clear();
-        mEwma1PeriodScb.getSelectionModel().selectFirst();
-        mEwma2PeriodScb.getSelectionModel().selectLast();
-        mDirectionScb.getSelectionModel().selectFirst();
+        mEwma1PeriodScb.getSelectionModel().select(DEFAULT_PERIOD_1);
+        mEwma2PeriodScb.getSelectionModel().select(DEFAULT_PERIOD_2);
     }
 
     @Override
@@ -88,6 +91,7 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
         var validEwma2_1d = true;
         var validEwma1_2d = true;
         var validEwma2_2d = true;
+        boolean[] validActivityDelta1d = {true, true};
         var validActivity1d = true;
         var validActivity2d = true;
 
@@ -101,7 +105,11 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
                     validEwma2_1d = validateEwma(p, key, mHeightComponent.mEwma2RangeSliderPane, mEwma2PeriodScb);
                 }
                 if (mHeightComponent.isActivatedActivity()) {
-                    validActivity1d = validateDiffReference(p, mHeightComponent);
+                    validActivity1d = validateActivity(p, mHeightComponent);
+                }
+
+                if (mHeightComponent.isActivatedActivityChange() || mHeightComponent.isActivatedActivityStrength()) {
+                    validActivityDelta1d = validateActivityDelta(p, mHeightComponent);
                 }
             }
 
@@ -114,7 +122,7 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
                     validEwma2_2d = validateEwma(p, key, mPlaneComponent.mEwma2RangeSliderPane, mEwma2PeriodScb);
                 }
                 if (mPlaneComponent.isActivatedActivity()) {
-                    validActivity2d = validateDiffReference(p, mPlaneComponent);
+                    validActivity2d = validateActivity(p, mPlaneComponent);
                 }
             }
         }
@@ -125,6 +133,8 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
                 && validEwma1_2d
                 && validEwma2_2d
                 && validActivity1d
+                && validActivityDelta1d[0]
+                && validActivityDelta1d[1]
                 && validActivity2d;
 
         return valid;
@@ -133,7 +143,6 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
     public void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
         List.of(
                 selectedProperty(),
-                mDirectionScb.valueProperty(),
                 mEwma1PeriodScb.getSelectionModel().selectedItemProperty(),
                 mEwma2PeriodScb.getSelectionModel().selectedItemProperty()
         ).forEach(propertyBase -> propertyBase.addListener(changeListener));
@@ -152,7 +161,6 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
         sessionManager.register(getKeyFilter("section"), selectedProperty());
         sessionManager.register(getKeyFilter("ewma1"), mEwma1PeriodScb.selectedIndexProperty());
         sessionManager.register(getKeyFilter("ewma2"), mEwma2PeriodScb.selectedIndexProperty());
-        sessionManager.register(getKeyFilter("ewmaDirection"), mDirectionScb.selectedIndexProperty());
         mHeightComponent.initSession(sessionManager);
         mPlaneComponent.initSession(sessionManager);
     }
@@ -162,7 +170,6 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
         mEwma2PeriodScb.load();
         mHeightComponent.load();
         mPlaneComponent.load();
-        mDirectionScb.load();
     }
 
     @Override
@@ -184,20 +191,16 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
         mEwma2PeriodScb.getItems().setAll(MAvgPeriod.values());
         mHeightComponent = new AvgComponent(BComponent.HEIGHT);
         mPlaneComponent = new AvgComponent(BComponent.PLANE);
-        mDirectionScb.getItems().setAll(BTrendDirection.values());
-
+        mTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        mTabPane.getTabs().addAll(mHeightComponent, mPlaneComponent);
         int row = 0;
         mRoot.addRow(row++, new VBox(new Label("EWMA 1 (Kort)"), mEwma1PeriodScb), new VBox(new Label("EWMA 2 (Lång)"), mEwma2PeriodScb));
-        mRoot.add(mHeightComponent, 0, row++, GridPane.REMAINING, 1);
-        mRoot.add(mPlaneComponent, 0, row++, GridPane.REMAINING, 1);
-        mRoot.addRow(row++, new VBox(new Label("Riktning"), mDirectionScb), new VBox(new Label("")));
+        mRoot.add(mTabPane, 0, row++, GridPane.REMAINING, 1);
         FxHelper.autoSizeColumn(mRoot, 2);
         FxHelper.autoSizeRegionHorizontal(mEwma1PeriodScb, mEwma2PeriodScb);
-
-        mDirectionScb.setDisable(true);
     }
 
-    private boolean validateDiffReference(BXyzPoint p, AvgComponent avgComponent) {
+    private boolean validateActivity(BXyzPoint p, AvgComponent avgComponent) {
         var slider = avgComponent.mActivityRangeSliderPane;
         var period1 = mEwma1PeriodScb.getValue();
         var period2 = mEwma2PeriodScb.getValue();
@@ -220,7 +223,39 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
         }
 
         var diff = value1 - value2;
+
         return slider.isValueValid(diff);
+    }
+
+    private boolean[] validateActivityDelta(BXyzPoint p, AvgComponent avgComponent) {
+        var period1 = mEwma1PeriodScb.getValue();
+        var period2 = mEwma2PeriodScb.getValue();
+        var invalid = new boolean[]{false, false};
+
+        HashMap<MAvgPeriod, EwmaHelper.Ewma> map = p.getValue(avgComponent.getKey());
+        if (map == null) {
+            return invalid;
+        }
+
+        var ewma1 = map.get(period1);
+        var ewma2 = map.get(period2);
+        if (ObjectUtils.anyNull(ewma1, ewma2)) {
+            return invalid;
+        }
+
+        var timeSeries1 = ewma1.getTimeSeries();
+        var timeSeries2 = ewma2.getTimeSeries();
+        var timeSeries = XyzChartBuilder.createDifference(timeSeries1, timeSeries2, "");
+        var fromDate = DateHelper.getMax(avgComponent.mActivityDateRangePane.lowDateProperty().get(), p.getDateZero());
+        var toDate = DateHelper.getMax(avgComponent.mActivityDateRangePane.highDateProperty().get(), p.getDateZero());
+        var activityFrom = XyzChartBuilder.getInterpolatedValue(timeSeries, ChartHelper.convertToMinute(fromDate.atStartOfDay()));
+        var activityTo = XyzChartBuilder.getInterpolatedValue(timeSeries, ChartHelper.convertToMinute(toDate.atStartOfDay()));
+        var activityChange = activityTo - activityFrom;
+        var activityStrength = Math.abs(activityTo) - Math.abs(activityFrom);
+        var validChange = avgComponent.mActivityChangeRangeSliderPane.isValueValid(activityChange);
+        var validStrength = avgComponent.mActivityStrengthRangeSliderPane.isValueValid(activityStrength);
+
+        return new boolean[]{validChange, validStrength};
     }
 
     private boolean validateEwma(BXyzPoint p, String key, RangeSliderPane slider, SessionComboBox<MAvgPeriod> comboBox) {
@@ -237,53 +272,12 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
         return slider.isValueValid(ewma.getLastValue());
     }
 
-    private boolean validateVerticalDirection(BXyzPoint p) {
-        if (mDirectionScb.getValue() == BTrendDirection.EITHER) {
-            return true;
-        }
-        if (p.getDimension() == BDimension._2d) {
-            return false;
-        }
-        var dZ = p.extOrNull().deltaZero().getDelta1();
-        if (dZ == null) {
-            return false;
-        }
-        HashMap<MAvgPeriod, TrendHelper.Trend> map = p.getValue(BKey.TRENDS_H);
-        if (map == null) {
-            return false;
-        }
+    class AvgComponent extends Tab {
 
-        var trend = map.get(mEwma1PeriodScb.getValue());
-        if (trend == null) {
-            return false;
-        }
-
-        var value = TrendHelper.getVelocity(trend);
-        if (value == null) {
-            return false;
-        }
-
-        var posTrend = value >= 0d;
-        var posDelta = dZ >= 0d;
-        var closeToZero = Math.abs(value) < 0.1;
-
-        switch (mDirectionScb.getValue()) {
-            case CONVERGENT:
-                return posTrend != posDelta;
-            case DIVERGENT:
-                return posTrend == posDelta;
-            case TRIVIAL:
-                return Math.abs(value) < 2 && !closeToZero;
-            case PARALLEL:
-                return closeToZero;
-            default:
-                throw new AssertionError();
-        }
-    }
-
-    class AvgComponent extends BorderPane {
-
+        private final RangeSliderPane mActivityChangeRangeSliderPane;
+        private final DateRangePane mActivityDateRangePane = new DateRangePane();
         private final RangeSliderPane mActivityRangeSliderPane;
+        private final RangeSliderPane mActivityStrengthRangeSliderPane;
         private final BComponent mComponent;
         private final RangeSliderPane mEwma1RangeSliderPane;
         private final RangeSliderPane mEwma2RangeSliderPane;
@@ -293,15 +287,26 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
             var minEwma = component == BComponent.HEIGHT ? -maxEwma : 0;
             mEwma1RangeSliderPane = new RangeSliderPane("EWMA 1", minEwma, maxEwma, true, 1.0);
             mEwma2RangeSliderPane = new RangeSliderPane("EWMA 2", minEwma, maxEwma, true, 1.0);
-            mActivityRangeSliderPane = new RangeSliderPane("Aktivitet (EWMA 1- EWMA 2)", -maxEwma, maxEwma, true, 1.0);
+            mActivityRangeSliderPane = new RangeSliderPane("Aktivitet (EWMA 1 - EWMA 2)", -maxEwma, maxEwma, true, 1.0);
+            mActivityChangeRangeSliderPane = new RangeSliderPane("Aktivitetsförändring (Aktivitet tom - Aktivitet from)", -maxEwma, maxEwma, true, 1.0);
+            mActivityStrengthRangeSliderPane = new RangeSliderPane("Aktivitetsstyrka (abs(Aktivitet tom) - abs(Aktivitet from))", -maxEwma, maxEwma, true, 1.0);
             mComponent = component;
             createUI();
+            clear();
         }
 
         private void clear() {
             mEwma1RangeSliderPane.clear();
             mEwma2RangeSliderPane.clear();
             mActivityRangeSliderPane.clear();
+            mActivityChangeRangeSliderPane.clear();
+            mActivityStrengthRangeSliderPane.clear();
+            mActivityDateRangePane.reset();
+
+            var minDate = LocalDate.now().minusYears(4);
+            var startDate = LocalDate.now().minusYears(1);
+            mActivityDateRangePane.setMinMaxDate(minDate, LocalDate.now());
+            mActivityDateRangePane.lowDateProperty().set(startDate);
         }
 
         private void createUI() {
@@ -310,29 +315,39 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
             var rangeSliders = List.of(
                     mEwma1RangeSliderPane,
                     mEwma2RangeSliderPane,
-                    mActivityRangeSliderPane
+                    mActivityRangeSliderPane,
+                    mActivityChangeRangeSliderPane,
+                    mActivityStrengthRangeSliderPane
             );
 
             rangeSliders.forEach(rangeSlider -> {
                 rangeSlider.setInvertIncluded(true);
                 FxHelper.autoSizeRegionHorizontal(rangeSlider);
             });
+            int row = 0;
+            gp.add(mEwma1RangeSliderPane, 0, row++, GridPane.REMAINING, 1);
+            gp.add(mEwma2RangeSliderPane, 0, row++, GridPane.REMAINING, 1);
+            gp.add(mActivityRangeSliderPane, 0, row++, GridPane.REMAINING, 1);
+            gp.add(mActivityChangeRangeSliderPane, 0, row++, GridPane.REMAINING, 1);
+            gp.add(mActivityStrengthRangeSliderPane, 0, row++, GridPane.REMAINING, 1);
+            gp.addRow(row++, mActivityDateRangePane.getRoot(), new Label());
 
-            gp.addColumn(0,
-                    rangeSliders.toArray(RangeSliderPane[]::new)
-            );
-
+            var leftRightPad = FxHelper.getUIScaled(4.0);
+            var bottomLeftRightRadius = FxHelper.getUIScaled(12.0);
             var borderNode = Borders.wrap(gp)
                     .etchedBorder()
-                    .title(mComponent.getDimension().getName() + "d")
+                    .radius(0, 0, bottomLeftRightRadius, bottomLeftRightRadius)
                     .innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding)
-                    .outerPadding(FxHelper.getUIScaled(6.0), 0, 0, 0)
+                    .outerPadding(0, leftRightPad, 0, leftRightPad)
                     .raised()
                     .build()
                     .build();
+            mActivityDateRangePane.getRoot().disableProperty().bind(mActivityChangeRangeSliderPane.selectedProperty().or(mActivityStrengthRangeSliderPane.selectedProperty()).not());
+            mActivityDateRangePane.getRoot().setBackground(FxHelper.createBackground(Color.DARKSALMON));
 
-            FxHelper.autoSizeColumn(gp, 1);
-            setCenter(borderNode);
+            FxHelper.autoSizeColumn(gp, 2);
+            setContent(borderNode);
+            setText(mComponent.getDimension().getName() + "d");
         }
 
         private String getKey() {
@@ -341,9 +356,18 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
 
         private void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
             List.of(
+                    mActivityDateRangePane.selectedFromStartProperty(),
+                    mActivityDateRangePane.selectedToEndProperty(),
+                    mActivityDateRangePane.lowStringProperty(),
+                    mActivityDateRangePane.highStringProperty()
+            ).forEach(propertyBase -> propertyBase.addListener(changeListener));
+
+            List.of(
                     mEwma1RangeSliderPane,
                     mEwma2RangeSliderPane,
-                    mActivityRangeSliderPane
+                    mActivityRangeSliderPane,
+                    mActivityChangeRangeSliderPane,
+                    mActivityStrengthRangeSliderPane
             ).forEach(rangeSlider -> {
                 rangeSlider.selectedProperty().addListener(changeListener);
                 rangeSlider.invertedProperty().addListener(changeListener);
@@ -357,10 +381,20 @@ public class BFilterSectionAvg<T extends BXyzPoint> extends MBaseFilterSection {
             mEwma1RangeSliderPane.initSession(getKeyFilter(mode + "ewma1"), sessionManager);
             mEwma2RangeSliderPane.initSession(getKeyFilter(mode + "ewma2"), sessionManager);
             mActivityRangeSliderPane.initSession(getKeyFilter(mode + "activity"), sessionManager);
+            mActivityChangeRangeSliderPane.initSession(getKeyFilter(mode + "activityChange"), sessionManager);
+            mActivityStrengthRangeSliderPane.initSession(getKeyFilter(mode + "activityStrength"), sessionManager);
         }
 
         private boolean isActivatedActivity() {
             return mActivityRangeSliderPane.selectedProperty().get();
+        }
+
+        private boolean isActivatedActivityChange() {
+            return mActivityChangeRangeSliderPane.selectedProperty().get();
+        }
+
+        private boolean isActivatedActivityStrength() {
+            return mActivityStrengthRangeSliderPane.selectedProperty().get();
         }
 
         private boolean isActivatedEwma1() {

@@ -23,6 +23,8 @@ public class BKey {
 
     public static final String CLUSTER_CHART = "cluster_chart";
     public static final String CLUSTER_CHART_FUNCTION = "cluster_chart_function";
+    public static final String EWMA_ACTIVITY_H = "ewmaActivityH";
+    public static final String EWMA_ACTIVITY_P = "ewmaActivityP";
     public static final String EWMA_H = "ewmaH";
     public static final String EWMA_H_RAW = EWMA_H + "raw";
     public static final String EWMA_P = "ewmaP";

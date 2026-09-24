@@ -124,6 +124,20 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         }
     }
 
+    public static TimeSeries createDifference(TimeSeries series1, TimeSeries series2, String name) {
+        var result = new TimeSeries(name);
+        var count = Math.min(series1.getItemCount(), series2.getItemCount());
+
+        for (int i = 0; i < count; i++) {
+            double value1 = series1.getDataItem(i).getValue().doubleValue();
+            double value2 = series2.getDataItem(i).getValue().doubleValue();
+            double diff = value1 - value2;
+            result.add(series1.getDataItem(i).getPeriod(), diff);
+        }
+
+        return result;
+    }
+
     public static TimeSeries createEWMA(String title, LocalDate minDate, TimeSeries source, MAvgPeriod avgPeriod) {
         var days = avgPeriod.getDays();
         var name = title != null ? title : "EWMA (%d)".formatted(days);
@@ -165,6 +179,53 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         }
 
         return result;
+    }
+
+    public static double getInterpolatedValue(TimeSeries series, Minute minute) {
+        if (series == null || series.isEmpty()) {
+            return Double.NaN;
+        }
+
+        long targetTime = minute.getStart().getTime();
+
+        var first = series.getDataItem(0);
+        long firstTime = first.getPeriod().getStart().getTime();
+
+        if (targetTime <= firstTime) {
+            return first.getValue().doubleValue();
+        }
+
+        var last = series.getDataItem(series.getItemCount() - 1);
+        long lastTime = last.getPeriod().getStart().getTime();
+
+        if (targetTime >= lastTime) {
+            return last.getValue().doubleValue();
+        }
+
+        for (int i = 1; i < series.getItemCount(); i++) {
+
+            var previous = series.getDataItem(i - 1);
+            var next = series.getDataItem(i);
+
+            long t1 = previous.getPeriod().getStart().getTime();
+            long t2 = next.getPeriod().getStart().getTime();
+
+            if (targetTime >= t1 && targetTime <= t2) {
+
+                double y1 = previous.getValue().doubleValue();
+                double y2 = next.getValue().doubleValue();
+
+                if (t1 == t2) {
+                    return y1;
+                }
+
+                double fraction = (double) (targetTime - t1) / (t2 - t1);
+
+                return y1 + fraction * (y2 - y1);
+            }
+        }
+
+        return Double.NaN;
     }
 
     public static void plotMeasNeed(XYPlot plot, BBaseControlPoint p, long days) {
@@ -226,21 +287,6 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         for (var timeSerie : series) {
             timeSerie.clear();
         }
-    }
-
-    public TimeSeries createDifference(TimeSeries series1, TimeSeries series2, String name) {
-        var result = new TimeSeries(name);
-
-        int count = Math.min(series1.getItemCount(), series2.getItemCount());
-
-        for (int i = 0; i < count; i++) {
-            double value1 = series1.getDataItem(i).getValue().doubleValue();
-            double value2 = series2.getDataItem(i).getValue().doubleValue();
-            double diff = value1 - value2;
-            result.add(series1.getDataItem(i).getPeriod(), diff);
-        }
-
-        return result;
     }
 
     public TimeSeries createSubSetMovingAverage(TimeSeries timeSeries, Minute start, Minute end, String name, int periodCount, int skip) {
