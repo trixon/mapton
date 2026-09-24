@@ -418,7 +418,7 @@
     </profiles>
 
     <properties>
-        <jackson.version>2.22.2</jackson.version>
+        <jackson.version>2.22.3</jackson.version>
         <brandingToken>mapton</brandingToken>
         <mapton.version>26.03x</mapton.version>
         <geotools.version>35.1</geotools.version>
