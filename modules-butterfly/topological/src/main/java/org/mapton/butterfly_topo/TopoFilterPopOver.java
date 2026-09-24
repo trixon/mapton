@@ -58,7 +58,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final CheckBox mDimens3Checkbox = new CheckBox("3");
     private final TopoFilter mFilter;
     private final BFilterSectionAlarm mFilterSectionAlarm;
-    private final BFilterSectionAvg<BTopoControlPoint> mFilterSectionAvg;
+    private final BFilterSectionAvg mFilterSectionAvg;
     private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
     private final BFilterSectionMeas mFilterSectionMeas;
@@ -84,7 +84,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMeas = new BFilterSectionMeas(mFilterSectionMeasSpecific.getRoot());
         mFilterSectionMisc = new BFilterSectionMisc(filter);
         mFilterSectionTrend = new BFilterSectionTrend<>();
-        mFilterSectionAvg = new BFilterSectionAvg<>();
+        mFilterSectionAvg = new BFilterSectionAvg();
         mFilterSectionMon = new FilterSectionMon();
 
         mFilter = (TopoFilter) filter;

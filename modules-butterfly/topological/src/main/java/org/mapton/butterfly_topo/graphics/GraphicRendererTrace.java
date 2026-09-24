@@ -25,11 +25,20 @@ import gov.nasa.worldwind.render.RigidShape;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import org.apache.commons.lang3.ObjectUtils;
+import org.jfree.data.time.Minute;
+import org.jfree.data.time.TimeSeries;
+import org.mapton.api.MAvgPeriod;
 import org.mapton.api.MOptions;
+import org.mapton.butterfly_core.api.BKey;
+import org.mapton.butterfly_core.api.EwmaHelper;
+import org.mapton.butterfly_core.api.XyzChartBuilder;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoLayerBundle;
+import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -56,6 +65,14 @@ public class GraphicRendererTrace extends GraphicRendererBase {
 //            plot2d(p, position, mapObjects);
         } else if (sCheckModel.isChecked(GraphicItem.TRACE_3D) && dimension == BDimension._3d) {
             plot3d(p, position);
+        }
+
+        if (sCheckModel.isChecked(GraphicItem.AVG_1D_PERIOD) && dimension != BDimension._2d) {
+            plotAvg1d(p, position, GraphicItem.AVG_1D_ACTIVITY);
+        }
+
+        if (sCheckModel.isChecked(GraphicItem.AVG_1D_ACTIVITY) && dimension != BDimension._2d) {
+            plotAvgActivity1d(p, position);
         }
     }
 
@@ -185,6 +202,96 @@ public class GraphicRendererTrace extends GraphicRendererBase {
 
         plotLabel(p, positions[0]);
 
+    }
+
+    private void plotAvg1d(BTopoControlPoint p, Position position, GraphicItem graphicItem) {
+        if (isPlotLimitReached(p, graphicItem, position)) {
+            return;
+        }
+
+        HashMap<MAvgPeriod, EwmaHelper.Ewma> map = p.getValue(BKey.EWMA_H);
+        if (map == null) {
+            return;
+        }
+
+        var avgA = map.get(mLayerOptions.getAvgPeriodA());
+        var avgB = map.get(mLayerOptions.getAvgPeriodB());
+        if (avgA == null || avgA.getTimeSeries() == null) {
+            return;
+        }
+
+        plotAvg1d(p, position, avgA.getTimeSeries(), graphicItem);
+    }
+
+    private void plotAvg1d(BTopoControlPoint p, Position position, TimeSeries timeSeries, GraphicItem graphicItem) {
+        var prevDate = LocalDateTime.now();
+        var altitude = 0.0;
+        var prevHeight = 0.0;
+//        System.out.println("%s: %d".formatted(p.getName(), timeSeries.getItemCount()));
+        for (int i = timeSeries.getItemCount() - 1; i >= 0; i--) {
+            var dataItem = timeSeries.getDataItem(i);
+            var dZ = dataItem.getValue().doubleValue() / 1000.0;
+            var date = ChartHelper.convertToLocalDateTime((Minute) dataItem.getPeriod());
+//
+            var timeSpan = ChronoUnit.MINUTES.between(date, prevDate);
+            var height = Math.max(0.01, timeSpan / 24000.0);
+
+            altitude = altitude + height * 0.5 + prevHeight * 0.5;
+            prevDate = date;
+            prevHeight = height;
+
+            var pos = WWHelper.positionFromPosition(position, altitude);
+            var maxRadius = 10.0;
+            var indicatorPosition = WWHelper.positionFromPosition(position, altitude + height / 2);
+//            if (sCheckModel.isChecked(GraphicItem.TRACE_1D_ZERO)) {
+//                plotIndicatorZero(indicatorPosition, 2, o);
+//            }
+//            if (sCheckModel.isChecked(GraphicItem.TRACE_1D_REPLACE)) {
+//                plotIndicatorReplacement(indicatorPosition, 2, o);
+//            }
+            ////            var dZ = o.ext().getDeltaZ();
+            var radius = Math.min(maxRadius, Math.abs(dZ) * mScale1dH + 0.05);
+            var maximus = radius == maxRadius;
+            RigidShape shape;
+            if (dZ > 0) {
+                shape = new Box(pos, radius, height / 2, radius);
+            } else {
+                shape = new Cylinder(pos, height, radius);
+            }
+
+            var alarmLevel = p.ext().getAlarmLevel(BComponent.HEIGHT, dZ);
+//            alarmLevel = Math.clamp(alarmLevel, 0, 4);
+//            var alarmLevel = p.ext().getAlarmLevelHeight(o);
+            var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, false, false);
+
+            if (i == 0 && ChronoUnit.DAYS.between(date, LocalDateTime.now()) > 180) {
+                attrs = new BasicShapeAttributes(attrs);
+                attrs.setInteriorOpacity(0.25);
+                attrs.setOutlineOpacity(0.20);
+            }
+
+            shape.setAttributes(attrs);
+            addRenderable(shape, true, graphicItem, sMapObjects);
+        }
+    }
+
+    private void plotAvgActivity1d(BTopoControlPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicItem.AVG_1D_ACTIVITY, position)) {
+            return;
+        }
+
+        HashMap<MAvgPeriod, EwmaHelper.Ewma> map = p.getValue(BKey.EWMA_H);
+        if (map == null) {
+            return;
+        }
+
+        var avgA = map.get(mLayerOptions.getAvgPeriodA());
+        var avgB = map.get(mLayerOptions.getAvgPeriodB());
+        if (avgA == null || avgA.getTimeSeries() == null || avgB == null || avgB.getTimeSeries() == null) {
+            return;
+        }
+        var timeSeries = XyzChartBuilder.createDifference(avgA.getTimeSeries(), avgB.getTimeSeries(), "");
+        plotAvg1d(p, position, timeSeries, GraphicItem.AVG_1D_ACTIVITY);
     }
 
 }

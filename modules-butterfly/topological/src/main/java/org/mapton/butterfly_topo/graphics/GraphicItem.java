@@ -60,6 +60,8 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     ALARM_CONSUMPTION_TRACE_1("\t— spår höjd", Integer.MAX_VALUE),
     ALARM_CONSUMPTION_TRACE_2("\t— spår plan", Integer.MAX_VALUE),
     TRACE_ALARM_LEVEL("%s (%s)".formatted(SDict.ALARM_LEVEL.toString(), SDict.TRACE.toLower()), Integer.MAX_VALUE),
+    AVG_1D_PERIOD("Medel, 1d Period", 10_000),
+    AVG_1D_ACTIVITY("Medel, 1d Aktivitet", 10_000),
     TREND_1D_PERIOD("Trend, 1d Period", Integer.MAX_VALUE),
     TREND_1D_PERIODS("Trend, 1d Perioder", Integer.MAX_VALUE),
     TREND_1D_DIFF_PREV("Trend, 1d Diff föregående", Integer.MAX_VALUE),

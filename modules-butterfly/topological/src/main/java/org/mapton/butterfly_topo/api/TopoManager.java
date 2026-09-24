@@ -326,23 +326,23 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     }
 
     private void populateEwma(BTopoControlPoint p) {
-        var timeSeries1 = new TimeSeries(p.getName());
-        var timeSeries2 = new TimeSeries(p.getName());
+        var rawTimeSeriesH = new TimeSeries(p.getName());
+        var rawTimeSeriesP = new TimeSeries(p.getName());
 
         for (var o : p.ext().getObservationsTimeFiltered()) {
             if (p.getDimension() != BDimension._2d) {
                 var delta = o.ext().getDelta1d() * 1000;
-                timeSeries1.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), delta);
+                rawTimeSeriesH.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), delta);
             }
 
             if (p.getDimension() != BDimension._1d) {
                 var delta = o.ext().getDelta2d() * 1000;
-                timeSeries2.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), delta);
+                rawTimeSeriesP.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), delta);
             }
         }
 
-        p.setValue(BKey.EWMA_H_RAW, timeSeries1);
-        p.setValue(BKey.EWMA_P_RAW, timeSeries2);
+        p.setValue(BKey.EWMA_H_RAW, rawTimeSeriesH);
+        p.setValue(BKey.EWMA_P_RAW, rawTimeSeriesP);
 
         for (var value : MAvgPeriod.values()) {
             switch (p.getDimension()) {
@@ -356,6 +356,27 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
                 }
             }
         }
+
+        for (var period1 : MAvgPeriod.values()) {
+            for (var period2 : MAvgPeriod.values()) {
+                switch (p.getDimension()) {
+                    case _1d ->
+                        populateEwmaActivity(p, BKey.EWMA_ACTIVITY_H, period1, period2);
+                    case _2d ->
+                        populateEwmaActivity(p, BKey.EWMA_ACTIVITY_P, period1, period2);
+                    case _3d -> {
+                        populateEwmaActivity(p, BKey.EWMA_ACTIVITY_H, period1, period2);
+                        populateEwmaActivity(p, BKey.EWMA_ACTIVITY_P, period1, period2);
+                    }
+                }
+            }
+        }
+    }
+
+    private void populateEwmaActivity(BTopoControlPoint p, String key, MAvgPeriod period1, MAvgPeriod period2) {
+        var keyPair = new MAvgPeriod.KeyPair(period1, period2);
+        p.getValue(key);
+        //TODO
     }
 
     private void populateTrend(BTopoControlPoint p, BTrendPeriod period, LocalDateTime startDate, LocalDateTime endDate) {
