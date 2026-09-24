@@ -28,8 +28,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
+import org.jfree.data.time.TimeSeries;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
+import org.mapton.api.MAvgPeriod;
 import org.mapton.api.MDisruptorProvider;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
@@ -38,6 +40,7 @@ import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_core.api.ButterflyManager;
+import org.mapton.butterfly_core.api.EwmaHelper;
 import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BTrendPeriod;
@@ -47,6 +50,7 @@ import org.mapton.butterfly_format.types.remote.BRemoteInsarPointObservation;
 import org.mapton.butterfly_remote.insar.chart.ChartAggregate;
 import org.mapton.butterfly_remote.insar.chart.InsarChartBuilder;
 import org.mapton.butterfly_remote.insar.chart.MultiChartAggregate;
+import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.CollectionHelper;
@@ -196,6 +200,10 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
             });
         }
 
+        timeFilteredItems.stream().forEach(p -> {
+            populateEwma(p);
+        });
+
         setItemsTimeFiltered(timeFilteredItems);
     }
 
@@ -275,6 +283,31 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
         };
 
         SystemHelper.runLaterDelayed(1000, task);
+    }
+
+    private void populateEwma(BRemoteInsarPoint p, String mode, MAvgPeriod period) {
+        var ewma = EwmaHelper.createEwma(p, mode, period);
+        HashMap<MAvgPeriod, EwmaHelper.Ewma> map = (HashMap<MAvgPeriod, EwmaHelper.Ewma>) p.getValue(mode, new HashMap<>());
+        map.put(period, ewma);
+        p.setValue(mode, map);
+    }
+
+    private void populateEwma(BRemoteInsarPoint p) {
+        if (p.getValue(BKey.EWMA_H_RAW) != null) {
+            return;
+        }
+        var timeSeries1 = new TimeSeries(p.getName());
+
+        for (var o : p.ext().getObservationsTimeFiltered()) {
+            var delta = o.ext().getDelta1d() * 1000;
+            timeSeries1.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), delta);
+        }
+
+        p.setValue(BKey.EWMA_H_RAW, timeSeries1);
+
+        for (var value : MAvgPeriod.values()) {
+            populateEwma(p, BKey.EWMA_H, value);
+        }
     }
 
     private void populateTrend(BRemoteInsarPoint p, BTrendPeriod period, LocalDateTime startDate, LocalDateTime endDate) {

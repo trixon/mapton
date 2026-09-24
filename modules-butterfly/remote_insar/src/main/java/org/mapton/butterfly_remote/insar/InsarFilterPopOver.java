@@ -21,6 +21,7 @@ import java.util.prefs.Preferences;
 import javafx.scene.layout.BorderPane;
 import org.mapton.butterfly_core.api.AlarmLevelCalculator;
 import org.mapton.butterfly_core.api.BFilterSectionAlarm;
+import org.mapton.butterfly_core.api.BFilterSectionAvg;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
@@ -43,13 +44,14 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
     private final ResourceBundle mBundle = NbBundle.getBundle(InsarFilterPopOver.class);
     private final InsarFilter mFilter;
     private final BFilterSectionAlarm mFilterSectionAlarm;
+    private final BFilterSectionAvg mFilterSectionAvg;
+    private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
     private final FilterSectionMeas mFilterSectionMeas;
     private final BFilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final BFilterSectionTrend<BRemoteInsarPoint> mFilterSectionTrend;
     private final InsarManager mManager = InsarManager.getInstance();
-    private final BFilterSectionDate mFilterSectionDate;
 
     public InsarFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
@@ -64,6 +66,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionMisc = new BFilterSectionMisc(filter);
         mFilterSectionTrend = new BFilterSectionTrend<>();
         mFilterSectionMeas = new FilterSectionMeas();
+        mFilterSectionAvg = new BFilterSectionAvg();
 
         mFilter = (InsarFilter) filter;
         mFilter.setFilterSection(mFilterSectionPoint);
@@ -72,6 +75,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.setFilterSection(mFilterSectionTrend);
         mFilter.setFilterSection(mFilterSectionMeas);
         mFilter.setFilterSection(mFilterSectionDate);
+        mFilter.setFilterSection(mFilterSectionAvg);
 
         setFilter(filter);
         createUI();
@@ -93,6 +97,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionTrend.clear();
         mFilterSectionMeas.clear();
         mFilterSectionDate.clear();
+        mFilterSectionAvg.clear();
 
         resetTabs();
     }
@@ -108,6 +113,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionTrend.load();
         mFilterSectionMeas.load(items, mManager.getTemporalRange());
         mFilterSectionDate.load(mManager.getTemporalRange());
+        mFilterSectionAvg.load();
     }
 
     @Override
@@ -157,6 +163,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
                 mFilterSectionMeas.getTab(),
                 mFilterSectionAlarm.getTab(),
                 mFilterSectionDisruptor.getTab(),
+                mFilterSectionAvg.getTab(),
                 mFilterSectionTrend.getTab()
         );
 
@@ -186,6 +193,7 @@ public class InsarFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionTrend.initSession(sessionManager);
         mFilterSectionMeas.initSession(sessionManager);
         mFilterSectionDate.initSession(sessionManager);
+        mFilterSectionAvg.initSession(sessionManager);
 
         return sessionManager;
     }
