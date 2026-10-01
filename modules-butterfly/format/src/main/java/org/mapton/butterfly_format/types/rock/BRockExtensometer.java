@@ -52,8 +52,6 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
     "tag",
     "nameOfAlarmHeight",
     "nameOfAlarmPlane",
-    "dateValidFrom",
-    "dateValidTo",
     "lat",
     "lon",
     "dateLatest"
@@ -63,8 +61,6 @@ public class BRockExtensometer extends BXyzPoint {
     private double groundLevel;
     private transient Ext mExt;
     private transient ArrayList<BRockExtensometerPoint> mPoints = new ArrayList<>();
-    private transient Double numOfDecXY;
-    private transient Double numOfDecZ;
     private transient Double offsetX;
     private transient Double offsetY;
     private transient Double offsetZ;
