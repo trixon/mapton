@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_structural.load;
 
-import org.mapton.butterfly_structural.load.api.LoadManager;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
@@ -24,12 +23,14 @@ import org.mapton.butterfly_core.api.AlarmLevelCalculator;
 import org.mapton.butterfly_core.api.BFilterSectionAlarm;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
+import org.mapton.butterfly_core.api.BFilterSectionMeas;
 import org.mapton.butterfly_core.api.BFilterSectionMisc;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.structural.BStructuralLoadCellPoint;
+import org.mapton.butterfly_structural.load.api.LoadManager;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
@@ -41,12 +42,13 @@ public class LoadFilterPopOver extends BaseTabbedFilterPopOver {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(LoadFilterPopOver.class);
     private final LoadFilter mFilter;
+    private final BFilterSectionAlarm mFilterSectionAlarm;
     private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
+    private final BFilterSectionMeas mFilterSectionMeas;
     private final BFilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final LoadManager mManager = LoadManager.getInstance();
-    private final BFilterSectionAlarm mFilterSectionAlarm;
 
     public LoadFilterPopOver(ButterflyFormFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
@@ -59,12 +61,14 @@ public class LoadFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMisc = new BFilterSectionMisc(filter);
+        mFilterSectionMeas = new BFilterSectionMeas();
 
         mFilter = (LoadFilter) filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionAlarm);
         mFilter.setFilterSection(mFilterSectionDate);
         mFilter.setFilterSection(mFilterSectionDisruptor);
+        mFilter.setFilterSection(mFilterSectionMeas);
 
         setFilter(filter);
         createUI();
@@ -84,21 +88,9 @@ public class LoadFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDisruptor.clear();
         mFilterSectionMisc.clear();
         mFilterSectionAlarm.clear();
+        mFilterSectionMeas.clear();
 
         resetTabs();
-    }
-
-    @Override
-    public void presetRestore(Preferences preferences) {
-        clear();
-        presetStore(preferences);
-        //mDateRangePane.reset();
-    }
-
-    @Override
-    public void presetStore(Preferences preferences) {
-        var sessionManager = initSession(preferences);
-        sessionManager.unregisterAll();
     }
 
     @Override
@@ -106,6 +98,7 @@ public class LoadFilterPopOver extends BaseTabbedFilterPopOver {
         var items = butterfly.structural().getLoadPoints();
 
         mFilterSectionPoint.load(items);
+        mFilterSectionMeas.load(items);
         mFilterSectionAlarm.load(items);
         mFilterSectionDisruptor.load();
         mFilterSectionDate.load(mManager.getTemporalRange());
@@ -121,6 +114,19 @@ public class LoadFilterPopOver extends BaseTabbedFilterPopOver {
     public void onShownFirstTime() {
         mFilterSectionPoint.onShownFirstTime();
         mFilterSectionAlarm.onShownFirstTime();
+    }
+
+    @Override
+    public void presetRestore(Preferences preferences) {
+        clear();
+        presetStore(preferences);
+        //mDateRangePane.reset();
+    }
+
+    @Override
+    public void presetStore(Preferences preferences) {
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
     }
 
     @Override
@@ -143,6 +149,7 @@ public class LoadFilterPopOver extends BaseTabbedFilterPopOver {
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),
                 mFilterSectionDate.getTab(),
+                mFilterSectionMeas.getTab(),
                 mFilterSectionAlarm.getTab(),
                 mFilterSectionDisruptor.getTab()
         );
@@ -168,6 +175,7 @@ public class LoadFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionAlarm.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
+        mFilterSectionMeas.initSession(sessionManager);
 
         return sessionManager;
     }

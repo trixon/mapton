@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_structural.load;
 
-import org.mapton.butterfly_structural.load.api.LoadManager;
 import j2html.tags.ContainerTag;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
@@ -28,10 +27,13 @@ import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
+import org.mapton.butterfly_core.api.BFilterSectionMeas;
+import org.mapton.butterfly_core.api.BFilterSectionMeasProvider;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
+import org.mapton.butterfly_structural.load.api.LoadManager;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
@@ -43,6 +45,7 @@ public class LoadFilter extends ButterflyFormFilter<LoadManager> implements
         BFilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
+        BFilterSectionMeasProvider,
         BFilterSectionAlarmProvider,
         BFilterSectionDisruptorProvider {
 
@@ -54,6 +57,12 @@ public class LoadFilter extends ButterflyFormFilter<LoadManager> implements
         mContentOptions = LoadContentOptions.getInstance();
 
         initListeners();
+    }
+
+    @Override
+    public void setFilterSection(BFilterSectionMeas filterSection) {
+        mFilterSectionMeas = filterSection;
+        mFilterSectionMeas.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     public void initCheckModelListeners() {
@@ -97,6 +106,7 @@ public class LoadFilter extends ButterflyFormFilter<LoadManager> implements
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> mFilterSectionAlarm.filter(p))
+                .filter(p -> mFilterSectionMeas.filter(p))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
                 .toList();
 
@@ -120,6 +130,7 @@ public class LoadFilter extends ButterflyFormFilter<LoadManager> implements
         mFilterSectionPoint.createInfoContent(map);
         mFilterSectionDate.createInfoContent(map);
         mFilterSectionDisruptor.createInfoContent(map);
+        mFilterSectionMeas.createInfoContent(map);
 
         return createHtmlFilterInfo(map);
     }
