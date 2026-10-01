@@ -89,7 +89,8 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
 
         var alarmLevel = p.ext().getAlarmLevelHeight(o);
-        var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, maximus);
+        var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, false, maximus).copy();
+        attrs.setInteriorMaterial(mAttributeManager.getMaterialForColorBy(p));
 
         shape.setAttributes(attrs);
         addRenderable(shape, true, GraphicItem.CIRCLE_1D, sMapObjects);

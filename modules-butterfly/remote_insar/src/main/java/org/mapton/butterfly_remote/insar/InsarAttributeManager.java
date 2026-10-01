@@ -130,6 +130,18 @@ public class InsarAttributeManager extends BaseAttributeManager {
         return mInsarAttribute;
     }
 
+    public Material getMaterialForColorBy(BRemoteInsarPoint p) {
+//        return new Material(getPinAttributes(p).getImageColor());
+
+        if (getColorBy() == InsarColorBy.ALARM) {
+            return new Material(InsarHelper.getAlarmColorAwt(p));
+        } else if (getColorBy() != null) {
+            return new Material(getColor(p));
+        } else {
+            return Material.BLACK;
+        }
+    }
+
     public PointPlacemarkAttributes getPinAttributes(BRemoteInsarPoint p) {
         var attrs = getPinAttributes(InsarHelper.getAlarmLevel(p));
 
