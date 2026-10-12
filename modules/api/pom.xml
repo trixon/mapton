@@ -282,7 +282,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>jdktools</artifactId>
-            <version>21.0.55</version>
+            <version>21.0.57</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
