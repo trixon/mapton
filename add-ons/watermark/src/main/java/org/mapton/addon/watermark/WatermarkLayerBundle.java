@@ -80,7 +80,17 @@ public class WatermarkLayerBundle extends LayerBundle {
         mAttributes.setAdjustWidthToText(AVKey.SIZE_FIT_TEXT);
 
         mTimer = new Timer(250, actionListener -> {
-            resetPaintDelayedResetRunner();
+            String newText;
+            try {
+                newText = mPatternError == null ? LocalDateTime.now().format(mDateTimeFormatter) : mPatternError;
+            } catch (Exception e) {
+                newText = e.getMessage();
+            }
+
+            if (!newText.equals(mAnnotation.getText())) {
+                mAnnotation.setText(newText);
+                resetPaintDelayedResetRunner();
+            }
         });
 
         mLayer.addAnnotation(mAnnotation);
@@ -130,16 +140,6 @@ public class WatermarkLayerBundle extends LayerBundle {
 
     private void initRepaint() {
         setPainter(() -> {
-            String text;
-            try {
-                text = mPatternError == null ? LocalDateTime.now().format(mDateTimeFormatter) : mPatternError;
-            } catch (Exception e) {
-                text = e.getMessage();
-            }
-
-            if (!text.equals(mAnnotation.getText())) {
-                mAnnotation.setText(text);
-            }
         });
     }
 

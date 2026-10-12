@@ -74,8 +74,8 @@ public class WatermarkOptionsView extends MOptionsView {
                 WatermarkOptions.DEFAULT_PATTERN,
                 "yyyy-MM-dd",
                 "yyyy-MM-dd HH.mm",
+                "'v'w yyyy-MM-dd HH.mm",
                 "HH:mm",
-                "HH:mm:ss",
                 "'prefix' HH:mm:ss 'suffix'",
                 "'Plain text: Hello, World!'"
         ));

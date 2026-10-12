@@ -41,7 +41,7 @@ public class WatermarkOptions extends OptionsBase implements MPresetActions {
     public static final Color DEFAULT_COLOR_FONT = Color.GRAY;
     public static final double DEFAULT_FONT_SIZE = FxHelper.getUIScaled(14);
     public static final double DEFAULT_OPACITY = 0.5;
-    public static final String DEFAULT_PATTERN = "yyyy-MM-dd HH.mm.ss";
+    public static final String DEFAULT_PATTERN = "yyyy-MM-dd HH.mm";
     private final ObjectProperty<Color> mBackgroundColorProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BACKGROUND);
     private final ObjectProperty<Color> mBorderColorProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BORDER);
     private final DoubleProperty mBorderSizeProperty = new SimpleDoubleProperty(DEFAULT_BORDER_SIZE);
