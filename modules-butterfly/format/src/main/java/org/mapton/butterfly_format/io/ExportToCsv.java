@@ -16,6 +16,11 @@
 package org.mapton.butterfly_format.io;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.StreamWriteFeature;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
@@ -47,11 +52,22 @@ public abstract class ExportToCsv {
         var simpleModule = new SimpleModule();
         simpleModule.addSerializer(BDimension.class, new DimensionSerializer());
         simpleModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
-
+        simpleModule.addSerializer(double.class, new JsonSerializer<Double>() {
+            @Override
+            public void serialize(Double value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+                if (Double.isNaN(value)) {
+                    gen.writeNull();
+                } else {
+                    gen.writeNumber(value);
+                }
+            }
+        });
         var mapper = CsvMapper.builder()
                 .addModule(new JavaTimeModule())
                 .addModule(simpleModule)
                 .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
+                .configure(JsonWriteFeature.WRITE_NAN_AS_STRINGS.mappedFeature(), false)
+                .configure(StreamWriteFeature.WRITE_BIGDECIMAL_AS_PLAIN.mappedFeature(), true)
                 .build();
 
         mapper.setVisibility(mapper.getSerializationConfig()

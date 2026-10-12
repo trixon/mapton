@@ -16,8 +16,11 @@
 package org.mapton.butterfly_format.io;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.StreamReadFeature;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
@@ -52,6 +55,25 @@ public abstract class ImportFromCsv<T> {
         var simpleModule = new SimpleModule();
         simpleModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
         simpleModule.addDeserializer(BDimension.class, new DimensionDeserializer());
+        simpleModule.addDeserializer(double.class, new JsonDeserializer<Double>() {
+            @Override
+            public Double deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+                String text = p.getText();
+                if (text == null || text.isBlank() || "null".equalsIgnoreCase(text)) {
+                    return Double.NaN;
+                }
+                try {
+                    return Double.valueOf(text);
+                } catch (NumberFormatException e) {
+                    return Double.NaN;
+                }
+            }
+
+            @Override
+            public Double getNullValue(DeserializationContext ctxt) {
+                return Double.NaN;
+            }
+        });
 
         SHARED_MAPPER = CsvMapper.builder()
                 .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
