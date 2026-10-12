@@ -21,8 +21,8 @@ import static j2html.TagCreator.hr;
 import static j2html.TagCreator.html;
 import static j2html.TagCreator.pre;
 import j2html.tags.ContainerTag;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.report.MReport;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.openide.util.lookup.ServiceProvider;
@@ -55,7 +55,7 @@ public class InvalidHeightMeasurementsReport extends BaseTopoMeasurementReport {
                 .filter(p -> p.getDimension() == BDimension._1d)
                 .forEachOrdered(p -> {
                     for (var o : p.ext().getObservationsTimeFiltered()) {
-                        if (ObjectUtils.anyNull(o.getMeasuredZ())) {
+                        if (Butterfly.anyNaN(o.getMeasuredZ())) {
                             sb.append(p.getName()).append("\t")
                                     .append(p.getOperator()).append("\t")
                                     .append(o.getDate().toString()).append("\t")

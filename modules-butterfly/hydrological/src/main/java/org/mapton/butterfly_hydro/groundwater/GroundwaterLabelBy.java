@@ -125,27 +125,27 @@ public enum GroundwaterLabelBy implements LabelBy.Operations {
     VALUE_LEVEL_CHANGE_30(LabelBy.CAT_VALUE, "Nivåförändring, 30 dagar", p -> {
         var z = p.ext().getGroundwaterLevelDiff(30);
 
-        return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
+        return Double.isNaN(z) ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
     }),
     VALUE_LEVEL_CHANGE_60(LabelBy.CAT_VALUE, "Nivåförändring, 60 dagar", p -> {
         var z = p.ext().getGroundwaterLevelDiff(60);
 
-        return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
+        return Double.isNaN(z) ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
     }),
     VALUE_LEVEL_CHANGE_90(LabelBy.CAT_VALUE, "Nivåförändring, 90 dagar", p -> {
         var z = p.ext().getGroundwaterLevelDiff(90);
 
-        return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
+        return Double.isNaN(z) ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
     }),
     VALUE_GROUNDWATER(LabelBy.CAT_VALUE, "Grundvattennivå", p -> {
         var z = p.ext().getObservationFilteredLast().getGroundwaterLevel();
 
-        return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
+        return Double.isNaN(z) ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
     }),
     VALUE_Z(LabelBy.CAT_VALUE, "Z", p -> {
         var z = p.getZeroZ();
 
-        return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
+        return Double.isNaN(z) ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
     });
     private final String mCategory;
     private final Function<BHydroGroundwaterPoint, String> mFunction;

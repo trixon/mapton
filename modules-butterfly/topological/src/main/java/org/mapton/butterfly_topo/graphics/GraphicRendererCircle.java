@@ -76,7 +76,7 @@ public class GraphicRendererCircle extends GraphicRendererBase {
         var o = p.ext().getObservationFilteredLast();
 
         var dZ = o.ext().getDeltaZ();
-        if (dZ == null) {
+        if (Double.isNaN(dZ)) {
             return;
         }
         var radius = Math.min(maxRadius, Math.abs(dZ) * 250 + 0.05);
@@ -107,7 +107,7 @@ public class GraphicRendererCircle extends GraphicRendererBase {
         var o = p.ext().getObservationFilteredLast();
 
         var delta2d = o.ext().getDelta2d();
-        if (delta2d == null) {
+        if (Double.isNaN(delta2d)) {
             return;
         }
         var radius = Math.min(maxRadius, Math.abs(delta2d) * 250 + 0.05);
@@ -132,7 +132,7 @@ public class GraphicRendererCircle extends GraphicRendererBase {
         BTopoControlPointObservation o = p.ext().getObservationFilteredLast();
 
         var delta3d = o.ext().getDelta3d();
-        if (delta3d == null) {
+        if (Double.isNaN(delta3d)) {
             return;
         }
 
@@ -148,7 +148,7 @@ public class GraphicRendererCircle extends GraphicRendererBase {
 
     private void plotFreqBuffer(BTopoControlPoint p, Position position) {
         var radius = p.ext().getFrequenceHighBuffer();
-        if (radius != null) {
+        if (!Double.isNaN(radius)) {
             var circle = new SurfaceCircle(position, Math.max(0.1, radius));
             var attrs = new BasicShapeAttributes();
             attrs.setDrawInterior(false);
@@ -183,7 +183,7 @@ public class GraphicRendererCircle extends GraphicRendererBase {
         }
 
         var dz = p.ext().deltaZero().getDeltaZ();
-        if (dz == null) {
+        if (Double.isNaN(dz)) {
             return;
         }
 

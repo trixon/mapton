@@ -82,7 +82,7 @@ public class GraphicRendererGroundwater extends GraphicRendererBase {
 //        double adjustment;
         var minLevel = groundwaterPoints.stream()
                 .flatMap(gw -> gw.ext().getObservationsAllRaw().stream())
-                .filter(o -> o.getGroundwaterLevel() != null)
+                .filter(o -> !Double.isNaN(o.getGroundwaterLevel()))
                 .mapToDouble(o -> o.getGroundwaterLevel())
                 .min()
                 .orElse(0);
@@ -102,7 +102,7 @@ public class GraphicRendererGroundwater extends GraphicRendererBase {
             var scale = totalDistance / (totalDuration.toHours() / 24.0);
 
             var nodes = gw.ext().getObservationsAllRaw().stream()
-                    .filter(o -> o.getGroundwaterLevel() != null)
+                    .filter(o -> !Double.isNaN(o.getGroundwaterLevel()))
                     .map(o -> {
                         var duration = Duration.between(gw.ext().getDateFirst(), o.getDate());
                         var distance = scale * (duration.toHours() / 24.0);

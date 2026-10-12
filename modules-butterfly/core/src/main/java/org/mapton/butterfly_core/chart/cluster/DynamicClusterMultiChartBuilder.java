@@ -177,7 +177,7 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BClusterCha
                     }
                     var lastItem = ts.getDataItem(count - 1);
                     var value = lastItem.getValue();
-                    return (value == null) ? Double.NaN : value.doubleValue();
+                    return (value == null) ? Double.NaN : Math.abs(value.doubleValue());
                 }))
                 .limit(limit)
                 .toList();

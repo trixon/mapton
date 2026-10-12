@@ -81,7 +81,7 @@ public abstract class BlastMultiChartPart extends BMultiChartPartBlast {
         for (var p : pointList) {
             var observations = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
-                    .filter(o -> o.getMeasuredZ() != null)
+                    .filter(o -> !Double.isNaN(o.getMeasuredZ()))
                     .map(o -> {
                         var oo = new BStructuralLoadCellPointObservation();
                         oo.setDate(o.getDate());

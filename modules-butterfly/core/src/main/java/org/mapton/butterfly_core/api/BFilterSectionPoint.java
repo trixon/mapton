@@ -262,8 +262,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mMeasurementModeSccb.loadAndRestoreCheckItems(Stream.of("Automatisk", "Manuell", "Odefinierad"));
         mMeasurementModeSubSccb.loadAndRestoreCheckItems(Stream.of(mMultipleObservatiosPerDay, mMultipleObservatiosPerDayNot));
 
-        var minZ = items.stream().filter(p -> p.getZeroZ() != null).mapToDouble(p -> p.getZeroZ()).min().orElse(-100d);
-        var maxZ = items.stream().filter(p -> p.getZeroZ() != null).mapToDouble(p -> p.getZeroZ()).max().orElse(100d);
+        var minZ = items.stream().filter(p -> !Double.isNaN(p.getZeroZ())).mapToDouble(p -> p.getZeroZ()).min().orElse(-100d);
+        var maxZ = items.stream().filter(p -> !Double.isNaN(p.getZeroZ())).mapToDouble(p -> p.getZeroZ()).max().orElse(100d);
         mAltitudeRangeSlider.setMinMaxValue(minZ - 1, maxZ + 1);
     }
 

@@ -22,11 +22,11 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.AlarmManager;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
@@ -115,7 +115,7 @@ public class AlarmLayerBundle extends BfLayerBundle {
             synchronized (mManager.getTimeFilteredItems()) {
                 for (var alarm : mManager.getTimeFilteredItems()) {
                     var mapObjects = new ArrayList<AVListImpl>();
-                    if (ObjectUtils.allNotNull(alarm.getLat(), alarm.getLon())) {
+                    if (Butterfly.allNotNaN(alarm.getLat(), alarm.getLon())) {
                         var position = Position.fromDegrees(alarm.getLat(), alarm.getLon());
                         var labelPlacemark = plotLabel(alarm, mLayerOptionsView.getLabelBy(), position);
 

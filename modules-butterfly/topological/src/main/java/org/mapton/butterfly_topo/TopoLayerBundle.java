@@ -25,11 +25,11 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.Pyramid;
 import java.util.ArrayList;
 import javafx.scene.Node;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MRunnable;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.PinPaddle;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BComponent;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
@@ -152,7 +152,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
             //Plot points with new measurement regardless of filter
             synchronized (mManager.getAllItems()) {
                 mManager.getAllItems().stream()
-                        .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
+                        .filter(p -> Butterfly.allNotNaN(p.getLat(), p.getLon()))
                         .forEach(p -> {
                             var position = BCoordinatrix.toPositionWW2d(p);
                             if (mLayerOptions.isPlotWatchlistChanges()) {
@@ -165,7 +165,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                 mManager.getTimeFilteredItems().stream()
                         .sorted((o1, o2) -> Double.compare(o1.ext().getAlarmLevel(), o2.ext().getAlarmLevel()))
                         .forEachOrdered(p -> {
-                            if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
+                            if (Butterfly.allNotNaN(p.getLat(), p.getLon())) {
                                 var position = BCoordinatrix.toPositionWW2d(p);
                                 var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                                 var mapObjects = new ArrayList<AVListImpl>();
@@ -199,15 +199,15 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
 
             var items = mManager.getTimeFilteredItems();
             if (mLayerOptionsView.getGraphicsCheckModel().isChecked(GraphicItem.HEAT_MAP) && !items.isEmpty()) {
-                var minLat = items.stream().filter(p -> p.getLat() != null).mapToDouble(p -> p.getLat()).min().getAsDouble();
-                var minLon = items.stream().filter(p -> p.getLat() != null).mapToDouble(p -> p.getLon()).min().getAsDouble();
-                var maxLat = items.stream().filter(p -> p.getLat() != null).mapToDouble(p -> p.getLat()).max().getAsDouble();
-                var maxLon = items.stream().filter(p -> p.getLat() != null).mapToDouble(p -> p.getLon()).max().getAsDouble();
+                var minLat = items.stream().filter(p -> !Double.isNaN(p.getLat())).mapToDouble(p -> p.getLat()).min().getAsDouble();
+                var minLon = items.stream().filter(p -> !Double.isNaN(p.getLon())).mapToDouble(p -> p.getLon()).min().getAsDouble();
+                var maxLat = items.stream().filter(p -> !Double.isNaN(p.getLat())).mapToDouble(p -> p.getLat()).max().getAsDouble();
+                var maxLon = items.stream().filter(p -> !Double.isNaN(p.getLon())).mapToDouble(p -> p.getLon()).max().getAsDouble();
                 var deltaLat = maxLat - minLat;
                 var deltaLon = maxLon - minLon;
 //                var sector = Sector.fromDegrees(minLat, maxLat, minLon, maxLon);
                 var values = items.stream()
-                        .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon(), p.ext().getAlarmPercent(BComponent.HEIGHT)))
+                        .filter(p -> Butterfly.allNotNaN(p.getLat(), p.getLon()) && null != p.ext().getAlarmPercent(BComponent.HEIGHT))
                         //                        .map(p -> {
                         //                            return new GridValue(p.getLat(), p.getLon(), p.ext().getAlarmPercent(BComponent.HEIGHT) / 100.0);
                         //                        })

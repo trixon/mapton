@@ -27,11 +27,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.ui.forms.DateRangePane;
 import org.mapton.api.ui.forms.MBaseFilterSection;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -186,7 +186,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
 
         return mRelativeCountSliderPane.getValue() <= p.ext().getObservationsTimeFiltered().stream()
                 .filter(o -> DateHelper.isBetween(speedPeriodDateLowProperty().get(), speedPeriodDateHighProperty().get(), o.getDate().toLocalDate()))
-                .filter(o -> ObjectUtils.allNotNull(o.getLimit(), o.getMeasuredZ()))
+                .filter(o -> Butterfly.allNotNaN(o.getLimit(), o.getMeasuredZ()))
                 .filter(o -> (o.getMeasuredZ() / o.getLimit()) >= mRelativeValueSliderPane.getValue() / 100.0)
                 .count();
     }

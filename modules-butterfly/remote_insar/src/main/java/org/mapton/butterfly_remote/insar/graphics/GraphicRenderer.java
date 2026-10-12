@@ -75,7 +75,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         var o = p.ext().getObservationsTimeFiltered().getLast();
 
         var dZ = o.ext().getDeltaZ();
-        if (dZ == null) {
+        if (Double.isNaN(dZ)) {
             return;
         }
         var radius = Math.min(maxRadius, Math.abs(dZ) * 250 + 0.05);
@@ -111,7 +111,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         int alarmLevel = p.ext().getAlarmLevelHeight(o);
         var dZ = o.ext().getDeltaZ();
         var rise = false;
-        if (dZ != null) {
+        if (!Double.isNaN(dZ)) {
             rise = Math.signum(o.ext().getDeltaZ()) > 0;
         }
         var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, false);
@@ -148,7 +148,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             prevDate = o.getDate();
             prevHeight = height;
 
-            if (o.ext().getDeltaZ() == null) {
+            if (Double.isNaN(o.ext().getDeltaZ())) {
                 continue;
             }
 

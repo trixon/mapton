@@ -156,14 +156,14 @@ public class ExtensoChartBuilder extends ChartBuilder<BRockExtensometer> {
         for (var p : extenso.getPoints()) {
             double pMin = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> o.getDate().isAfter(startDate))
-                    .filter(o -> o.ext().getDelta() != null)
+                    .filter(o -> !Double.isNaN(o.ext().getDelta()))
                     .mapToDouble(o -> o.ext().getDelta())
                     .min()
                     .orElse(0.0);
 
             double pMax = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> o.getDate().isAfter(startDate))
-                    .filter(o -> o.ext().getDelta() != null)
+                    .filter(o -> !Double.isNaN(o.ext().getDelta()))
                     .mapToDouble(o -> o.ext().getDelta())
                     .max()
                     .orElse(0.0);

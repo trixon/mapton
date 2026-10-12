@@ -60,7 +60,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         var endPosition = Position.ZERO;
         for (var o : p.ext().getObservationsTimeFiltered().reversed()) {
-            if (o.ext().getDeltaZ() == null) {
+            if (Double.isNaN(o.ext().getDeltaZ())) {
                 continue;
             }
 
@@ -75,7 +75,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             var cylinder = new Cylinder(pos, 0.025, radius);
             var attrs = mAttributeManager.getComponentTracedAttributes(0, maximus);
 
-            if (o.getLimit() != null && z >= o.getLimit()) {
+            if (!Double.isNaN(o.getLimit()) && z >= o.getLimit()) {
                 attrs = new BasicShapeAttributes(attrs);
                 attrs.setInteriorMaterial(Material.RED);
             }

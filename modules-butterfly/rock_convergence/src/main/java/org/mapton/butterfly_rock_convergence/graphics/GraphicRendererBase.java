@@ -15,20 +15,20 @@
  */
 package org.mapton.butterfly_rock_convergence.graphics;
 
-import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.rock.BRockConvergence;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_rock_convergence.ConvergenceAttributeManager;
+import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
 
 /**
  *
@@ -57,7 +57,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         var o1 = p.ext().getObservationsTimeFiltered().getFirst();
         var o2 = p.ext().getObservationsTimeFiltered().getLast();
 
-        return ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ(), o1.getMeasuredZ(), o2.getMeasuredZ());
+        return Butterfly.allNotNaN(p.getZeroX(), p.getZeroY(), p.getZeroZ(), o1.getMeasuredZ(), o2.getMeasuredZ());
     }
 
     protected boolean isPlotLimitReached(BRockConvergence p, Object key, Position position) {

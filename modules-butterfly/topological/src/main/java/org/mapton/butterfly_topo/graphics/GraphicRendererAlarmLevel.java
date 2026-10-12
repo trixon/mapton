@@ -124,7 +124,7 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentP / 100.0);
             var bearing = o.ext().getBearing();
             RigidShape planeShape;
-            if (bearing == null || Double.isNaN(bearing)) {
+            if (Double.isNaN(bearing)) {
                 planeShape = new Pyramid(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
             } else {
                 var wedgeHeight = PERCENTAGE_SIZE * 0.5;
@@ -152,7 +152,7 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             int alarmLevel = p.ext().getAlarmLevelHeight(o);
             var dZ = o.ext().getDeltaZ();
             var rise = false;
-            if (dZ != null) {
+            if (!Double.isNaN(dZ)) {
                 rise = Math.signum(o.ext().getDeltaZ()) > 0;
             }
             var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, false, false);
@@ -222,7 +222,7 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percent / 100.0);
             var bearing = o.ext().getBearing();
             RigidShape planeShape;
-            if (bearing == null || Double.isNaN(bearing)) {
+            if (Double.isNaN(bearing)) {
                 planeShape = new Pyramid(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
             } else {
                 var wedgeHeight = PERCENTAGE_SIZE * 0.5;

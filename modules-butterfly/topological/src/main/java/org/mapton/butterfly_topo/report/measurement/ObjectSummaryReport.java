@@ -90,7 +90,7 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
                     CollectionHelper.incInteger(hAgeMap, String.valueOf(age));
                 }
                 CollectionHelper.incInteger(map, "alarmLevelH%d".formatted(alarmLevel));
-                if (delta != null) {
+                if (!Double.isNaN(delta)) {
                     hDeltaMap.put(p, Math.abs(delta));
                 }
             } else {
@@ -100,7 +100,7 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
                     CollectionHelper.incInteger(pAgeMap, String.valueOf(age));
                 }
                 CollectionHelper.incInteger(map, "alarmLevelP%d".formatted(alarmLevel));
-                if (delta != null) {
+                if (!Double.isNaN(delta)) {
                     pDeltaMap.put(p, Math.abs(delta));
                 }
             }

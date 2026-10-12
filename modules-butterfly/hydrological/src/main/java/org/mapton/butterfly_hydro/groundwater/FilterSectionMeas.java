@@ -160,7 +160,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
         var lim = mLevelPeriodAllSds.getValue();
         if (direction == Direction.MIN_MAX_SPAN) {
             var value = p.ext().getGroundwaterLevelMinMaxSpan(levelPeriodDateLowProperty().get(), levelPeriodDateHighProperty().get());
-            if (value == null) {
+            if (Double.isNaN(value)) {
                 return false;
             }
 
@@ -173,7 +173,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
             }
         } else {
             var value = p.ext().getGroundwaterLevelDiff(levelPeriodDateLowProperty().get(), levelPeriodDateHighProperty().get());
-            if (value == null) {
+            if (Double.isNaN(value)) {
                 return false;
             }
             var validDirection = value < 0 && direction == Direction.DOWN

@@ -145,7 +145,7 @@ public enum WaterLevelLabelBy implements LabelBy.Operations {
     VALUE_Z(LabelBy.CAT_VALUE, "Z", p -> {
         var z = p.getZeroZ();
 
-        return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
+        return Double.isNaN(z) ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
     });
     private final String mCategory;
     private final Function<BHydroWaterLevelPoint, String> mFunction;

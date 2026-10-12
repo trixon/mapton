@@ -102,12 +102,12 @@ public class TiltHelper {
         return result;
     }
 
-    public static Double toDegreeBased(Double value) {
-        return value == null ? null : Math.toDegrees(value) / 1000.0;
+    public static double toDegreeBased(double value) {
+        return Double.isNaN(value) ? Double.NaN : Math.toDegrees(value) / 1000.0;
     }
 
-    public static Double toRadianBased(Double value) {
-        return value == null ? null : Math.toRadians(value) * 1000.0;
+    public static double toRadianBased(double value) {
+        return Double.isNaN(value) ? Double.NaN : Math.toRadians(value) * 1000.0;
     }
 
 }

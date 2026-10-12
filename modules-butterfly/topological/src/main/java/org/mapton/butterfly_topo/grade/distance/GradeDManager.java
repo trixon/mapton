@@ -23,7 +23,6 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.scene.Node;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BAxis;
@@ -113,7 +112,7 @@ public class GradeDManager extends GradeManagerBase {
     private ArrayList<BTopoGrade> load1d() {
         var dimensionToPointsMap = mTopoManager.getTimeFilteredItems().stream()
                 .filter(p -> p.getDimension() != BDimension._2d)
-                .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                .filter(p -> Butterfly.allNotNaN(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
                 .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
                 .collect(Collectors.groupingBy(BTopoControlPoint::getDimension));
 
@@ -186,7 +185,7 @@ public class GradeDManager extends GradeManagerBase {
     private ArrayList<BTopoGrade> load3d() {
         var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
                 .filter(p -> p.getDimension() != BDimension._2d)
-                .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                .filter(p -> Butterfly.allNotNaN(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
                 .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
                 .toList();
 

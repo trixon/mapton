@@ -25,7 +25,6 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MOptions;
 import org.mapton.api.MSimpleObjectStorageManager;
@@ -35,6 +34,7 @@ import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_core.api.sos.ScalePlot1dHSosi;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -92,7 +92,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         var o1 = p.ext().getObservationsTimeFiltered().getFirst();
         var o2 = p.ext().getObservationsTimeFiltered().getLast();
 
-        return ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ(), o1.getMeasuredZ(), o2.getMeasuredZ());
+        return Butterfly.allNotNaN(p.getZeroX(), p.getZeroY(), p.getZeroZ(), o1.getMeasuredZ(), o2.getMeasuredZ());
     }
 
     public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, boolean plotEnabled, double scaleZero, boolean plotCurrent) {
@@ -128,26 +128,52 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         if (plotCurrent) {
             var o1 = p.ext().getReferenceObservation();
             var o2 = p.ext().getObservationsTimeFiltered().getLast();
-            if (ObjectUtils.anyNull(o1.getMeasuredX(), o1.getMeasuredY(), o1.getMeasuredZ(),
-                    o2.getMeasuredX(), o2.getMeasuredY(), o2.getMeasuredZ())) {
-
+//            if (Butterfly.anyNaN(o1.getMeasuredX(), o1.getMeasuredY(), o1.getMeasuredZ(),
+//                    o2.getMeasuredX(), o2.getMeasuredY(), o2.getMeasuredZ())) {
+//
+//            }
+//            var x = p.getZeroX();
+//            var y = p.getZeroY();
+            var x = o1.getMeasuredX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * mScale3dP;
+            var y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * mScale3dP;
+            if (Double.isNaN(x)) {
+                x = p.getZeroX();
             }
-            var x = p.getZeroX();
-            var y = p.getZeroY();
-            try {
-                x = o1.getMeasuredX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * mScale3dP;
-            } catch (Exception e) {
-            }
-            try {
-                y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * mScale3dP;
-            } catch (Exception e) {
+            if (Double.isNaN(y)) {
+                y = p.getZeroY();
             }
 
             var z = MathHelper.convertDoubleToDouble(o1.getMeasuredZ())
                     + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * mScale3dH
                     + TopoLayerBundle.getZOffset();
-
+            if (Double.isNaN(z)) {
+                z = p.getZeroZ();
+            }
+//            if (Butterfly.anyNaN(x, y, z)) {
+//                x = p.getZeroX();
+//                y = p.getZeroY();
+//            }
+//            if (Butterfly.anyNaN(x, y, z)) {
+            ////                if (Butterfly.anyNaN(x0, y0, z0, x, y, z)) {
+////                System.err.println("BAD COORDINATE: " + p.getName());
+////                System.err.println(Integer.toHexString(System.identityHashCode(p)));
+//                System.err.println("B. %s\t%s\t%f\t%f\t%f\t%f\t%f\t%f".formatted(
+//                        Integer.toHexString(System.identityHashCode(p)),
+//                        p.getName(),
+//                        p.getZeroX(),
+//                        p.getZeroY(),
+//                        p.getZeroZ(),
+//                        x0,
+//                        y0,
+//                        z0
+//                )
+//                );
+//                int w = 0;
+//            }
             var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
+            if (wgs84.getX() == 0 || wgs84.getY() == 0) {
+                System.err.println("%s failed with yx %f, %f".formatted(y, x));
+            }
             currentPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
 
             var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
@@ -176,7 +202,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
 
             try {
                 var bearing = o.ext().getBearing();
-                if (bearing == null || bearing.isNaN()) {
+                if (Double.isNaN(bearing)) {
                     continue;
                 }
 
@@ -209,6 +235,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         placemark.setAltitudeMode(WorldWind.ABSOLUTE);
         placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
         placemark.setLabelText(string);
+        placemark.setAlwaysOnTop(true);
         addRenderable(placemark, false, null, null);
     }
 

@@ -20,14 +20,14 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.butterfly_meteo.MeteoAttributeManager;
-import org.mapton.butterfly_meteo.MeteoManager;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BMeteoPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_meteo.MeteoAttributeManager;
+import org.mapton.butterfly_meteo.MeteoManager;
 
 /**
  *
@@ -56,7 +56,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         var o1 = p.ext().getObservationsTimeFiltered().getFirst();
         var o2 = p.ext().getObservationsTimeFiltered().getLast();
 
-        return ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ(), o1.getMeasuredZ(), o2.getMeasuredZ());
+        return Butterfly.allNotNaN(p.getZeroX(), p.getZeroY(), p.getZeroZ(), o1.getMeasuredZ(), o2.getMeasuredZ());
     }
 
     protected boolean isPlotLimitReached(BMeteoPoint p, Object key, Position position) {

@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
@@ -121,7 +120,7 @@ public class ConvergenceManager extends BaseManager<BRockConvergence> {
                 var controlPoints = Arrays.stream(StringUtils.split(g.getRef(), ","))
                         .map(s -> butterfly.topo().getControlPointByName(s))
                         .filter(p -> p != null)
-                        .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                        .filter(p -> Butterfly.allNotNaN(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
                         .filter(p -> {
                             var validDate = true;
                             if (p.getDateValidTo() != null) {
@@ -132,6 +131,14 @@ public class ConvergenceManager extends BaseManager<BRockConvergence> {
                         .collect(Collectors.toCollection(ArrayList::new));
 
                 g.ext().setControlPoints(controlPoints);
+                var minDecXY = controlPoints.stream().mapToInt(p -> p.getNumOfDecXY()).min().orElse(0);
+                var minDecZ = controlPoints.stream().mapToInt(p -> p.getNumOfDecZ()).min().orElse(0);
+                g.setNumOfDecXY(minDecXY);
+                g.setNumOfDecZ(minDecZ);
+                System.out.println(g.getName());
+                System.out.println(g.getNumOfDecXY());
+                System.out.println(g.getNumOfDecZ());
+                System.out.println();
                 try {
                     var pairToObservations = convergenceToObservations.get(g.getName()).stream()
                             .collect(Collectors.groupingBy(item -> item.getP1Name() + "::" + item.getP2Name(), Collectors.toCollection(ArrayList::new)));
@@ -196,8 +203,8 @@ public class ConvergenceManager extends BaseManager<BRockConvergence> {
                             .values()
                             .stream()
                             .flatMap(entry -> entry.stream()
-                            .max(Comparator.comparingDouble(value -> Math.abs(value.getMeasuredZ())))
-                            .stream())
+                                    .max(Comparator.comparingDouble(value -> Math.abs(value.getMeasuredZ())))
+                                    .stream())
                             .sorted(Comparator.comparing(BRockConvergenceObservation::getDate))
                             .collect(Collectors.toList());
                     maxObservationsPerDate.forEach(o -> o.ext().setDeltaZ(o.ext().getDeltaZ()));

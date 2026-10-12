@@ -35,6 +35,7 @@ import org.controlsfx.tools.Borders;
 import org.mapton.api.MAvgPeriod;
 import org.mapton.api.ui.forms.DateRangePane;
 import org.mapton.api.ui.forms.MBaseFilterSection;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -218,7 +219,7 @@ public class BFilterSectionAvg extends MBaseFilterSection {
 
         var value1 = ewma1.getLastValue();
         var value2 = ewma2.getLastValue();
-        if (ObjectUtils.anyNull(value1, value2)) {
+        if (Butterfly.anyNaN(value1, value2)) {
             return false;
         }
 

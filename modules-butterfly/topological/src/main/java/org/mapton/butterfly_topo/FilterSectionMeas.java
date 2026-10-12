@@ -32,12 +32,12 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import javax.swing.SortOrder;
 import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Strings;
 import org.mapton.api.ui.forms.FormHelper;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.butterfly_core.api.AlarmLevelChangeUnit;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
@@ -223,7 +223,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
                 }
             }
 
-            if (limitedObservations.size() >= 2 && ObjectUtils.allNotNull(limitedObservations.getFirst().ext().getDelta(), limitedObservations.getLast().ext().getDelta())) {
+            if (limitedObservations.size() >= 2 && Butterfly.allNotNaN(limitedObservations.getFirst().ext().getDelta(), limitedObservations.getLast().ext().getDelta())) {
                 var delta = limitedObservations.getFirst().ext().getDelta() - limitedObservations.getLast().ext().getDelta();
                 pointToDiffMap.put(p, Math.abs(delta));
             }
@@ -335,7 +335,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
     }
 
     private boolean validateMeasDisplacementAll(BTopoControlPoint p) {
-        if (mDiffAllCheckbox.isSelected() && p.ext().deltaZero().getDelta() != null) {
+        if (mDiffAllCheckbox.isSelected() && !Double.isNaN(p.ext().deltaZero().getDelta())) {
             double lim = mDiffAllSds.getValue();
             double value = Math.abs(p.ext().deltaZero().getDelta());
 
@@ -361,9 +361,9 @@ public class FilterSectionMeas extends MBaseFilterSection {
             var first = observations.get(observations.size() - 2);
             var last = observations.get(observations.size() - 1);
             double lim = mDiffLatestSds.getValue();
-            Double lastDelta = last.ext().getDelta();
-            Double firstDelta = first.ext().getDelta();
-            if (ObjectUtils.anyNull(firstDelta, lastDelta)) {
+            double lastDelta = last.ext().getDelta();
+            double firstDelta = first.ext().getDelta();
+            if (Butterfly.anyNaN(firstDelta, lastDelta)) {
                 return false;
             }
             double value = Math.abs(lastDelta - firstDelta);
@@ -414,7 +414,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
             var currentDeltaZ = currenMeas.ext().getDeltaZ();
             var prevDeltaZ = prevMeas.ext().getDeltaZ();
 
-            if (ObjectUtils.anyNull(currentDeltaZ, prevDeltaZ)) {
+            if (Butterfly.anyNaN(currentDeltaZ, prevDeltaZ)) {
                 continue;
             }
 

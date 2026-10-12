@@ -31,13 +31,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.MBaseFilterSection;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
@@ -119,7 +119,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
             return filteredItems;
         }
         var filteredPoints = filteredItems.stream()
-                .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                .filter(p -> Butterfly.allNotNaN(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
                 .toList();
 
         if (filteredPoints.isEmpty()) {
@@ -266,12 +266,13 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         var minPoints = 1;
         var dbscan = new DBSCANClusterer<BXyzPoint>(epsilon, minPoints, mDistanceMeasure);
         //Calculate and subtract min on order to use dbscan.
-        var minX = items.stream().filter(p -> p.getZeroX() != null).mapToDouble(p -> p.getZeroX()).min().getAsDouble();
-        var minY = items.stream().filter(p -> p.getZeroY() != null).mapToDouble(p -> p.getZeroY()).min().getAsDouble();
-        var minZ = items.stream().filter(p -> p.getZeroZ() != null).mapToDouble(p -> p.getZeroZ()).min().getAsDouble();
+
+        var minX = items.stream().filter(p -> !Double.isNaN(p.getZeroX())).mapToDouble(p -> p.getZeroX()).min().getAsDouble();
+        var minY = items.stream().filter(p -> !Double.isNaN(p.getZeroY())).mapToDouble(p -> p.getZeroY()).min().getAsDouble();
+        var minZ = items.stream().filter(p -> !Double.isNaN(p.getZeroZ())).mapToDouble(p -> p.getZeroZ()).min().getAsDouble();
 
         items = items.stream()
-                .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                .filter(p -> Butterfly.allNotNaN(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
                 .filter(p -> {
                     p.setZeroXScaled(p.getZeroX() - minX);
                     p.setZeroYScaled(p.getZeroY() - minY);

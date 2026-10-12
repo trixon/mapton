@@ -23,10 +23,10 @@ import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.util.ArrayList;
 import javafx.scene.Node;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.ButterflyHelper;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.rock.BRockConvergence;
 import org.mapton.butterfly_format.types.rock.BRockConvergenceObservation;
 import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
@@ -110,7 +110,7 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
 
             synchronized (mManager.getTimeFilteredItems()) {
                 for (var p : mManager.getTimeFilteredItems()) {
-                    if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
+                    if (Butterfly.allNotNaN(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
                         var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();

@@ -25,12 +25,12 @@ import gov.nasa.worldwind.render.SurfacePolyline;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
-import org.apache.commons.lang3.ObjectUtils;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import org.mapton.butterfly_activities.api.ActManager;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
@@ -120,7 +120,7 @@ public class ActLayerBundle extends BfLayerBundle {
             synchronized (mManager.getTimeFilteredItems()) {
                 for (var area : mManager.getTimeFilteredItems()) {
                     var mapObjects = new ArrayList<AVListImpl>();
-                    if (ObjectUtils.allNotNull(area.getLat(), area.getLon())) {
+                    if (Butterfly.allNotNaN(area.getLat(), area.getLon())) {
                         var position = Position.fromDegrees(area.getLat(), area.getLon());
                         var labelPlacemark = plotLabel(area, mOptionsView.getLabelBy(), position);
 

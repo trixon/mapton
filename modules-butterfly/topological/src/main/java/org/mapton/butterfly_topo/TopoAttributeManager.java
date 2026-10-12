@@ -412,7 +412,7 @@ public class TopoAttributeManager extends BaseAttributeManager {
 
     private Color getColorForVerticalDirection(BTopoControlPoint p) {
         var deltaZ = p.ext().deltaZero().getDeltaZ();
-        if (p.getDimension() == BDimension._2d || p.ext().getNumOfObservationsFiltered() == 0 || deltaZ == null) {
+        if (p.getDimension() == BDimension._2d || p.ext().getNumOfObservationsFiltered() == 0 || Double.isNaN(deltaZ)) {
             return Color.BLUE;
         } else if (deltaZ == 0) {
             return Color.WHITE;

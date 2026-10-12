@@ -23,10 +23,10 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.scene.Node;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoBaseLayerBundle;
 import org.mapton.butterfly_topo.grade.GradeAttributeManager;
@@ -117,7 +117,7 @@ public class DistanceLayerBundle extends TopoBaseLayerBundle {
 
             synchronized (mManager.getTimeFilteredItems()) {
                 mManager.getTimeFilteredItems().stream()
-                        .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
+                        .filter(p -> Butterfly.allNotNaN(p.getLat(), p.getLon()))
                         //                        .limit(PLOT_LIMIT)
                         .forEachOrdered(p -> {
                             var position = Position.fromDegrees(p.getLat(), p.getLon());

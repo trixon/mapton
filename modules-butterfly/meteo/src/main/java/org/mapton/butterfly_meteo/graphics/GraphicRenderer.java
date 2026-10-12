@@ -58,7 +58,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         var endPosition = Position.ZERO;
         for (var o : p.ext().getObservationsTimeFiltered().reversed()) {
-            if (o.ext().getDeltaZ() == null) {
+            if (Double.isNaN(o.ext().getDeltaZ())) {
                 continue;
             }
 

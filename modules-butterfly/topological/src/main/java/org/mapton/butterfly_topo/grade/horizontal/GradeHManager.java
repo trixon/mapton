@@ -20,7 +20,6 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.stream.Collector;
 import java.util.stream.IntStream;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BAxis;
@@ -62,7 +61,7 @@ public class GradeHManager extends GradeManagerBase {
     public void load() {
         var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
                 .filter(p -> p.getDimension() != BDimension._2d)
-                .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                .filter(p -> Butterfly.allNotNaN(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
                 .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
                 .peek(p -> {
                     BTopoGrade.getCachePointToObservations().computeIfAbsent(p, k -> BTopoGrade.createObservationMap(k));

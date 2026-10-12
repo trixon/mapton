@@ -187,7 +187,7 @@ public class TopoHelper {
 
     public static Color getVerticalColor(BTopoControlPoint p) {
         var dZ = p.ext().deltaZero().getDelta1();
-        if (dZ == null) {
+        if (Double.isNaN(dZ)) {
             return Color.YELLOW;
         } else if (dZ < 0) {
             return ButterflyHelper.sVerticalNegColors[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.025, dZ)];
@@ -198,7 +198,7 @@ public class TopoHelper {
 
     public static Material getVerticalMaterial(BTopoControlPoint p) {
         var dZ = p.ext().deltaZero().getDelta1();
-        if (dZ == null) {
+        if (Double.isNaN(dZ)) {
             return Material.YELLOW;
         } else if (dZ < 0) {
             return ButterflyHelper.sVerticalNegMaterials[ButterflyHelper.getColorIndex(ButterflyHelper.sVerticalNegMaterials.length, 0.025, dZ)];

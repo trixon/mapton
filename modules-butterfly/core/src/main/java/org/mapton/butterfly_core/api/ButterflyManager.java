@@ -37,7 +37,6 @@ import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.geotools.api.geometry.MismatchedDimensionException;
@@ -141,10 +140,12 @@ public class ButterflyManager {
             var x = cp.getZeroX();
             var y = cp.getZeroY();
 
-            if (ObjectUtils.allNotNull(x, y)) {
+            if (Butterfly.allNotNaN(x, y)) {
                 var wgs84 = getCooTrans().toWgs84(y, x);
-                cp.setLat(MathHelper.round(wgs84.getY(), 6));
-                cp.setLon(MathHelper.round(wgs84.getX(), 6));
+//                cp.setLat(MathHelper.round(wgs84.getY(), 6));
+//                cp.setLon(MathHelper.round(wgs84.getX(), 6));
+                cp.setLat(wgs84.getY());
+                cp.setLon(wgs84.getX());
                 cp.setValue("MLATLON", new MLatLon(wgs84.getY(), wgs84.getX()));
             }
         });
@@ -155,7 +156,7 @@ public class ButterflyManager {
             var x = cp.getX();
             var y = cp.getY();
 
-            if (ObjectUtils.allNotNull(x, y)) {
+            if (Butterfly.allNotNaN(x, y)) {
                 var wgs84 = getCooTrans().toWgs84(y, x);
                 cp.setLat(MathHelper.round(wgs84.getY(), 6));
                 cp.setLon(MathHelper.round(wgs84.getX(), 6));
@@ -168,7 +169,7 @@ public class ButterflyManager {
             var lat = cp.getLat();
             var lon = cp.getLon();
 
-            if (ObjectUtils.allNotNull(lat, lon)) {
+            if (Butterfly.allNotNaN(lat, lon)) {
                 var local = getCooTrans().fromWgs84(lat, lon);
                 cp.setZeroY(MathHelper.round(local.getY(), 3));
                 cp.setZeroX(MathHelper.round(local.getX(), 3));

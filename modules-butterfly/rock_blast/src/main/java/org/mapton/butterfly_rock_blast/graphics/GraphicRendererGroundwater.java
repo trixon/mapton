@@ -55,16 +55,16 @@ public class GraphicRendererGroundwater extends GraphicRendererBase {
     private void plotGroundwaterGraph(BRockBlast p, Position position) {
         var groundwaterPoints = getGroundwaterPoints(p);
         var maxStart = groundwaterPoints.stream()
-                .filter(gw -> gw.ext().getObservationRawFirst().getGroundwaterLevel() != null)
+                .filter(gw -> !Double.isNaN(gw.ext().getObservationRawFirst().getGroundwaterLevel()))
                 .mapToDouble(gw -> gw.ext().getObservationRawFirst().getGroundwaterLevel()).max().orElse(0);
         var maxEnd = groundwaterPoints.stream()
-                .filter(gw -> gw.ext().getObservationRawLast().getGroundwaterLevel() != null)
+                .filter(gw -> !Double.isNaN(gw.ext().getObservationRawFirst().getGroundwaterLevel()))
                 .mapToDouble(gw -> gw.ext().getObservationRawLast().getGroundwaterLevel()).max().orElse(0);
         var offset = 40;
 //        double adjustment;
         var minLevel = groundwaterPoints.stream()
                 .flatMap(gw -> gw.ext().getObservationsAllRaw().stream())
-                .filter(o -> o.getGroundwaterLevel() != null)
+                .filter(o -> !Double.isNaN(o.getGroundwaterLevel()))
                 .mapToDouble(o -> o.getGroundwaterLevel())
                 .min()
                 .orElse(0);
@@ -84,7 +84,7 @@ public class GraphicRendererGroundwater extends GraphicRendererBase {
             var scale = totalDistance / (totalDuration.toHours() / 24.0);
             mMap.clear();
             var nodes = gw.ext().getObservationsAllRaw().stream()
-                    .filter(o -> o.getGroundwaterLevel() != null)
+                    .filter(o -> !Double.isNaN(o.getGroundwaterLevel()))
                     .filter(o -> o.getDate().isAfter(p.getDateLatest().minusYears(1)))
                     .map(o -> {
                         var duration = Duration.between(gw.ext().getDateFirst(), o.getDate());

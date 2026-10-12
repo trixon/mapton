@@ -19,7 +19,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.time.LocalDate;
-import org.apache.commons.lang3.ObjectUtils;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.ui.RectangleAnchor;
@@ -28,6 +27,7 @@ import org.mapton.api.MChartOverlay;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BChartOverlay;
 import org.mapton.butterfly_core.api.ButterflyHelper;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -66,7 +66,7 @@ public class VibrationPeakChartOverlay extends BChartOverlay {
                     var distance = vibLatLon.distance(pointLatLon);
 
                     for (var o : v.ext().getObservationsTimeFiltered()) {
-                        if (ObjectUtils.anyNull(o.getLimit(), o.getMeasuredZ())) {
+                        if (Butterfly.anyNaN(o.getLimit(), o.getMeasuredZ())) {
                             continue;
                         }
 

@@ -160,7 +160,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         path.setAttributes(mTopoAttributeManager.getComponentVector3dAttributes(p));
         addRenderable(path, true, null, sMapObjects);
 
-        plotLabel(p, positions[0]);
+        plotLabel(p, positions[1]);
 
         return endPosition;
     }

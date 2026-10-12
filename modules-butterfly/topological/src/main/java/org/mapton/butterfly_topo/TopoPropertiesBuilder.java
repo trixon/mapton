@@ -283,7 +283,7 @@ public class TopoPropertiesBuilder extends BPropertiesBuilder<BTopoControlPoint>
                 mAlarmHGaugeTile.setValue(p.ext().deltaRolling().getDelta1());
                 mAlarmHGaugeTile.setValue(p.ext().deltaZero().getDelta1() * 1000);
             }
-            if (p.getDimension() != BDimension._1d && p.ext().deltaZero() != null && p.ext().deltaZero().getDelta2() != null) {
+            if (p.getDimension() != BDimension._1d && p.ext().deltaZero() != null && !Double.isNaN(p.ext().deltaZero().getDelta2())) {
                 mAlarmPGaugeTile.setValue(p.ext().deltaZero().getDelta2() * 1000);
             }
         } catch (NullPointerException e) {

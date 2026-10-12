@@ -20,6 +20,8 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsLast;
 import static java.util.Comparator.reverseOrder;
+import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.BSortOrder;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
@@ -27,52 +29,46 @@ import org.mapton.butterfly_format.types.BXyzPoint;
  * @author Patrik Karlström
  */
 public enum BListSortOrder {
-    STANDARD(Order.ASC, "Ursprung och namn",
+    STANDARD(BSortOrder.ASC, "Ursprung och namn",
             comparing(BXyzPoint::getOrigin).thenComparing(comparing(BXyzPoint::getName))),
-    NAME(Order.ASC, "Namn",
+    NAME(BSortOrder.ASC, "Namn",
             comparing(BXyzPoint::getName)),
-    DELTA_1D(Order.DESC, "Δ1d",
-            comparing((BXyzPoint p) -> {
-                var value = p.extOrNull().deltaZero().getDelta1();
-                return (value == null) ? null : Math.abs(value);
-            }, nullsLast(reverseOrder()))),
-    DELTA_2D(Order.DESC, "Δ2d",
-            comparing((BXyzPoint p) -> {
-                var value = p.extOrNull().deltaZero().getDelta2();
-                return (value == null) ? null : Math.abs(value);
-            }, nullsLast(reverseOrder()))),
-    DELTA_3D(Order.DESC, "Δ3d",
-            comparing((BXyzPoint p) -> {
-                var value = p.extOrNull().deltaZero().getDelta3();
-                return (value == null) ? null : Math.abs(value);
-            }, nullsLast(reverseOrder()))),
-    Z_ASC(Order.ASC, "Z",
+    DELTA_1D(BSortOrder.DESC, "Δ1d",
+            comparing(p -> Math.abs(p.extOrNull().deltaZero().getDelta1()),
+                    Butterfly.DOUBLE_NaN_LAST_DESC)),
+    DELTA_2D(BSortOrder.DESC, "Δ2d",
+            comparing(p -> Math.abs(p.extOrNull().deltaZero().getDelta2()),
+                    Butterfly.DOUBLE_NaN_LAST_DESC)),
+    DELTA_3D(BSortOrder.DESC, "Δ3d",
+            comparing(p -> Math.abs(p.extOrNull().deltaZero().getDelta3()),
+                    Butterfly.DOUBLE_NaN_LAST_DESC)),
+    Z_ASC(BSortOrder.ASC, "Z",
             comparing((BXyzPoint p) -> {
                 return p.getZeroZ();
             }, nullsLast(naturalOrder()))),
-    Z_DESC(Order.DESC, "Z",
+    Z_DESC(BSortOrder.DESC, "Z",
             comparing((BXyzPoint p) -> {
                 return p.getZeroZ();
             }, nullsLast(reverseOrder()))),
-    DATE_PREV_ASC(Order.ASC, "Datum, senaste",
+    DATE_PREV_ASC(BSortOrder.ASC, "Datum, senaste",
             comparing(BXyzPoint::getDateLatest, nullsLast(naturalOrder()))),
-    DATE_PREV_DESC(Order.DESC, "Datum, senaste",
+    DATE_PREV_DESC(BSortOrder.DESC, "Datum, senaste",
             comparing(BXyzPoint::getDateLatest, nullsLast(reverseOrder()))),
-    DATE_NEXT_ASC(Order.ASC, "Datum, nästa",
+    DATE_NEXT_ASC(BSortOrder.ASC, "Datum, nästa",
             comparing((BXyzPoint p) -> p.extOrNull().getObservationRawNextDate(), nullsLast(naturalOrder()))),
-    DATE_NEXT_DESC(Order.DESC, "Datum, nästa",
+    DATE_NEXT_DESC(BSortOrder.DESC, "Datum, nästa",
             comparing((BXyzPoint p) -> p.extOrNull().getObservationRawNextDate(), nullsLast(reverseOrder()))),
-    NORTH_SOUTH(Order.NONE, "Nord-Syd, Väst-Öst",
+    NORTH_SOUTH(BSortOrder.NONE, "Nord-Syd, Väst-Öst",
             comparing(BXyzPoint::getZeroY, nullsLast(reverseOrder()))
                     .thenComparing(BXyzPoint::getZeroX, nullsLast(naturalOrder()))),
-    WEST_EAST(Order.NONE, "Väst-Öst, Nord-Syd",
+    WEST_EAST(BSortOrder.NONE, "Väst-Öst, Nord-Syd",
             comparing(BXyzPoint::getZeroX, nullsLast(naturalOrder()))
                     .thenComparing(BXyzPoint::getZeroY, nullsLast(reverseOrder())));
     private final Comparator<BXyzPoint> mComparator;
     private final String mName;
-    private final Order mOrder;
+    private final BSortOrder mOrder;
 
-    private BListSortOrder(Order order, String name, Comparator<BXyzPoint> comparator) {
+    private BListSortOrder(BSortOrder order, String name, Comparator<BXyzPoint> comparator) {
         mOrder = order;
         mName = name;
         mComparator = comparator;
@@ -95,7 +91,4 @@ public enum BListSortOrder {
         };
     }
 
-    public enum Order {
-        ASC, DESC, NONE;
-    }
 }

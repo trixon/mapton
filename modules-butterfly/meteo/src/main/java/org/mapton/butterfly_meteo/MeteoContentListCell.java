@@ -47,7 +47,7 @@ class MeteoContentListCell extends BContentListCell<BMeteoPoint> {
         mDesc2Label.setText(p.ext().getDateFirst().toString());
 
         try {
-            if (p.getZeroZ() != null) {
+            if (!Double.isNaN(p.getZeroZ())) {
                 mDesc2Label.setText("%s, %.0f m ö.h.".formatted(mDesc2Label.getText(), p.getZeroZ()));
             }
         } catch (Exception e) {

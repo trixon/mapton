@@ -123,7 +123,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             addNEMarkers(plot, o, plotZeroAndReplacement);
 
-            if (o.ext().getDeltaZ() != null) {
+            if (!Double.isNaN(o.ext().getDeltaZ())) {
                 var minute = ChartHelper.convertToMinute(o.getDate());
                 var delta = o.ext().getDeltaZ() * CrackHelper.getScaleFactor(p);
                 timeSeries.addOrUpdate(minute, delta);

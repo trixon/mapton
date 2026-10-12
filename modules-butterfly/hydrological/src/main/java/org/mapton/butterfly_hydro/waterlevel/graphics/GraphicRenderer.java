@@ -163,7 +163,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         for (int i = 0; i < reversedList.size(); i++) {
             var o = reversedList.get(i);
-            if (ObjectUtils.anyNull(o.getDate(), o.getGroundwaterLevel())
+            if (ObjectUtils.anyNull(o.getDate()) || Double.isNaN(o.getGroundwaterLevel())
                     || o.getDate().isBefore(LocalDate.parse("2017-01-01").atStartOfDay())) {
                 continue;
             }

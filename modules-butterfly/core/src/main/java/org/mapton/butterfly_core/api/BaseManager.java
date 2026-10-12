@@ -280,7 +280,7 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
         var latLons = getTimeFilteredItems().stream()
                 .filter(p -> p instanceof BBasePoint)
                 .map(p -> (BBasePoint) p)
-                .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
+                .filter(p -> Butterfly.allNotNaN(p.getLat(), p.getLon()))
                 .map(p -> new MLatLon(p.getLat(), p.getLon()))
                 .toList();
 

@@ -69,7 +69,7 @@ public class MeteoPrecipitationChartOverlay extends BaseMeteoChartOverlay {
                     var timeSeries = new TimeSeries("%s (%.1f km)".formatted(point.getName(), distance / 1000.0));
 
                     point.ext().getObservationsTimeFiltered().stream()
-                            .filter(o -> o.getPrecipitation() != null)
+                            .filter(o -> !Double.isNaN(o.getPrecipitation()))
                             .collect(
                                     Collectors.groupingBy(
                                             dp -> dp.getDate().toLocalDate(),

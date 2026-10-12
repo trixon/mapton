@@ -320,7 +320,7 @@ public class BFilterSectionTrend<T extends BXyzPoint> extends MBaseFilterSection
             return false;
         }
         var dZ = p.extOrNull().deltaZero().getDelta1();
-        if (dZ == null) {
+        if (Double.isNaN(dZ)) {
             return false;
         }
         HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(BKey.TRENDS_H);

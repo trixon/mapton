@@ -54,7 +54,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             plotAltutid(xyz, position);
         }
 
-        if (sCheckModel.isChecked(GraphicItem.BALLS_Z) && xyz.getZeroZ() != null) {
+        if (sCheckModel.isChecked(GraphicItem.BALLS_Z) && !Double.isNaN(xyz.getZeroZ())) {
             plotBallsZ(xyz, position);
         }
 

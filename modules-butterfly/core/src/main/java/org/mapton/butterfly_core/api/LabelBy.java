@@ -436,7 +436,7 @@ public class LabelBy {
     public static String valueZeroZ(BXyzPoint p) {
         var z = p.getZeroZ();
 
-        return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
+        return Double.isNaN(z) ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
     }
 
     public static interface Operations {

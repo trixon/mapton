@@ -29,7 +29,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
-import org.apache.commons.lang3.ObjectUtils;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MAvgPeriod;
 import org.mapton.api.MSimpleObjectStorageManager;
@@ -142,6 +141,9 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             }
 
             for (var p : butterfly.topo().getControlPoints()) {
+//                if (p.getDimension() == BDimension._1d) {
+//                    System.err.println("err  %s\t%f\t%f".formatted(p.getName(), p.getZeroX(), p.getZeroY()));
+//                }
                 keepLoadingProgressAlive();
                 var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
                 if (!observations.isEmpty()) {
@@ -230,15 +232,16 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             var timeFilteredObservations = p.ext().getObservationsAllRaw().stream()
                     .filter(o -> getTemporalManager().isValid(o.getDate()))
                     .filter(o -> {
+                        //TODO Flytta till initial inläsning?
                         switch (p.getDimension()) {
                             case _1d -> {
-                                return ObjectUtils.allNotNull(o.getMeasuredZ());
+                                return Butterfly.allNotNaN(o.getMeasuredZ());
                             }
                             case _2d -> {
-                                return ObjectUtils.allNotNull(o.getMeasuredX(), o.getMeasuredY());
+                                return Butterfly.allNotNaN(o.getMeasuredX(), o.getMeasuredY());
                             }
                             case _3d -> {
-                                return ObjectUtils.allNotNull(o.getMeasuredX(), o.getMeasuredY(), o.getMeasuredZ());
+                                return Butterfly.allNotNaN(o.getMeasuredX(), o.getMeasuredY(), o.getMeasuredZ());
                             }
                             default ->
                                 throw new AssertionError();
@@ -272,6 +275,9 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
         int cores = Runtime.getRuntime().availableProcessors();
         try (var executor = Executors.newFixedThreadPool(cores)) {
             for (var p : timeFilteredItems) {
+//                if (true) {
+//                    break;
+//                }
                 executor.submit(() -> {
                     if (!p.ext().getObservationsAllRaw().isEmpty()) {
                         var trendsH = (HashMap<BTrendPeriod, Trend>) p.getValue(BKey.TRENDS_H);
@@ -311,6 +317,10 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
                         p.setValue("MONMON", delta);
                     });
         }
+//        for (BTopoControlPoint p : timeFilteredItems) {
+//            System.err.println("err2  %s\t%f\t%f".formatted(p.getName(), p.getZeroX(), p.getZeroY()));
+//
+//        }
     }
 
     @Override

@@ -20,13 +20,15 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Box;
 import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Ellipsoid;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.RigidShape;
+import gov.nasa.worldwind.render.ShapeAttributes;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.apache.commons.lang3.ObjectUtils;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MAvgPeriod;
@@ -34,6 +36,7 @@ import org.mapton.api.MOptions;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.EwmaHelper;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -74,6 +77,9 @@ public class GraphicRendererTrace extends GraphicRendererBase {
         if (sCheckModel.isChecked(GraphicItem.AVG_1D_ACTIVITY) && dimension != BDimension._2d) {
             plotAvgActivity1d(p, position);
         }
+        if (sCheckModel.isChecked(GraphicItem.ALTUTID)) {
+            plotAltutid(p, position);
+        }
     }
 
     private void plot1d(BTopoControlPoint p, Position position) {
@@ -95,7 +101,7 @@ public class GraphicRendererTrace extends GraphicRendererBase {
             prevDate = o.getDate();
             prevHeight = height;
 
-            if (o.ext().getDeltaZ() == null) {
+            if (Double.isNaN(o.ext().getDeltaZ())) {
                 continue;
             }
 
@@ -141,12 +147,12 @@ public class GraphicRendererTrace extends GraphicRendererBase {
         }
 
         var positions = plot3dOffsetPole(p, position, true, 0.5, true);
-        if (ObjectUtils.anyNull(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
+        if (Butterfly.anyNaN(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
             return;
         }
         var o1 = p.ext().getReferenceObservation();
         var observations = p.ext().getObservationsTimeFiltered().stream()
-                .filter(o -> ObjectUtils.allNotNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ(), o1.getMeasuredX(), o1.getMeasuredY(), o1.getMeasuredZ()))
+                .filter(o -> Butterfly.allNotNaN(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ(), o1.getMeasuredX(), o1.getMeasuredY(), o1.getMeasuredZ()))
                 .toList();
         mGotZeroMeas = observations.stream().filter(o -> o.isZeroMeasurement()).findAny().isPresent();
         var mainStream = observations.stream();
@@ -200,8 +206,49 @@ public class GraphicRendererTrace extends GraphicRendererBase {
 //            addRenderable(endEllipsoid, true, null, sMapObjects);
 //        }
 
-        plotLabel(p, positions[0]);
+        plotLabel(p, positions[1]);
 
+    }
+
+    private void plotAltutid(BTopoControlPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicItem.ALTUTID, position)) {
+            return;
+        }
+        var plotGround = true;
+        if (plotGround) {
+
+        } else {
+        }
+        var firstDate = p.ext().getObservationFilteredFirstDate().atStartOfDay();
+        var zeroDate = p.getDateZero().atStartOfDay();
+        if (firstDate.isEqual(zeroDate)) {
+            plotGround = plotAltutid(p, position, zeroDate, Material.WHITE, plotGround);
+        } else {
+            plotGround = plotAltutid(p, position, firstDate, Material.GRAY, plotGround);
+            plotGround = plotAltutid(p, position, zeroDate, Material.WHITE, plotGround);
+        }
+        plotGround = plotAltutid(p, position, p.getDateLatest(), Material.MAGENTA, plotGround);
+
+    }
+
+    private boolean plotAltutid(BTopoControlPoint p, Position position, LocalDateTime date, Material material, boolean plotGround) {
+        var timeSpan = ChronoUnit.MINUTES.between(date, LocalDateTime.now());
+        var altitude = timeSpan / 24000.0;
+        var startPosition = WWHelper.positionFromPosition(position, 0.0);
+        var endPosition = WWHelper.positionFromPosition(position, altitude);
+        var radius = 1.2;
+        var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
+        ShapeAttributes attrs = mAttributeManager.getComponentVectorCurrentAttributes(p).copy();
+        attrs.setInteriorMaterial(material);
+        endEllipsoid.setAttributes(attrs);
+
+        addRenderable(endEllipsoid, true, GraphicItem.ALTUTID, sMapObjects);
+        if (plotGround) {
+            var groundPath = new Path(startPosition, endPosition);
+            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+            addRenderable(groundPath, true, GraphicItem.ALTUTID, sMapObjects);
+        }
+        return false;
     }
 
     private void plotAvg1d(BTopoControlPoint p, Position position, GraphicItem graphicItem) {

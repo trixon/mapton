@@ -190,7 +190,11 @@ public class GroundwaterManager extends BaseManager<BHydroGroundwaterPoint> {
             });
         });
 
-        var latLonDisruptors = timeFilteredItems.stream().map(p -> new MLatLon(p.getLat(), p.getLon())).toList();
+        var latLonDisruptors = timeFilteredItems.stream()
+                .filter(p -> Butterfly.allNotNaN(p.getLat(), p.getLon()))
+                .map(p -> new MLatLon(p.getLat(), p.getLon()))
+                .toList();
+
         mDisruptorManager.putLatLons(DISRUPTOR_NAME, latLonDisruptors);
 
         setItemsTimeFiltered(timeFilteredItems);

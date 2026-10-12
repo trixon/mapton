@@ -32,6 +32,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.TrendHelper;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BTrendPeriod;
@@ -104,7 +105,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
 
     private void plot1dVector(BTopoControlPoint p, Position position) {
         var zeroZ = p.getZeroZ();
-        if (zeroZ == null) {
+        if (Double.isNaN(zeroZ)) {
             return;
         }
         var ZERO_SIZE = 0.4;
@@ -116,9 +117,9 @@ public class GraphicRendererVector extends GraphicRendererBase {
 
         var currentPosition = zeroPosition;
         var o = p.ext().getObservationsTimeFiltered().getLast();
-        var direction = o.ext().getDeltaZ() != null && o.ext().getDeltaZ() < 0 ? -1 : 1;
+        var direction = !Double.isNaN(o.ext().getDeltaZ()) && o.ext().getDeltaZ() < 0 ? -1 : 1;
 
-        if (o.ext().getDeltaZ() != null) {
+        if (!Double.isNaN(o.ext().getDeltaZ())) {
             var z = zeroZ
                     + TopoLayerBundle.getZOffset()
                     + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * mScale3dH;
@@ -145,7 +146,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
         var zeroZ = p.getZeroZ();
         var alarm = p.ext().getAlarm(BComponent.HEIGHT);
 
-        if (ObjectUtils.anyNull(alarm, zeroZ) || TopoHelper.getAlarmLevelHeight(p) < 0) {
+        if (ObjectUtils.anyNull(alarm) || Butterfly.anyNaN(zeroZ) || TopoHelper.getAlarmLevelHeight(p) < 0) {
             return;
         }
 
@@ -205,7 +206,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
         var zeroZ = p.getZeroZ();
         var o = p.ext().getObservationsTimeFiltered().getLast();
 
-        if (ObjectUtils.anyNull(zeroZ, o.ext().getDeltaZ())) {
+        if (Butterfly.anyNaN(zeroZ, o.ext().getDeltaZ())) {
             return;
         }
         var zeroPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.getZOffset());
@@ -221,7 +222,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
     private void plot1dVectorTrend(BTopoControlPoint p, Position position) {
         HashMap<BTrendPeriod, TrendHelper.Trend> map = p.getValue(BKey.TRENDS_H);
         var zeroZ = p.getZeroZ();
-        if (ObjectUtils.anyNull(map, zeroZ)) {
+        if (map == null || Double.isNaN(zeroZ)) {
             return;
         }
         var TREND_SIZE = 0.3;
@@ -292,7 +293,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
         pathDeltaR.setAttributes(mAttributeManager.getComponentVector2dAttributes(p));
         addRenderable(pathDeltaR, true, null, sMapObjects);
 
-        plotLabel(p, positions[0]);
+        plotLabel(p, positions[1]);
     }
 
     private void plot3dLineOfSight(BTopoControlPoint p, Position position) {
@@ -339,12 +340,12 @@ public class GraphicRendererVector extends GraphicRendererBase {
     }
 
     private void plotPoint(BTopoControlPoint p, Position position) {
-        if (ObjectUtils.anyNull(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
+        if (Butterfly.anyNaN(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
             return;
         }
 
         var positions = plot3dOffsetPole(p, position, true, 0.5, false);
-        plotLabel(p, positions[0]);
+        plotLabel(p, positions[1]);
 
         if (sCheckModel.isChecked(GraphicItem.BEARING)) {
             plotBearing(p, position, positions[0].getAltitude());

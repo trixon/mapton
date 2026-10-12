@@ -93,7 +93,7 @@ public class CrackManager extends BaseManager<BStructuralCrackPoint> {
 
                     for (int i = 0; i < observations.size(); i++) {
                         var o = observations.get(i);
-                        if (o.getMeasuredZ() == null) {
+                        if (Double.isNaN(o.getMeasuredZ())) {
                             if (i == 0) {
                                 firstX = o.getMeasuredX();
                                 firstY = o.getMeasuredY();
@@ -101,8 +101,8 @@ public class CrackManager extends BaseManager<BStructuralCrackPoint> {
                             var dx = o.getMeasuredX() - firstX;
                             var dy = o.getMeasuredY() - firstY;
                             var dz = Math.hypot(dx, dy);
-                            o.setMeasuredX(null);
-                            o.setMeasuredY(null);
+                            o.setMeasuredX(Double.NaN);
+                            o.setMeasuredY(Double.NaN);
                             o.setMeasuredZ(dz);
                         }
 //                        o.setMeasuredZ(o.getMeasuredZ() / 1000.0);

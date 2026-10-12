@@ -22,12 +22,12 @@ import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import javafx.scene.Node;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_structural.crack.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
@@ -117,7 +117,7 @@ public class CrackLayerBundle extends BfLayerBundle {
             //Plot points with new measurement regardless of filter
             synchronized (mManager.getAllItems()) {
                 mManager.getAllItems().stream()
-                        .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
+                        .filter(p -> Butterfly.allNotNaN(p.getLat(), p.getLon()))
                         .forEach(p -> {
                             var position = BCoordinatrix.toPositionWW2d(p);
                             if (mLayerOptions.isPlotWatchlistChanges()) {
@@ -128,7 +128,7 @@ public class CrackLayerBundle extends BfLayerBundle {
 
             synchronized (mManager.getTimeFilteredItems()) {
                 for (var p : mManager.getTimeFilteredItems()) {
-                    if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
+                    if (Butterfly.allNotNaN(p.getLat(), p.getLon())) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
                         var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();

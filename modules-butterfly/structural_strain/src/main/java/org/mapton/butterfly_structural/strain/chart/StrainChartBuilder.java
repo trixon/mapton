@@ -123,7 +123,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             addNEMarkers(plot, o, plotZeroAndReplacement);
 
-            if (o.ext().getDeltaZ() != null) {
+            if (!Double.isNaN(o.ext().getDeltaZ())) {
                 var minute = ChartHelper.convertToMinute(o.getDate());
                 timeSeries.addOrUpdate(minute, o.ext().getDeltaZ());
                 if (DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), p.getDateZero())) {

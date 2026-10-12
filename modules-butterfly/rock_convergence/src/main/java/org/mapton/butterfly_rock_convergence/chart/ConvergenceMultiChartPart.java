@@ -92,7 +92,7 @@ public class ConvergenceMultiChartPart extends BMultiChartPart {
         for (var p : pointList) {
             var observations = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
-                    .filter(o -> o.getMeasuredZ() != null)
+                    .filter(o -> !Double.isNaN(o.getMeasuredZ()))
                     .map(o -> {
                         var oo = new BXyzPointObservation();
                         oo.setDate(o.getDate());

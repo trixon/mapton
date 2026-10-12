@@ -77,7 +77,7 @@ public abstract class BlastMultiChartPart extends BMultiChartPart {
         for (var p : pointList) {
             var observations = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
-                    .filter(o -> o.getMeasuredZ() != null)
+                    .filter(o -> !Double.isNaN(o.getMeasuredZ()))
                     .map(o -> {
                         var oo = new BTopoControlPointObservation();
                         oo.setDate(o.getDate());

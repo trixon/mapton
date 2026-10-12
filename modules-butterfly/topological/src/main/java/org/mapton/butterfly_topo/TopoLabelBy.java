@@ -17,9 +17,9 @@ package org.mapton.butterfly_topo;
 
 import java.time.temporal.ChronoUnit;
 import java.util.function.Function;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.LabelBy;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -232,7 +232,7 @@ public enum TopoLabelBy implements LabelBy.Operations {
             var last = observations.getLast();
             var lastDelta = last.ext().getDeltaZ();
             var secondLastDelta = secondLast.ext().getDeltaZ();
-            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+            if (Butterfly.anyNaN(secondLastDelta, lastDelta)) {
                 return "-";
             }
 
@@ -255,7 +255,7 @@ public enum TopoLabelBy implements LabelBy.Operations {
             var last = observations.getLast();
             var lastDelta = last.ext().getDeltaZ();
             var secondLastDelta = secondLast.ext().getDeltaZ();
-            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+            if (Butterfly.anyNaN(secondLastDelta, lastDelta)) {
                 return "-";
             }
 
@@ -278,7 +278,7 @@ public enum TopoLabelBy implements LabelBy.Operations {
             var last = observations.getLast();
             var lastDelta = last.ext().getDelta2d();
             var secondLastDelta = secondLast.ext().getDelta2d();
-            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+            if (Butterfly.anyNaN(secondLastDelta, lastDelta)) {
                 return "-";
             }
 
@@ -301,7 +301,7 @@ public enum TopoLabelBy implements LabelBy.Operations {
             var last = observations.getLast();
             var lastDelta = last.ext().getDelta2d();
             var secondLastDelta = secondLast.ext().getDelta2d();
-            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+            if (Butterfly.anyNaN(secondLastDelta, lastDelta)) {
                 return "-";
             }
 
@@ -324,7 +324,7 @@ public enum TopoLabelBy implements LabelBy.Operations {
             var last = observations.get(observations.size() - 1);
             var lastDelta = last.ext().getDeltaZ();
             var secondLastDelta = secondLast.ext().getDeltaZ();
-            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+            if (Butterfly.anyNaN(secondLastDelta, lastDelta)) {
                 return "-";
             }
 
@@ -347,7 +347,7 @@ public enum TopoLabelBy implements LabelBy.Operations {
             var last = observations.get(observations.size() - 1);
             var lastDelta = last.ext().getDeltaZ();
             var secondLastDelta = secondLast.ext().getDeltaZ();
-            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+            if (Butterfly.anyNaN(secondLastDelta, lastDelta)) {
                 return "-";
             }
 
@@ -370,7 +370,7 @@ public enum TopoLabelBy implements LabelBy.Operations {
             var last = observations.get(observations.size() - 1);
             var lastDelta = last.ext().getDelta2d();
             var secondLastDelta = secondLast.ext().getDelta2d();
-            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+            if (Butterfly.anyNaN(secondLastDelta, lastDelta)) {
                 return "-";
             }
 
@@ -393,7 +393,7 @@ public enum TopoLabelBy implements LabelBy.Operations {
             var last = observations.get(observations.size() - 1);
             var lastDelta = last.ext().getDelta2d();
             var secondLastDelta = secondLast.ext().getDelta2d();
-            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+            if (Butterfly.anyNaN(secondLastDelta, lastDelta)) {
                 return "-";
             }
 
@@ -403,6 +403,30 @@ public enum TopoLabelBy implements LabelBy.Operations {
         }
 
         return "%s (%.3f)".formatted(StringHelper.round(delta, 3), p.ext().deltaZero().getDelta2());
+    }),
+    VALUE_DELTA_FIRST3_1D(LabelBy.CAT_VALUE, "@3 första Δ1d (dagar)", p -> {
+        if (p.getDimension() == BDimension._2d) {
+            return ":";
+        }
+        long daysSinceMeasurement;
+        var observations = p.ext().getObservationsTimeFiltered();
+        double delta;
+        if (observations.size() > 1) {
+            var second = observations.get(2);
+            var first = observations.get(0);
+            var firstDelta = first.ext().getDeltaZ();
+            var secondLastDelta = second.ext().getDeltaZ();
+            if (Butterfly.anyNaN(secondLastDelta, firstDelta)) {
+                return "-";
+            }
+
+            delta = secondLastDelta - firstDelta;
+            daysSinceMeasurement = ChronoUnit.DAYS.between(first.getDate(), second.getDate());
+        } else {
+            return "-";
+        }
+
+        return "%s (%d)".formatted(StringHelper.round(delta * 1000, 0), daysSinceMeasurement);
     }),
     VALUE_Z(LabelBy.CAT_VALUE, "Z", p -> {
         return LabelBy.valueZeroZ(p);

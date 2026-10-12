@@ -26,6 +26,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import static org.mapton.butterfly_core.api.BaseGraphicRenderer.PERCENTAGE_ALTITUDE;
 import static org.mapton.butterfly_core.api.BaseGraphicRenderer.PERCENTAGE_SIZE;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import org.mapton.butterfly_structural.tilt.TiltAttributeManager;
@@ -82,7 +83,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     private Double calcBearing(BStructuralTiltPoint p) {
         var dX = p.ext().deltaZero().getDeltaX();
         var dY = p.ext().deltaZero().getDeltaY();
-        if (ObjectUtils.anyNull(p.getAzimuth(), dX, dY)) {
+        if (ObjectUtils.anyNull(p.getAzimuth()) || Butterfly.anyNaN(dX, dY)) {
             return null;
         }
 
@@ -112,7 +113,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         var bearing = calcBearing(p);
 
-        if (ObjectUtils.anyNull(bearing, p.ext().deltaZero().getDelta2())) {
+        if (bearing == null || Double.isNaN(p.ext().deltaZero().getDelta2())) {
             return;
         }
 
@@ -124,7 +125,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         mPosition3 = WWHelper.movePolar(mPosition0, bearing, length, z);
 
         var transDelta = p.ext().deltaZero().getDeltaX();
-        if (transDelta != null) {
+        if (!Double.isNaN(transDelta)) {
             var transBearing = MathHelper.convertCcwDegreeToCw(p.getAzimuth());
             if (transDelta < 0) {
                 transBearing -= 180.0;
@@ -134,7 +135,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
 
         var longDelta = p.ext().deltaZero().getDeltaY();
-        if (longDelta != null) {
+        if (!Double.isNaN(longDelta)) {
             var longBearing = MathHelper.convertCcwDegreeToCw(p.getAzimuth());
             if (longDelta > 0) {
                 longBearing -= 90.0;
@@ -159,7 +160,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         int alarmLevel = TiltHelper.getAlarmLevel(p);
 //        var dZ = o.ext().getDeltaZ();
         var rise = false;
-//        if (dZ != null) {
+//        if (!Double.isNaN(dZ)) {
 //            rise = Math.signum(o.ext().getDeltaZ()) > 0;
 //        }
         var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, false);
@@ -195,7 +196,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     private void plotTiltLongitudinal(BStructuralTiltPoint p) {
         var dY = p.ext().deltaZero().getDeltaY();
-        if (ObjectUtils.anyNull(dY, mPosition0, mPosition1)
+        if (Double.isNaN(dY) || ObjectUtils.anyNull(mPosition0, mPosition1)
                 || dY == 0.0
                 || mPosition2 == null) {
             return;
@@ -208,7 +209,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     private void plotTiltTransversal(BStructuralTiltPoint p) {
         var dX = p.ext().deltaZero().getDeltaX();
-        if (ObjectUtils.anyNull(dX, mPosition0, mPosition1)
+        if (Double.isNaN(dX) || ObjectUtils.anyNull(mPosition0, mPosition1)
                 || dX == 0.0
                 || mPosition1 == null) {
             return;

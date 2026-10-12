@@ -86,7 +86,7 @@ public abstract class BlastMultiChartPart extends BMultiChartPart {
         for (var p : pointList) {
             var observations = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
-                    .filter(o -> o.getGroundwaterLevel() != null)
+                    .filter(o -> !Double.isNaN(o.getGroundwaterLevel()))
                     .map(o -> {
                         var oo = new BHydroGroundwaterPointObservation();
                         oo.setDate(o.getDate());

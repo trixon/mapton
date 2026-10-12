@@ -25,9 +25,9 @@ import org.mapton.butterfly_acoustic.vibration.VibrationManager;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.BXyzPoint;
-import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationObservation;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
+import org.mapton.butterfly_format.types.rock.BRockBlast;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.DateHelper;
 
@@ -90,7 +90,7 @@ public class VibrationMultiChartPart extends BMultiChartPart {
         for (var p : pointList) {
             var observations = p.ext().getObservationsTimeFiltered().stream()
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
-                    .filter(o -> o.getMeasuredZ() != null)
+                    .filter(o -> !Double.isNaN(o.getMeasuredZ()))
                     .map(o -> {
                         var oo = new BAcousticVibrationObservation();
                         oo.setDate(o.getDate());

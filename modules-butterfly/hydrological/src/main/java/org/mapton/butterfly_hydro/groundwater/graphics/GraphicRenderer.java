@@ -62,7 +62,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     public void init() {
         mMinLevel = mManager.getTimeFilteredItems().stream()
                 .flatMap(p -> p.ext().getObservationsAllRaw().stream())
-                .filter(o -> o.getGroundwaterLevel() != null)
+                .filter(o -> !Double.isNaN(o.getGroundwaterLevel()))
                 .mapToDouble(o -> o.getGroundwaterLevel())
                 .min()
                 .orElse(0);
@@ -89,7 +89,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
         var list = p.ext().getObservationsTimeFiltered();
         var waterLevels = list.stream()
-                .filter(d -> d.getGroundwaterLevel() != null)
+                .filter(o -> !Double.isNaN(o.getGroundwaterLevel()))
                 .mapToDouble(BHydroGroundwaterPointObservation::getGroundwaterLevel)
                 .sorted();
         var median = list.size() % 2 == 0
@@ -115,7 +115,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         var bearing = ll1.getBearing(ll2);
         var scale = totalDistance / (totalDuration.toHours() / 24.0);
         var nodes = p.ext().getObservationsAllRaw().stream()
-                .filter(o -> o.getGroundwaterLevel() != null)
+                .filter(o -> !Double.isNaN(o.getGroundwaterLevel()))
                 .map(o -> {
                     var duration = Duration.between(p.ext().getDateFirst(), o.getDate());
                     var distance = scale * (duration.toHours() / 24.0);
@@ -151,7 +151,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         var reversedList = list.reversed();
         var minObservation = list.stream()
-                .filter(o -> o.getGroundwaterLevel() != null)
+                .filter(o -> !Double.isNaN(o.getGroundwaterLevel()))
                 .min(Comparator.comparing(BHydroGroundwaterPointObservation::getGroundwaterLevel))
                 .orElse(null);
 
@@ -163,7 +163,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         for (int i = 0; i < reversedList.size(); i++) {
             var o = reversedList.get(i);
-            if (ObjectUtils.anyNull(o.getDate(), o.getGroundwaterLevel())
+            if (ObjectUtils.anyNull(o.getDate()) || Double.isNaN(o.getGroundwaterLevel())
                     || o.getDate().isBefore(LocalDate.parse("2017-01-01").atStartOfDay())) {
                 continue;
             }

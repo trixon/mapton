@@ -19,12 +19,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BMultiChartPartCluster;
 import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.rock.BRockConvergence;
 import org.mapton.butterfly_rock_convergence.api.ConvergenceManager;
@@ -64,7 +64,7 @@ public class ClusterMultiChartPart extends BMultiChartPartCluster {
     public ArrayList<BRockConvergence> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = ConvergenceManager.getInstance().getTimeFilteredItems().stream()
                 .filter(p -> {
-                    return ObjectUtils.allNotNull(p.getLat(), p.getLon());
+                    return Butterfly.allNotNaN(p.getLat(), p.getLon());
                 })
                 .filter(p -> {
                     return hasValidGeometry(latLon, new MLatLon(p.getLat(), p.getLon()), getDefaultDistance());

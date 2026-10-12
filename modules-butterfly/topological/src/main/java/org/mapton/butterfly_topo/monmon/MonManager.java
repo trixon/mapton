@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javafx.collections.ListChangeListener;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseManager;
@@ -110,7 +109,7 @@ public class MonManager extends BaseManager<BTopoMonmon> {
                         }
                     })
                     .filter(m -> {
-                        return m != null && ObjectUtils.allNotNull(
+                        return m != null && Butterfly.allNotNaN(
                                 m.getZeroX(),
                                 m.getZeroY(),
                                 m.getZeroZ()
