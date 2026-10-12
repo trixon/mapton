@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_format.types;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +32,7 @@ import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.apache.commons.math3.ml.clustering.Clusterable;
+import org.mapton.butterfly_format.Butterfly;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
@@ -50,20 +53,29 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
     private boolean noSplit;
     private Integer numOfDecXY;
     private Integer numOfDecZ;
-    private Double offsetX;
-    private Double offsetY;
-    private Double offsetZ;
+    @JsonSetter(nulls = Nulls.SKIP)
+    private double offsetX = Double.NaN;
+    @JsonSetter(nulls = Nulls.SKIP)
+    private double offsetY = Double.NaN;
+    @JsonSetter(nulls = Nulls.SKIP)
+    private double offsetZ = Double.NaN;
     private String rollingFormula;
-    private Double rollingX;
-    private Double rollingY;
-    private Double rollingZ;
+    @JsonSetter(nulls = Nulls.SKIP)
+    private double rollingX = Double.NaN;
+    @JsonSetter(nulls = Nulls.SKIP)
+    private double rollingY = Double.NaN;
+    @JsonSetter(nulls = Nulls.SKIP)
+    private double rollingZ = Double.NaN;
     private String sparse;
-    private Double zeroX;
-    private transient Double zeroXScaled;
-    private Double zeroY;
-    private transient Double zeroYScaled;
-    private Double zeroZ;
-    private transient Double zeroZScaled;
+    @JsonSetter(nulls = Nulls.SKIP)
+    private double zeroX = Double.NaN;
+    private transient double zeroXScaled;
+    @JsonSetter(nulls = Nulls.SKIP)
+    private double zeroY = Double.NaN;
+    private transient double zeroYScaled;
+    @JsonSetter(nulls = Nulls.SKIP)
+    private double zeroZ = Double.NaN;
+    private transient double zeroZScaled;
 
     public static HashMap<LocalDate, Point3D> createObservationMap(BXyzPoint p, DateTimeFormatter dateTimeFormatterTo, DateTimeFormatter dateTimeFormatterFrom) {
         var observationsTimeFiltered = p.extOrNull().getObservationsTimeFiltered();
@@ -85,7 +97,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                 if (o.isZeroMeasurement()) {
                     beforeZero1 = false;
                 }
-                if (hasZero && beforeZero1 || ObjectUtils.anyNull(o.ext().getDeltaZ())) {
+                if (hasZero && beforeZero1 || Butterfly.anyNaN(o.ext().getDeltaZ())) {
                     continue;
                 }
                 var yyyyww = o.getDate().toLocalDate().format(dateTimeFormatterTo);
@@ -105,7 +117,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                 if (o.isZeroMeasurement()) {
                     beforeZero3 = false;
                 }
-                if (hasZero && beforeZero3 || ObjectUtils.anyNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ())) {
+                if (hasZero && beforeZero3 || Butterfly.anyNaN(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ())) {
                     continue;
                 }
                 var key = o.getDate().toLocalDate().format(dateTimeFormatterTo);
@@ -168,15 +180,15 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         return numOfDecZ;
     }
 
-    public Double getOffsetX() {
+    public double getOffsetX() {
         return offsetX;
     }
 
-    public Double getOffsetY() {
+    public double getOffsetY() {
         return offsetY;
     }
 
-    public Double getOffsetZ() {
+    public double getOffsetZ() {
         return offsetZ;
     }
 
@@ -189,15 +201,15 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         return rollingFormula;
     }
 
-    public Double getRollingX() {
+    public double getRollingX() {
         return rollingX;
     }
 
-    public Double getRollingY() {
+    public double getRollingY() {
         return rollingY;
     }
 
-    public Double getRollingZ() {
+    public double getRollingZ() {
         return rollingZ;
     }
 
@@ -205,27 +217,27 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         return sparse;
     }
 
-    public Double getZeroX() {
+    public double getZeroX() {
         return zeroX;
     }
 
-    public Double getZeroXScaled() {
+    public double getZeroXScaled() {
         return zeroXScaled;
     }
 
-    public Double getZeroY() {
+    public double getZeroY() {
         return zeroY;
     }
 
-    public Double getZeroYScaled() {
+    public double getZeroYScaled() {
         return zeroYScaled;
     }
 
-    public Double getZeroZ() {
+    public double getZeroZ() {
         return zeroZ;
     }
 
-    public Double getZeroZScaled() {
+    public double getZeroZScaled() {
         return zeroZScaled;
     }
 
@@ -261,15 +273,15 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         this.numOfDecZ = numOfDecZ;
     }
 
-    public void setOffsetX(Double offsetX) {
+    public void setOffsetX(double offsetX) {
         this.offsetX = offsetX;
     }
 
-    public void setOffsetY(Double offsetY) {
+    public void setOffsetY(double offsetY) {
         this.offsetY = offsetY;
     }
 
-    public void setOffsetZ(Double offsetZ) {
+    public void setOffsetZ(double offsetZ) {
         this.offsetZ = offsetZ;
     }
 
@@ -277,15 +289,15 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         this.rollingFormula = rollingFormula;
     }
 
-    public void setRollingX(Double rollingX) {
+    public void setRollingX(double rollingX) {
         this.rollingX = rollingX;
     }
 
-    public void setRollingY(Double rollingY) {
+    public void setRollingY(double rollingY) {
         this.rollingY = rollingY;
     }
 
-    public void setRollingZ(Double rollingZ) {
+    public void setRollingZ(double rollingZ) {
         this.rollingZ = rollingZ;
     }
 
@@ -293,27 +305,27 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         this.sparse = sparse;
     }
 
-    public void setZeroX(Double zeroX) {
+    public void setZeroX(double zeroX) {
         this.zeroX = zeroX;
     }
 
-    public void setZeroXScaled(Double zeroXScaled) {
+    public void setZeroXScaled(double zeroXScaled) {
         this.zeroXScaled = zeroXScaled;
     }
 
-    public void setZeroY(Double zeroY) {
+    public void setZeroY(double zeroY) {
         this.zeroY = zeroY;
     }
 
-    public void setZeroYScaled(Double zeroYScaled) {
+    public void setZeroYScaled(double zeroYScaled) {
         this.zeroYScaled = zeroYScaled;
     }
 
-    public void setZeroZ(Double zeroZ) {
+    public void setZeroZ(double zeroZ) {
         this.zeroZ = zeroZ;
     }
 
-    public void setZeroZScaled(Double zeroZScaled) {
+    public void setZeroZScaled(double zeroZScaled) {
         this.zeroZScaled = zeroZScaled;
     }
 
@@ -322,7 +334,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         private transient final DeltaFirst deltaFirst = new DeltaFirst();
         private transient final DeltaRolling deltaRolling = new DeltaRolling();
         private transient final DeltaZero deltaZero = new DeltaZero();
-        private transient Double mFrequenceHighBuffer;
+        private transient double mFrequenceHighBuffer;
         private TreeMap<LocalDateTime, Point3D> mReplacements = new TreeMap<>();
 
         public void calculateObservations(List<T> observations) {
@@ -347,9 +359,9 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                     .filter(o -> o.isZeroMeasurement())
                     .findFirst().orElse(observations.getFirst());
 
-            var zeroX = latestZero.getMeasuredX();
-            var zeroY = latestZero.getMeasuredY();
-            var zeroZ = latestZero.getMeasuredZ();
+            var localZeroX = latestZero.getMeasuredX();
+            var localZeroY = latestZero.getMeasuredY();
+            var localZeroZ = latestZero.getMeasuredZ();
             var accumulatedReplacementsX = 0.0;
             var accumulatedReplacementsY = 0.0;
             var accumulatedReplacementsZ = 0.0;
@@ -369,13 +381,14 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                             if (oo == o) {
                                 break;
                             }
-                            if (oo.ext().getDeltaX() != null) {
+
+                            if (!Double.isNaN(oo.ext().getDeltaX())) {
                                 oo.ext().setDeltaX(oo.ext().getDeltaX() + accumulatedReplacementsX);
                             }
-                            if (oo.ext().getDeltaY() != null) {
+                            if (!Double.isNaN(oo.ext().getDeltaY())) {
                                 oo.ext().setDeltaY(oo.ext().getDeltaY() + accumulatedReplacementsY);
                             }
-                            if (oo.ext().getDeltaZ() != null) {
+                            if (!Double.isNaN(oo.ext().getDeltaZ())) {
                                 oo.ext().setDeltaZ(oo.ext().getDeltaZ() + accumulatedReplacementsZ);
                             }
                         }
@@ -384,14 +397,14 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                     accumulatedReplacementsY = 0.0;
                     accumulatedReplacementsZ = 0.0;
                 }
-                if (ObjectUtils.allNotNull(measuredX, zeroX)) {
-                    o.ext().setDeltaX(measuredX - zeroX - accumulatedReplacementsX);
+                if (Butterfly.allNotNaN(measuredX, localZeroX)) {
+                    o.ext().setDeltaX(measuredX - localZeroX - accumulatedReplacementsX);
                 }
-                if (ObjectUtils.allNotNull(measuredY, zeroY)) {
-                    o.ext().setDeltaY(measuredY - zeroY - accumulatedReplacementsY);
+                if (Butterfly.allNotNaN(measuredY, localZeroY)) {
+                    o.ext().setDeltaY(measuredY - localZeroY - accumulatedReplacementsY);
                 }
-                if (ObjectUtils.allNotNull(measuredZ, zeroZ)) {
-                    o.ext().setDeltaZ(measuredZ - zeroZ - accumulatedReplacementsZ);
+                if (Butterfly.allNotNaN(measuredZ, localZeroZ)) {
+                    o.ext().setDeltaZ(measuredZ - localZeroZ - accumulatedReplacementsZ);
                 }
 
                 if (o.isReplacementMeasurement() && i > 0) {
@@ -404,19 +417,19 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                     var replacementY = 0d;
                     var replacementZ = 0d;
 
-                    if (ObjectUtils.allNotNull(measuredX, prevX, o.ext().getDeltaX())) {
+                    if (Butterfly.allNotNaN(measuredX, prevX, o.ext().getDeltaX())) {
                         replacementX = measuredX - prevX;
                         o.ext().setDeltaX(o.ext().getDeltaX() - replacementX);
                         accumulatedReplacementsX = accumulatedReplacementsX + replacementX;
                     }
 
-                    if (ObjectUtils.allNotNull(measuredY, prevY, o.ext().getDeltaY())) {
+                    if (Butterfly.allNotNaN(measuredY, prevY, o.ext().getDeltaY())) {
                         replacementY = measuredY - prevY;
                         o.ext().setDeltaY(o.ext().getDeltaY() - replacementY);
                         accumulatedReplacementsY = accumulatedReplacementsY + replacementY;
                     }
 
-                    if (ObjectUtils.allNotNull(measuredZ, prevZ, o.ext().getDeltaZ())) {
+                    if (Butterfly.allNotNaN(measuredZ, prevZ, o.ext().getDeltaZ())) {
                         replacementZ = measuredZ - prevZ;
                         o.ext().setDeltaZ(o.ext().getDeltaZ() - replacementZ);
                         accumulatedReplacementsZ = accumulatedReplacementsZ + replacementZ;
@@ -425,7 +438,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                     mReplacements.put(o.getDate(), new Point3D(replacementX, replacementY, replacementZ));
                 }
 
-                if (offsetZ != null && offsetZ != 0d) {
+                if (!Double.isNaN(offsetZ) && offsetZ != 0d) {
                     o.ext().setDeltaZ(o.ext().getDeltaZ() + offsetZ);
                 }
 
@@ -476,10 +489,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
         }
 
-        public int getAlarmLevel(BComponent component, Double delta) {
+        public int getAlarmLevel(BComponent component, double delta) {
             var alarm = getAlarm(component);
 
-            if (ObjectUtils.anyNull(alarm, delta)) {
+            if (alarm == null || Double.isNaN(delta)) {
                 return -1;
             } else {
                 return alarm.ext().getLevel(delta);
@@ -599,8 +612,8 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
         }
 
-        public Integer getAlarmPercent(BComponent component, Double delta) {
-            if (delta == null) {
+        public Integer getAlarmPercent(BComponent component, double delta) {
+            if (Double.isNaN(delta)) {
                 return null;
             }
 
@@ -635,7 +648,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             var percentH = getAlarmPercentString(ext, BComponent.HEIGHT);
             var delta = ext.deltaZero().getDelta1();
             var direction = "";
-            if (delta != null) {
+            if (!Double.isNaN(delta)) {
                 if (delta > 0) {
                     direction = " ↑";
                 } else if (delta < 0) {
@@ -712,7 +725,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
         }
 
-        public Double getFrequenceHighBuffer() {
+        public double getFrequenceHighBuffer() {
             return mFrequenceHighBuffer;
         }
 
@@ -771,7 +784,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
         }
 
-        public void setFrequenceHighBuffer(Double frequenceHighBuffer) {
+        public void setFrequenceHighBuffer(double frequenceHighBuffer) {
             this.mFrequenceHighBuffer = frequenceHighBuffer;
         }
 
@@ -794,7 +807,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                 return getDelta(decimals, 1);
             }
 
-            public Double getDelta() {
+            public double getDelta() {
                 switch (getDimension()) {
                     case _1d -> {
                         return getDelta1();
@@ -807,10 +820,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                     }
                 }
 
-                return null;
+                return Double.NaN;
             }
 
-            public Double getDelta1() {
+            public double getDelta1() {
                 return getDeltaZ();
             }
 
@@ -820,7 +833,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
             public String getDelta1(int decimals, int factor, boolean usePrefix) {
                 var delta = getDelta1();
-                if (delta == null) {
+                if (Double.isNaN(delta)) {
                     return null;
                 } else {
                     var prefix = usePrefix ? "Δ1d " : "";
@@ -852,7 +865,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
             public String getDelta2(int decimals, int factor, boolean usePrefix) {
                 var delta = getDelta2();
-                if (delta == null) {
+                if (Double.isNaN(delta)) {
                     return null;
                 } else {
                     var prefix = usePrefix ? "Δ2d " : "";
@@ -860,11 +873,11 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                 }
             }
 
-            public Double getDelta2() {
-                if (ObjectUtils.allNotNull(getDeltaX(), getDeltaY())) {
+            public double getDelta2() {
+                if (Butterfly.allNotNaN(getDeltaX(), getDeltaY())) {
                     return Math.hypot(getDeltaX(), getDeltaY());
                 } else {
-                    return null;
+                    return Double.NaN;
                 }
             }
 
@@ -874,55 +887,63 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
             public String getDelta3(int decimals, int factor) {
                 var delta = getDelta3();
-                if (delta == null) {
+                if (Double.isNaN(delta)) {
                     return null;
                 } else {
                     return StringHelper.round(delta * factor, decimals, "Δ3d ", "", true);
                 }
             }
 
-            public Double getDelta3() {
-                if (ObjectUtils.allNotNull(getDelta1(), getDelta2())) {
+            public double getDelta3() {
+                if (Butterfly.allNotNaN(getDelta1(), getDelta2())) {
                     return Math.hypot(getDelta1(), getDelta2()) * MathHelper.sign(getDelta1());
                 } else {
-                    return null;
+                    return Double.NaN;
                 }
             }
 
-            public abstract Double getDeltaX();
+            public abstract double getDeltaX();
 
             public String getDeltaX(int decimals) {
                 var delta = getDeltaX();
-                return delta == null ? null : StringHelper.round(delta, decimals, "ΔX=", "", false);
+                return Double.isNaN(delta)
+                        ? null
+                        : StringHelper.round(delta, decimals, "ΔX=", "", false);
             }
 
-            public abstract Double getDeltaY();
+            public abstract double getDeltaY();
 
             public String getDeltaY(int decimals) {
                 var delta = getDeltaY();
-                return delta == null ? null : StringHelper.round(delta, decimals, "ΔY=", "", false);
+                return Double.isNaN(delta)
+                        ? null
+                        : StringHelper.round(delta, decimals, "ΔY=", "", false);
             }
 
-            public abstract Double getDeltaZ();
+            public abstract double getDeltaZ();
 
             public String getDeltaZ(int decimals) {
                 var delta = getDeltaZ();
-                return delta == null ? null : StringHelper.round(delta, decimals, "ΔZ=", "", true);
+                return Double.isNaN(delta)
+                        ? null
+                        : StringHelper.round(delta, decimals, "ΔZ=", "", true);
             }
 
             public String getDeltaZAbsolute(int decimals) {
                 var delta = getDeltaZ();
-                return delta == null ? null : StringHelper.round(Math.abs(delta), decimals, "ΔZ=", "", false);
+                return Double.isNaN(delta)
+                        ? null
+                        : StringHelper.round(Math.abs(delta), decimals, "ΔZ=", "", false);
             }
         }
 
         public class DeltaFirst extends Delta {
 
             @Override
-            public Double getDeltaX() {
+            public double getDeltaX() {
                 var observations = getObservationsTimeFiltered();
                 if (observations == null || observations.isEmpty()) {
-                    return null;
+                    return Double.NaN;
                 }
 
                 var firstMeasured = observations.getFirst().getMeasuredX();
@@ -933,18 +954,18 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                         .mapToDouble(entry -> entry.getValue().getX())
                         .sum();
 
-                if (ObjectUtils.allNotNull(firstMeasured, lastMeasured)) {
+                if (Butterfly.allNotNaN(firstMeasured, lastMeasured)) {
                     return lastMeasured - firstMeasured - replacement;
                 } else {
-                    return null;
+                    return Double.NaN;
                 }
             }
 
             @Override
-            public Double getDeltaY() {
+            public double getDeltaY() {
                 var observations = getObservationsTimeFiltered();
                 if (observations == null || observations.isEmpty()) {
-                    return null;
+                    return Double.NaN;
                 }
 
                 var firstMeasured = observations.getFirst().getMeasuredY();
@@ -954,18 +975,18 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                         .mapToDouble(entry -> entry.getValue().getY())
                         .sum();
 
-                if (ObjectUtils.allNotNull(firstMeasured, lastMeasured)) {
+                if (Butterfly.allNotNaN(firstMeasured, lastMeasured)) {
                     return lastMeasured - firstMeasured - replacement;
                 } else {
-                    return null;
+                    return Double.NaN;
                 }
             }
 
             @Override
-            public Double getDeltaZ() {
+            public double getDeltaZ() {
                 var observations = getObservationsTimeFiltered();
                 if (observations == null || observations.isEmpty()) {
-                    return null;
+                    return Double.NaN;
                 }
 
                 var firstMeasured = observations.getFirst().getMeasuredZ();
@@ -975,10 +996,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                         .mapToDouble(entry -> entry.getValue().getZ())
                         .sum();
 
-                if (ObjectUtils.allNotNull(firstMeasured, lastMeasured)) {
+                if (Butterfly.allNotNaN(firstMeasured, lastMeasured)) {
                     return lastMeasured - firstMeasured - replacement;
                 } else {
-                    return null;
+                    return Double.NaN;
                 }
             }
         }
@@ -986,44 +1007,44 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         public class DeltaRolling extends Delta {
 
             @Override
-            public Double getDeltaX() {
+            public double getDeltaX() {
                 var observations = getObservationsTimeFiltered();
                 if (observations == null || observations.isEmpty()) {
-                    return null;
+                    return Double.NaN;
                 }
 
-                if (ObjectUtils.allNotNull(getRollingX(), observations.getLast().getMeasuredX())) {
+                if (Butterfly.allNotNaN(getRollingX(), observations.getLast().getMeasuredX())) {
                     return observations.getLast().getMeasuredX() - getRollingX();
                 } else {
-                    return null;
+                    return Double.NaN;
                 }
             }
 
             @Override
-            public Double getDeltaY() {
+            public double getDeltaY() {
                 var observations = getObservationsTimeFiltered();
                 if (observations == null || observations.isEmpty()) {
-                    return null;
+                    return Double.NaN;
                 }
 
-                if (ObjectUtils.allNotNull(getRollingY(), observations.getLast().getMeasuredY())) {
+                if (Butterfly.allNotNaN(getRollingY(), observations.getLast().getMeasuredY())) {
                     return observations.getLast().getMeasuredY() - getRollingY();
                 } else {
-                    return null;
+                    return Double.NaN;
                 }
             }
 
             @Override
-            public Double getDeltaZ() {
+            public double getDeltaZ() {
                 var observations = getObservationsTimeFiltered();
                 if (observations == null || observations.isEmpty()) {
-                    return null;
+                    return Double.NaN;
                 }
 
-                if (ObjectUtils.allNotNull(getRollingZ(), observations.getLast().getMeasuredZ())) {
+                if (Butterfly.allNotNaN(getRollingZ(), observations.getLast().getMeasuredZ())) {
                     return observations.getLast().getMeasuredZ() - getRollingZ();
                 } else {
-                    return null;
+                    return Double.NaN;
                 }
             }
         }
@@ -1031,18 +1052,18 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         public class DeltaZero extends Delta {
 
             @Override
-            public Double getDeltaX() {
-                return getObservationsTimeFiltered().isEmpty() ? null : getObservationsTimeFiltered().getLast().ext().getDeltaX();
+            public double getDeltaX() {
+                return getObservationsTimeFiltered().isEmpty() ? Double.NaN : getObservationsTimeFiltered().getLast().ext().getDeltaX();
             }
 
             @Override
-            public Double getDeltaY() {
-                return getObservationsTimeFiltered().isEmpty() ? null : getObservationsTimeFiltered().getLast().ext().getDeltaY();
+            public double getDeltaY() {
+                return getObservationsTimeFiltered().isEmpty() ? Double.NaN : getObservationsTimeFiltered().getLast().ext().getDeltaY();
             }
 
             @Override
-            public Double getDeltaZ() {
-                return getObservationsTimeFiltered().isEmpty() ? null : getObservationsTimeFiltered().getLast().ext().getDeltaZ();
+            public double getDeltaZ() {
+                return getObservationsTimeFiltered().isEmpty() ? Double.NaN : getObservationsTimeFiltered().getLast().ext().getDeltaZ();
             }
         }
 

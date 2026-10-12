@@ -32,8 +32,8 @@ public abstract class BBasePoint extends BBase {
 
     private String comment;
     private String group;
-    private Double lat;
-    private Double lon;
+    private double lat;
+    private double lon;
 
     public String getComment() {
         return comment;
@@ -43,11 +43,11 @@ public abstract class BBasePoint extends BBase {
         return group;
     }
 
-    public Double getLat() {
+    public double getLat() {
         return lat;
     }
 
-    public Double getLon() {
+    public double getLon() {
         return lon;
     }
 
@@ -59,11 +59,11 @@ public abstract class BBasePoint extends BBase {
         this.group = group;
     }
 
-    public void setLat(Double lat) {
+    public void setLat(double lat) {
         this.lat = lat;
     }
 
-    public void setLon(Double lon) {
+    public void setLon(double lon) {
         this.lon = lon;
     }
 

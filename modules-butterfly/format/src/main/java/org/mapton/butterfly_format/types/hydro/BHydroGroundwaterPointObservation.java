@@ -46,61 +46,61 @@ m5: top-edge of pipe = RÖK
 m6: pressure from sensor in mVp
 
      */
-    private Double temperature;
-    private Double downMeasurement;
-    private Double sensorOffset;
-    private Double groundwaterLevel;
-    private Double topEdge;
-    private Double preasureMvp;
+    private double temperature;
+    private double downMeasurement;
+    private double sensorOffset;
+    private double groundwaterLevel;
+    private double topEdge;
+    private double preasureMvp;
 
     public BHydroGroundwaterPointObservation() {
     }
 
-    public Double getGroundwaterLevel() {
+    public double getGroundwaterLevel() {
         return groundwaterLevel;
     }
 
-    public Double getPreasureMvp() {
+    public double getPreasureMvp() {
         return preasureMvp;
     }
 
-    public Double getTemperature() {
+    public double getTemperature() {
         return temperature;
     }
 
-    public Double getDownMeasurement() {
+    public double getDownMeasurement() {
         return downMeasurement;
     }
 
-    public Double getSensorOffset() {
+    public double getSensorOffset() {
         return sensorOffset;
     }
 
-    public Double getTopEdge() {
+    public double getTopEdge() {
         return topEdge;
     }
 
-    public void setGroundwaterLevel(Double groundwaterLevel) {
+    public void setGroundwaterLevel(double groundwaterLevel) {
         this.groundwaterLevel = groundwaterLevel;
     }
 
-    public void setPreasureMvp(Double preasureMvp) {
+    public void setPreasureMvp(double preasureMvp) {
         this.preasureMvp = preasureMvp;
     }
 
-    public void setTemperature(Double temperature) {
+    public void setTemperature(double temperature) {
         this.temperature = temperature;
     }
 
-    public void setDownMeasurement(Double downMeasurement) {
+    public void setDownMeasurement(double downMeasurement) {
         this.downMeasurement = downMeasurement;
     }
 
-    public void setSensorOffset(Double sensorOffset) {
+    public void setSensorOffset(double sensorOffset) {
         this.sensorOffset = sensorOffset;
     }
 
-    public void setTopEdge(Double topEdge) {
+    public void setTopEdge(double topEdge) {
         this.topEdge = topEdge;
     }
 

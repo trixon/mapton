@@ -167,10 +167,10 @@ public class BAlarm extends BBasePoint {
         public Ext() {
         }
 
-        public int getLevel(Double value) {
+        public int getLevel(double value) {
             value = MathHelper.round(value, 6);//Get rid of things like -0.004999999999999005
 
-            if (ObjectUtils.anyNull(value, mRange0, mRange1)) {
+            if (Double.isNaN(value) || ObjectUtils.anyNull(mRange0, mRange1)) {
                 return -1;
             } else if (value == 0 || mRange0.contains(value)) {
                 return 0;
@@ -240,10 +240,10 @@ public class BAlarm extends BBasePoint {
             return list.stream().filter(r -> r != null).toList();
         }
 
-        public int getRatioLevel(Double value) {
+        public int getRatioLevel(double value) {
             value = MathHelper.round(value, 6);//Get rid of things like -0.004999999999999005
 
-            if (ObjectUtils.anyNull(value, mRatioRange0, mRatioRange1)) {
+            if (Double.isNaN(value) || ObjectUtils.anyNull(mRatioRange0, mRatioRange1)) {
                 return -1;
             } else if (value == 0 || mRatioRange0.contains(value)) {
                 return 0;

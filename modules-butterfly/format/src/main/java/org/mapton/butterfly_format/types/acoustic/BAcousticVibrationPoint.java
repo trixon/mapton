@@ -17,7 +17,7 @@ package org.mapton.butterfly_format.types.acoustic;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
-import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
@@ -60,14 +60,14 @@ public class BAcousticVibrationPoint extends BXyzPoint {
 
         public int getNumOfExceedings() {
             return (int) getObservationsTimeFiltered().stream()
-                    .filter(o -> ObjectUtils.allNotNull(o.getMeasuredZ(), o.getLimit()))
+                    .filter(o -> Butterfly.allNotNaN(o.getMeasuredZ(), o.getLimit()))
                     .filter(o -> o.getLimit() < o.getMeasuredZ())
                     .count();
         }
 
         public boolean isLastExceeding() {
             var o = getObservationsTimeFiltered().getLast();
-            if (ObjectUtils.allNotNull(o.getLimit(), o.getMeasuredZ())) {
+            if (Butterfly.allNotNaN(o.getLimit(), o.getMeasuredZ())) {
                 return o.getLimit() < o.getMeasuredZ();
             } else {
                 return false;

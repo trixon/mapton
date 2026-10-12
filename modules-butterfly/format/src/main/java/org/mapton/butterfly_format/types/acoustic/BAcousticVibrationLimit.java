@@ -26,7 +26,7 @@ public class BAcousticVibrationLimit {
     private boolean fixed;
     private String pointId;
     private String unit;
-    private Double value;
+    private double value;
     private ArrayList<String> types;
 
     public BAcousticVibrationLimit() {
@@ -44,7 +44,7 @@ public class BAcousticVibrationLimit {
         return unit;
     }
 
-    public Double getValue() {
+    public double getValue() {
         return value;
     }
 
@@ -68,7 +68,7 @@ public class BAcousticVibrationLimit {
         this.unit = unit;
     }
 
-    public void setValue(Double value) {
+    public void setValue(double value) {
         this.value = value;
     }
 

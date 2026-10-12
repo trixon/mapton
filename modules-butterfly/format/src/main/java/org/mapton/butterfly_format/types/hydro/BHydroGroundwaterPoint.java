@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
-import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import se.trixon.almond.util.DateHelper;
@@ -69,38 +69,38 @@ public class BHydroGroundwaterPoint extends BXyzPoint {
 
     public class Ext extends BXyzPoint.Ext<BHydroGroundwaterPointObservation> {
 
-        public Double getGroundwaterLevelDiff(int daysBeforeNow) {
+        public double getGroundwaterLevelDiff(int daysBeforeNow) {
             var now = LocalDate.now();
             return getGroundwaterLevelDiff(now.minusDays(daysBeforeNow), now);
         }
 
-        public Double getGroundwaterLevelDiff(LocalDate firstDate, LocalDate lastDate) {
+        public double getGroundwaterLevelDiff(LocalDate firstDate, LocalDate lastDate) {
             var obs = getObservationsTimeFiltered().stream()
-                    .filter(o -> o.getGroundwaterLevel() != null)
+                    .filter(o -> !Double.isNaN(o.getGroundwaterLevel()))
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
                     .toList();
 
             if (obs.size() < 2) {
-                return null;
+                return Double.NaN;
             } else {
                 var o1 = obs.getFirst();
                 var o2 = obs.getLast();
 
-                if (ObjectUtils.anyNull(o1.getGroundwaterLevel(), o2.getGroundwaterLevel())) {
-                    return null;
+                if (Butterfly.anyNaN(o1.getGroundwaterLevel(), o2.getGroundwaterLevel())) {
+                    return Double.NaN;
                 }
                 return o2.getGroundwaterLevel() - o1.getGroundwaterLevel();
             }
         }
 
-        public Double getGroundwaterLevelMinMaxSpan(LocalDate firstDate, LocalDate lastDate) {
+        public double getGroundwaterLevelMinMaxSpan(LocalDate firstDate, LocalDate lastDate) {
             var obs = getObservationsTimeFiltered().stream()
-                    .filter(o -> o.getGroundwaterLevel() != null)
+                    .filter(o -> !Double.isNaN(o.getGroundwaterLevel()))
                     .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
                     .toList();
 
             if (obs.size() < 2) {
-                return null;
+                return Double.NaN;
             } else {
                 var min = obs.stream().mapToDouble(o -> o.getGroundwaterLevel()).min().orElse(0);
                 var max = obs.stream().mapToDouble(o -> o.getGroundwaterLevel()).max().orElse(0);
@@ -111,11 +111,12 @@ public class BHydroGroundwaterPoint extends BXyzPoint {
 
         public BHydroGroundwaterPointObservation getMaxObservation() {
             return getObservationsAllRaw().stream()
-                    .filter(o -> o.getGroundwaterLevel() != null)
+                    .filter(o -> !Double.isNaN(o.getGroundwaterLevel()))
                     .max(Comparator.comparing(BHydroGroundwaterPointObservation::getGroundwaterLevel))
                     .orElse(null);
         }
 
+        @Override
         public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
             var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
             var nextMeas = latest.plusDays(getFrequency());
@@ -125,7 +126,7 @@ public class BHydroGroundwaterPoint extends BXyzPoint {
 
         public BHydroGroundwaterPointObservation getMinObservation() {
             return getObservationsAllRaw().stream()
-                    .filter(o -> o.getGroundwaterLevel() != null)
+                    .filter(o -> !Double.isNaN(o.getGroundwaterLevel()))
                     .min(Comparator.comparing(BHydroGroundwaterPointObservation::getGroundwaterLevel))
                     .orElse(null);
         }

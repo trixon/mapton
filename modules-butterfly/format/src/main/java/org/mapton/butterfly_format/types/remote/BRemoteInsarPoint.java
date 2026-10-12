@@ -25,22 +25,22 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 @JsonIgnoreProperties(value = {"visible"})
 public class BRemoteInsarPoint extends BXyzPoint {
 
-    private Double acceleration;
+    private double acceleration;
     private Integer changeDetected;
-    private Double cumulativeDisplacement;
+    private double cumulativeDisplacement;
     private Integer effArea;
     private transient Ext mExt;
-    private Double seasonAmp;
-    private Double stDef;
-    private Double stDevAcceleration;
-    private Double stDevHeight;
-    private Double stDevSeasonAmp;
-    private Double stDevVelocity;
-    private Double stDevVelocity3m;
-    private Double stDevVelocity6m;
-    private Double velocity;
-    private Double velocity3m;
-    private Double velocity6m;
+    private double seasonAmp;
+    private double stDef;
+    private double stDevAcceleration;
+    private double stDevHeight;
+    private double stDevSeasonAmp;
+    private double stDevVelocity;
+    private double stDevVelocity3m;
+    private double stDevVelocity6m;
+    private double velocity;
+    private double velocity3m;
+    private double velocity6m;
 
     @Override
     public Ext ext() {
@@ -51,7 +51,7 @@ public class BRemoteInsarPoint extends BXyzPoint {
         return mExt;
     }
 
-    public Double getAcceleration() {
+    public double getAcceleration() {
         return acceleration;
     }
 
@@ -59,7 +59,7 @@ public class BRemoteInsarPoint extends BXyzPoint {
         return changeDetected;
     }
 
-    public Double getCumulativeDisplacement() {
+    public double getCumulativeDisplacement() {
         return cumulativeDisplacement;
     }
 
@@ -67,51 +67,51 @@ public class BRemoteInsarPoint extends BXyzPoint {
         return effArea;
     }
 
-    public Double getSeasonAmp() {
+    public double getSeasonAmp() {
         return seasonAmp;
     }
 
-    public Double getStDef() {
+    public double getStDef() {
         return stDef;
     }
 
-    public Double getStDevAcceleration() {
+    public double getStDevAcceleration() {
         return stDevAcceleration;
     }
 
-    public Double getStDevHeight() {
+    public double getStDevHeight() {
         return stDevHeight;
     }
 
-    public Double getStDevSeasonAmp() {
+    public double getStDevSeasonAmp() {
         return stDevSeasonAmp;
     }
 
-    public Double getStDevVelocity() {
+    public double getStDevVelocity() {
         return stDevVelocity;
     }
 
-    public Double getStDevVelocity3m() {
+    public double getStDevVelocity3m() {
         return stDevVelocity3m;
     }
 
-    public Double getStDevVelocity6m() {
+    public double getStDevVelocity6m() {
         return stDevVelocity6m;
     }
 
-    public Double getVelocity() {
+    public double getVelocity() {
         return velocity;
     }
 
-    public Double getVelocity3m() {
+    public double getVelocity3m() {
         return velocity3m;
     }
 
-    public Double getVelocity6m() {
+    public double getVelocity6m() {
         return velocity6m;
     }
 
-    public void setAcceleration(Double acceleration) {
+    public void setAcceleration(double acceleration) {
         this.acceleration = acceleration;
     }
 
@@ -119,7 +119,7 @@ public class BRemoteInsarPoint extends BXyzPoint {
         this.changeDetected = changeDetected;
     }
 
-    public void setCumulativeDisplacement(Double cumulativeDisplacement) {
+    public void setCumulativeDisplacement(double cumulativeDisplacement) {
         this.cumulativeDisplacement = cumulativeDisplacement;
     }
 
@@ -127,47 +127,47 @@ public class BRemoteInsarPoint extends BXyzPoint {
         this.effArea = effArea;
     }
 
-    public void setSeasonAmp(Double seasonAmp) {
+    public void setSeasonAmp(double seasonAmp) {
         this.seasonAmp = seasonAmp;
     }
 
-    public void setStDef(Double stDef) {
+    public void setStDef(double stDef) {
         this.stDef = stDef;
     }
 
-    public void setStDevAcceleration(Double stDevAcceleration) {
+    public void setStDevAcceleration(double stDevAcceleration) {
         this.stDevAcceleration = stDevAcceleration;
     }
 
-    public void setStDevHeight(Double stDevHeight) {
+    public void setStDevHeight(double stDevHeight) {
         this.stDevHeight = stDevHeight;
     }
 
-    public void setStDevSeasonAmp(Double stDevSeasonAmp) {
+    public void setStDevSeasonAmp(double stDevSeasonAmp) {
         this.stDevSeasonAmp = stDevSeasonAmp;
     }
 
-    public void setStDevVelocity(Double stDevVelocity) {
+    public void setStDevVelocity(double stDevVelocity) {
         this.stDevVelocity = stDevVelocity;
     }
 
-    public void setStDevVelocity3m(Double stDevVelocity3m) {
+    public void setStDevVelocity3m(double stDevVelocity3m) {
         this.stDevVelocity3m = stDevVelocity3m;
     }
 
-    public void setStDevVelocity6m(Double stDevVelocity6m) {
+    public void setStDevVelocity6m(double stDevVelocity6m) {
         this.stDevVelocity6m = stDevVelocity6m;
     }
 
-    public void setVelocity(Double velocity) {
+    public void setVelocity(double velocity) {
         this.velocity = velocity;
     }
 
-    public void setVelocity3m(Double velocity3m) {
+    public void setVelocity3m(double velocity3m) {
         this.velocity3m = velocity3m;
     }
 
-    public void setVelocity6m(Double velocity6m) {
+    public void setVelocity6m(double velocity6m) {
         this.velocity6m = velocity6m;
     }
 

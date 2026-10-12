@@ -126,6 +126,7 @@ public class BRockExtensometerPoint extends BXyzPoint {
         public Ext() {
         }
 
+        @Override
         public int getAlarmLevel() {
             return getAlarmLevel(getObservationFilteredLast());
         }
@@ -133,7 +134,7 @@ public class BRockExtensometerPoint extends BXyzPoint {
         public int getAlarmLevel(BRockExtensometerPointObservation o) {
             var p = BRockExtensometerPoint.this;
 
-            if (o != null && o.ext().getDelta() != null) {
+            if (o != null && !Double.isNaN(o.ext().getDelta())) {
                 var delta = Math.abs(o.ext().getDelta() / 1000);
 
                 if (delta >= p.getLimit3()) {

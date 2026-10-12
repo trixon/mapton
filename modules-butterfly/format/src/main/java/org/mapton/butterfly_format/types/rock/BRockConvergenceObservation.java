@@ -149,17 +149,17 @@ public class BRockConvergenceObservation extends BXyzPointObservation {
         }
 
         @Override
-        public Double getDelta1d() {
+        public double getDelta1d() {
             return getMeasuredZ();
         }
 
         @Override
-        public Double getDelta2d() {
+        public double getDelta2d() {
             return getMeasuredY();
         }
 
         @Override
-        public Double getDelta3d() {
+        public double getDelta3d() {
             return getMeasuredX();
         }
 

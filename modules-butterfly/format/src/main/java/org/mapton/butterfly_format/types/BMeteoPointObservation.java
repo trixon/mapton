@@ -21,16 +21,16 @@ package org.mapton.butterfly_format.types;
  */
 public class BMeteoPointObservation extends BXyzPointObservation {
 
-    private Double airPressure;
-    private Double airTemperature;
-    private Double humidity;
+    private double airPressure;
+    private double airTemperature;
+    private double humidity;
     private transient Ext mExt;
-    private Double precipitation;
+    private double precipitation;
     private Integer visibility;
     private String weatherCode;
     private Integer windDirection;
-    private Double windSpeed;
-    private Double windSpeedMax;
+    private double windSpeed;
+    private double windSpeedMax;
 
     public BMeteoPointObservation() {
     }
@@ -44,19 +44,19 @@ public class BMeteoPointObservation extends BXyzPointObservation {
         return mExt;
     }
 
-    public Double getAirPressure() {
+    public double getAirPressure() {
         return airPressure;
     }
 
-    public Double getAirTemperature() {
+    public double getAirTemperature() {
         return airTemperature;
     }
 
-    public Double getHumidity() {
+    public double getHumidity() {
         return humidity;
     }
 
-    public Double getPrecipitation() {
+    public double getPrecipitation() {
         return precipitation;
     }
 
@@ -72,19 +72,19 @@ public class BMeteoPointObservation extends BXyzPointObservation {
         return windDirection;
     }
 
-    public Double getWindSpeed() {
+    public double getWindSpeed() {
         return windSpeed;
     }
 
-    public Double getWindSpeedMax() {
+    public double getWindSpeedMax() {
         return windSpeedMax;
     }
 
-    public void setAirPressure(Double airPressure) {
+    public void setAirPressure(double airPressure) {
         this.airPressure = airPressure;
     }
 
-    public void setAirTemperature(Double temperature) {
+    public void setAirTemperature(double temperature) {
         this.airTemperature = temperature;
     }
 
@@ -92,11 +92,11 @@ public class BMeteoPointObservation extends BXyzPointObservation {
         this.mExt = ext;
     }
 
-    public void setHumidity(Double humidity) {
+    public void setHumidity(double humidity) {
         this.humidity = humidity;
     }
 
-    public void setPrecipitation(Double rain) {
+    public void setPrecipitation(double rain) {
         this.precipitation = rain;
     }
 
@@ -112,11 +112,11 @@ public class BMeteoPointObservation extends BXyzPointObservation {
         this.windDirection = windDirection;
     }
 
-    public void setWindSpeed(Double windSpeed) {
+    public void setWindSpeed(double windSpeed) {
         this.windSpeed = windSpeed;
     }
 
-    public void setWindSpeedMax(Double windSpeedMax) {
+    public void setWindSpeedMax(double windSpeedMax) {
         this.windSpeedMax = windSpeedMax;
     }
 

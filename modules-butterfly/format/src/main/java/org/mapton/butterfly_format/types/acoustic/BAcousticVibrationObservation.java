@@ -41,11 +41,11 @@ public class BAcousticVibrationObservation extends BXyzPointObservation {
     private String channelIdY;
     private String channelIdZ;
     private Integer distance;
-    private Double frequencyX;
-    private Double frequencyY;
-    private Double frequencyZ;
+    private double frequencyX;
+    private double frequencyY;
+    private double frequencyZ;
     private transient String id;
-    private Double limit;
+    private double limit;
     private transient Ext mExt;
     private String unit;
 
@@ -81,15 +81,15 @@ public class BAcousticVibrationObservation extends BXyzPointObservation {
         return distance;
     }
 
-    public Double getFrequencyX() {
+    public double getFrequencyX() {
         return frequencyX;
     }
 
-    public Double getFrequencyY() {
+    public double getFrequencyY() {
         return frequencyY;
     }
 
-    public Double getFrequencyZ() {
+    public double getFrequencyZ() {
         return frequencyZ;
     }
 
@@ -97,7 +97,7 @@ public class BAcousticVibrationObservation extends BXyzPointObservation {
         return id;
     }
 
-    public Double getLimit() {
+    public double getLimit() {
         return limit;
     }
 
@@ -125,15 +125,15 @@ public class BAcousticVibrationObservation extends BXyzPointObservation {
         this.distance = distance;
     }
 
-    public void setFrequencyX(Double frequencyX) {
+    public void setFrequencyX(double frequencyX) {
         this.frequencyX = frequencyX;
     }
 
-    public void setFrequencyY(Double frequencyY) {
+    public void setFrequencyY(double frequencyY) {
         this.frequencyY = frequencyY;
     }
 
-    public void setFrequencyZ(Double frequencyZ) {
+    public void setFrequencyZ(double frequencyZ) {
         this.frequencyZ = frequencyZ;
     }
 
@@ -141,7 +141,7 @@ public class BAcousticVibrationObservation extends BXyzPointObservation {
         this.id = id;
     }
 
-    public void setLimit(Double limit) {
+    public void setLimit(double limit) {
         this.limit = limit;
     }
 

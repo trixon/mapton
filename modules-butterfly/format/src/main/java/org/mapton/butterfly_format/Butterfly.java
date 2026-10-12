@@ -106,7 +106,38 @@ import org.mapton.butterfly_format.types.topo.BTopoMonmon;
  */
 public class Butterfly {
 
-    public static final int FORMAT = 11;
+    public static final Comparator<Double> DOUBLE_NaN_LAST_ASC = (d1, d2) -> {
+        boolean isNaN1 = Double.isNaN(d1);
+        boolean isNaN2 = Double.isNaN(d2);
+        if (isNaN1 && isNaN2) {
+            return 0;
+        }
+        if (isNaN1) {
+            return 1;
+        }
+        if (isNaN2) {
+            return -1;
+        }
+
+        return Double.compare(d1, d2);
+    };
+    public static final Comparator<Double> DOUBLE_NaN_LAST_DESC = (d1, d2) -> {
+        boolean isNaN1 = Double.isNaN(d1);
+        boolean isNaN2 = Double.isNaN(d2);
+        if (isNaN1 && isNaN2) {
+            return 0;
+        }
+        if (isNaN1) {
+            return 1;
+        }
+        if (isNaN2) {
+            return -1;
+        }
+
+        return Double.compare(d2, d1);
+    };
+
+    public static final int FORMAT = 12;
     public static final String KEY_FORMAT = "FORMAT";
     public static final String KEY_TIMESTAMP = "TIMESTAMP";
     public static final String VERSION_FILE = "version.properties";
@@ -164,6 +195,30 @@ public class Butterfly {
     private final ArrayList<BAcousticVibrationLimit> mVibrationLimits = new ArrayList<>();
     private final ArrayList<BAcousticVibrationObservation> mVibrationObservations = new ArrayList<>();
     private final ArrayList<BAcousticVibrationPoint> mVibrationPoints = new ArrayList<>();
+
+    public static boolean allNotNaN(double... doubles) {
+        if (doubles != null && doubles.length > 0) {
+            for (double d : doubles) {
+                if (Double.isNaN(d)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean anyNaN(double... doubles) {
+        if (doubles != null && doubles.length > 0) {
+            for (double d : doubles) {
+                if (Double.isNaN(d)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     public Butterfly() {
     }
@@ -397,7 +452,7 @@ public class Butterfly {
         if (param != null && p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
             var numberString = param.replaceAll("[^0-9]", "");
             if (StringUtils.isNotBlank(numberString)) {
-                ext.setFrequenceHighBuffer(Double.valueOf(numberString + "d"));
+                ext.setFrequenceHighBuffer(Double.parseDouble(numberString));
             }
         }
     }
