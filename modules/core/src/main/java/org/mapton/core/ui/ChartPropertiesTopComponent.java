@@ -33,7 +33,7 @@ import se.trixon.almond.util.Dict;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "topLeft", openAtStartup = false, position = 0)
+@TopComponent.Registration(mode = "belowProperties", openAtStartup = false, position = 0)
 public final class ChartPropertiesTopComponent extends MTopComponent {
 
     public ChartPropertiesTopComponent() {

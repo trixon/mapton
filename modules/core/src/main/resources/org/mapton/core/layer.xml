@@ -126,6 +126,7 @@ limitations under the License.
             <file name="mapBottom.wsmode" url="mapBottomWsmode.xml"/>
             <file name="navigator.wsmode" url="navigatorWsmode.xml"/>
             <file name="topLeft.wsmode" url="topLeftWsmode.xml"/>
+            <file name="belowProperties.wsmode" url="belowPropertiesWsmode.xml"/>
         </folder>
         <folder name="Groups">
             <file name="MapGroup.wsgrp" url="MapGroupWsgrp.xml"/>
