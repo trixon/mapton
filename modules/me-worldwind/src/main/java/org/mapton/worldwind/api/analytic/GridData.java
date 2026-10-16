@@ -52,7 +52,7 @@ public class GridData {
 
         values.forEach(gridValue -> {
             latLons.add(gridValue.getLatLon());
-            if (gridValue.getValue() != null) {
+            if (!Double.isNaN(gridValue.getValue())) {
                 mMin = Math.min(mMin, gridValue.getValue());
                 mMax = Math.max(mMax, gridValue.getValue());
             }

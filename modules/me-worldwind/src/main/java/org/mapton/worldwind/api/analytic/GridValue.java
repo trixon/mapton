@@ -24,17 +24,17 @@ import org.mapton.api.MLatLon;
 public class GridValue {
 
     private MLatLon mLatLon;
-    private Double mValue;
+    private double mValue;
 
     public GridValue() {
     }
 
-    public GridValue(MLatLon latLon, Double value) {
+    public GridValue(MLatLon latLon, double value) {
         mLatLon = latLon;
         mValue = value;
     }
 
-    public GridValue(double lat, double lon, Double value) {
+    public GridValue(double lat, double lon, double value) {
         mLatLon = new MLatLon(lat, lon);
         mValue = value;
     }
@@ -43,7 +43,7 @@ public class GridValue {
         return mLatLon;
     }
 
-    public Double getValue() {
+    public double getValue() {
         return mValue;
     }
 
@@ -51,7 +51,7 @@ public class GridValue {
         mLatLon = latLon;
     }
 
-    public void setValue(Double value) {
+    public void setValue(double value) {
         mValue = value;
     }
 }

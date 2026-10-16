@@ -181,20 +181,19 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 System.out.println(e.getMessage());
             } catch (IOException e) {
                 Exceptions.printStackTrace(e);
+            } catch (NoClassDefFoundError e) {
+                //Missing gdal?
             }
         }
     }
 
     private void customElevationModelRefresh() {
-        var thread = new Thread(() -> {
-            var dir = new File(FileHelper.getDefaultDirectory(), "test/dem");
+        Thread.ofVirtual().name("customElevationModelRefresh").start(() -> {
+            var dir = new File(FileHelper.getDefaultDirectory(), "worldwind-elevation-model");
             if (dir.isDirectory()) {
                 customElevationModelLoad(dir);
             }
-        }, getClass().getCanonicalName());
-
-        thread.setPriority(Thread.MIN_PRIORITY);
-        thread.start();
+        });
     }
 
     private GeographicProjection getProjection() {

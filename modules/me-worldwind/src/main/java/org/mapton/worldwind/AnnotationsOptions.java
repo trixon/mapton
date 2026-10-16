@@ -35,7 +35,7 @@ public class AnnotationsOptions extends OptionsBase implements MPresetActions {
 
     public static final int DEFAULT_LIMIT = 3;
     public static final AnnotationLimitMode DEFAULT_LIMIT_MODE = AnnotationLimitMode.TOTAL;
-    public static final AnnotationTimeout DEFAULT_TIMEOUT = AnnotationTimeout.NO_TIMEOUT;
+    public static final AnnotationTimeout DEFAULT_TIMEOUT = AnnotationTimeout.SEC_03;
     private final ObjectProperty<AnnotationLimitMode> mLimitModeProperty = new SimpleObjectProperty<>(DEFAULT_LIMIT_MODE);
     private final StringProperty mLimitModeProxyProperty = BindingHelper.createStringEnumProxyProperty(mLimitModeProperty, AnnotationLimitMode.class);
     private final IntegerProperty mLimitProperty = new SimpleIntegerProperty(DEFAULT_LIMIT);
