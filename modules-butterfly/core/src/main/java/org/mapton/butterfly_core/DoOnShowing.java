@@ -19,10 +19,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MOptions;
 import org.mapton.butterfly_core.api.AlarmHistoryManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
+import org.mapton.butterfly_core.commands.OpenDefaultWindowsCommandBoxItem;
 import org.openide.modules.Modules;
 import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
-import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -38,14 +38,7 @@ public class DoOnShowing implements Runnable {
     @Override
     public void run() {
         if (mOptions.isFirstRun()) {
-            Almond.openTopComponent("LayerPropertiesTopComponent");
-            Almond.openTopComponent("TrendsTopComponent");
-            Almond.openTopComponent("PoiTopComponent");
-            Almond.openTopComponent("LayerTopComponent");
-            Almond.openTopComponent("AreaTopComponent");
-            Almond.openTopComponent("PropertiesTopComponent");
-            Almond.openTopComponent("ChartTopComponent");
-            Almond.openTopComponent("TopoTopComponent");
+            new OpenDefaultWindowsCommandBoxItem().getAction().handle(null);
         }
 
         var moduleInfo = Modules.getDefault().ownerOf(ButterflyHelper.class);

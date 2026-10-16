@@ -54,6 +54,7 @@ import org.mapton.api.MSearchProviderManager;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.LogoLoader;
 import org.mapton.butterfly_core.loader.ButterflyOpener;
+import static org.mapton.butterfly_core.loader.ButterflyOpener.KEY_PROJECT_FILE;
 import org.mapton.butterfly_format.BundleMode;
 import static org.mapton.butterfly_format.BundleMode.DIR;
 import static org.mapton.butterfly_format.BundleMode.ZIP;
@@ -212,6 +213,7 @@ public class ButterflyManager {
     }
 
     public synchronized void load(File file) {
+        NbPreferences.forModule(ButterflyOpener.class).put(KEY_PROJECT_FILE, file.toString());
         BCoordinatrix.clear();
         BTopoGrade.clearCache();
 //        BaseManager.clearPreLoad();
@@ -281,8 +283,7 @@ public class ButterflyManager {
                 var coosysPlane = project.getCoordinateSystemPlane();
 
                 if (coosysPlane != null) {
-                    var preferences = NbPreferences.forModule(MCooTrans.class);
-                    preferences.put("map.coo_trans", coosysPlane);
+                    NbPreferences.forModule(MCooTrans.class).put("map.coo_trans", coosysPlane);
                     //TODO request restart if changed or better yet, force change
                 }
 

@@ -52,7 +52,6 @@ public class ButterflyOpener {
     }
 
     public void open(File file) {
-        mPreferences.put(KEY_PROJECT_FILE, file.toString());
         mButterflyManager.load(file);
     }
 
