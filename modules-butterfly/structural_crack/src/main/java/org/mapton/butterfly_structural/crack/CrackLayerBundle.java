@@ -27,7 +27,6 @@ import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
-import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_structural.crack.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
@@ -117,7 +116,7 @@ public class CrackLayerBundle extends BfLayerBundle {
             //Plot points with new measurement regardless of filter
             synchronized (mManager.getAllItems()) {
                 mManager.getAllItems().stream()
-                        .filter(p -> Butterfly.allNotNaN(p.getLat(), p.getLon()))
+                        .filter(p -> BCoordinatrix.hasValidLatLon(p))
                         .forEach(p -> {
                             var position = BCoordinatrix.toPositionWW2d(p);
                             if (mLayerOptions.isPlotWatchlistChanges()) {
@@ -128,7 +127,7 @@ public class CrackLayerBundle extends BfLayerBundle {
 
             synchronized (mManager.getTimeFilteredItems()) {
                 for (var p : mManager.getTimeFilteredItems()) {
-                    if (Butterfly.allNotNaN(p.getLat(), p.getLon())) {
+                    if (BCoordinatrix.hasValidLatLon(p)) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
                         var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();

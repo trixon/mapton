@@ -171,9 +171,6 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
 //                int w = 0;
 //            }
             var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
-            if (wgs84.getX() == 0 || wgs84.getY() == 0) {
-                System.err.println("%s failed with yx %f, %f".formatted(y, x));
-            }
             currentPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
 
             var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);

@@ -22,7 +22,7 @@ import javafx.scene.Node;
 import org.mapton.api.MLatLon;
 import org.mapton.api.Mapton;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
-import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoBaseLayerBundle;
 import org.mapton.butterfly_topo.TopoLayerBundle;
@@ -108,7 +108,7 @@ public class HeatMapLayerBundle extends TopoBaseLayerBundle {
             var values = new ArrayList<GridValue>();
             synchronized (mManager.getTimeFilteredItems()) {
                 mManager.getTimeFilteredItems().stream()
-                        .filter(p -> Butterfly.allNotNaN(p.getLat(), p.getLon()))
+                        .filter(p -> BCoordinatrix.hasValidLatLon(p))
                         .forEach(p -> {
                             var value = p.ext().getNumOfObservationsFiltered();
                             values.add(new GridValue(new MLatLon(p.getLat(), p.getLon()), value));

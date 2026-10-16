@@ -35,10 +35,10 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class GradeVManager extends GradeManagerBase {
 
-    public static final Double MAX_HORIZONTAL_DISTANCE = 10.0;
-    public static final Double MAX_VERTICAL_DISTANCE = 50.0;
-    public static final Double MIN_HORIZONTAL_DISTANCE = 0.0;
-    public static final Double MIN_VERTICAL_DISTANCE = 0.5;
+    public static final double MAX_HORIZONTAL_DISTANCE = 10.0;
+    public static final double MAX_VERTICAL_DISTANCE = 50.0;
+    public static final double MIN_HORIZONTAL_DISTANCE = 0.0;
+    public static final double MIN_VERTICAL_DISTANCE = 0.5;
     private final GradeVPropertiesBuilder mPropertiesBuilder = new GradeVPropertiesBuilder();
 
     public static GradeVManager getInstance() {

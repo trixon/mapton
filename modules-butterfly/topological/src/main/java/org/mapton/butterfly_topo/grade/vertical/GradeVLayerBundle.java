@@ -25,7 +25,6 @@ import java.util.stream.DoubleStream;
 import javafx.scene.Node;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
-import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoBaseLayerBundle;
@@ -116,7 +115,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
 
             synchronized (mManager.getTimeFilteredItems()) {
                 mManager.getTimeFilteredItems().stream()
-                        .filter(p -> Butterfly.allNotNaN(p.getLat(), p.getLon()))
+                        .filter(p -> BCoordinatrix.hasValidLatLon(p))
                         .forEachOrdered(p -> {
                             var elevation = DoubleStream.of(p.getP1().getZeroZ(), p.getP2().getZeroZ()).average().orElse(0.0);
                             var position = Position.fromDegrees(p.getLat(), p.getLon(), elevation);

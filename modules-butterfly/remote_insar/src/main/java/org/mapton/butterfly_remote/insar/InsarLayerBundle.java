@@ -24,10 +24,10 @@ import gov.nasa.worldwind.render.airspaces.Polygon;
 import java.util.ArrayList;
 import javafx.scene.Node;
 import org.mapton.api.Mapton;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
-import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.remote.BRemoteInsarPoint;
 import org.mapton.butterfly_remote.api.RemoteHelper;
 import org.mapton.butterfly_remote.insar.graphics.GraphicItem;
@@ -121,7 +121,7 @@ public class InsarLayerBundle extends BfLayerBundle {
 
             synchronized (mManager.getTimeFilteredItems()) {
                 for (var p : mManager.getTimeFilteredItems()) {
-                    if (Butterfly.allNotNaN(p.getLat(), p.getLon())) {
+                    if (BCoordinatrix.hasValidLatLon(p)) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
                         var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                         var mapObjects = new ArrayList<AVListImpl>();

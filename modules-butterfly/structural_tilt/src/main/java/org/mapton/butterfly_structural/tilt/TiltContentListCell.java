@@ -31,7 +31,7 @@ class TiltContentListCell extends BContentListCell<BStructuralTiltPoint> {
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
     private final Label mDesc2Label = new Label();
-    private final Label mDesc3Label = new Label();
+//    private final Label mDesc3Label = new Label();
     private final Label mDesc4Label = new Label();
 
     public TiltContentListCell() {
@@ -58,14 +58,14 @@ class TiltContentListCell extends BContentListCell<BStructuralTiltPoint> {
         }
 
         var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
-        var desc3 = "%s: %s".formatted(dateRolling, p.ext().getDeltaRolling());
+//        var desc3 = "%s: %s".formatted(dateRolling, p.ext().getDeltaRolling());
 
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
         var desc4 = "%s: %s".formatted(dateZero, p.ext().getDeltaZero());
         mHeaderLabel.setText(getHeader(p));
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(dateSB.toString());
-        mDesc3Label.setText(desc3);
+//        mDesc3Label.setText(desc3);
         mDesc4Label.setText(desc4);
     }
 
@@ -74,7 +74,7 @@ class TiltContentListCell extends BContentListCell<BStructuralTiltPoint> {
                 mHeaderLabel,
                 mDesc1Label,
                 mDesc2Label,
-                mDesc3Label,
+                //                mDesc3Label,
                 mDesc4Label
         );
 

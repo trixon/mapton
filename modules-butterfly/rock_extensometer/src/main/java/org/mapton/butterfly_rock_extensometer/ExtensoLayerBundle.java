@@ -21,10 +21,10 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import javafx.scene.Node;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
-import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.rock.BRockExtensometer;
 import org.mapton.butterfly_rock_extensometer.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
@@ -104,7 +104,7 @@ public class ExtensoLayerBundle extends BfLayerBundle {
                 for (var extenso : mManager.getTimeFilteredItems()) {
                     var mapObjects = new ArrayList<AVListImpl>();
 
-                    if (Butterfly.allNotNaN(extenso.getLat(), extenso.getLon())) {
+                    if (BCoordinatrix.hasValidLatLon(extenso)) {
                         var position = Position.fromDegrees(extenso.getLat(), extenso.getLon());
                         var labelPlacemark = plotLabel(extenso, mLayerOptions.getLabelBy(), position);
 

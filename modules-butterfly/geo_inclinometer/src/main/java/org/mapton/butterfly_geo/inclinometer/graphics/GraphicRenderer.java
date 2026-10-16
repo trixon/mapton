@@ -219,7 +219,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             var valueLimiter = createValueLimiter(p, value);
             var scaledDistance = valueLimiter.cappedValue;
             var azimuth = item.getAzimuth();
-            if (p.getAzimuth() != null) {
+            if (!Double.isNaN(p.getAzimuth())) {
                 azimuth = Angle.normalizedDegrees(azimuth + p.getAzimuth());
             }
 
@@ -252,7 +252,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             var valueLimiter = createValueLimiter(p, value);
             var scaledDistance = valueLimiter.cappedValue;
             var azimuth = Double.isFinite(item.getAzimuth()) ? item.getAzimuth() : 0d;
-            if (p.getAzimuth() != null) {
+            if (!Double.isNaN(p.getAzimuth())) {
                 azimuth = Angle.normalizedDegrees(azimuth + p.getAzimuth());
             }
 
@@ -294,7 +294,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             var valueLimiter = createValueLimiter(p, value);
             var scaledDistance = 1.5 + valueLimiter.cappedValue;
             var azimuth = item.getAzimuth();
-            if (p.getAzimuth() != null) {
+            if (!Double.isNaN(p.getAzimuth())) {
                 azimuth = Angle.normalizedDegrees(azimuth + p.getAzimuth());
             }
 
@@ -325,8 +325,8 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         for (int i = 0; i < observationItems.size(); i++) {
             var item = observationItems.get(i);
-            Double pHeight = null;
-            Double nHeight = null;
+            double pHeight = Double.NaN;
+            double nHeight = Double.NaN;
             var down = item.getDown();
 
             if (i > 0) {
@@ -341,9 +341,9 @@ public class GraphicRenderer extends GraphicRendererBase {
                 nHeight = Math.abs((nDown - down) * .5);
             }
 
-            if (pHeight == null) {
+            if (Double.isNaN(pHeight)) {
                 pHeight = nHeight;
-            } else if (nHeight == null) {
+            } else if (Double.isNaN(nHeight)) {
                 nHeight = pHeight;
             }
 
@@ -351,7 +351,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             var valueLimiter = createValueLimiter(p, value);
             var scaledDistance = valueLimiter.cappedValue;
             var azimuth = item.getAzimuth();
-            if (p.getAzimuth() != null) {
+            if (!Double.isNaN(p.getAzimuth())) {
                 azimuth = Angle.normalizedDegrees(azimuth + p.getAzimuth());
             }
 
@@ -388,8 +388,8 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         for (int i = 0; i < observationItems.size(); i++) {
             var item = observationItems.get(i);
-            Double pHeight = null;
-            Double nHeight = null;
+            double pHeight = Double.NaN;
+            double nHeight = Double.NaN;
             var down = item.getDown();
 
             if (i > 0) {
@@ -404,15 +404,15 @@ public class GraphicRenderer extends GraphicRendererBase {
                 nHeight = Math.abs((nDown - down) * .5);
             }
 
-            if (pHeight == null) {
+            if (Double.isNaN(pHeight)) {
                 pHeight = nHeight;
-            } else if (nHeight == null) {
+            } else if (Double.isNaN(nHeight)) {
                 nHeight = pHeight;
             }
 
             for (var axis : List.of("A", "B")) {
-                Double azimuth = p.getAzimuth() == null ? 0 : p.getAzimuth();
-                Double value;
+                var azimuth = Double.isNaN(p.getAzimuth()) ? 0 : p.getAzimuth();
+                double value = Double.NaN;
 
                 if (axis.equalsIgnoreCase("A")) {
                     value = item.getA();

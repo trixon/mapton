@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import javafx.collections.ListChangeListener;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
@@ -76,6 +77,7 @@ public class MonFilter extends ButterflyFormFilter<MonManager> implements
 //        var filteredItems = mManager.getAllItems().stream()
 //                .filter(mon -> mTopoManager.getTimeFilteredItemsMap().containsKey(mon.getName()))
         var filteredItems = mManager.getAllItems().stream()
+                .filter(p -> BCoordinatrix.hasValidLatLon(p) != mInvalidCoordinateProperty.get())
                 .filter(p -> p.isVisible() != mInvisibleProperty.get())
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment(), p.getStationName()))
                 .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
@@ -120,6 +122,7 @@ public class MonFilter extends ButterflyFormFilter<MonManager> implements
         List.of(
                 mInvertProperty,
                 mInvisibleProperty,
+                mInvalidCoordinateProperty,
                 mContentOptions.listSortOrderProperty(),
                 mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));

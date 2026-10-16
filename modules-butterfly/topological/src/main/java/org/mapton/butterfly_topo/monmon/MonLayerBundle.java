@@ -24,9 +24,9 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
-import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.topo.BTopoMonmon;
 import org.mapton.butterfly_topo.monmon.graphics.GraphicRenderer;
 import org.mapton.worldwind.api.LayerBundle;
@@ -145,7 +145,7 @@ public class MonLayerBundle extends BfLayerBundle {
                     var stationIndex = sortedStations.indexOf(mon.getStationName());
                     var mapObjects = new ArrayList<AVListImpl>();
 
-                    if (Butterfly.allNotNaN(mon.getLat(), mon.getLon())) {
+                    if (BCoordinatrix.hasValidLatLon(mon)) {
                         var position = Position.fromDegrees(mon.getLat(), mon.getLon());
                         var labelPlacemark = plotLabel(mon, mLayerOptions.getLabelBy(), position);
 

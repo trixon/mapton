@@ -35,7 +35,7 @@ public class ClusterMultiChartPart1D extends ClusterMultiChartPart {
 
     @Override
     public String getName() {
-        return "Topo 1D";
+        return "1D";
     }
 
 }

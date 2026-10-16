@@ -29,7 +29,6 @@ import org.mapton.api.MRunnable;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.PinPaddle;
-import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BComponent;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
@@ -152,7 +151,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
             //Plot points with new measurement regardless of filter
             synchronized (mManager.getAllItems()) {
                 mManager.getAllItems().stream()
-                        .filter(p -> Butterfly.allNotNaN(p.getLat(), p.getLon()))
+                        .filter(p -> BCoordinatrix.hasValidLatLon(p))
                         .forEach(p -> {
                             var position = BCoordinatrix.toPositionWW2d(p);
                             if (mLayerOptions.isPlotWatchlistChanges()) {
@@ -165,7 +164,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                 mManager.getTimeFilteredItems().stream()
                         .sorted((o1, o2) -> Double.compare(o1.ext().getAlarmLevel(), o2.ext().getAlarmLevel()))
                         .forEachOrdered(p -> {
-                            if (Butterfly.allNotNaN(p.getLat(), p.getLon())) {
+                            if (BCoordinatrix.hasValidLatLon(p)) {
                                 var position = BCoordinatrix.toPositionWW2d(p);
                                 var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
                                 var mapObjects = new ArrayList<AVListImpl>();
@@ -207,7 +206,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
                 var deltaLon = maxLon - minLon;
 //                var sector = Sector.fromDegrees(minLat, maxLat, minLon, maxLon);
                 var values = items.stream()
-                        .filter(p -> Butterfly.allNotNaN(p.getLat(), p.getLon()) && null != p.ext().getAlarmPercent(BComponent.HEIGHT))
+                        .filter(p -> BCoordinatrix.hasValidLatLon(p) && null != p.ext().getAlarmPercent(BComponent.HEIGHT))
                         //                        .map(p -> {
                         //                            return new GridValue(p.getLat(), p.getLon(), p.ext().getAlarmPercent(BComponent.HEIGHT) / 100.0);
                         //                        })

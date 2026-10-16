@@ -165,6 +165,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
+                .filter(p -> BCoordinatrix.hasValidLatLon(p) != mInvalidCoordinateProperty.get())
                 .filter(p -> p.isVisible() != mInvisibleProperty.get())
                 .filter(p -> {
                     var alarmH = p.ext().getAlarm(BComponent.HEIGHT);
@@ -247,6 +248,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         List.of(
                 mInvertProperty,
                 mInvisibleProperty,
+                mInvalidCoordinateProperty,
                 mDimens1Property,
                 mDimens2Property,
                 mDimens3Property,

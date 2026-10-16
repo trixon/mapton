@@ -22,9 +22,9 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
+import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
-import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import org.mapton.butterfly_tmo.TmoAttributeManager;
 import org.mapton.butterfly_tmo.api.GrundvattenManager;
@@ -119,7 +119,7 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
 
             synchronized (mManager.getTimeFilteredItems()) {
                 for (var p : mManager.getTimeFilteredItems()) {
-                    if (Butterfly.allNotNaN(p.getLat(), p.getLon())) {
+                    if (BCoordinatrix.hasValidLatLon(p)) {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
 
                         var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);

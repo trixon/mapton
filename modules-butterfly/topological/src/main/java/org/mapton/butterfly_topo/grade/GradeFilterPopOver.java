@@ -116,7 +116,9 @@ public class GradeFilterPopOver extends BaseTabbedFilterPopOver {
     private void createUI() {
         var root = new BorderPane(getTabPane());
         root.setTop(getToolBar());
-        populateToolBar(mFilterSectionMisc.getInvertCheckboxToolBarItem(), mFilterSectionMisc.getInvisibleCheckboxToolBarItem());
+        populateToolBar(mFilterSectionMisc.getInvertCheckboxToolBarItem(),
+                mFilterSectionMisc.getInvisibleCheckboxToolBarItem()
+        );
 
         getTabPane().getTabs().addAll(
                 mFilterSectionMeas.getTab()

@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_structural.strain;
 
-import org.mapton.butterfly_structural.strain.api.StrainManager;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
@@ -29,6 +28,7 @@ import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_structural.strain.api.StrainManager;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
@@ -137,7 +137,11 @@ public class StrainFilterPopOver extends BaseTabbedFilterPopOver {
     private void createUI() {
         var root = new BorderPane(getTabPane());
         root.setTop(getToolBar());
-        populateToolBar(mFilterSectionMisc.getInvertCheckboxToolBarItem(), mFilterSectionMisc.getInvisibleCheckboxToolBarItem());
+        populateToolBar(
+                mFilterSectionMisc.getInvertCheckboxToolBarItem(),
+                mFilterSectionMisc.getInvisibleCheckboxToolBarItem(),
+                mFilterSectionMisc.getInvalidCoordinateCheckboxToolBarItem()
+        );
 
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),

@@ -194,7 +194,11 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         var root = new BorderPane(getTabPane());
         root.setTop(getToolBar());
         root.setBottom(bottomBox);
-        populateToolBar(mFilterSectionMisc.getInvertCheckboxToolBarItem(), mFilterSectionMisc.getInvisibleCheckboxToolBarItem());
+        populateToolBar(
+                mFilterSectionMisc.getInvertCheckboxToolBarItem(),
+                mFilterSectionMisc.getInvisibleCheckboxToolBarItem(),
+                mFilterSectionMisc.getInvalidCoordinateCheckboxToolBarItem()
+        );
 
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),

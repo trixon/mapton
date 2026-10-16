@@ -136,7 +136,11 @@ public class TiltFilterPopOver extends BaseTabbedFilterPopOver {
     private void createUI() {
         var root = new BorderPane(getTabPane());
         root.setTop(getToolBar());
-        populateToolBar(mFilterSectionMisc.getInvertCheckboxToolBarItem(), mFilterSectionMisc.getInvisibleCheckboxToolBarItem());
+        populateToolBar(
+                mFilterSectionMisc.getInvertCheckboxToolBarItem(),
+                mFilterSectionMisc.getInvisibleCheckboxToolBarItem(),
+                mFilterSectionMisc.getInvalidCoordinateCheckboxToolBarItem()
+        );
 
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),

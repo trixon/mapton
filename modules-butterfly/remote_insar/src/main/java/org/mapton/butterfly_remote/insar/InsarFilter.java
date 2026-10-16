@@ -113,20 +113,19 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
 
     @Override
     public void update() {
-        var filteredItems = mManager.getAllItems().stream()
-                .filter(p -> p.isVisible() != mInvisibleProperty.get())
-                .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
-                .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
-                .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
-                .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
-                .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
-                .filter(p -> mFilterSectionAlarm.filter(p))
-                .filter(p -> mFilterSectionDisruptor.filter(p))
-                .filter(p -> mFilterSectionAvg.filter(p))
-                .filter(p -> mFilterSectionTrend.filter(p))
-                .filter(p -> mFilterSectionMeas.filter(p))
-                .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
-                .toList();
+        var filteredItemsStream = filterCommon1(mManager.getAllItems());
+
+        if (!mInvalidCoordinateProperty.get()) {
+            filteredItemsStream = filteredItemsStream
+                    .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
+                    .filter(p -> mFilterSectionAlarm.filter(p))
+                    .filter(p -> mFilterSectionAvg.filter(p))
+                    .filter(p -> mFilterSectionTrend.filter(p))
+                    .filter(p -> mFilterSectionMeas.filter(p))
+                    .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()));
+        }
+
+        var filteredItems = filteredItemsStream.toList();
 
         if (mInvertProperty.get()) {
             var toBeExluded = new HashSet<>(filteredItems);
@@ -158,6 +157,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         List.of(
                 mInvertProperty,
                 mInvisibleProperty,
+                mInvalidCoordinateProperty,
                 mContentOptions.listSortOrderProperty(),
                 mContentOptions.listLimitProperty()
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
