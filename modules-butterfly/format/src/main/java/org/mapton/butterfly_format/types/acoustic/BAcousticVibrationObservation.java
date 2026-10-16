@@ -41,11 +41,11 @@ public class BAcousticVibrationObservation extends BXyzPointObservation {
     private String channelIdY;
     private String channelIdZ;
     private Integer distance;
-    private double frequencyX;
-    private double frequencyY;
-    private double frequencyZ;
+    private double frequencyX = Double.NaN;
+    private double frequencyY = Double.NaN;
+    private double frequencyZ = Double.NaN;
     private transient String id;
-    private double limit;
+    private double limit = Double.NaN;
     private transient Ext mExt;
     private String unit;
 

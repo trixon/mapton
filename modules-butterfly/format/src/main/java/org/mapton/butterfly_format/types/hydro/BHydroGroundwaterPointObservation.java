@@ -46,12 +46,12 @@ m5: top-edge of pipe = RÖK
 m6: pressure from sensor in mVp
 
      */
-    private double temperature;
-    private double downMeasurement;
-    private double sensorOffset;
-    private double groundwaterLevel;
-    private double topEdge;
-    private double preasureMvp;
+    private double temperature = Double.NaN;
+    private double downMeasurement = Double.NaN;
+    private double sensorOffset = Double.NaN;
+    private double groundwaterLevel = Double.NaN;
+    private double topEdge = Double.NaN;
+    private double preasureMvp = Double.NaN;
 
     public BHydroGroundwaterPointObservation() {
     }

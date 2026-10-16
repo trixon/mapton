@@ -33,9 +33,9 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
 })
 public class BGeoInclinometerPointObservationPre extends BXyzPointObservation {
 
-    private Double a;
-    private Double b;
-    private Double down;
+    private double a = Double.NaN;
+    private double b = Double.NaN;
+    private double down = Double.NaN;
     private transient Ext mExt;
 
     @Override
@@ -47,27 +47,27 @@ public class BGeoInclinometerPointObservationPre extends BXyzPointObservation {
         return mExt;
     }
 
-    public Double getA() {
+    public double getA() {
         return a;
     }
 
-    public Double getB() {
+    public double getB() {
         return b;
     }
 
-    public Double getDown() {
+    public double getDown() {
         return down;
     }
 
-    public void setA(Double a) {
+    public void setA(double a) {
         this.a = a;
     }
 
-    public void setB(Double b) {
+    public void setB(double b) {
         this.b = b;
     }
 
-    public void setDown(Double down) {
+    public void setDown(double down) {
         this.down = down;
     }
 

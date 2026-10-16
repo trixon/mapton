@@ -25,22 +25,22 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 @JsonIgnoreProperties(value = {"visible"})
 public class BRemoteInsarPoint extends BXyzPoint {
 
-    private double acceleration;
+    private double acceleration = Double.NaN;
     private Integer changeDetected;
-    private double cumulativeDisplacement;
+    private double cumulativeDisplacement = Double.NaN;
     private Integer effArea;
     private transient Ext mExt;
-    private double seasonAmp;
-    private double stDef;
-    private double stDevAcceleration;
-    private double stDevHeight;
-    private double stDevSeasonAmp;
-    private double stDevVelocity;
-    private double stDevVelocity3m;
-    private double stDevVelocity6m;
-    private double velocity;
-    private double velocity3m;
-    private double velocity6m;
+    private double seasonAmp = Double.NaN;
+    private double stDef = Double.NaN;
+    private double stDevAcceleration = Double.NaN;
+    private double stDevHeight = Double.NaN;
+    private double stDevSeasonAmp = Double.NaN;
+    private double stDevVelocity = Double.NaN;
+    private double stDevVelocity3m = Double.NaN;
+    private double stDevVelocity6m = Double.NaN;
+    private double velocity = Double.NaN;
+    private double velocity3m = Double.NaN;
+    private double velocity6m = Double.NaN;
 
     @Override
     public Ext ext() {

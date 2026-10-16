@@ -26,11 +26,11 @@ import org.mapton.butterfly_format.Butterfly;
  */
 public abstract class BBase {
 
-    private Double azimuth;
+    private double azimuth = Double.NaN;
     private transient Butterfly butterfly;
     private LocalDateTime dateChanged;
     private LocalDateTime dateCreated;
-    private Double declination;
+    private double declination = Double.NaN;
     private String externalId;
     private String externalSysId;
     private String externalSysKey;
@@ -44,7 +44,7 @@ public abstract class BBase {
     private transient final HashMap<Object, Object> values = new HashMap<>();
     private Boolean visible;
 
-    public Double getAzimuth() {
+    public double getAzimuth() {
         return azimuth;
     }
 
@@ -60,7 +60,7 @@ public abstract class BBase {
         return dateCreated;
     }
 
-    public Double getDeclination() {
+    public double getDeclination() {
         return declination;
     }
 
@@ -125,7 +125,7 @@ public abstract class BBase {
         return visible;
     }
 
-    public void setAzimuth(Double azimuth) {
+    public void setAzimuth(double azimuth) {
         this.azimuth = azimuth;
     }
 
@@ -141,7 +141,7 @@ public abstract class BBase {
         this.dateCreated = dateCreated;
     }
 
-    public void setDeclination(Double declination) {
+    public void setDeclination(double declination) {
         this.declination = declination;
     }
 

@@ -62,12 +62,12 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 public class BRockExtensometerPoint extends BXyzPoint {
 
     private transient String category;
-    private double depth;
+    private double depth = Double.NaN;
     private String extensometer;
     private transient String group;
-    private double limit1;
-    private double limit2;
-    private double limit3;
+    private double limit1 = Double.NaN;
+    private double limit2 = Double.NaN;
+    private double limit3 = Double.NaN;
     private transient Ext mExt;
     private transient String operator;
 

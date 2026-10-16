@@ -26,9 +26,9 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 public class BStructuralTiltPoint extends BXyzPoint {
 
     private transient Ext mExt;
-    private Double zeroTiltX;
-    private Double zeroTiltY;
-    private Double zeroTiltZ;
+    private double zeroTiltX = Double.NaN;
+    private double zeroTiltY = Double.NaN;
+    private double zeroTiltZ = Double.NaN;
 
     public Ext ext() {
         if (mExt == null) {
@@ -38,27 +38,27 @@ public class BStructuralTiltPoint extends BXyzPoint {
         return mExt;
     }
 
-    public Double getZeroTiltX() {
+    public double getZeroTiltX() {
         return zeroTiltX;
     }
 
-    public Double getZeroTiltY() {
+    public double getZeroTiltY() {
         return zeroTiltY;
     }
 
-    public Double getZeroTiltZ() {
+    public double getZeroTiltZ() {
         return zeroTiltZ;
     }
 
-    public void setZeroTiltX(Double zeroTiltX) {
+    public void setZeroTiltX(double zeroTiltX) {
         this.zeroTiltX = zeroTiltX;
     }
 
-    public void setZeroTiltY(Double zeroTiltY) {
+    public void setZeroTiltY(double zeroTiltY) {
         this.zeroTiltY = zeroTiltY;
     }
 
-    public void setZeroTiltZ(Double zeroTiltZ) {
+    public void setZeroTiltZ(double zeroTiltZ) {
         this.zeroTiltZ = zeroTiltZ;
     }
 

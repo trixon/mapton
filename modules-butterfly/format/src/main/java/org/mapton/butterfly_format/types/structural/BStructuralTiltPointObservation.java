@@ -23,7 +23,7 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
  */
 public class BStructuralTiltPointObservation extends BXyzPointObservation {
 
-    private Double temperature;
+    private double temperature = Double.NaN;
     private transient Ext mExt;
 
     @Override
@@ -35,11 +35,11 @@ public class BStructuralTiltPointObservation extends BXyzPointObservation {
         return mExt;
     }
 
-    public Double getTemperature() {
+    public double getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(Double temperature) {
+    public void setTemperature(double temperature) {
         this.temperature = temperature;
     }
 

@@ -58,7 +58,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 })
 public class BRockExtensometer extends BXyzPoint {
 
-    private double groundLevel;
+    private double groundLevel = Double.NaN;
     private transient Ext mExt;
     private transient ArrayList<BRockExtensometerPoint> mPoints = new ArrayList<>();
     private transient Double offsetX;

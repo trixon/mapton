@@ -21,16 +21,16 @@ package org.mapton.butterfly_format.types;
  */
 public class BMeteoPointObservation extends BXyzPointObservation {
 
-    private double airPressure;
-    private double airTemperature;
-    private double humidity;
+    private double airPressure = Double.NaN;
+    private double airTemperature = Double.NaN;
+    private double humidity = Double.NaN;
     private transient Ext mExt;
-    private double precipitation;
+    private double precipitation = Double.NaN;
     private Integer visibility;
     private String weatherCode;
     private Integer windDirection;
-    private double windSpeed;
-    private double windSpeedMax;
+    private double windSpeed = Double.NaN;
+    private double windSpeedMax = Double.NaN;
 
     public BMeteoPointObservation() {
     }

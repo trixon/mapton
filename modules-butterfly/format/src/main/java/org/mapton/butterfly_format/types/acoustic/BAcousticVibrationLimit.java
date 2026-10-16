@@ -26,7 +26,7 @@ public class BAcousticVibrationLimit {
     private boolean fixed;
     private String pointId;
     private String unit;
-    private double value;
+    private double value = Double.NaN;
     private ArrayList<String> types;
 
     public BAcousticVibrationLimit() {

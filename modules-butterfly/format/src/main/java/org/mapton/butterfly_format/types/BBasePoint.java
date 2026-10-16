@@ -32,8 +32,8 @@ public abstract class BBasePoint extends BBase {
 
     private String comment;
     private String group;
-    private double lat;
-    private double lon;
+    private double lat = Double.NaN;
+    private double lon = Double.NaN;
 
     public String getComment() {
         return comment;

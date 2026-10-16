@@ -54,32 +54,32 @@ public class BGeoInclinometerPointObservation extends BXyzPointObservation {
 
     public static class ObservationItem {
 
-        private Double mA;
-        private Double mAzimuth = 0.0;
-        private Double mB;
-        private Double mDistance = 0.0;
-        private Double mDown;
+        private double mA = Double.NaN;
+        private double mAzimuth = 0.0;
+        private double mB = Double.NaN;
+        private double mDistance = 0.0;
+        private double mDown = Double.NaN;
 
         public ObservationItem() {
         }
 
-        public Double getA() {
+        public double getA() {
             return mA;
         }
 
-        public Double getAzimuth() {
+        public double getAzimuth() {
             return mAzimuth;
         }
 
-        public Double getB() {
+        public double getB() {
             return mB;
         }
 
-        public Double getDistance() {
+        public double getDistance() {
             return mDistance;
         }
 
-        public Double getDown() {
+        public double getDown() {
             return mDown;
         }
 
@@ -88,23 +88,23 @@ public class BGeoInclinometerPointObservation extends BXyzPointObservation {
             setDistance(Math.hypot(mA, mB));
         }
 
-        public void setA(Double a) {
+        public void setA(double a) {
             mA = a;
         }
 
-        public void setAzimuth(Double azimuth) {
+        public void setAzimuth(double azimuth) {
             mAzimuth = azimuth;
         }
 
-        public void setB(Double b) {
+        public void setB(double b) {
             mB = b;
         }
 
-        public void setDistance(Double distance) {
+        public void setDistance(double distance) {
             mDistance = distance;
         }
 
-        public void setDown(Double down) {
+        public void setDown(double down) {
             mDown = down;
         }
 

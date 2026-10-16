@@ -137,7 +137,7 @@ public class Butterfly {
         return Double.compare(d2, d1);
     };
 
-    public static final int FORMAT = 12;
+    public static final int FORMAT = 14;
     public static final String KEY_FORMAT = "FORMAT";
     public static final String KEY_TIMESTAMP = "TIMESTAMP";
     public static final String VERSION_FILE = "version.properties";
@@ -195,6 +195,10 @@ public class Butterfly {
     private final ArrayList<BAcousticVibrationLimit> mVibrationLimits = new ArrayList<>();
     private final ArrayList<BAcousticVibrationObservation> mVibrationObservations = new ArrayList<>();
     private final ArrayList<BAcousticVibrationPoint> mVibrationPoints = new ArrayList<>();
+
+    public static double getIfNaN(double value, double defaultValue) {
+        return Double.isNaN(value) ? defaultValue : value;
+    }
 
     public static boolean allNotNaN(double... doubles) {
         if (doubles != null && doubles.length > 0) {
@@ -526,13 +530,13 @@ public class Butterfly {
                         o.setName(o0.getName());
                         var item = new ObservationItem();
                         try {
-                            if (o0.getA() != null) {
+                            if (!Double.isNaN(o0.getA())) {
                                 item.setA(o0.getA() / 1000.0);
                             } else {
                                 item.setA(0.0);
                             }
 
-                            if (o0.getB() != null) {
+                            if (!Double.isNaN(o0.getB())) {
                                 item.setB(o0.getB() / 1000.0);
                             } else {
                                 item.setB(0.0);

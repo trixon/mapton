@@ -69,13 +69,13 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
     private String sparse;
     @JsonSetter(nulls = Nulls.SKIP)
     private double zeroX = Double.NaN;
-    private transient double zeroXScaled;
+    private transient double zeroXScaled = Double.NaN;
     @JsonSetter(nulls = Nulls.SKIP)
     private double zeroY = Double.NaN;
-    private transient double zeroYScaled;
+    private transient double zeroYScaled = Double.NaN;
     @JsonSetter(nulls = Nulls.SKIP)
     private double zeroZ = Double.NaN;
-    private transient double zeroZScaled;
+    private transient double zeroZScaled = Double.NaN;
 
     public static HashMap<LocalDate, Point3D> createObservationMap(BXyzPoint p, DateTimeFormatter dateTimeFormatterTo, DateTimeFormatter dateTimeFormatterFrom) {
         var observationsTimeFiltered = p.extOrNull().getObservationsTimeFiltered();

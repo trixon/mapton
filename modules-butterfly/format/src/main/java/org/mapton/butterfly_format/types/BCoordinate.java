@@ -24,23 +24,23 @@ import java.time.LocalDateTime;
 public class BCoordinate extends BBasePoint {
 
     private LocalDateTime date;
-    private Double x;
-    private Double y;
-    private Double z;
+    private double x = Double.NaN;
+    private double y = Double.NaN;
+    private double z = Double.NaN;
 
     public LocalDateTime getDate() {
         return date;
     }
 
-    public Double getX() {
+    public double getX() {
         return x;
     }
 
-    public Double getY() {
+    public double getY() {
         return y;
     }
 
-    public Double getZ() {
+    public double getZ() {
         return z;
     }
 
@@ -48,15 +48,15 @@ public class BCoordinate extends BBasePoint {
         date = dt;
     }
 
-    public void setX(Double x) {
+    public void setX(double x) {
         this.x = x;
     }
 
-    public void setY(Double y) {
+    public void setY(double y) {
         this.y = y;
     }
 
-    public void setZ(Double z) {
+    public void setZ(double z) {
         this.z = z;
     }
 }
