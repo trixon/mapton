@@ -17,6 +17,7 @@ package org.mapton.api;
 
 import java.util.HashSet;
 import org.apache.commons.lang3.ObjectUtils;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -26,7 +27,7 @@ public class MCircleFilterManager {
 
     private MLatLon mLatLon;
     private final HashSet<Runnable> mListeners = new HashSet<>();
-    private Double mRadius;
+    private double mRadius;
 
     public static MCircleFilterManager getInstance() {
         return Holder.INSTANCE;
@@ -43,7 +44,7 @@ public class MCircleFilterManager {
         return mLatLon;
     }
 
-    public Double getRadius() {
+    public double getRadius() {
         return mRadius;
     }
 
@@ -51,11 +52,11 @@ public class MCircleFilterManager {
         return ObjectUtils.allNotNull(mLatLon, mRadius);
     }
 
-    public boolean isWithinCircle(Double lat, Double lon) {
-        if (ObjectUtils.anyNull(lat, lon)) {
+    public boolean isWithinCircle(double lat, double lon) {
+        if (MathHelper.anyNaN(lat, lon)) {
             return false;
         } else {
-            if (ObjectUtils.allNotNull(mLatLon, mRadius)) {
+            if (mLatLon != null && !Double.isNaN(mRadius)) {
                 return mLatLon.distance(new MLatLon(lat, lon)) <= mRadius;
             } else {
                 return true;
@@ -65,14 +66,14 @@ public class MCircleFilterManager {
 
     public void reset() {
         mLatLon = null;
-        mRadius = null;
+        mRadius = Double.NaN;
         mListeners.forEach(r -> {
             r.run();
         });
     }
 
-    public void set(double lat, double lon, Double radius) {
-        if (radius != null && radius > 0) {
+    public void set(double lat, double lon, double radius) {
+        if (radius > 0) {
             mLatLon = new MLatLon(lat, lon);
             mRadius = radius;
         } else {
