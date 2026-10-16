@@ -345,7 +345,7 @@
             <dependency>
                 <groupId>org.controlsfx</groupId>
                 <artifactId>controlsfx</artifactId>
-                <version>11.2.5</version>
+                <version>11.2.6</version>
             </dependency>
             <dependency>
                 <groupId>eu.hansolo</groupId>
@@ -421,6 +421,6 @@
         <jackson.version>2.22.3</jackson.version>
         <brandingToken>mapton</brandingToken>
         <mapton.version>26.03x</mapton.version>
-        <geotools.version>35.1</geotools.version>
+        <geotools.version>35.2</geotools.version>
     </properties>
 </project>
