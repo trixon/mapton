@@ -29,10 +29,7 @@ public class Ntc3k {
 
     private static Properties sProperties;
 
-    public static Double convertToCelcius(Double value) {
-        if (value == null) {
-            return null;
-        }
+    public static double convertToCelcius(double value) {
         if (sProperties == null) {
             sProperties = new Properties();
             try {
