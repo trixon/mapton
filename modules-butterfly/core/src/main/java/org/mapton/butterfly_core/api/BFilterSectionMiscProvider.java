@@ -27,6 +27,8 @@ public interface BFilterSectionMiscProvider {
         return null;
     }
 
+    public SimpleBooleanProperty invalidCoordinateProperty();
+
     public SimpleBooleanProperty invertProperty();
 
     public SimpleBooleanProperty invisibleProperty();

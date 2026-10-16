@@ -16,6 +16,7 @@
 package org.mapton.butterfly_core.api;
 
 import java.util.List;
+import java.util.stream.Stream;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.ui.forms.FormFilter;
@@ -36,11 +37,16 @@ public abstract class ButterflyFormFilter<ManagerType extends MBaseDataManager> 
     protected BFilterSectionMisc mFilterSectionMisc;
     protected BFilterSectionPoint mFilterSectionPoint;
     protected BFilterSectionTrend mFilterSectionTrend;
+    protected final SimpleBooleanProperty mInvalidCoordinateProperty = new SimpleBooleanProperty();
     protected final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     protected final SimpleBooleanProperty mInvisibleProperty = new SimpleBooleanProperty();
 
     public ButterflyFormFilter(MBaseDataManager manager) {
         super(manager);
+    }
+
+    public SimpleBooleanProperty invalidCoordinateProperty() {
+        return mInvalidCoordinateProperty;
     }
 
     public SimpleBooleanProperty invertProperty() {
@@ -49,6 +55,29 @@ public abstract class ButterflyFormFilter<ManagerType extends MBaseDataManager> 
 
     public SimpleBooleanProperty invisibleProperty() {
         return mInvisibleProperty;
+    }
+
+    protected <T extends BXyzPoint> Stream<T> filterCommon1(List<T> items) {
+        var stream = items.stream()
+                .filter(p -> BCoordinatrix.hasValidLatLon(p) != mInvalidCoordinateProperty.get())
+                .filter(p -> p.isVisible() != mInvisibleProperty.get())
+                .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment(), p.getExternalId()));
+
+        if (!mInvalidCoordinateProperty.get()) {
+            stream = stream
+                    .filter(p -> validateCoordinateCircle(p.getLat(), p.getLon()))
+                    .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
+                    .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
+                    .filter(p -> {
+                        if (mFilterSectionDisruptor == null) {
+                            return true;
+                        } else {
+                            return mFilterSectionDisruptor.filter(p);
+                        }
+                    });
+        }
+
+        return stream;
     }
 
     protected <T extends BXyzPoint> List<T> sortAndLimit(List<T> filteredItems) {

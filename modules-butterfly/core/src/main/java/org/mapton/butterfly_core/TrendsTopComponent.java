@@ -53,7 +53,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "topLeft", openAtStartup = false, position = 100)
+@TopComponent.Registration(mode = "belowProperties", openAtStartup = false, position = 100)
 public final class TrendsTopComponent extends MTopComponent {
 
     public TrendsTopComponent() {

@@ -22,6 +22,7 @@ import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.worldwind.api.WWHelper;
@@ -46,6 +47,18 @@ public class BCoordinatrix {
         return MCooTrans.getCooTrans(MOptions.getInstance().getMapCooTransName());
     }
 
+    public static boolean hasValidLatLon(BBasePoint p) {
+        return Butterfly.allNotNaN(p.getLat(), p.getLon())
+                && p.getLat() != 0
+                && p.getLon() != 0;
+    }
+
+    public static boolean hasValidXY(BXyzPoint p) {
+        return Butterfly.allNotNaN(p.getZeroX(), p.getZeroY())
+                && p.getZeroX() != 0
+                && p.getZeroY() != 0;
+    }
+
     public static MLatLon toLatLon(BBasePoint p) {
         return sPointToLatLon.computeIfAbsent(p, k -> new MLatLon(k.getLat(), k.getLon()));
     }
@@ -53,10 +66,6 @@ public class BCoordinatrix {
     public static Point3D toLocalFromPosition(Position p) {
         var local = getCooTrans().fromWgs84(p.getLatitude().degrees, p.getLongitude().degrees);
         return new Point3D(local.getX(), local.getY(), p.elevation);
-    }
-
-    public static Vector3D toVector(Point3D p) {
-        return Vector3D.of(p.getX(), p.getY(), p.getZ());
     }
 
     public static Position toPositionWW2d(BXyzPoint p) {
@@ -72,6 +81,10 @@ public class BCoordinatrix {
 
     public static Position toPositionWW3d(BXyzPoint p) {
         return sPositionWW3d.computeIfAbsent(p, k -> WWHelper.positionFromLatLon(toLatLon(p), p.getZeroZ()));
+    }
+
+    public static Vector3D toVector(Point3D p) {
+        return Vector3D.of(p.getX(), p.getY(), p.getZ());
     }
 
     private BCoordinatrix() {

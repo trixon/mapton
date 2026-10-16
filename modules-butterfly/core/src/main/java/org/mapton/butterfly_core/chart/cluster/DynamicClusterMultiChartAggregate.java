@@ -22,6 +22,7 @@ import org.apache.commons.lang3.Strings;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_format.types.BClusterChartPoint;
+import org.mapton.core.api.ChartOptionsManager;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 
@@ -60,7 +61,9 @@ public class DynamicClusterMultiChartAggregate {
 
                                 var chartPanel = chartBuilder.build(p, multiChartPart).call();
                                 if (chartBuilder.getPointSize() > 0) {
-                                    var avgTitle = multiChartPart.isAvg() ? " AVG" : "";
+                                    var avgPeriod = ChartOptionsManager.getInstance().getAvgPeriod1();
+                                    var avg = " EWMA %d".formatted(avgPeriod.getDays());
+                                    var avgTitle = multiChartPart.isAvg() ? avg : "";
                                     var tabTitle = "%s (%d) %s".formatted(
                                             multiChartPart.getName(),
                                             chartBuilder.getPointSize(),

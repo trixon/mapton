@@ -59,6 +59,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
     private SliderPane mDeltaRSlider;
     private final DistanceMeasure mDistanceMeasure;
     private final FormFilter<? extends MBaseDataManager> mFilter;
+    private final CheckBox mInvalidCoordinateCheckbox = new CheckBox();
     private final CheckBox mInvertCheckbox = new CheckBox();
     private final CheckBox mInvisibleCheckbox = new CheckBox();
     private final GridPane mRoot = new GridPane(columnGap, rowGap);
@@ -92,6 +93,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
                 mDeformationCheckbox,
                 mInvertCheckbox,
                 mInvisibleCheckbox,
+                mInvalidCoordinateCheckbox,
                 mClusterCheckbox
         );
     }
@@ -136,6 +138,23 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         return getPoints(filteredItems, epsilon);
     }
 
+    public CheckBox getDeformationCheckbox() {
+        return mDeformationCheckbox;
+    }
+
+    public CheckBox getInvalidCoordinateCheckbox() {
+        return mInvalidCoordinateCheckbox;
+    }
+
+    public Node getInvalidCoordinateCheckboxToolBarItem() {
+        mInvalidCoordinateCheckbox.setText("Ogiltig koordinat");
+        var internalBox = new HBox(FxHelper.getUIScaled(8.0), mInvalidCoordinateCheckbox);
+        internalBox.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, 8.0));
+        internalBox.setAlignment(Pos.CENTER_LEFT);
+
+        return internalBox;
+    }
+
     public CheckBox getInvertCheckbox() {
         return mInvertCheckbox;
     }
@@ -160,10 +179,6 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         internalBox.setAlignment(Pos.CENTER_LEFT);
 
         return internalBox;
-    }
-
-    public CheckBox getDeformationCheckbox() {
-        return mDeformationCheckbox;
     }
 
     public void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
@@ -196,6 +211,7 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
     public void initListeners(BFilterSectionMiscProvider filter) {
         filter.invertProperty().bind(invertSelectionProperty());
         filter.invisibleProperty().bind(invisibleObjectsProperty());
+        filter.invalidCoordinateProperty().bind(invalidCoordinateObjectsProperty());
     }
 
     @Override
@@ -210,6 +226,10 @@ public class BFilterSectionMisc<T extends BXyzPoint> extends MBaseFilterSection 
         sessionManager.register(getKeyFilter("DEFORMATION"), mDeformationCheckbox.selectedProperty());
         sessionManager.register(getKeyFilter("invert"), invertSelectionProperty());
         sessionManager.register(getKeyFilter("invisible"), invisibleObjectsProperty());
+    }
+
+    public BooleanProperty invalidCoordinateObjectsProperty() {
+        return mInvalidCoordinateCheckbox.selectedProperty();
     }
 
     public BooleanProperty invertSelectionProperty() {

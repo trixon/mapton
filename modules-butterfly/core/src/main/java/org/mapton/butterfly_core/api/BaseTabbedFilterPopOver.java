@@ -20,6 +20,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TabPane;
 import org.controlsfx.control.action.ActionUtils;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -32,6 +33,7 @@ public abstract class BaseTabbedFilterPopOver extends BaseFilterPopOver {
     public BaseTabbedFilterPopOver() {
         mTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         setContentNode(mTabPane);
+        mTabPane.setMinWidth(FxHelper.getUIScaled(650.0));
     }
 
     public TabPane getTabPane() {
