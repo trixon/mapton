@@ -20,6 +20,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.StreamWriteFeature;
 import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SequenceWriter;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
@@ -48,7 +50,21 @@ public abstract class ExportToCsv {
         return Logger.getLogger(getClass().getName());
     }
 
+    public SequenceWriter openCsvSequenceWriter(File destDir, String basename, Class<?> clazz) throws IOException {
+        var file = new File(destDir, basename + ".csv");
+
+        return createCsvWriter(clazz).writeValues(file);
+    }
+
     public void writeCsv(File destDir, String basename, Class clazz, List list) throws IOException {
+        var file = new File(destDir, basename + ".csv");
+        try (var sequenceWriter = createCsvWriter(clazz).writeValues(file)) {
+            sequenceWriter.writeAll(list);
+        }
+        getLogger().info("%d items exported\t%s".formatted(list.size(), file.getName()));
+    }
+
+    private ObjectWriter createCsvWriter(Class<?> clazz) {
         var simpleModule = new SimpleModule();
         simpleModule.addSerializer(BDimension.class, new DimensionSerializer());
         simpleModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
@@ -62,6 +78,7 @@ public abstract class ExportToCsv {
                 }
             }
         });
+
         var mapper = CsvMapper.builder()
                 .addModule(new JavaTimeModule())
                 .addModule(simpleModule)
@@ -79,12 +96,7 @@ public abstract class ExportToCsv {
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
         var schema = mapper.schemaFor(clazz).withHeader().withQuoteChar('"');
-        var objectWriter = mapper.writer(schema);
-        var file = new File(destDir, basename + ".csv");
-        try (var sequenceWriter = objectWriter.writeValues(file)) {
-            sequenceWriter.writeAll(list);
-        }
 
-        getLogger().info("%d items exported\t%s".formatted(list.size(), file.getName()));
+        return mapper.writer(schema);
     }
 }

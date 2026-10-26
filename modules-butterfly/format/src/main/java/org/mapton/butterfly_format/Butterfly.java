@@ -137,7 +137,7 @@ public class Butterfly {
         return Double.compare(d2, d1);
     };
 
-    public static final int FORMAT = 14;
+    public static final int FORMAT = 15;
     public static final String KEY_FORMAT = "FORMAT";
     public static final String KEY_TIMESTAMP = "TIMESTAMP";
     public static final String VERSION_FILE = "version.properties";
