@@ -69,7 +69,26 @@ public class MCrsManager {
     }
 
     public final ObservableList<MCooTrans> getItems() {
-        return mItemsProperty.get();
+        int attempts = 0;
+        var items = mItemsProperty.get();
+
+        while (items == null || items.isEmpty()) {
+            try {
+                Thread.sleep(20);
+                attempts++;
+                items = mItemsProperty.get();
+
+                if (attempts > 250) {
+                    System.err.println("MCrsManager: Timeout väntande på att updateProviders() ska bli klar!");
+                    break;
+                }
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+
+        return items;
     }
 
     public CoordinateReferenceSystem getSelectedSystem() {
