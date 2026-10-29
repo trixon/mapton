@@ -161,7 +161,8 @@ public class GeoToolsCooTrans implements MCooTrans {
         try {
             return mathTransform.transform(new Position2D(longitude, latitude), null);
         } catch (MismatchedDimensionException | TransformException ex) {
-            Exceptions.printStackTrace(ex);
+//            Exceptions.printStackTrace(ex);
+            System.err.println("getPosition failed: %f, %f".formatted(latitude, longitude));
         }
 
         return new Position2D();
