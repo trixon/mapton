@@ -29,7 +29,7 @@ import org.mapton.butterfly_core.api.BLayerOptions;
 public class XyzLayerOptions extends BLayerOptions implements MPresetActions {
 
     public static final XyzColorBy DEFAULT_COLOR_BY = XyzColorBy.DEFAULT;
-    public static final XyzLabelBy DEFAULT_LABEL_BY = XyzLabelBy.MISC_DATE;
+    public static final XyzLabelBy DEFAULT_LABEL_BY = XyzLabelBy.NAME;
     public static final XyzPointBy DEFAULT_POINT_BY = XyzPointBy.PIN;
     private final ObjectProperty<XyzColorBy> mColorByProperty = new SimpleObjectProperty<>(DEFAULT_COLOR_BY);
     private final ObjectProperty<XyzLabelBy> mLabelByProperty = new SimpleObjectProperty<>(DEFAULT_LABEL_BY);
