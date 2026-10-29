@@ -15,12 +15,16 @@
  */
 package org.mapton.butterfly_core.api;
 
+import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.render.Renderable;
 import java.net.URLEncoder;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -64,6 +68,9 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
     private final BooleanProperty mDisabledSearchProperty = new SimpleBooleanProperty(true);
+    private LayerBundle mLayerBundle;
+    private boolean mLoadedAndReady = false;
+    private final MapSelector mMapSelector = new MapSelector();
 
     static {
         Mapton.getGlobalState().addListener(gsce -> {
@@ -227,6 +234,10 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
         return null;
     }
 
+    public MapSelector getMapSelector() {
+        return mMapSelector;
+    }
+
     public List<String> getObjectAnnotation(T t) {
         return null;
     }
@@ -250,23 +261,38 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
     public abstract void load(Butterfly butterfly);
 
     public void registerLayerBundle(LayerBundle layerBundle, BLayerOptionsView optionsView) {
+        mLayerBundle = layerBundle;
         selectedItemProperty().addListener((p, o, n) -> {
-            if (optionsView.isPlotSelected()) {
+            if (optionsView.isPlotSelected() && mLoadedAndReady) {
                 layerBundle.repaint();
             }
         });
 
         getTimeFilteredItems().addListener((ListChangeListener.Change<? extends T> c) -> {
-            layerBundle.repaint();
+            if (mLoadedAndReady) {
+                layerBundle.repaint();
+            }
         });
 
         layerBundle.getParentLayer().addPropertyChangeListener("Enabled", pce -> {
             boolean enabled = layerBundle.getParentLayer().isEnabled();
             updateTemporal(enabled);
 
-            if (enabled) {
+            if (enabled && mLoadedAndReady) {
                 layerBundle.repaint();
             }
+        });
+
+        var butterflyManager = ButterflyManager.getInstance();
+        butterflyManager.loadCounterProperty().addListener((p, o, n) -> {
+            if (!mLoadedAndReady) {
+                mLayerBundle.repaint();
+            }
+            mLoadedAndReady = true;
+        });
+
+        butterflyManager.butterflyProperty().addListener((p, o, n) -> {
+            mLoadedAndReady = false;
         });
     }
 
@@ -303,6 +329,45 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
             sPrevItem = sCurrItem;
             sCurrManager = (BaseManager<BBase>) this;
             sCurrItem = item;
+        }
+    }
+
+    public class MapSelector {
+
+        private final Runnable mLeftClickRunnable;
+        private Consumer<T> mLeftDoubleClickConsumer;
+        private final Runnable mLeftDoubleClickRunnable;
+
+        public MapSelector() {
+            var cls = BaseManager.this.getTypeParameterClass();
+
+            mLeftClickRunnable = (Runnable) () -> {
+                var contextObject = Mapton.getEngine().getCurrentClickContextObject();
+                if (cls.isInstance(contextObject)) {
+                    setSelectedItemAfterReset((T) contextObject, true);
+                }
+            };
+
+            mLeftDoubleClickRunnable = (Runnable) () -> {
+                var contextObject = Mapton.getEngine().getCurrentClickContextObject();
+                if (cls.isInstance(contextObject) && mLeftDoubleClickConsumer != null) {
+                    mLeftDoubleClickConsumer.accept((T) contextObject);
+                }
+            };
+        }
+
+        public void attach(T p, ArrayList<AVListImpl> mapObjects) {
+            mapObjects.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(r -> {
+                        r.setValue(WWHelper.KEY_MAP_OBJECT, p);
+                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, mLeftClickRunnable);
+                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, mLeftDoubleClickRunnable);
+                    });
+        }
+
+        public void setLeftDoubleClickConsumer(Consumer<T> leftDoubleClickConsumer) {
+            mLeftDoubleClickConsumer = leftDoubleClickConsumer;
         }
     }
 }
