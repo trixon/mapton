@@ -43,6 +43,7 @@ public abstract class MEngine {
     private static final HashSet<MEngineListener> sEngineListeners = new HashSet<>();
 
     private Double mAltitude;
+    private Object mCurrentClickContextObject = null;
     private Double mElevation;
     private Callable<BufferedImage> mImageRenderer;
     private boolean mInitialized;
@@ -130,6 +131,10 @@ public abstract class MEngine {
     public MLatLon getCenter() {
         Mapton.getLog().i(getClass().getSimpleName(), "getCenter not implemented");
         return new MLatLon(0, 0);
+    }
+
+    public Object getCurrentClickContextObject() {
+        return mCurrentClickContextObject;
     }
 
     public Double getElevation() {
@@ -326,6 +331,10 @@ public abstract class MEngine {
      * Used to re-parent SwingNodes
      */
     public void refreshUI() {
+    }
+
+    public void setCurrentClickContextObject(Object obj) {
+        mCurrentClickContextObject = obj;
     }
 
     public void setImageRenderer(Callable<BufferedImage> imageRenderer) {
