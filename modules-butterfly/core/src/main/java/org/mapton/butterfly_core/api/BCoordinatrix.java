@@ -37,7 +37,7 @@ public class BCoordinatrix {
     private static final ConcurrentHashMap<BXyzPoint, Position> sPositionWW2d = new ConcurrentHashMap();
     private static final ConcurrentHashMap<BXyzPoint, Position> sPositionWW3d = new ConcurrentHashMap();
 
-    public static void clear() {
+    public synchronized static void clear() {
         sPointToLatLon.clear();
         sPositionWW2d.clear();
         sPositionWW3d.clear();
