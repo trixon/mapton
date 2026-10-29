@@ -51,8 +51,10 @@ import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.api.MPrint;
 import org.mapton.api.MSearchProviderManager;
+import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.LogoLoader;
+import org.mapton.butterfly_core.api.sos.ButterflyLoadDelaySosi;
 import org.mapton.butterfly_core.loader.ButterflyOpener;
 import static org.mapton.butterfly_core.loader.ButterflyOpener.KEY_PROJECT_FILE;
 import org.mapton.butterfly_format.BundleMode;
@@ -118,12 +120,12 @@ public class ButterflyManager {
     }
 
     private ButterflyManager() {
-        int delay = 3_000;
+        var delay = 1_000 * MSimpleObjectStorageManager.getInstance().getInteger(ButterflyLoadDelaySosi.class, ButterflyLoadDelaySosi.DEFAULT_VALUE);
         mDelayedResetRunner = new DelayedResetRunner(delay, () -> {
             if (mProgressHandle != null) {
                 mProgressHandle.finish();
                 mProgressHandle = null;
-                var timeSpent = SystemHelper.age(mStartMilliseconds - delay) / 1000d;
+                var timeSpent = SystemHelper.age(mStartMilliseconds + delay) / 1000d;
                 var title = "Butterfly inläst";
                 var message = "Det tog %.1f %s".formatted(timeSpent, Dict.TIME_SECONDS.toLower());
                 NotifocationHelper.displayTextNotification(title, message, 10_000);
