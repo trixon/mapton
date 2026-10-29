@@ -28,7 +28,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
-import org.jfree.data.time.TimeSeries;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import org.mapton.api.MAvgPeriod;
@@ -38,6 +37,7 @@ import org.mapton.api.MOptions;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BKey;
+import org.mapton.butterfly_core.api.BPrimitiveSeries;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_core.api.EwmaHelper;
@@ -50,7 +50,6 @@ import org.mapton.butterfly_format.types.remote.BRemoteInsarPointObservation;
 import org.mapton.butterfly_remote.insar.chart.ChartAggregate;
 import org.mapton.butterfly_remote.insar.chart.InsarChartBuilder;
 import org.mapton.butterfly_remote.insar.chart.MultiChartAggregate;
-import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.CollectionHelper;
@@ -293,17 +292,16 @@ public class InsarManager extends BaseManager<BRemoteInsarPoint> {
     }
 
     private void populateEwma(BRemoteInsarPoint p) {
-        if (p.getValue(BKey.EWMA_H_RAW) != null) {
-            return;
-        }
-        var timeSeries1 = new TimeSeries(p.getName());
+        var observations = p.ext().getObservationsTimeFiltered();
+        int initialCapacity = Math.max(observations.size(), 10);
 
-        for (var o : p.ext().getObservationsTimeFiltered()) {
-            var delta = o.ext().getDelta1d() * 1000;
-            timeSeries1.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), delta);
+        var rawSeriesH = new BPrimitiveSeries(initialCapacity);
+
+        for (var o : observations) {
+            rawSeriesH.add(o.getDate(), o.ext().getDelta1d() * 1000);
         }
 
-        p.setValue(BKey.EWMA_H_RAW, timeSeries1);
+        p.setValue(BKey.EWMA_H_RAW, rawSeriesH);
 
         for (var value : MAvgPeriod.values()) {
             populateEwma(p, BKey.EWMA_H, value);
