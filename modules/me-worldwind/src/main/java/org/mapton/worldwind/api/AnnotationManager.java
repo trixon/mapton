@@ -24,6 +24,7 @@ import java.awt.Font;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import org.mapton.api.MAnnotation;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MKey;
@@ -42,6 +43,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
 
     public static final String KEY_CAT = "annotation.category";
+    private final ConcurrentLinkedDeque<GlobeAnnotation> mAnnotationPool = new ConcurrentLinkedDeque<>();
     private final HashMap<Class, AnnotationAttributes> mCategoryClassToAttribute = new HashMap<>();
     private AnnotationAttributes mDefaultAttributes = new AnnotationAttributes();
     private final AnnotationsOptions mOptions = AnnotationsOptions.getInstance();
@@ -103,7 +105,9 @@ public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
             if (delay > 0) {
                 FxHelper.runLaterDelayed(delay, () -> {
                     try {
-                        getAllItems().remove(annotation);
+                        if (getAllItems().remove(annotation)) {
+                            mAnnotationPool.push(annotation);
+                        }
                     } catch (Exception e) {
                         //nvm it might be gone already
                     }
@@ -117,7 +121,15 @@ public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
     }
 
     public void add(Position position, String text, Class category) {
-        var annotation = new GlobeAnnotation(text, position);
+        var annotation = mAnnotationPool.poll();
+
+        if (annotation != null) {
+            annotation.setText(text);
+            annotation.setPosition(position);
+        } else {
+            annotation = new GlobeAnnotation(text, position);
+        }
+
         annotation.setValue(KEY_CAT, category);
         add(annotation);
     }
@@ -155,7 +167,10 @@ public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
 
         if (mOptions.getLimitMode() == AnnotationLimitMode.TOTAL) {
             if (items.size() > limit) {
+                var itemsToRemove = new ArrayList<>(items.subList(0, items.size() - limit));
                 items.remove(0, items.size() - limit);
+
+                itemsToRemove.forEach(mAnnotationPool::push);
             }
         } else {
             var map = new HashMap<String, Integer>();
@@ -164,6 +179,7 @@ public class AnnotationManager extends MBaseDataManager<GlobeAnnotation> {
                     .toList();
 
             items.removeAll(itemsToRemove);
+            itemsToRemove.forEach(mAnnotationPool::push);
         }
     }
 
