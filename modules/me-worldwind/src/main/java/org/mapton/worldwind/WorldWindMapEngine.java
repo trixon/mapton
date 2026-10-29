@@ -392,7 +392,7 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     private void init() {
-        mMap = new WorldWindowPanel();
+        mMap = new WorldWindowPanel(this);
         mMap.postCreate(() -> {
             var zoom = mOptions.getDouble(KEY_VIEW_ALTITUDE, -1d);
             if (zoom != -1) {

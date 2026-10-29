@@ -96,6 +96,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     private CrosshairLayer mCrosshairLayer;
     private final ObservableList<Layer> mCustomLayers = FXCollections.observableArrayList();
+    private final WorldWindMapEngine mEngine;
     private FlatGlobe mFlatGlobe;
     private IndicatorLayerBundle mIndicatorLayer;
     private Object mLastHighlightObject;
@@ -108,7 +109,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private final HashSet<String> mWmsLoadedLayers = new HashSet<>();
     private final ElevationModel mZeroElevationModel = new ZeroElevationModel();
 
-    public WorldWindowPanel() {
+    public WorldWindowPanel(WorldWindMapEngine engine) {
+        mEngine = engine;
         MaptonNb.progressStart(MDict.MAP_ENGINE.toString());
         init();
     }
@@ -323,16 +325,21 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             public void mouseClicked(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == MouseEvent.BUTTON1 && mLastHighlightObject != null) {
                     if (mLastHighlightObject instanceof AVList avList) {
-                        if (mouseEvent.getClickCount() == 1) {
-                            Runnable r = (Runnable) avList.getValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK);
-                            if (r != null) {
-                                r.run();
+                        mEngine.setCurrentClickContextObject(avList.getValue(WWHelper.KEY_MAP_OBJECT));
+                        try {
+                            if (mouseEvent.getClickCount() == 1) {
+                                Runnable r = (Runnable) avList.getValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK);
+                                if (r != null) {
+                                    r.run();
+                                }
+                            } else if (mouseEvent.getClickCount() == 2) {
+                                Runnable r = (Runnable) avList.getValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK);
+                                if (r != null) {
+                                    r.run();
+                                }
                             }
-                        } else if (mouseEvent.getClickCount() == 2) {
-                            Runnable r = (Runnable) avList.getValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK);
-                            if (r != null) {
-                                r.run();
-                            }
+                        } finally {
+                            mEngine.setCurrentClickContextObject(null);
                         }
                     }
                 }
