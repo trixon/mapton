@@ -26,7 +26,6 @@ import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import gov.nasa.worldwind.render.Renderable;
-import gov.nasa.worldwind.render.SurfaceCircle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
@@ -49,10 +48,25 @@ public class WWHelper {
     public static final String KEY_HOOVER_TEXT = "mapton.hoover.text";
     public static final String KEY_LAYER_CATEGORY = "mapton.layer.category";
     public static final String KEY_LAYER_HIDE_FROM_MANAGER = "mapton.layer.hide_from_manager";
+    public static final String KEY_MAP_OBJECT = "mapton.map_objekt";
     public static final String KEY_RUNNABLE_HOOVER_OFF = "mapton.runnable.hoover_off";
     public static final String KEY_RUNNABLE_HOOVER_ON = "mapton.runnable.hoover";
     public static final String KEY_RUNNABLE_LEFT_CLICK = "mapton.runnable.left_click";
     public static final String KEY_RUNNABLE_LEFT_DOUBLE_CLICK = "mapton.runnable.left_double_click";
+    private static final BasicShapeAttributes INDICATOR_CIRCLE_ATTRIBUTES = new BasicShapeAttributes();
+    private static final BasicShapeAttributes INDICATOR_POLE_ATTRIBUTES = new BasicShapeAttributes();
+
+    static {
+        INDICATOR_CIRCLE_ATTRIBUTES.setDrawInterior(false);
+        INDICATOR_CIRCLE_ATTRIBUTES.setOutlineMaterial(Material.RED);
+        INDICATOR_CIRCLE_ATTRIBUTES.setOutlineWidth(2.0);
+
+        INDICATOR_POLE_ATTRIBUTES.setDrawInterior(false);
+        INDICATOR_POLE_ATTRIBUTES.setDrawOutline(true);
+        INDICATOR_POLE_ATTRIBUTES.setOutlineMaterial(Material.WHITE);
+        INDICATOR_POLE_ATTRIBUTES.setOutlineOpacity(0.5);
+        INDICATOR_POLE_ATTRIBUTES.setOutlineWidth(2.0);
+    }
 
     public static PointPlacemarkAttributes createHighlightAttributes(PointPlacemarkAttributes attrs, double scale) {
         var highlightAttrs = new PointPlacemarkAttributes(attrs);
@@ -71,30 +85,29 @@ public class WWHelper {
         return createIndicator(latLon, 2.0);
     }
 
-    public static Material createMaterial(javafx.scene.paint.Color color) {
-        return new Material(FxHelper.colorToAwtColor(color));
-    }
-
     public static Renderable createIndicator(MLatLon latLon, double radius) {
-        var sa = new BasicShapeAttributes();
-        sa.setDrawInterior(false);
-        sa.setOutlineMaterial(Material.RED);
-        var circle = new SurfaceCircle(sa, positionFromLatLon(latLon), radius);
+        var centerPosition = positionFromLatLon(latLon);
+        var nodes = createNodes(centerPosition, radius, 16);
+        var pathPositions = new ArrayList<Position>();
+        for (var node : nodes) {
+            pathPositions.add(new Position(node.getLatitude(), node.getLongitude(), 0.1));
+        }
+        pathPositions.add(pathPositions.get(0));
+        var circlePath = new Path(pathPositions);
+        circlePath.setAttributes(INDICATOR_CIRCLE_ATTRIBUTES);
 
-        return circle;
+        return circlePath;
     }
 
     public static Renderable createIndicatorPole(MLatLon latLon) {
         var path = new Path(WWHelper.positionFromLatLon(latLon, 0), WWHelper.positionFromLatLon(latLon, 100));
-        var attrs = new BasicShapeAttributes();
-        attrs.setDrawInterior(false);
-        attrs.setDrawOutline(true);
-        attrs.setOutlineMaterial(Material.WHITE);
-        attrs.setOutlineOpacity(0.5);
-        attrs.setOutlineWidth(2.0);
-        path.setAttributes(attrs);
+        path.setAttributes(INDICATOR_POLE_ATTRIBUTES);
 
         return path;
+    }
+
+    public static Material createMaterial(javafx.scene.paint.Color color) {
+        return new Material(FxHelper.colorToAwtColor(color));
     }
 
     public static ArrayList<LatLon> createNodes(Position position, double radius, int nodes, double offsetAzimuth) {
