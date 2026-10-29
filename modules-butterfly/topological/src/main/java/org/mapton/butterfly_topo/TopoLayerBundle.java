@@ -103,6 +103,12 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
         initCommons(Bundle.CTL_ControlPointAction(), SDict.TOPOGRAPHY.toString(), "TopoTopComponent");
 
         mLabelLayer.setMaxActiveAltitude(2000);
+
+        mManager.getMapSelector().setLeftDoubleClickConsumer(p -> {
+            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+            mGraphicRenderer.addToAllowList(p);
+            repaint();
+        });
     }
 
     private void initListeners() {
@@ -162,35 +168,23 @@ public class TopoLayerBundle extends TopoBaseLayerBundle implements MRunnable {
 
             synchronized (mManager.getTimeFilteredItems()) {
                 mManager.getTimeFilteredItems().stream()
+                        .filter(p -> BCoordinatrix.hasValidLatLon(p))
+                        //                        .filter(p -> BCoordinatrix.hasValidXY(p))
+                        //                        .filter(p -> !Double.isNaN(p.getZeroZ()))
                         .sorted((o1, o2) -> Double.compare(o1.ext().getAlarmLevel(), o2.ext().getAlarmLevel()))
                         .forEachOrdered(p -> {
-                            if (BCoordinatrix.hasValidLatLon(p)) {
-                                var position = BCoordinatrix.toPositionWW2d(p);
-                                var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
-                                var mapObjects = new ArrayList<AVListImpl>();
+                            var position = BCoordinatrix.toPositionWW2d(p);
+                            var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
+                            var mapObjects = new ArrayList<AVListImpl>();
 
-                                mapObjects.add(labelPlacemark);
-                                mapObjects.add(plotPin(p, position, labelPlacemark));
-                                mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
+                            mapObjects.add(labelPlacemark);
+                            mapObjects.add(plotPin(p, position, labelPlacemark));
+                            mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
 
-                                mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mLayerOptions);
-                                addClickArea(position, mapObjects);
+                            mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mLayerOptions);
+                            addClickArea(position, mapObjects);
 
-                                var leftClickRunnable = (Runnable) () -> {
-                                    mManager.setSelectedItemAfterReset(p, true);
-                                };
-
-                                var leftDoubleClickRunnable = (Runnable) () -> {
-                                    Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                                    mGraphicRenderer.addToAllowList(p);
-                                    resetPaintDelayedResetRunner();
-                                };
-
-                                mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                                    r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                                    r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                                });
-                            }
+                            mManager.getMapSelector().attach(p, mapObjects);
                         });
 
                 mGraphicRenderer.postPlot();

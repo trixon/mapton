@@ -77,6 +77,10 @@ public class ActLayerBundle extends BfLayerBundle {
         mLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(10000);
         mLabelLayer.setMaxActiveAltitude(10000);
+
+        mManager.getMapSelector().setLeftDoubleClickConsumer(p -> {
+            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+        });
     }
 
     private void initListeners() {
@@ -131,18 +135,7 @@ public class ActLayerBundle extends BfLayerBundle {
 
                     mapObjects.add(plotArea(area));
 
-                    var leftClickRunnable = (Runnable) () -> {
-                        mManager.setSelectedItemAfterReset(area);
-                    };
-
-                    var leftDoubleClickRunnable = (Runnable) () -> {
-                        Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                    };
-
-                    mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                    });
+                    mManager.getMapSelector().attach(area, mapObjects);
                 }
             }
 

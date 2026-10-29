@@ -74,6 +74,10 @@ public class ExtensoLayerBundle extends BfLayerBundle {
         mLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(10000);
         mLabelLayer.setMaxActiveAltitude(10000);
+
+        mManager.getMapSelector().setLeftDoubleClickConsumer(p -> {
+            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+        });
     }
 
     private void initListeners() {
@@ -102,9 +106,8 @@ public class ExtensoLayerBundle extends BfLayerBundle {
 
             synchronized (mManager.getTimeFilteredItems()) {
                 for (var extenso : mManager.getTimeFilteredItems()) {
-                    var mapObjects = new ArrayList<AVListImpl>();
-
                     if (BCoordinatrix.hasValidLatLon(extenso)) {
+                        var mapObjects = new ArrayList<AVListImpl>();
                         var position = Position.fromDegrees(extenso.getLat(), extenso.getLon());
                         var labelPlacemark = plotLabel(extenso, mLayerOptions.getLabelBy(), position);
 
@@ -114,20 +117,9 @@ public class ExtensoLayerBundle extends BfLayerBundle {
                         mGraphicRenderer.plot(extenso, mManager.getSelectedItem(), position, mapObjects, mLayerOptions);
 
                         addClickArea(position, mapObjects);
+
+                        mManager.getMapSelector().attach(extenso, mapObjects);
                     }
-
-                    var leftClickRunnable = (Runnable) () -> {
-                        mManager.setSelectedItemAfterReset(extenso);
-                    };
-
-                    var leftDoubleClickRunnable = (Runnable) () -> {
-                        Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                    };
-
-                    mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                    });
                 }
             }
 

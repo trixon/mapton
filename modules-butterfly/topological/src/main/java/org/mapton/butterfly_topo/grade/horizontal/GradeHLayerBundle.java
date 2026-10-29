@@ -81,6 +81,12 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
         mPinLayer.setMaxActiveAltitude(10000);
         mLabelLayer.setMaxActiveAltitude(2000);
         mGroundConnectorLayer.setMaxActiveAltitude(1000);
+
+        mManager.getMapSelector().setLeftDoubleClickConsumer(p -> {
+            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+            mGraphicRenderer.addToAllowList(p);
+            repaint();
+        });
     }
 
     private void initListeners() {
@@ -141,20 +147,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
 
                             addClickArea(position, mapObjects);
 
-                            var leftClickRunnable = (Runnable) () -> {
-                                mManager.setSelectedItemAfterReset(p);
-                            };
-
-                            var leftDoubleClickRunnable = (Runnable) () -> {
-                                Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                                mGraphicRenderer.addToAllowList(p);
-                                repaint();
-                            };
-
-                            mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                                r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                                r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                            });
+                            mManager.getMapSelector().attach(p, mapObjects);
                         });
             }
 

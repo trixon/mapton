@@ -71,6 +71,10 @@ public class RorelseLayerBundle extends BfLayerBundle {
 
     private void init() {
         initCommons(Bundle.CTL_RorelseAction(), "TMO", "RorelseTopComponent");
+
+        mManager.getMapSelector().setLeftDoubleClickConsumer(p -> {
+            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+        });
     }
 
     private void initListeners() {
@@ -127,18 +131,7 @@ public class RorelseLayerBundle extends BfLayerBundle {
 //                    mComponentRenderer.plot(p, position, mapObjects);
                         addClickArea(position, mapObjects);
 
-                        var leftClickRunnable = (Runnable) () -> {
-                            mManager.setSelectedItemAfterReset(p);
-                        };
-
-                        var leftDoubleClickRunnable = (Runnable) () -> {
-                            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                        };
-
-                        mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                        });
+                        mManager.getMapSelector().attach(p, mapObjects);
                     }
                 }
             }

@@ -77,6 +77,10 @@ public class MonLayerBundle extends BfLayerBundle {
         mLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(10000);
         mLabelLayer.setMaxActiveAltitude(10000);
+
+        mManager.getMapSelector().setLeftDoubleClickConsumer(p -> {
+            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+        });
     }
 
     private void initListeners() {
@@ -141,32 +145,21 @@ public class MonLayerBundle extends BfLayerBundle {
                     pointToZ.put(stationName, min);
                 }
 
-                for (var mon : mManager.getTimeFilteredItems()) {
-                    var stationIndex = sortedStations.indexOf(mon.getStationName());
+                for (var p : mManager.getTimeFilteredItems()) {
+                    var stationIndex = sortedStations.indexOf(p.getStationName());
                     var mapObjects = new ArrayList<AVListImpl>();
 
-                    if (BCoordinatrix.hasValidLatLon(mon)) {
-                        var position = Position.fromDegrees(mon.getLat(), mon.getLon());
-                        var labelPlacemark = plotLabel(mon, mLayerOptions.getLabelBy(), position);
+                    if (BCoordinatrix.hasValidLatLon(p)) {
+                        var position = Position.fromDegrees(p.getLat(), p.getLon());
+                        var labelPlacemark = plotLabel(p, mLayerOptions.getLabelBy(), position);
 
                         mapObjects.add(labelPlacemark);
-                        mapObjects.add(plotPin(mon, position, labelPlacemark, stationIndex));
-                        mGraphicRenderer.plot(mon, position, stationIndex, pointToZ, mapObjects);
+                        mapObjects.add(plotPin(p, position, labelPlacemark, stationIndex));
+                        mGraphicRenderer.plot(p, position, stationIndex, pointToZ, mapObjects);
                         addClickArea(position, mapObjects);
                     }
 
-                    var leftClickRunnable = (Runnable) () -> {
-                        mManager.setSelectedItemAfterReset(mon);
-                    };
-
-                    var leftDoubleClickRunnable = (Runnable) () -> {
-                        Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                    };
-
-                    mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                    });
+                    mManager.getMapSelector().attach(p, mapObjects);
                 }
             }
 

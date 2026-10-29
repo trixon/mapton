@@ -72,6 +72,14 @@ public class InfiltrationLayerBundle extends BfLayerBundle {
 
     private void init() {
         initCommons(Bundle.CTL_InfiltrationAction(), "TMO", "InfiltrationTopComponent");
+
+        mManager.getMapSelector().setLeftDoubleClickConsumer(p -> {
+            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+            if (!p.ext().getObservationsTimeFiltered().isEmpty()) {
+                mGraphicRenderer.addToAllowList(p.getName());
+                repaint();
+            }
+        });
     }
 
     private void initListeners() {
@@ -130,22 +138,7 @@ public class InfiltrationLayerBundle extends BfLayerBundle {
                         mGraphicRenderer.plot(p, position, mapObjects);
                         addClickArea(position, mapObjects);
 
-                        var leftClickRunnable = (Runnable) () -> {
-                            mManager.setSelectedItemAfterReset(p);
-                        };
-
-                        var leftDoubleClickRunnable = (Runnable) () -> {
-                            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                            if (!p.ext().getObservationsTimeFiltered().isEmpty()) {
-                                mGraphicRenderer.addToAllowList(p.getName());
-                                repaint();
-                            }
-                        };
-
-                        mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                        });
+                        mManager.getMapSelector().attach(p, mapObjects);
                     }
                 }
             }

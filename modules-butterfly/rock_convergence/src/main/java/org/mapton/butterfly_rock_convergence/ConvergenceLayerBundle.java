@@ -80,6 +80,10 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
         mPinLayer.setMaxActiveAltitude(20000);
         mLabelLayer.setMaxActiveAltitude(2000);
         mGroundConnectorLayer.setMaxActiveAltitude(1000);
+
+        mManager.getMapSelector().setLeftDoubleClickConsumer(p -> {
+            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+        });
     }
 
     private void initListeners() {
@@ -121,18 +125,7 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
                         mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mLayerOptions);
                         addClickArea(position, mapObjects);
 
-                        var leftClickRunnable = (Runnable) () -> {
-                            mManager.setSelectedItemAfterReset(p);
-                        };
-
-                        var leftDoubleClickRunnable = (Runnable) () -> {
-                            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                        };
-
-                        mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                        });
+                        mManager.getMapSelector().attach(p, mapObjects);
                     }
                 }
             }

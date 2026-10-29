@@ -85,6 +85,12 @@ public class InsarLayerBundle extends BfLayerBundle {
         mSurfaceLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(20000);
         mLabelLayer.setMaxActiveAltitude(2000);
+
+        mManager.getMapSelector().setLeftDoubleClickConsumer(p -> {
+            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+            mGraphicRenderer.addToAllowList(p);
+            repaint();
+        });
     }
 
     private void initListeners() {
@@ -133,41 +139,27 @@ public class InsarLayerBundle extends BfLayerBundle {
                         mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mLayerOptions);
                         addClickArea(position, mapObjects);
 
-                        var leftClickRunnable = (Runnable) () -> {
-                            mManager.setSelectedItemAfterReset(p);
-                        };
-
-                        var leftDoubleClickRunnable = (Runnable) () -> {
-                            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                            if (!p.ext().getObservationsTimeFiltered().isEmpty()) {
-                                mGraphicRenderer.addToAllowList(p);
-                                repaint();
-                            }
-                        };
-
-                        mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                        });
+                        mManager.getMapSelector().attach(p, mapObjects);
                     }
                 }
             }
 
             if (mLayerOptionsView.getGraphicsCheckModel().isChecked(GraphicItem.HEAT_MAP)) {
                 var values = mManager.getTimeFilteredItems().stream()
-                        .map(p -> new GridValue(p.getLat(), p.getLon(), p.ext().deltaZero().getDeltaZ() * 1000))
+                        .map(p -> new GridValue(p.getLat(), p.getLon(), -p.ext().deltaZero().getDeltaZ() * 1000))
                         //                        .map(p -> new GridValue(p.getLat(), p.getLon(), p.getVelocity()))
                         .toList();
 
-                int width = 600;
-                int height = 600;
+                int width = 25;
+                int height = 25;
 
-                var gridData = new GridData(width, height, values, CellAggregate.MIN);
-                var analyticGrid = new AnalyticGrid(mLayer, 50, -10, +10);
+                var gridData = new GridData(width, height, values, CellAggregate.MEDIAN);
+                var analyticGrid = new AnalyticGrid(mLayer, 0.2, -10, +10);
                 analyticGrid.setNullOpacity(0.0);
                 analyticGrid.setZeroOpacity(0.3);
                 analyticGrid.setZeroValueSearchRange(5);
                 analyticGrid.setGridData(gridData);
+                analyticGrid.getSurface().setVerticalScale(0);
                 var surface = analyticGrid.getSurface();
                 mSurfaceLayer.addRenderable(surface);
             }
