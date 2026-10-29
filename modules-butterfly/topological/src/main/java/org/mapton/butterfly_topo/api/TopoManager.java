@@ -29,7 +29,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
-import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MAvgPeriod;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MTemporalRange;
@@ -37,10 +36,10 @@ import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BMeasurementReport;
 import org.mapton.butterfly_core.api.BMeasurementTab;
+import org.mapton.butterfly_core.api.BPrimitiveSeries;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_core.api.EwmaHelper;
-import org.mapton.butterfly_core.api.EwmaHelper.Ewma;
 import org.mapton.butterfly_core.api.TrendHelper;
 import org.mapton.butterfly_core.api.TrendHelper.Trend;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
@@ -58,7 +57,6 @@ import org.mapton.butterfly_topo.chart.ChartAggregate;
 import org.mapton.butterfly_topo.chart.MultiChartAggregate;
 import org.mapton.butterfly_topo.monmon.MonManager;
 import org.mapton.butterfly_topo.table.StandardMeasurementPopulator;
-import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 import se.trixon.almond.util.SystemHelper;
@@ -261,14 +259,11 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
         var mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosi.class, 500);
 
-        mMinimumZscaled = Double.MAX_VALUE;
-        for (var p : timeFilteredItems) {
-            try {
-                mMinimumZscaled = Math.min(mMinimumZscaled, p.getZeroZ() + mScale3dH * p.ext().deltaZero().getDeltaZ());
-            } catch (Exception e) {
-                //nvm
-            }
-        }
+        mMinimumZscaled = timeFilteredItems.stream()
+                .filter(p -> Butterfly.allNotNaN(p.getZeroZ(), mScale3dH, p.ext().deltaZero().getDeltaZ()))
+                .mapToDouble(p -> p.getZeroZ() + mScale3dH * p.ext().deltaZero().getDeltaZ())
+                .min()
+                .orElse(Double.MAX_VALUE);
 
 //        if (mTrendLoadCounter++ < 3) {
         var start = System.currentTimeMillis();
@@ -328,31 +323,25 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private void populateEwma(BTopoControlPoint p, String mode, MAvgPeriod period) {
-        var ewma = EwmaHelper.createEwma(p, mode, period);
-        HashMap<MAvgPeriod, Ewma> map = (HashMap<MAvgPeriod, Ewma>) p.getValue(mode, new HashMap<>());
-        map.put(period, ewma);
-        p.setValue(mode, map);
-    }
-
     private void populateEwma(BTopoControlPoint p) {
-        var rawTimeSeriesH = new TimeSeries(p.getName());
-        var rawTimeSeriesP = new TimeSeries(p.getName());
+        var observations = p.ext().getObservationsTimeFiltered();
+        int initialCapacity = Math.max(observations.size(), 10);
 
-        for (var o : p.ext().getObservationsTimeFiltered()) {
+        var rawSeriesH = new BPrimitiveSeries(initialCapacity);
+        var rawSeriesP = new BPrimitiveSeries(initialCapacity);
+
+        for (var o : observations) {
             if (p.getDimension() != BDimension._2d) {
-                var delta = o.ext().getDelta1d() * 1000;
-                rawTimeSeriesH.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), delta);
+                rawSeriesH.add(o.getDate(), o.ext().getDelta1d() * 1000);
             }
 
             if (p.getDimension() != BDimension._1d) {
-                var delta = o.ext().getDelta2d() * 1000;
-                rawTimeSeriesP.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), delta);
+                rawSeriesP.add(o.getDate(), o.ext().getDelta2d() * 1000);
             }
         }
 
-        p.setValue(BKey.EWMA_H_RAW, rawTimeSeriesH);
-        p.setValue(BKey.EWMA_P_RAW, rawTimeSeriesP);
+        p.setValue(BKey.EWMA_H_RAW, rawSeriesH);
+        p.setValue(BKey.EWMA_P_RAW, rawSeriesP);
 
         for (var value : MAvgPeriod.values()) {
             switch (p.getDimension()) {
@@ -381,6 +370,13 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
                 }
             }
         }
+    }
+
+    private void populateEwma(BTopoControlPoint p, String mode, MAvgPeriod period) {
+        var ewma = EwmaHelper.createEwma(p, mode, period);
+        HashMap<MAvgPeriod, EwmaHelper.Ewma> map = (HashMap<MAvgPeriod, EwmaHelper.Ewma>) p.getValue(mode, new HashMap<>());
+        map.put(period, ewma);
+        p.setValue(mode, map);
     }
 
     private void populateEwmaActivity(BTopoControlPoint p, String key, MAvgPeriod period1, MAvgPeriod period2) {
