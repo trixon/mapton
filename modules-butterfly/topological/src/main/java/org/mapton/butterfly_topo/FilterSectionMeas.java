@@ -121,11 +121,11 @@ public class FilterSectionMeas extends MBaseFilterSection {
 
     public boolean filter(BTopoControlPoint p) {
         var valid = true
-                && validateMeasDisplacementAll(p)
-                && validateMeasDisplacementLatest(p)
+                && validateDisplacementAll(p)
+                && validateDisplacementLatest(p)
                 //                                && validateMeasDateDiff(p)
-                && validateMeasYoyo(p)
-                && validateMeasBearing(p)
+                && validateYoyo(p)
+                && validateBearing(p)
                 && true;
 
         return valid;
@@ -319,7 +319,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
         mDateDiffPane.getRoot().setDisable(true);
     }
 
-    private boolean validateMeasBearing(BTopoControlPoint p) {
+    private boolean validateBearing(BTopoControlPoint p) {
         try {
             var o = p.ext().getObservationsTimeFiltered().getLast();
             var bearing = o.ext().getBearing();
@@ -334,7 +334,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
         }
     }
 
-    private boolean validateMeasDisplacementAll(BTopoControlPoint p) {
+    private boolean validateDisplacementAll(BTopoControlPoint p) {
         if (mDiffAllCheckbox.isSelected() && !Double.isNaN(p.ext().deltaZero().getDelta())) {
             double lim = mDiffAllSds.getValue();
             double value = Math.abs(p.ext().deltaZero().getDelta());
@@ -351,7 +351,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
         }
     }
 
-    private boolean validateMeasDisplacementLatest(BTopoControlPoint p) {
+    private boolean validateDisplacementLatest(BTopoControlPoint p) {
         if (!mDiffLatestCheckbox.isSelected()) {
             return true;
         }
@@ -380,25 +380,7 @@ public class FilterSectionMeas extends MBaseFilterSection {
         }
     }
 
-//    private boolean validateMeasDateDiff(BTopoControlPoint p) {
-//        if (mMeasDateDiffProperty.get()) {
-    ////        if (mMeasSpeedProperty.get() && p.ext().deltaZero().getDelta() != null && p.ext().deltaZero().getDelta1() != null) {
-//            double lim = mMeasDateDiffValueProperty.get();
-//            double value = Math.abs(p.ext().getSpeed()[0]);
-//
-//            if (lim == 0) {
-//                return value == 0;
-//            } else if (lim < 0) {
-//                return value <= Math.abs(lim);
-//            } else {
-//                return value >= lim;
-//            }
-//        } else {
-//            return true;
-//        }
-//    }
-
-    private boolean validateMeasYoyo(BTopoControlPoint p) {
+    private boolean validateYoyo(BTopoControlPoint p) {
         if (!mYoyoCheckbox.isSelected()) {
             return true;
         } else if (p.getDimension() == BDimension._2d || p.ext().getObservationsTimeFiltered().size() < 2) {
