@@ -40,10 +40,9 @@ public class EwmaHelper {
         for (int i = 0; i < series.size(); i++) {
             double raw = series.getValues()[i];
             long seconds = series.getEpochSeconds()[i];
-            LocalDateTime dt = LocalDateTime.ofEpochSecond(seconds, 0, ZoneOffset.UTC);
 
             if (Double.isNaN(raw)) {
-                ewmaSeries.add(dt, currentEwma);
+                ewmaSeries.add(seconds, currentEwma);
                 continue;
             }
 
@@ -53,7 +52,7 @@ public class EwmaHelper {
                 currentEwma = (lambda * raw) + ((1.0 - lambda) * currentEwma);
             }
 
-            ewmaSeries.add(dt, currentEwma);
+            ewmaSeries.add(seconds, currentEwma);
         }
 
         return ewmaSeries;
