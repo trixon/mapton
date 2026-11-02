@@ -15,10 +15,12 @@
  */
 package org.mapton.butterfly_format.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import org.mapton.butterfly_format.Butterfly;
+import se.trixon.almond.util.EpochHelper;
 
 /**
  *
@@ -28,8 +30,10 @@ public abstract class BBase {
 
     private double azimuth = Double.NaN;
     private transient Butterfly butterfly;
-    private LocalDateTime dateChanged;
-    private LocalDateTime dateCreated;
+    @JsonIgnore
+    private long dateChangedEpochSeconds = Long.MIN_VALUE;
+    @JsonIgnore
+    private long dateCreatedEpochSeconds = Long.MIN_VALUE;
     private double declination = Double.NaN;
     private String externalId;
     private String externalSysId;
@@ -52,12 +56,34 @@ public abstract class BBase {
         return butterfly;
     }
 
+    /**
+     * For presentation/UI purposes only.
+     * Use getEpochSeconds() for filtering, sorting and calculations.
+     *
+     * @return
+     */
     public LocalDateTime getDateChanged() {
-        return dateChanged;
+        return EpochHelper.epochSecondsToLocalDateTime(dateChangedEpochSeconds);
     }
 
+    @JsonIgnore
+    public long getDateChangedEpochSeconds() {
+        return dateChangedEpochSeconds;
+    }
+
+    /**
+     * For presentation/UI purposes only.
+     * Use getEpochSeconds() for filtering, sorting and calculations.
+     *
+     * @return
+     */
     public LocalDateTime getDateCreated() {
-        return dateCreated;
+        return EpochHelper.epochSecondsToLocalDateTime(dateCreatedEpochSeconds);
+    }
+
+    @JsonIgnore
+    public long getDateCreatedEpochSeconds() {
+        return dateCreatedEpochSeconds;
     }
 
     public double getDeclination() {
@@ -117,6 +143,14 @@ public abstract class BBase {
         return values;
     }
 
+    public boolean hasChangedDate() {
+        return EpochHelper.hasDate(dateChangedEpochSeconds);
+    }
+
+    public boolean hasCreatedDate() {
+        return EpochHelper.hasDate(dateCreatedEpochSeconds);
+    }
+
     public Boolean isVisible() {
         if (visible == null) {
             visible = true;
@@ -134,11 +168,11 @@ public abstract class BBase {
     }
 
     public void setDateChanged(LocalDateTime dateChanged) {
-        this.dateChanged = dateChanged;
+        dateChangedEpochSeconds = EpochHelper.localDateTimeToEpochSeconds(dateChanged);
     }
 
     public void setDateCreated(LocalDateTime dateCreated) {
-        this.dateCreated = dateCreated;
+        dateCreatedEpochSeconds = EpochHelper.localDateTimeToEpochSeconds(dateCreated);
     }
 
     public void setDeclination(double declination) {

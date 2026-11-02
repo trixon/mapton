@@ -18,6 +18,7 @@ package org.mapton.butterfly_format.types;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;
+import se.trixon.almond.util.EpochHelper;
 
 /**
  *
@@ -26,16 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class BBasePointObservation {
 
     protected static final ConcurrentHashMap<String, String> CELL_CACHE = new ConcurrentHashMap<>(4096);
-
-    private LocalDateTime date;
+    private long mEpochSeconds = EpochHelper.NULL_EPOCH_SECONDS;
     private String name;
-
-    protected String cacheString(String input) {
-        if (input == null) {
-            return null;
-        }
-        return CELL_CACHE.computeIfAbsent(input, s -> s);
-    }
 
     public static void clearCache() {
         CELL_CACHE.clear();
@@ -44,21 +37,42 @@ public abstract class BBasePointObservation {
     public BBasePointObservation() {
     }
 
+    /**
+     * For presentation/UI purposes only.
+     * Use getEpochSeconds() for filtering, sorting and calculations.
+     *
+     * @return
+     */
     public LocalDateTime getDate() {
-        return date;
+        return EpochHelper.epochSecondsToLocalDateTime(mEpochSeconds);
+    }
+
+    public long getEpochSeconds() {
+        return mEpochSeconds;
     }
 
     public String getName() {
         return name;
     }
 
+    public boolean hasDate() {
+        return EpochHelper.hasDate(mEpochSeconds);
+    }
+
     public void setDate(LocalDateTime date) {
-        this.date = date;
+        mEpochSeconds = EpochHelper.localDateTimeToEpochSeconds(date);
     }
 
     @JsonSetter
     public void setName(String name) {
         this.name = cacheString(name);
+    }
+
+    protected String cacheString(String input) {
+        if (input == null) {
+            return null;
+        }
+        return CELL_CACHE.computeIfAbsent(input, s -> s);
     }
 
 }

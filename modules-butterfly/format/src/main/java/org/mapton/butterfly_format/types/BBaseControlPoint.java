@@ -15,9 +15,11 @@
  */
 package org.mapton.butterfly_format.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.stream.DoubleStream;
+import se.trixon.almond.util.EpochHelper;
 
 /**
  *
@@ -27,11 +29,16 @@ public abstract class BBaseControlPoint extends BBasePoint {
 
     private String category;
     private String classification;
-    private LocalDateTime dateLatest;
-    private LocalDate dateRolling;
-    private LocalDate dateValidFrom;
-    private LocalDate dateValidTo;
-    private LocalDate dateZero;
+    @JsonIgnore
+    private long dateLatestEpochSeconds = EpochHelper.NULL_EPOCH_SECONDS;
+    @JsonIgnore
+    private int dateRollingEpochDays = EpochHelper.NULL_EPOCH_DAY;
+    @JsonIgnore
+    private int dateValidFromEpochDays = EpochHelper.NULL_EPOCH_DAY;
+    @JsonIgnore
+    private int dateValidToEpochDays = EpochHelper.NULL_EPOCH_DAY;
+    @JsonIgnore
+    private int dateZeroEpochDays = EpochHelper.NULL_EPOCH_DAY;
     private Integer frequency;
     private Integer frequencyDefault;
     private Integer frequencyHigh;
@@ -65,23 +72,43 @@ public abstract class BBaseControlPoint extends BBasePoint {
     }
 
     public LocalDateTime getDateLatest() {
-        return dateLatest;
+        return EpochHelper.epochSecondsToLocalDateTime(dateLatestEpochSeconds);
+    }
+
+    public long getDateLatestEpochSeconds() {
+        return dateLatestEpochSeconds;
     }
 
     public LocalDate getDateRolling() {
-        return dateRolling;
+        return EpochHelper.epochDayToLocalDate(dateRollingEpochDays);
+    }
+
+    public int getDateRollingEpochDays() {
+        return dateRollingEpochDays;
     }
 
     public LocalDate getDateValidFrom() {
-        return dateValidFrom;
+        return EpochHelper.epochDayToLocalDate(dateValidFromEpochDays);
+    }
+
+    public int getDateValidFromEpochDays() {
+        return dateValidFromEpochDays;
     }
 
     public LocalDate getDateValidTo() {
-        return dateValidTo;
+        return EpochHelper.epochDayToLocalDate(dateValidToEpochDays);
+    }
+
+    public int getDateValidToEpochDays() {
+        return dateValidToEpochDays;
     }
 
     public LocalDate getDateZero() {
-        return dateZero;
+        return EpochHelper.epochDayToLocalDate(dateZeroEpochDays);
+    }
+
+    public int getDateZeroEpochDays() {
+        return dateZeroEpochDays;
     }
 
     public Integer getFrequency() {
@@ -120,6 +147,26 @@ public abstract class BBaseControlPoint extends BBasePoint {
         return tag;
     }
 
+    public boolean hasDateLatest() {
+        return EpochHelper.hasDate(dateLatestEpochSeconds);
+    }
+
+    public boolean hasDateRolling() {
+        return EpochHelper.hasDate(dateRollingEpochDays);
+    }
+
+    public boolean hasDateValidFrom() {
+        return EpochHelper.hasDate(dateValidFromEpochDays);
+    }
+
+    public boolean hasDateValidTo() {
+        return EpochHelper.hasDate(dateValidToEpochDays);
+    }
+
+    public boolean hasDateZero() {
+        return EpochHelper.hasDate(dateZeroEpochDays);
+    }
+
     public void setCategory(String category) {
         this.category = category;
     }
@@ -129,23 +176,23 @@ public abstract class BBaseControlPoint extends BBasePoint {
     }
 
     public void setDateLatest(LocalDateTime dateLatest) {
-        this.dateLatest = dateLatest;
+        dateLatestEpochSeconds = EpochHelper.localDateTimeToEpochSeconds(dateLatest);
     }
 
     public void setDateRolling(LocalDate dateRolling) {
-        this.dateRolling = dateRolling;
+        this.dateRollingEpochDays = EpochHelper.localDateToEpochDay(dateRolling);
     }
 
     public void setDateValidFrom(LocalDate dateValidFrom) {
-        this.dateValidFrom = dateValidFrom;
+        this.dateValidFromEpochDays = EpochHelper.localDateToEpochDay(dateValidFrom);
     }
 
     public void setDateValidTo(LocalDate dateValidTo) {
-        this.dateValidTo = dateValidTo;
+        this.dateValidToEpochDays = EpochHelper.localDateToEpochDay(dateValidTo);
     }
 
     public void setDateZero(LocalDate dateZero) {
-        this.dateZero = dateZero;
+        this.dateZeroEpochDays = EpochHelper.localDateToEpochDay(dateZero);
     }
 
     public void setFrequency(Integer frequency) {
