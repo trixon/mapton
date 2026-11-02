@@ -36,14 +36,17 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.util.StringConverter;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.Strings;
+import org.mapton.api.MAvgPeriod;
 import org.mapton.api.ui.forms.DateRangePane;
 import org.mapton.api.ui.forms.FormHelper;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.api.ui.forms.NegPosStringConverterInteger;
 import org.mapton.api.ui.forms.NegPosStringConverterIntegerPercent;
 import static org.mapton.butterfly_core.api.BFilterSectionMeas.MeasElement.*;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.core.api.ui.MPresetPopOver;
 import org.openide.util.NbBundle;
@@ -52,6 +55,7 @@ import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.BindingHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
+import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
 import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
 
 /**
@@ -63,6 +67,9 @@ public class BFilterSectionMeas extends MBaseFilterSection {
     private static final int DEFAULT_NUM_OF_VALUE = 1;
     private static final int DEFAULT_QUOTA_VALUE = 80;
     private final SessionCheckComboBox<String> mCodeSccb = new SessionCheckComboBox<>(true);
+    private final CheckBox mCyclicQualityCheckbox = new CheckBox();
+    private final double mDefaultCyclic = 2;
+    private final SessionDoubleSpinner mCyclicQualitySds = new SessionDoubleSpinner(0, 50.0, mDefaultCyclic, 1.0);
     private final SessionCheckComboBox<String> mInstrumentSccb = new SessionCheckComboBox<>();
     private final CheckBox mLatestOperatorCheckbox = new CheckBox();
     private final CheckBox mNumOfCheckbox = new CheckBox();
@@ -96,10 +103,14 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         FxHelper.setSelected(false,
                 mLatestOperatorCheckbox,
                 mNumOfCheckbox,
+                mCyclicQualityCheckbox,
                 mQuotaCheckbox
         );
+
         mNumOfSis.getValueFactory().setValue(DEFAULT_NUM_OF_VALUE);
         mQuotaSis.getValueFactory().setValue(DEFAULT_QUOTA_VALUE);
+        mCyclicQualitySds.getValueFactory().setValue(mDefaultCyclic);
+
         SessionCheckComboBox.clearChecks(
                 mOperatorSccb,
                 mInstrumentSccb,
@@ -148,7 +159,8 @@ public class BFilterSectionMeas extends MBaseFilterSection {
                     && validateInstrument(p)
                     && validateOperators(p)
                     && validateCount(p)
-                    && validateQuota(p);
+                    && validateQuota(p)
+                    && validateCyclic(p);
 
             return valid;
         } else {
@@ -168,6 +180,8 @@ public class BFilterSectionMeas extends MBaseFilterSection {
                 mLatestOperatorCheckbox.selectedProperty(),
                 mQuotaSis.sessionValueProperty(),
                 mNumOfSis.sessionValueProperty(),
+                mCyclicQualityCheckbox.selectedProperty(),
+                mCyclicQualitySds.sessionValueProperty(),
                 //TODO Remove
                 mQuotaDateRangePane.selectedFromStartProperty(),
                 mQuotaDateRangePane.selectedToEndProperty(),
@@ -193,6 +207,8 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         sessionManager.register(getKeyFilter("numOfValue"), mNumOfSis.sessionValueProperty());
         sessionManager.register(getKeyFilter("quota"), mQuotaCheckbox.selectedProperty());
         sessionManager.register(getKeyFilter("quotaValue"), mQuotaSis.sessionValueProperty());
+        sessionManager.register(getKeyFilter("cyclic"), mCyclicQualityCheckbox.selectedProperty());
+        sessionManager.register(getKeyFilter("cyclicValue"), mCyclicQualitySds.sessionValueProperty());
 
         var preferences = sessionManager.getPreferences();
         var isPreset = Strings.CI.contains(preferences.absolutePath(), MPresetPopOver.PARENT_NODE_FILTER);
@@ -217,9 +233,12 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         mCodeSccb.loadAndRestoreCheckItems();
         mNumOfSis.load();
         mQuotaSis.load();
+        mCyclicQualitySds.load();
+
         mNumOfSis.disableProperty().bind(mNumOfCheckbox.selectedProperty().not());
         mQuotaSis.disableProperty().bind(mQuotaCheckbox.selectedProperty().not());
         mQuotaDateRangePane.getRoot().disableProperty().bind(mQuotaCheckbox.selectedProperty().not());
+        mCyclicQualitySds.disableProperty().bind(mCyclicQualityCheckbox.selectedProperty().not());
     }
 
     @Override
@@ -231,12 +250,28 @@ public class BFilterSectionMeas extends MBaseFilterSection {
     }
 
     private void createUI() {
+        mCyclicQualitySds.getValueFactory().setConverter(new StringConverter<Double>() {
+            @Override
+            public Double fromString(String string) {
+                return Double.valueOf(Strings.CS.replace(string, ",", "."));
+            }
+
+            @Override
+            public String toString(Double value) {
+                if (value == null) {
+                    return null;
+                } else {
+                    return "%.2f".formatted(value);
+                }
+            }
+        });
         FxHelper.setShowCheckedCount(true,
                 mCodeSccb,
                 mInstrumentSccb,
                 mOperatorSccb
         );
         mCodeSccb.setTitle(getBundle().getString("measCodeCheckComboBoxTitle"));
+        mCyclicQualityCheckbox.setText("Cykliskt årsomfång");
         mInstrumentSccb.setTitle("Instrument");
         mOperatorSccb.setTitle(SDict.SURVEYORS.toString());
         mCodeSccb.getItems().setAll(List.of(
@@ -252,6 +287,7 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         mQuotaCheckbox.setText("Kvot");
         var spinners = new Spinner[]{
             mNumOfSis,
+            mCyclicQualitySds,
             mQuotaSis
         };
         FxHelper.setEditable(true, spinners);
@@ -260,6 +296,8 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         var miscBox = new VBox(rowGap,
                 new VBox(titleGap * 2, mNumOfCheckbox, mNumOfSis),
                 mCodeSccb,
+                mCyclicQualityCheckbox,
+                mCyclicQualitySds,
                 mInstrumentSccb,
                 new VBox(titleGap * 2, mOperatorSccb, mLatestOperatorCheckbox),
                 new VBox(titleGap * 2, mQuotaCheckbox, mQuotaSis, mQuotaDateRangePane.getRoot())
@@ -324,6 +362,66 @@ public class BFilterSectionMeas extends MBaseFilterSection {
         }
 
         return true;
+    }
+
+    private boolean validateCyclic(BXyzPoint p) {
+        if (!mCyclicQualityCheckbox.isSelected()) {
+            return true;
+        } else if (p.getDimension() == BDimension._2d || p.extOrNull().getObservationsTimeFiltered().size() < 2) {
+            return false;
+        }
+
+        List<Cyclic.EwmaObservation> observations = p.getValue(Cyclic.EwmaObservation.class);
+        if (observations == null) {
+            HashMap<MAvgPeriod, EwmaHelper.Ewma> map = (HashMap<MAvgPeriod, EwmaHelper.Ewma>) p.getValue(BKey.EWMA_H, new HashMap<>());
+            var ewma = map.get(MAvgPeriod.SENSITIVE);
+            if (ewma != null) {
+                observations = new ArrayList<>();
+// 1. Hämta den underliggande primitiva serien i stället för .getTimeSeries()!
+                var primitiveSeries = ewma.getPrimitiveSeries();
+
+                if (primitiveSeries != null && !primitiveSeries.isEmpty()) {
+                    int count = primitiveSeries.size();
+                    long[] epochSeconds = primitiveSeries.getEpochSeconds(); // Ditt platta tidsblock (long)
+                    double[] values = primitiveSeries.getValues();           // Ditt platta värdeblock (double)
+
+                    // Ta reda på din p.getDateZero() i form av råa epoksekunder inför den blixtsnabba jämförelsen
+                    long zeroEpochSecond = p.getDateZero().atStartOfDay().toEpochSecond(java.time.ZoneOffset.UTC);
+
+                    for (int i = count - 1; i >= 0; i--) {
+                        long currentSeconds = epochSeconds[i];
+
+                        // Divisionen och enheten justeras primitivt
+                        double dZ = values[i] / 1000.0;
+
+                        // STENHÅRD & BLIXTSNABB JÄMFÖRELSE: Två primitiva long jämförs direkt i CPU-registren!
+                        if (currentSeconds >= zeroEpochSecond) {
+                            // Skapa din nya slanka, objekt-fria EwmaObservation med råa tal
+                            observations.add(new Cyclic.EwmaObservation(currentSeconds, dZ));
+                        }
+                    }
+                    p.setValue(Cyclic.EwmaObservation.class, observations);
+                }
+//                var timeSeries = ewma.getTimeSeries();
+//                for (int i = timeSeries.getItemCount() - 1; i >= 0; i--) {
+//                    var dataItem = timeSeries.getDataItem(i);
+//                    var dZ = dataItem.getValue().doubleValue() / 1000.0;
+//                    var date = ChartHelper.convertToLocalDateTime((Minute) dataItem.getPeriod());
+//                    if (DateHelper.isAfterOrEqual(date.toLocalDate(), p.getDateZero())) {
+//                        observations.add(new Cyclic.EwmaObservation(date, dZ));
+//                    }
+//                }
+//                p.setValue(Cyclic.EwmaObservation.class, observations);
+            }
+        }
+        var yearlyAmplitude = Cyclic.calculateYearlyCyclicAmplitude(observations);
+        if (Double.isNaN(yearlyAmplitude)) {
+            return false; // Sortera bort punkter med för lite mätdata
+        }
+
+        // 2. KVALITETSTRÖSKELN: Släpp BARA igenom punkten om den andas
+        // mer än t.ex. 4.0 mm per år (eller vad din UI-property är inställd på)
+        return yearlyAmplitude * 1000 > mCyclicQualitySds.getValue();
     }
 
     private boolean validateInstrument(BXyzPoint p) {

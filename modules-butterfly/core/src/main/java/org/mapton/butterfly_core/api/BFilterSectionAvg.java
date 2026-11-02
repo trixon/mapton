@@ -17,6 +17,7 @@ package org.mapton.butterfly_core.api;
 
 import com.dlsc.gemsfx.util.SessionManager;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,7 +40,6 @@ import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPoint;
-import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -53,6 +53,9 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public class BFilterSectionAvg extends MBaseFilterSection {
 
+    public static final MAvgPeriod DEFAULT_PERIOD_1 = MAvgPeriod.SENSITIVE;
+    public static final MAvgPeriod DEFAULT_PERIOD_2 = MAvgPeriod.CALM;
+
     private final ResourceBundle mBundle = NbBundle.getBundle(BFilterSectionAvg.class);
     private SessionComboBox<MAvgPeriod> mEwma1PeriodScb;
     private SessionComboBox<MAvgPeriod> mEwma2PeriodScb;
@@ -60,8 +63,6 @@ public class BFilterSectionAvg extends MBaseFilterSection {
     private AvgComponent mPlaneComponent;
     private final GridPane mRoot = new GridPane(columnGap, rowGap);
     private final TabPane mTabPane = new TabPane();
-    public static final MAvgPeriod DEFAULT_PERIOD_1 = MAvgPeriod.SENSITIVE;
-    public static final MAvgPeriod DEFAULT_PERIOD_2 = MAvgPeriod.CALM;
 
     public BFilterSectionAvg() {
         super("Medel");
@@ -244,13 +245,15 @@ public class BFilterSectionAvg extends MBaseFilterSection {
             return invalid;
         }
 
-        var timeSeries1 = ewma1.getTimeSeries();
-        var timeSeries2 = ewma2.getTimeSeries();
-        var timeSeries = XyzChartBuilder.createDifference(timeSeries1, timeSeries2, "");
+        var primSeries1 = ewma1.getPrimitiveSeries();
+        var primSeries2 = ewma2.getPrimitiveSeries();
+        var primDifference = BPrimitiveSeries.createPrimitiveDifference(primSeries1, primSeries2);
         var fromDate = DateHelper.getMax(avgComponent.mActivityDateRangePane.lowDateProperty().get(), p.getDateZero());
         var toDate = DateHelper.getMax(avgComponent.mActivityDateRangePane.highDateProperty().get(), p.getDateZero());
-        var activityFrom = XyzChartBuilder.getInterpolatedValue(timeSeries, ChartHelper.convertToMinute(fromDate.atStartOfDay()));
-        var activityTo = XyzChartBuilder.getInterpolatedValue(timeSeries, ChartHelper.convertToMinute(toDate.atStartOfDay()));
+        long fromMinute = fromDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC);
+        long toMinute = toDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC);
+        var activityFrom = BPrimitiveSeries.getInterpolatedValue(primDifference, fromMinute);
+        var activityTo = BPrimitiveSeries.getInterpolatedValue(primDifference, toMinute);
         var activityChange = activityTo - activityFrom;
         var activityStrength = Math.abs(activityTo) - Math.abs(activityFrom);
         var validChange = avgComponent.mActivityChangeRangeSliderPane.isValueValid(activityChange);

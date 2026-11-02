@@ -105,6 +105,18 @@ public class BPrimitiveSeries {
         mCount++;
     }
 
+    public void add(long epochSeconds, double value) {
+        if (mCount >= mValues.length) {
+            int newLength = mValues.length * 2;
+            mEpochSeconds = Arrays.copyOf(mEpochSeconds, newLength);
+            mValues = Arrays.copyOf(mValues, newLength);
+        }
+
+        mEpochSeconds[mCount] = epochSeconds;
+        mValues[mCount] = Double.isFinite(value) ? value : Double.NaN;
+        mCount++;
+    }
+
     public LocalDateTime getDateTime(int index) {
         return LocalDateTime.ofEpochSecond(mEpochSeconds[index], 0, ZoneOffset.UTC);
     }
