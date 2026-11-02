@@ -29,6 +29,8 @@ import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
+import org.mapton.butterfly_core.api.BFilterSectionMeas;
+import org.mapton.butterfly_core.api.BFilterSectionMeasProvider;
 import org.mapton.butterfly_core.api.BFilterSectionMiscProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
@@ -45,6 +47,7 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         BFilterSectionMiscProvider,
+        BFilterSectionMeasProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
         BFilterSectionTrendProvider,
@@ -54,7 +57,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         FilterSectionMeasProvider {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(InsarFilter.class);
-    private FilterSectionMeas mFilterSectionMeas;
+    private FilterSectionMeas mFilterSectionMeasLocal;
     private final InsarManager mManager = InsarManager.getInstance();
 
     public InsarFilter() {
@@ -101,14 +104,20 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
 
     @Override
     public void setFilterSection(FilterSectionMeas filterSection) {
-        mFilterSectionMeas = filterSection;
-        mFilterSectionMeas.initListeners(mChangeListenerObject, mListChangeListener);
+        mFilterSectionMeasLocal = filterSection;
+        mFilterSectionMeasLocal.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
     public void setFilterSection(BFilterSectionDate filterSectionDate) {
         mFilterSectionDate = filterSectionDate;
         mFilterSectionDate.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
+    public void setFilterSection(BFilterSectionMeas filterSection) {
+        mFilterSectionMeas = filterSection;
+        mFilterSectionMeas.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
@@ -121,6 +130,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
                     .filter(p -> mFilterSectionAlarm.filter(p))
                     .filter(p -> mFilterSectionAvg.filter(p))
                     .filter(p -> mFilterSectionTrend.filter(p))
+                    .filter(p -> mFilterSectionMeasLocal.filter(p))
                     .filter(p -> mFilterSectionMeas.filter(p))
                     .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()));
         }
@@ -145,6 +155,7 @@ public class InsarFilter extends ButterflyFormFilter<InsarManager> implements
         var map = new LinkedHashMap<String, String>();
         map.put(Dict.TEXT.toString(), getFreeText());
         mFilterSectionPoint.createInfoContent(map);
+        mFilterSectionMeasLocal.createInfoContent(map);
         mFilterSectionMeas.createInfoContent(map);
         mFilterSectionDisruptor.createInfoContent(map);
         mFilterSectionTrend.createInfoContent(map);
