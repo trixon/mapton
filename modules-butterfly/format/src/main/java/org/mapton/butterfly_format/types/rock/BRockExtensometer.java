@@ -19,8 +19,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import se.trixon.almond.util.EpochHelper;
 
 /**
  *
@@ -84,12 +86,22 @@ public class BRockExtensometer extends BXyzPoint {
 
     @Override
     public LocalDateTime getDateChanged() {
-        return getPoints().stream().map(p -> p.getDateChanged()).max(LocalDateTime::compareTo).orElse(null);
+        long epoch = getPoints().stream()
+                .mapToLong(BBase::getEpochSecondsChanged)
+                .max()
+                .orElse(EpochHelper.NULL_EPOCH_SECONDS);
+
+        return EpochHelper.epochSecondsToLocalDateTime(epoch);
     }
 
     @Override
     public LocalDateTime getDateCreated() {
-        return getPoints().stream().map(p -> p.getDateCreated()).min(LocalDateTime::compareTo).orElse(null);
+        long epoch = getPoints().stream()
+                .mapToLong(BBase::getEpochSecondsCreated)
+                .min()
+                .orElse(EpochHelper.NULL_EPOCH_SECONDS);
+
+        return EpochHelper.epochSecondsToLocalDateTime(epoch);
     }
 
     public double getGroundLevel() {

@@ -30,11 +30,9 @@ public abstract class BBase {
 
     private double azimuth = Double.NaN;
     private transient Butterfly butterfly;
-    @JsonIgnore
-    private long dateChangedEpochSeconds = Long.MIN_VALUE;
-    @JsonIgnore
-    private long dateCreatedEpochSeconds = Long.MIN_VALUE;
     private double declination = Double.NaN;
+    private long epochSecondsChanged = EpochHelper.NULL_EPOCH_SECONDS;
+    private long epochSecondsCreated = EpochHelper.NULL_EPOCH_SECONDS;
     private String externalId;
     private String externalSysId;
     private String externalSysKey;
@@ -62,13 +60,9 @@ public abstract class BBase {
      *
      * @return
      */
+    @JsonProperty("dateChanged")
     public LocalDateTime getDateChanged() {
-        return EpochHelper.epochSecondsToLocalDateTime(dateChangedEpochSeconds);
-    }
-
-    @JsonIgnore
-    public long getDateChangedEpochSeconds() {
-        return dateChangedEpochSeconds;
+        return EpochHelper.epochSecondsToLocalDateTime(epochSecondsChanged);
     }
 
     /**
@@ -77,17 +71,23 @@ public abstract class BBase {
      *
      * @return
      */
+    @JsonProperty("dateCreated")
     public LocalDateTime getDateCreated() {
-        return EpochHelper.epochSecondsToLocalDateTime(dateCreatedEpochSeconds);
-    }
-
-    @JsonIgnore
-    public long getDateCreatedEpochSeconds() {
-        return dateCreatedEpochSeconds;
+        return EpochHelper.epochSecondsToLocalDateTime(epochSecondsCreated);
     }
 
     public double getDeclination() {
         return declination;
+    }
+
+    @JsonIgnore
+    public long getEpochSecondsChanged() {
+        return epochSecondsChanged;
+    }
+
+    @JsonIgnore
+    public long getEpochSecondsCreated() {
+        return epochSecondsCreated;
     }
 
     public String getExternalId() {
@@ -143,12 +143,12 @@ public abstract class BBase {
         return values;
     }
 
-    public boolean hasChangedDate() {
-        return EpochHelper.hasDate(dateChangedEpochSeconds);
+    public boolean hasEpochSecondsChanged() {
+        return EpochHelper.hasDate(epochSecondsChanged);
     }
 
-    public boolean hasCreatedDate() {
-        return EpochHelper.hasDate(dateCreatedEpochSeconds);
+    public boolean hasEpochSecondsCreated() {
+        return EpochHelper.hasDate(epochSecondsCreated);
     }
 
     public Boolean isVisible() {
@@ -167,12 +167,14 @@ public abstract class BBase {
         this.butterfly = butterfly;
     }
 
+    @JsonProperty("dateChanged")
     public void setDateChanged(LocalDateTime dateChanged) {
-        dateChangedEpochSeconds = EpochHelper.localDateTimeToEpochSeconds(dateChanged);
+        epochSecondsChanged = EpochHelper.localDateTimeToEpochSeconds(dateChanged);
     }
 
+    @JsonProperty("dateCreated")
     public void setDateCreated(LocalDateTime dateCreated) {
-        dateCreatedEpochSeconds = EpochHelper.localDateTimeToEpochSeconds(dateCreated);
+        epochSecondsCreated = EpochHelper.localDateTimeToEpochSeconds(dateCreated);
     }
 
     public void setDeclination(double declination) {

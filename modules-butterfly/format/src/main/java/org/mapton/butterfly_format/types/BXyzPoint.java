@@ -344,7 +344,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
 
             observations.forEach(o -> {
-                var dateMatch = getStoredZeroDateTime() == o.getDate();
+                var dateMatch = Objects.equals(o.getDate(), getStoredZeroDateTime());
                 if (dateMatch) {
                     setZeroUnset(false);
                 }

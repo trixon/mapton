@@ -16,6 +16,7 @@
 package org.mapton.butterfly_format.types;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.stream.DoubleStream;
@@ -29,16 +30,11 @@ public abstract class BBaseControlPoint extends BBasePoint {
 
     private String category;
     private String classification;
-    @JsonIgnore
-    private long dateLatestEpochSeconds = EpochHelper.NULL_EPOCH_SECONDS;
-    @JsonIgnore
-    private int dateRollingEpochDays = EpochHelper.NULL_EPOCH_DAY;
-    @JsonIgnore
-    private int dateValidFromEpochDays = EpochHelper.NULL_EPOCH_DAY;
-    @JsonIgnore
-    private int dateValidToEpochDays = EpochHelper.NULL_EPOCH_DAY;
-    @JsonIgnore
-    private int dateZeroEpochDays = EpochHelper.NULL_EPOCH_DAY;
+    private long epochSecondsLatest = EpochHelper.NULL_EPOCH_SECONDS;
+    private int epochDaysRolling = EpochHelper.NULL_EPOCH_DAY;
+    private int epochDaysValidFrom = EpochHelper.NULL_EPOCH_DAY;
+    private int epochDaysValidTo = EpochHelper.NULL_EPOCH_DAY;
+    private int epochDaysZero = EpochHelper.NULL_EPOCH_DAY;
     private Integer frequency;
     private Integer frequencyDefault;
     private Integer frequencyHigh;
@@ -71,44 +67,54 @@ public abstract class BBaseControlPoint extends BBasePoint {
         return classification;
     }
 
+    @JsonProperty("dateLatest")
     public LocalDateTime getDateLatest() {
-        return EpochHelper.epochSecondsToLocalDateTime(dateLatestEpochSeconds);
+        return EpochHelper.epochSecondsToLocalDateTime(epochSecondsLatest);
     }
 
-    public long getDateLatestEpochSeconds() {
-        return dateLatestEpochSeconds;
+    @JsonIgnore
+    public long getEpochSecondsLatest() {
+        return epochSecondsLatest;
     }
 
+    @JsonProperty("dateRolling")
     public LocalDate getDateRolling() {
-        return EpochHelper.epochDayToLocalDate(dateRollingEpochDays);
+        return EpochHelper.epochDayToLocalDate(epochDaysRolling);
     }
 
-    public int getDateRollingEpochDays() {
-        return dateRollingEpochDays;
-    }
-
+    @JsonProperty("dateValidFrom")
     public LocalDate getDateValidFrom() {
-        return EpochHelper.epochDayToLocalDate(dateValidFromEpochDays);
+        return EpochHelper.epochDayToLocalDate(epochDaysValidFrom);
     }
 
-    public int getDateValidFromEpochDays() {
-        return dateValidFromEpochDays;
-    }
-
+    @JsonProperty("dateValidTo")
     public LocalDate getDateValidTo() {
-        return EpochHelper.epochDayToLocalDate(dateValidToEpochDays);
+        return EpochHelper.epochDayToLocalDate(epochDaysValidTo);
     }
 
-    public int getDateValidToEpochDays() {
-        return dateValidToEpochDays;
-    }
-
+    @JsonProperty("dateZero")
     public LocalDate getDateZero() {
-        return EpochHelper.epochDayToLocalDate(dateZeroEpochDays);
+        return EpochHelper.epochDayToLocalDate(epochDaysZero);
     }
 
-    public int getDateZeroEpochDays() {
-        return dateZeroEpochDays;
+    @JsonIgnore
+    public int getEpochDaysRolling() {
+        return epochDaysRolling;
+    }
+
+    @JsonIgnore
+    public int getEpochDaysValidFrom() {
+        return epochDaysValidFrom;
+    }
+
+    @JsonIgnore
+    public int getEpochDaysValidTo() {
+        return epochDaysValidTo;
+    }
+
+    @JsonIgnore
+    public int getEpochDaysZero() {
+        return epochDaysZero;
     }
 
     public Integer getFrequency() {
@@ -147,24 +153,24 @@ public abstract class BBaseControlPoint extends BBasePoint {
         return tag;
     }
 
-    public boolean hasDateLatest() {
-        return EpochHelper.hasDate(dateLatestEpochSeconds);
+    public boolean hasEpochDaysRolling() {
+        return EpochHelper.hasDate(epochDaysRolling);
     }
 
-    public boolean hasDateRolling() {
-        return EpochHelper.hasDate(dateRollingEpochDays);
+    public boolean hasEpochDaysValidFrom() {
+        return EpochHelper.hasDate(epochDaysValidFrom);
     }
 
-    public boolean hasDateValidFrom() {
-        return EpochHelper.hasDate(dateValidFromEpochDays);
+    public boolean hasEpochDaysValidTo() {
+        return EpochHelper.hasDate(epochDaysValidTo);
     }
 
-    public boolean hasDateValidTo() {
-        return EpochHelper.hasDate(dateValidToEpochDays);
+    public boolean hasEpochDaysZero() {
+        return EpochHelper.hasDate(epochDaysZero);
     }
 
-    public boolean hasDateZero() {
-        return EpochHelper.hasDate(dateZeroEpochDays);
+    public boolean hasEpochSecondsLatest() {
+        return EpochHelper.hasDate(epochSecondsLatest);
     }
 
     public void setCategory(String category) {
@@ -175,24 +181,29 @@ public abstract class BBaseControlPoint extends BBasePoint {
         this.classification = classification;
     }
 
+    @JsonProperty("dateLatest")
     public void setDateLatest(LocalDateTime dateLatest) {
-        dateLatestEpochSeconds = EpochHelper.localDateTimeToEpochSeconds(dateLatest);
+        epochSecondsLatest = EpochHelper.localDateTimeToEpochSeconds(dateLatest);
     }
 
+    @JsonProperty("dateRolling")
     public void setDateRolling(LocalDate dateRolling) {
-        this.dateRollingEpochDays = EpochHelper.localDateToEpochDay(dateRolling);
+        this.epochDaysRolling = EpochHelper.localDateToEpochDay(dateRolling);
     }
 
+    @JsonProperty("dateValidFrom")
     public void setDateValidFrom(LocalDate dateValidFrom) {
-        this.dateValidFromEpochDays = EpochHelper.localDateToEpochDay(dateValidFrom);
+        this.epochDaysValidFrom = EpochHelper.localDateToEpochDay(dateValidFrom);
     }
 
+    @JsonProperty("dateValidTo")
     public void setDateValidTo(LocalDate dateValidTo) {
-        this.dateValidToEpochDays = EpochHelper.localDateToEpochDay(dateValidTo);
+        this.epochDaysValidTo = EpochHelper.localDateToEpochDay(dateValidTo);
     }
 
+    @JsonProperty("dateZero")
     public void setDateZero(LocalDate dateZero) {
-        this.dateZeroEpochDays = EpochHelper.localDateToEpochDay(dateZero);
+        this.epochDaysZero = EpochHelper.localDateToEpochDay(dateZero);
     }
 
     public void setFrequency(Integer frequency) {

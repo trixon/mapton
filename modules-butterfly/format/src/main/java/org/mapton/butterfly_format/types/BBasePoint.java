@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
+import se.trixon.almond.util.DateHelper;
+import se.trixon.almond.util.EpochHelper;
 
 /**
  *
@@ -69,30 +71,44 @@ public abstract class BBasePoint extends BBase {
 
     public abstract class Ext<T extends BBasePointObservation> {
 
-        private LocalDateTime mDateFirst;
-        private LocalDateTime mDateLatest;
+        private long mEpochSecondsFirst = EpochHelper.NULL_EPOCH_SECONDS;
+        private long mEpochSecondsLatest = EpochHelper.NULL_EPOCH_SECONDS;
+        private long mEpochSecondsStoredZero = EpochHelper.NULL_EPOCH_SECONDS;
+
         private transient boolean mMultipleObservationsPerDay = true;
         private transient LinkedHashMap<String, Integer> measuremenCountStats = new LinkedHashMap<>();
         private transient ArrayList<T> observationsAllCalculated;
         private transient ArrayList<T> observationsAllRaw;
         private transient ArrayList<T> observationsTimeFiltered;
-        private transient LocalDateTime storedZeroDateTime;
+
         private transient boolean zeroUnset = true;
 
         public LocalDateTime getDateFirst() {
-            return mDateFirst;
+            return EpochHelper.epochSecondsToLocalDateTime(mEpochSecondsFirst);
         }
 
         public String getDateFirstAsString() {
-            return mDateFirst != null ? mDateFirst.toString() : "-";
+            return DateHelper.toDateTimeString(getDateFirst(), "-");
         }
 
         public LocalDateTime getDateLatest() {
-            return mDateLatest;
+            return EpochHelper.epochSecondsToLocalDateTime(mEpochSecondsLatest);
         }
 
         public String getDateLatestAsString() {
-            return mDateLatest != null ? mDateLatest.toString() : "-";
+            return DateHelper.toDateTimeString(getDateLatest(), "-");
+        }
+
+        public long getEpochSecondsFirst() {
+            return mEpochSecondsFirst;
+        }
+
+        public long getEpochSecondsLatest() {
+            return mEpochSecondsLatest;
+        }
+
+        public long getEpochSecondsStoredZero() {
+            return mEpochSecondsStoredZero;
         }
 
         public long getMeasurementAge(ChronoUnit chronoUnit) {
@@ -238,7 +254,19 @@ public abstract class BBasePoint extends BBase {
         }
 
         public LocalDateTime getStoredZeroDateTime() {
-            return storedZeroDateTime;
+            return EpochHelper.epochSecondsToLocalDateTime(mEpochSecondsStoredZero);
+        }
+
+        public boolean hasEpochSecondsFirst() {
+            return EpochHelper.hasDate(mEpochSecondsFirst);
+        }
+
+        public boolean hasEpochSecondsLatest() {
+            return EpochHelper.hasDate(mEpochSecondsLatest);
+        }
+
+        public boolean hasEpochSecondsStordZero() {
+            return EpochHelper.hasDate(mEpochSecondsStoredZero);
         }
 
         public boolean isMultipleObservationsPerDay() {
@@ -249,12 +277,24 @@ public abstract class BBasePoint extends BBase {
             return zeroUnset;
         }
 
-        public void setDateFirst(LocalDateTime dateFirst) {
-            mDateFirst = dateFirst;
+        public void setDateFirst(LocalDateTime dateTime) {
+            mEpochSecondsFirst = EpochHelper.localDateTimeToEpochSeconds(dateTime);
         }
 
         public void setDateLatest(LocalDateTime dateTime) {
-            mDateLatest = dateTime;
+            mEpochSecondsLatest = EpochHelper.localDateTimeToEpochSeconds(dateTime);
+        }
+
+        public void setEpochSecondsFirst(long epochSecondsFirst) {
+            mEpochSecondsFirst = epochSecondsFirst;
+        }
+
+        public void setEpochSecondsLatest(long epochSecondsLatest) {
+            mEpochSecondsLatest = epochSecondsLatest;
+        }
+
+        public void setEpochSecondsStoredZero(long epochSecondsStoredZero) {
+            mEpochSecondsStoredZero = epochSecondsStoredZero;
         }
 
         public void setMeasurementCountStats(LinkedHashMap<String, Integer> measuremenCountStats) {
@@ -277,8 +317,8 @@ public abstract class BBasePoint extends BBase {
             this.observationsTimeFiltered = observationsTimeFiltered;
         }
 
-        public void setStoredZeroDateTime(LocalDateTime storedZeroDateTime) {
-            this.storedZeroDateTime = storedZeroDateTime;
+        public void setStoredZeroDateTime(LocalDateTime dateTime) {
+            this.mEpochSecondsStoredZero = EpochHelper.localDateTimeToEpochSeconds(dateTime);
         }
 
         public void setZeroUnset(boolean zeroUnset) {

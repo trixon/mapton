@@ -15,7 +15,10 @@
  */
 package org.mapton.butterfly_format.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
+import se.trixon.almond.util.EpochHelper;
 
 /**
  *
@@ -23,13 +26,20 @@ import java.time.LocalDateTime;
  */
 public class BCoordinate extends BBasePoint {
 
-    private LocalDateTime date;
+    @JsonIgnore
+    private long mEpochSeconds = EpochHelper.NULL_EPOCH_SECONDS;
     private double x = Double.NaN;
     private double y = Double.NaN;
     private double z = Double.NaN;
 
+    @JsonProperty("date")
     public LocalDateTime getDate() {
-        return date;
+        return EpochHelper.epochSecondsToLocalDateTime(mEpochSeconds);
+    }
+
+    @JsonIgnore
+    public long getEpochSeconds() {
+        return mEpochSeconds;
     }
 
     public double getX() {
@@ -44,8 +54,9 @@ public class BCoordinate extends BBasePoint {
         return z;
     }
 
-    public void setDate(LocalDateTime dt) {
-        date = dt;
+    @JsonProperty("date")
+    public void setDate(LocalDateTime date) {
+        mEpochSeconds = EpochHelper.localDateTimeToEpochSeconds(date);
     }
 
     public void setX(double x) {

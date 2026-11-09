@@ -16,6 +16,7 @@
 package org.mapton.butterfly_format;
 
 import java.io.File;
+import java.time.LocalTime;
 
 /**
  *
@@ -61,7 +62,9 @@ public class ButterflyLoader {
     public void process(BundleMode bundleMode, File source) {
         var dir = mBundleMode == BundleMode.DIR ? source.getParentFile() : null;
         mButterfly = new Butterfly();
+        System.out.println("%s Butterfly Load BEG".formatted(LocalTime.now().toString()));
         mButterfly.load(dir);
+        System.out.println("%s Butterfly Load END".formatted(LocalTime.now().toString()));
         mButterfly.postLoad();
     }
 

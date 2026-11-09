@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_format.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +29,7 @@ import se.trixon.almond.util.EpochHelper;
 public abstract class BBasePointObservation {
 
     protected static final ConcurrentHashMap<String, String> CELL_CACHE = new ConcurrentHashMap<>(4096);
+    @JsonIgnore
     private long mEpochSeconds = EpochHelper.NULL_EPOCH_SECONDS;
     private String name;
 
@@ -43,10 +46,12 @@ public abstract class BBasePointObservation {
      *
      * @return
      */
+    @JsonProperty("date")
     public LocalDateTime getDate() {
         return EpochHelper.epochSecondsToLocalDateTime(mEpochSeconds);
     }
 
+    @JsonIgnore
     public long getEpochSeconds() {
         return mEpochSeconds;
     }
@@ -59,6 +64,7 @@ public abstract class BBasePointObservation {
         return EpochHelper.hasDate(mEpochSeconds);
     }
 
+    @JsonProperty("date")
     public void setDate(LocalDateTime date) {
         mEpochSeconds = EpochHelper.localDateTimeToEpochSeconds(date);
     }
