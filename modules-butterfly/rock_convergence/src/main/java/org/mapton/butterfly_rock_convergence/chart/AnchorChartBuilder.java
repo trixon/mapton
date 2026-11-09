@@ -16,7 +16,6 @@
 package org.mapton.butterfly_rock_convergence.chart;
 
 import java.awt.Color;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.DateAxis;
@@ -82,10 +81,9 @@ public class AnchorChartBuilder extends XyzChartBuilder<BRockConvergencePair> {
             color = color.darker();
         }
         mChart.getTitle().setPaint(color);
-        var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
-        var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getDateLatest()), "");
-        var date = "(%s) → %s".formatted(dateFirst, dateLast);
-        getLeftSubTextTitle().setText(date);
+        if (p.extOrNull().getObservationsAllRaw().size() > 1) {
+            getLeftSubTextTitle().setText(createTitleDate(p));
+        }
     }
 
     @Override
@@ -120,9 +118,9 @@ public class AnchorChartBuilder extends XyzChartBuilder<BRockConvergencePair> {
         var series = pair.getConvergence().ext().getAnchorPoint() == p ? mTimeSeriesAnchor : mTimeSeriesPoint;
         p.ext().getObservationsAllRaw().stream()
                 .filter(o -> DateHelper.isBetween(
-                firstDate,
-                lastDate,
-                o.getDate().toLocalDate()))
+                        firstDate,
+                        lastDate,
+                        o.getDate().toLocalDate()))
                 .forEachOrdered(o -> {
                     var minute = ChartHelper.convertToMinute(o.getDate());
                     series.add(minute, o.ext().getDeltaZ());

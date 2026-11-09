@@ -299,6 +299,27 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         return null;
     }
 
+    public String createTitleDate(BXyzPoint p) {
+        var sb = new StringBuilder();
+        var firstDate = p.extOrNull().getObservationRawFirstDate();
+        var zeroDate = p.getDateZero() != null ? p.getDateZero() : firstDate;
+
+        if (!zeroDate.isEqual(firstDate)) {
+            sb.append("<%s>   ".formatted(firstDate));
+        }
+
+        sb.append(zeroDate)
+                .append(" → ")
+                .append(p.getDateLatest().toLocalDate());
+
+        if (p.getFrequency() > 0) {
+            sb.append("   ");
+            sb.append(Long.toString(p.extOrNull().getMeasurementUntilNext(ChronoUnit.DAYS)));
+        }
+
+        return sb.toString();
+    }
+
     public ChartPanel getChartPanel() {
         return mChartPanel;
     }

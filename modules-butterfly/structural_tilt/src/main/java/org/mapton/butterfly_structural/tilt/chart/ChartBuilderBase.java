@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_structural.tilt.chart;
 
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.data.time.Minute;
@@ -23,7 +22,6 @@ import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import org.mapton.butterfly_structural.tilt.TiltHelper;
-import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -76,11 +74,8 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BStructuralTiltPo
     public void setTitle(BStructuralTiltPoint p) {
         setTitle(p, TiltHelper.getAlarmColorHeightAwt(p));
 
-        if (isCompleteView()) {
-            var dateFirst = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredFirstDate()), "");
-            var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
-            var date = "(%s) → %s".formatted(dateFirst, dateLast);
-            getLeftSubTextTitle().setText(date);
+        if (isCompleteView() && p.extOrNull().getObservationsAllRaw().size() > 1) {
+            getLeftSubTextTitle().setText(createTitleDate(p));
         }
 
         var rightTitle = "%s".formatted(p.ext().getDeltaZero());

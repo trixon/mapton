@@ -19,14 +19,12 @@ import java.awt.Color;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.hydro.BHydroWaterLevelPoint;
-import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -75,14 +73,8 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BHydroWaterLevelP
     public void setTitle(BHydroWaterLevelPoint p) {
         setTitle(p, Color.BLUE);
 
-        if (isCompleteView()) {
-            var dateFirst = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredFirstDate()), "");
-            var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
-            var date = "(%s) → %s".formatted(dateFirst, dateLast);
-            getLeftSubTextTitle().setText(date);
+        if (isCompleteView() && p.extOrNull().getObservationsAllRaw().size() > 1) {
+            getLeftSubTextTitle().setText(createTitleDate(p));
         }
-
-//        String delta = p.ext().deltaZero().getDelta1(0);
-//        getRightSubTextTitle().setText("Δ " + delta);
     }
 }

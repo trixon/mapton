@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo.chart;
 
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.data.time.Minute;
@@ -23,7 +22,6 @@ import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoHelper;
-import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -76,14 +74,11 @@ public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoControlPoint
     public void setTitle(BTopoControlPoint p) {
         setTitle(p, TopoHelper.getAlarmColorAwt(p));
 
-        if (isCompleteView()) {
-            var dateFirst = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredFirstDate()), "");
-            var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
-            var date = "(%s) → %s".formatted(dateFirst, dateLast);
-            getLeftSubTextTitle().setText(date);
+        if (isCompleteView() && p.extOrNull().getObservationsAllRaw().size() > 1) {
+            getLeftSubTextTitle().setText(createTitleDate(p));
         }
 
-        String delta = p.ext().deltaZero().getDelta1d2d(0, 1000);
+        var delta = p.ext().deltaZero().getDelta1d2d(0, 1000);
         getRightSubTextTitle().setText(delta);
     }
 }

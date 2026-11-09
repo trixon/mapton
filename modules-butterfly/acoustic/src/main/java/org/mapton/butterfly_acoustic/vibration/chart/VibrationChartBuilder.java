@@ -16,7 +16,6 @@
 package org.mapton.butterfly_acoustic.vibration.chart;
 
 import java.awt.Color;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.AxisLocation;
@@ -29,7 +28,6 @@ import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
-import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -84,11 +82,9 @@ public class VibrationChartBuilder extends XyzChartBuilder<BAcousticVibrationPoi
     public void setTitle(BAcousticVibrationPoint p) {
         setTitle(p, Color.BLUE);
 //        setTitle(p, StrainHelper.getAlarmColorAwt(p));
-
-        var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
-        var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
-        var date = "(%s) → %s".formatted(dateFirst, dateLast);
-        getLeftSubTextTitle().setText(date);
+        if (isCompleteView() && p.extOrNull().getObservationsAllRaw().size() > 1) {
+            getLeftSubTextTitle().setText(createTitleDate(p));
+        }
 
 //        var rightTitle = "%s: %s".formatted(p.getAlarm1Id(), p.ext().getDeltaZero());
 //        getRightSubTextTitle().setText(rightTitle);

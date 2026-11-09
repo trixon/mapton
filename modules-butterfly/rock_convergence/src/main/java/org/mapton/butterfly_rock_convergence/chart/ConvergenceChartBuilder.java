@@ -16,7 +16,6 @@
 package org.mapton.butterfly_rock_convergence.chart;
 
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.data.time.TimeSeries;
@@ -26,7 +25,6 @@ import org.mapton.butterfly_format.types.rock.BRockConvergence;
 import org.mapton.butterfly_format.types.rock.BRockConvergencePair;
 import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.ce_jfreechart.api.ChartHelper;
-import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -61,10 +59,9 @@ public class ConvergenceChartBuilder extends XyzChartBuilder<BRockConvergence> {
     @Override
     public void setTitle(BRockConvergence p) {
         setTitle(p, TopoHelper.getAlarmColorAwt(p));
-        var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
-        var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
-        var date = "(%s) → %s".formatted(dateFirst, dateLast);
-        getLeftSubTextTitle().setText(date);
+        if (p.extOrNull().getObservationsAllRaw().size() > 1) {
+            getLeftSubTextTitle().setText(createTitleDate(p));
+        }
     }
 
     @Override
