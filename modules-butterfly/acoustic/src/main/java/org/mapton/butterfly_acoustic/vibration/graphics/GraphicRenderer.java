@@ -20,6 +20,7 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import java.time.LocalDateTime;
@@ -40,8 +41,13 @@ public class GraphicRenderer extends GraphicRendererBase {
         sCheckModel = checkModel;
     }
 
+    @Override
     public void plot(BAcousticVibrationPoint point, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
+
+        if (sCheckModel.isChecked(GraphicItem.TRACE_ELLIPSOID)) {
+            plotTraceEllipsoid(point, position);
+        }
 
         if (sCheckModel.isChecked(GraphicItem.TRACE)) {
             plotTrace(point, position);
@@ -91,4 +97,40 @@ public class GraphicRenderer extends GraphicRendererBase {
         addRenderable(groundPath, true, GraphicItem.TRACE, sMapObjects);
     }
 
+    private void plotTraceEllipsoid(BAcousticVibrationPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicItem.TRACE_ELLIPSOID, position)) {
+            return;
+        }
+
+        var endPosition = Position.ZERO;
+        for (var o : p.ext().getObservationsTimeFiltered().reversed()) {
+            if (Double.isNaN(o.ext().getDeltaZ())) {
+                continue;
+            }
+
+            var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), LocalDateTime.now());
+            var altitude = timeSpan / 24000.0;
+            var pos = WWHelper.positionFromPosition(position, altitude);
+            var z = o.getMeasuredZ();
+            var radius = 1.0;
+            var cylinder = new Ellipsoid(pos, radius, radius, radius);
+            var attrs = mAttributeManager.getComponentTracedAttributes(0, false);
+
+            if (!Double.isNaN(o.getLimit()) && z >= o.getLimit()) {
+                attrs = new BasicShapeAttributes(attrs);
+                attrs.setInteriorMaterial(Material.RED);
+            }
+
+            cylinder.setAttributes(attrs);
+            if (!Double.isNaN(o.getLimit()) && z / o.getLimit() > 0.75) {
+                addRenderable(cylinder, true, GraphicItem.TRACE_ELLIPSOID, sMapObjects);
+            }
+            endPosition = pos;
+        }
+
+        var startPosition = WWHelper.positionFromPosition(position, 0.0);
+        var groundPath = new Path(startPosition, endPosition);
+        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        addRenderable(groundPath, true, GraphicItem.TRACE_ELLIPSOID, sMapObjects);
+    }
 }

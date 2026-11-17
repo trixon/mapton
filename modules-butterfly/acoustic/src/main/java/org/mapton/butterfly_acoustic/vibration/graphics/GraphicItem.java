@@ -23,6 +23,7 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
+    TRACE_ELLIPSOID(SDict.TRACE.toString() + ", toppar", Integer.MAX_VALUE),
     TRACE(SDict.TRACE.toString(), 10_000);
     private final String mName;
     private final int mPlotLimit;
