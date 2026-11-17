@@ -16,20 +16,27 @@
 package org.mapton.butterfly_structural.crack.graphics;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
+import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Box;
+import gov.nasa.worldwind.render.Cone;
 import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.RigidShape;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
+import static org.mapton.butterfly_core.api.BaseGraphicRenderer.DELTA_1D_ALTITUDE;
+import static org.mapton.butterfly_core.api.BaseGraphicRenderer.DELTA_1D_NEG_HEIGHT;
+import static org.mapton.butterfly_core.api.BaseGraphicRenderer.DELTA_1D_POS_HEIGHT;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_structural.crack.CrackAttributeManager;
 import org.mapton.worldwind.api.WWHelper;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -44,8 +51,12 @@ public class GraphicRenderer extends GraphicRendererBase {
         sCheckModel = checkModel;
     }
 
+    @Override
     public void plot(BStructuralCrackPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
+        if (sCheckModel.isChecked(GraphicItem.DELTA)) {
+            plotDelta(p, position);
+        }
 
         if (sCheckModel.isChecked(GraphicItem.ALARM_CONSUMPTION)) {
             plotAlarmConsumption(p, position);
@@ -85,6 +96,43 @@ public class GraphicRenderer extends GraphicRendererBase {
         plotPercentageAlarmIndicator(position, alarm, alarmShape, false);
 
         plotPercentageRod(position, p.ext().getAlarmPercent());
+    }
+
+    private void plotDelta(BStructuralCrackPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicItem.DELTA, position)) {
+            return;
+        }
+
+        var heightOffset = 0.1 - Math.abs(p.extOrNull().deltaZero().getDelta1() * 2);
+        var pos = WWHelper.positionFromPosition(position, DELTA_1D_ALTITUDE + MathHelper.convertDoubleToDouble(heightOffset) * 2);
+        var maxRadius = 10.0;
+        var o = p.ext().getObservationFilteredLast();
+
+        var dZ = o.ext().getDeltaZ();
+        if (Double.isNaN(dZ)) {
+            return;
+        }
+//        var radius = Math.min(maxRadius, Math.abs(dZ) * 250 + 0.05);
+//        var maximus = radius == maxRadius;
+        var mScale1dH = 1;
+//            var dZ = o.ext().getDeltaZ();
+        var radius = Math.min(maxRadius, Math.abs(dZ * 1000) * mScale1dH + 0.05);
+        var maximus = radius == maxRadius;
+
+        RigidShape shape;
+        if (dZ > 0) {
+            shape = new Pyramid(pos, DELTA_1D_POS_HEIGHT, radius);
+        } else {
+            shape = new Cone(pos, DELTA_1D_NEG_HEIGHT, radius);
+            shape.setTilt(Angle.POS180);
+        }
+
+        var alarmLevel = p.ext().getAlarmLevelHeight(o);
+//        var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, maximus);
+        var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, false, maximus);
+
+        shape.setAttributes(attrs);
+        addRenderable(shape, true, GraphicItem.DELTA, sMapObjects);
     }
 
     private void plotTrace(BStructuralCrackPoint p, Position position) {
