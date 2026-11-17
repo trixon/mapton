@@ -17,24 +17,21 @@ package org.mapton.butterfly_structural.tilt.graphics;
 
 import org.mapton.api.MDict;
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
+import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
-
-    ALARM_CONSUMPTION("Larmförbrukning"),
-    AXIS(MDict.COORDINATE_SYSTEM.toString()),
-    TILT("Lutning"),
-    TILT_LONGITUDINAL("Lutning, longitudinell"),
-    TILT_TRANSVERSAL("Lutning, transversal");
+    TRACE(SDict.TRACE.toString(), 100_000),
+    ALARM_CONSUMPTION("Larmförbrukning", Integer.MAX_VALUE),
+    AXIS(MDict.COORDINATE_SYSTEM.toString(), Integer.MAX_VALUE),
+    TILT("Lutning", Integer.MAX_VALUE),
+    TILT_LONGITUDINAL("Lutning, longitudinell", Integer.MAX_VALUE),
+    TILT_TRANSVERSAL("Lutning, transversal", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
-
-    private GraphicItem(String name) {
-        this(name, Integer.MAX_VALUE);
-    }
 
     private GraphicItem(String name, int plotLimit) {
         mName = name;

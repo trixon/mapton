@@ -16,11 +16,16 @@
 package org.mapton.butterfly_structural.tilt.graphics;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
+import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Box;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.Wedge;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
@@ -52,10 +57,15 @@ public class GraphicRenderer extends GraphicRendererBase {
         sCheckModel = checkModel;
     }
 
+    @Override
     public void plot(BStructuralTiltPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
         mPosition = position;
         initPositions(p);
+
+        if (sCheckModel.isChecked(GraphicItem.TRACE)) {
+            plotTrace(p, position);
+        }
 
         if (sCheckModel.isChecked(GraphicItem.ALARM_CONSUMPTION)) {
             plotAlarmConsumption(p, position);
@@ -81,8 +91,10 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     private Double calcBearing(BStructuralTiltPoint p) {
-        var dX = p.ext().deltaZero().getDeltaX();
-        var dY = p.ext().deltaZero().getDeltaY();
+        return calcBearing(p, p.ext().deltaZero().getDeltaX(), p.ext().deltaZero().getDeltaY());
+    }
+
+    private Double calcBearing(BStructuralTiltPoint p, double dX, double dY) {
         if (ObjectUtils.anyNull(p.getAzimuth()) || Butterfly.anyNaN(dX, dY)) {
             return null;
         }
@@ -218,6 +230,69 @@ public class GraphicRenderer extends GraphicRendererBase {
         var path = new Path(mPosition0, mPosition1);
         path.setAttributes(mAttributeManager.getAlarmOutlineAttributes(TiltHelper.getAlarmLevelTrans(p)));
         addRenderable(path, true, GraphicItem.TILT_TRANSVERSAL, sMapObjects);
+    }
+
+    private void plotTrace(BStructuralTiltPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicItem.TRACE, position)) {
+            return;
+        }
+        var reversedList = p.ext().getObservationsTimeFiltered().reversed();
+        var prevDate = LocalDateTime.now();
+        var altitude = 0.0;
+        var prevHeight = 0.0;
+
+        for (int i = 0; i < reversedList.size(); i++) {
+            var o = reversedList.get(i);
+
+            var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
+            var height = timeSpan / 24000.0;
+            if (height <= 0) {
+                continue;
+            }
+            altitude = altitude + height * 0.5 + prevHeight * 0.5;
+            prevDate = o.getDate();
+            prevHeight = height;
+
+            if (Double.isNaN(o.ext().getDeltaZ())) {
+                continue;
+            }
+
+            if (o.isZeroMeasurement()) {
+                var pos = WWHelper.positionFromPosition(position, altitude + height * .5);
+                var cylinder = new Cylinder(pos, .5, 2.0);
+                cylinder.setAttributes(mAttributeManager.getComponentZeroAttributes());
+                addRenderable(cylinder, true, null, sMapObjects);
+
+            }
+
+            var pos = WWHelper.positionFromPosition(position, altitude);
+            var maxRadius = 40.0;
+
+            var mScale1dH = 0.01;
+            var dZ = o.ext().getDeltaZ();
+            var radius = Math.min(maxRadius, Math.abs(dZ * 1000) * mScale1dH + 0.05);
+            var maximus = radius == maxRadius;
+            var angle = 5.0;
+            var wedge = new Wedge(pos, Angle.fromDegrees(angle), height, radius);
+            var bearing = calcBearing(p, o.ext().getDeltaX(), o.ext().getDeltaY());
+            if (bearing == null) {
+                continue;
+            }
+            var az = Angle.normalizedDegrees(bearing - angle / 2);
+            wedge.setHeading(Angle.fromDegrees(az));
+
+            var alarmLevel = p.ext().getAlarmLevelHeight(o);
+            var attrs = mAttributeManager.getAlarmInteriorAttributes(alarmLevel, maximus);
+
+            if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
+                attrs = new BasicShapeAttributes(attrs);
+                attrs.setInteriorOpacity(0.25);
+                attrs.setOutlineOpacity(0.20);
+            }
+
+            wedge.setAttributes(attrs);
+            addRenderable(wedge, true, GraphicItem.TRACE, sMapObjects);
+        }
     }
 
     private void plotZeroCircle(Position position) {

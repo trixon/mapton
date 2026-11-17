@@ -37,7 +37,7 @@ public enum TiltLabelBy implements LabelBy.Operations {
         return LabelBy.alarmHName(p);
     }),
     ALARM_VALUE(LabelBy.CAT_ALARM, Dict.VALUE.toString(), p -> {
-        return TiltHelper.getLimitsAsString(p);
+        return LabelBy.alarmHValue(p);
     }),
     ALARM_PERCENT(LabelBy.CAT_ALARM, "%", p -> {
         return LabelBy.alarmHPercent(p);

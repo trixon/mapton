@@ -17,7 +17,6 @@ package org.mapton.butterfly_structural.tilt;
 
 import java.awt.Color;
 import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.butterfly_core.api.AlarmManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -42,14 +41,7 @@ public class TiltHelper {
         if (o == null) {
             return -1;
         } else {
-            var oldZ = o.ext().getDeltaZ();
-            var newZ = toDegreeBased(oldZ);
-
-            o.ext().setDeltaZ(newZ);
-            var alarmLevel = p.extOrNull().getAlarmLevelHeight(o);
-            o.ext().setDeltaZ(oldZ);
-
-            return alarmLevel;
+            return p.extOrNull().getAlarmLevelHeight(o);
         }
     }
 
@@ -62,8 +54,7 @@ public class TiltHelper {
             if (ObjectUtils.anyNull(alarm, o)) {
                 return -1;
             } else {
-                var deltaLong = toDegreeBased(o.ext().getDeltaY());
-                return alarm.ext().getLevel(Math.abs(deltaLong));
+                return alarm.ext().getLevel(o.ext().getDeltaY());
             }
         }
     }
@@ -77,37 +68,8 @@ public class TiltHelper {
             if (ObjectUtils.anyNull(alarm, o)) {
                 return -1;
             } else {
-                var deltaTrans = toDegreeBased(o.ext().getDeltaX());
-                return alarm.ext().getLevel(Math.abs(deltaTrans));
+                return alarm.ext().getLevel(o.ext().getDeltaX());
             }
         }
     }
-
-    public static String getLimitsAsString(BStructuralTiltPoint p) {
-        var manager = AlarmManager.getInstance();
-        var result = "";
-        var alarm = manager.getAllItemsMap().get(p.getAlarm1Id());
-        if (alarm != null) {
-            var max0 = alarm.ext().getRange0().getMaximum();
-            var max1 = alarm.ext().getRange1().getMaximum();
-            var s = "%s%.2f // %s%.2f".formatted(
-                    alarm.getType(), toRadianBased(max0),
-                    alarm.getType(), toRadianBased(max1)
-            );
-            return s;
-        } else {
-            System.out.println("Alarm not found: %s, %s".formatted(p.getName(), p.getAlarm1Id()));
-        }
-
-        return result;
-    }
-
-    public static double toDegreeBased(double value) {
-        return Double.isNaN(value) ? Double.NaN : Math.toDegrees(value) / 1000.0;
-    }
-
-    public static double toRadianBased(double value) {
-        return Double.isNaN(value) ? Double.NaN : Math.toRadians(value) * 1000.0;
-    }
-
 }
