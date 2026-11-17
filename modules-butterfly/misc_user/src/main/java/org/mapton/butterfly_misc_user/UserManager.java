@@ -80,8 +80,8 @@ public class UserManager extends BaseManager<BSystemUser> {
                 user.setEmail(decrypt(user.getEmail()));
                 user.setInitials(decrypt(user.getInitials()));
                 user.setCategory(decrypt(user.getCategory()));
-                user.extOrNull().setDateFirst(user.getDateCreated());
-                user.extOrNull().setDateLatest(user.getDateLatest());
+                user.extOrNull().setEpochSecondsFirst(user.getEpochSecondsCreated());
+                user.extOrNull().setEpochSecondsLatest(user.getEpochSecondsLatest());
             }
 
             initAllItems(butterfly.sys().getUsers());
