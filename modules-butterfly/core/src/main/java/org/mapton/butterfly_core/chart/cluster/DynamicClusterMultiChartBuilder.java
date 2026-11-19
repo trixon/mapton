@@ -36,7 +36,7 @@ import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import org.mapton.butterfly_format.types.BClusterChartPoint;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
@@ -45,7 +45,7 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BClusterChartPoint> {
+public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BXyzPoint> {
 
     private LocalDate mDateFirst;
     private LocalDate mDateLast;
@@ -60,7 +60,7 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BClusterCha
         initChart(axisLabel, decimalPattern);
     }
 
-    public synchronized Callable<ChartPanel> build(BClusterChartPoint p, BMultiChartPart multiChartComponent) {
+    public synchronized Callable<ChartPanel> build(BXyzPoint p, BMultiChartPart multiChartComponent) {
         if (p == null) {
             return null;
         }
@@ -116,7 +116,7 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BClusterCha
     }
 
     @Override
-    public Object build(BClusterChartPoint selectedObject) {
+    public Object build(BXyzPoint selectedObject) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -125,14 +125,14 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BClusterCha
     }
 
     @Override
-    public void setTitle(BClusterChartPoint b) {
+    public void setTitle(BXyzPoint b) {
         mChart.setTitle("%s: %s".formatted(b.getName(), mTitlePrefix));
         var date = "%s → %s".formatted(mDateFirst, mDateLast);
         getLeftSubTextTitle().setText(date);
     }
 
     @Override
-    public void updateDataset(BClusterChartPoint b) {
+    public void updateDataset(BXyzPoint b) {
         var plot = getPlot();
         resetPlot(plot);
         var renderer = new XYLineAndShapeRenderer(true, true);
@@ -140,7 +140,7 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BClusterCha
         renderer.setDefaultStroke(stroke);
         plot.setRenderer(renderer);
         var latLon = new MLatLon(b.getLat(), b.getLon());
-        var points = mMultiChartComponent.getPoints(latLon, mDateFirst, b.ext().getDateFirst().toLocalDate(), mDateLast);
+        var points = mMultiChartComponent.getPoints(latLon, mDateFirst, b.extOrNull().getDateFirst().toLocalDate(), mDateLast);
         var seriesList = new ArrayList<TimeSeries>();
 
         for (var p : points) {
@@ -170,7 +170,7 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BClusterCha
         var limit = MSimpleObjectStorageManager.getInstance().getInteger(DynamicClusterMaxCountSosi.class, DynamicClusterMaxCountSosi.DEFAULT_VALUE);
 
         var orderedList = seriesList.stream()
-                .sorted(Comparator.comparingDouble(ts -> {
+                .sorted(Comparator.comparingDouble((TimeSeries ts) -> {
                     var count = ts.getItemCount();
                     if (count == 0) {
                         return Double.NEGATIVE_INFINITY;
@@ -178,7 +178,7 @@ public class DynamicClusterMultiChartBuilder extends XyzChartBuilder<BClusterCha
                     var lastItem = ts.getDataItem(count - 1);
                     var value = lastItem.getValue();
                     return (value == null) ? Double.NaN : Math.abs(value.doubleValue());
-                }))
+                }).reversed())
                 .limit(limit)
                 .toList();
 

@@ -18,13 +18,13 @@ package org.mapton.butterfly_core.chart.cluster;
 import java.util.ArrayList;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.BClusterChartPoint;
+import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class DynamicClusterChartManager extends BaseManager<BClusterChartPoint> {
+public class DynamicClusterChartManager extends BaseManager<BXyzPoint> {
 
     private final DynamicClusterMultiChartAggregate mChartAggregate = new DynamicClusterMultiChartAggregate();
 
@@ -33,11 +33,11 @@ public class DynamicClusterChartManager extends BaseManager<BClusterChartPoint> 
     }
 
     private DynamicClusterChartManager() {
-        super(BClusterChartPoint.class);
+        super(BXyzPoint.class);
     }
 
     @Override
-    public Object getObjectChart(BClusterChartPoint selectedObject) {
+    public Object getObjectChart(BXyzPoint selectedObject) {
         return mChartAggregate.build(selectedObject);
     }
 
@@ -54,7 +54,7 @@ public class DynamicClusterChartManager extends BaseManager<BClusterChartPoint> 
     }
 
     @Override
-    protected void load(ArrayList<BClusterChartPoint> items) {
+    protected void load(ArrayList<BXyzPoint> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
