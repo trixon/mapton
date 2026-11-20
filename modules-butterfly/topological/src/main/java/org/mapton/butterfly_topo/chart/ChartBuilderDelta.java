@@ -124,6 +124,10 @@ public class ChartBuilderDelta extends ChartBuilderBase {
             }
         }
 
+        if (mChartOptionsManager.isMiscForceDayMedianProperty()) {
+            timeSeries = ChartHelper.dailyMedian(timeSeries);
+        }
+
         plot(p, mPlotAvg, timeSeries, renderer, color);
 
         try {

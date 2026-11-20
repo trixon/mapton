@@ -35,7 +35,7 @@ public class BlastMultiChartPart3D extends BlastMultiChartPart {
 
     @Override
     public String getName() {
-        return ".Prismor";
+        return "3D";
     }
 
 }

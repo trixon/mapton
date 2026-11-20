@@ -35,7 +35,7 @@ public class BlastMultiChartPart1D extends BlastMultiChartPart {
 
     @Override
     public String getName() {
-        return ".Dubbar";
+        return "1D";
     }
 
 }
