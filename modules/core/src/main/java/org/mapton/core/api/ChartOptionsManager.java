@@ -47,6 +47,7 @@ public class ChartOptionsManager {
     private final ObjectProperty<ChartStartPoint> mDatePeriodProperty = new SimpleObjectProperty<>(ChartStartPoint.ZERO);
     private final StringProperty mDatePeriodProxyProperty = BindingHelper.createStringEnumProxyProperty(mDatePeriodProperty, ChartStartPoint.class);
     private final BooleanProperty mDateResetOnFirstProperty = new SimpleBooleanProperty();
+    private final BooleanProperty mMiscForceDayMedianProperty = new SimpleBooleanProperty();
     private final ObjectProperty<ChartMiscLineMode> mMiscLineModeProperty = new SimpleObjectProperty<>(ChartMiscLineMode.EXTRAPOLATE);
     private final StringProperty mMiscLineModeProxyProperty = BindingHelper.createStringEnumProxyProperty(mMiscLineModeProperty, ChartMiscLineMode.class);
     private final Preferences mPreferences = NbPreferences.forModule(ChartOptionsManager.class).node("chart");
@@ -137,6 +138,14 @@ public class ChartOptionsManager {
         return mDateResetOnFirstProperty.get();
     }
 
+    public boolean isMiscForceDayMedianProperty() {
+        return mMiscForceDayMedianProperty.get();
+    }
+
+    public BooleanProperty miscForceDayMedianProperty() {
+        return mMiscForceDayMedianProperty;
+    }
+
     public ObjectProperty<ChartMiscLineMode> miscLineModeProperty() {
         return mMiscLineModeProperty;
     }
@@ -152,6 +161,7 @@ public class ChartOptionsManager {
         mSessionManager.register("dateResetOnFirst", mDateResetOnFirstProperty);
         mSessionManager.register("dateEndToday", mDateEndTodayProperty);
 
+        mSessionManager.register("miscForceDayMedian", mMiscForceDayMedianProperty);
         mSessionManager.register("miscLinemode", mMiscLineModeProxyProperty);
     }
 
@@ -173,6 +183,7 @@ public class ChartOptionsManager {
         mDatePeriodProperty.addListener(listener);
         mAvgPeriod1Property.addListener(listener);
         mAvgPeriod2Property.addListener(listener);
+        mMiscForceDayMedianProperty.addListener(listener);
         mMiscLineModeProperty.addListener(listener);
     }
 

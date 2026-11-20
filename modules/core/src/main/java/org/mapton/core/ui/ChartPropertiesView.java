@@ -254,6 +254,7 @@ class ChartPropertiesView extends BorderPane {
 
     private class MiscView extends VBox {
 
+        private final SessionCheckBox mForceDayMedianScb = new SessionCheckBox("Tvinga dygnsmedian");
         private final SessionComboBox<ChartMiscLineMode> mLineModeComboBox = new SessionComboBox<>();
 
         public MiscView() {
@@ -268,16 +269,19 @@ class ChartPropertiesView extends BorderPane {
 //            initBindings();
 
             mLineModeComboBox.valueProperty().bindBidirectional(mChartOptionsManager.miscLineModeProperty());
+            mForceDayMedianScb.selectedProperty().bindBidirectional(mChartOptionsManager.miscForceDayMedianProperty());
 
-            var vbox = new VBox(
+            var lineBox = new VBox(
                     headerLabel,
-                    mLineModeComboBox);
-
-            getChildren().addAll(vbox
+                    mLineModeComboBox
             );
 
-            BindingHelper.bindWidthForChildrens(this, vbox);
-        }
+            getChildren().addAll(
+                    lineBox,
+                    mForceDayMedianScb
+            );
 
+            BindingHelper.bindWidthForChildrens(this, lineBox);
+        }
     }
 }
