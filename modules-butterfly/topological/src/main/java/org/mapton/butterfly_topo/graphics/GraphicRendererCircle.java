@@ -15,22 +15,25 @@
  */
 package org.mapton.butterfly_topo.graphics;
 
+import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.AbstractSurfaceShape;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
-import gov.nasa.worldwind.render.Box;
-import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Cone;
 import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.RigidShape;
 import gov.nasa.worldwind.render.SurfaceCircle;
 import gov.nasa.worldwind.render.SurfacePolygon;
+import gov.nasa.worldwind.render.Wedge;
 import java.time.temporal.ChronoUnit;
+import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.worldwind.api.WWHelper;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -52,10 +55,6 @@ public class GraphicRendererCircle extends GraphicRendererBase {
             plot2dCircle(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicItem.CIRCLE_3D) && p.getDimension() == BDimension._3d) {
-            plot3dCircle(p, position);
-        }
-
         if (sCheckModel.isChecked(GraphicItem.CIRCLE_VERTICAL_DIRECTION) && p.getDimension() != BDimension._2d) {
             plotVerticalDirection(p, position);
         }
@@ -70,8 +69,8 @@ public class GraphicRendererCircle extends GraphicRendererBase {
             return;
         }
 
-        var height = 0.4;
-        var pos = WWHelper.positionFromPosition(position, height * 0.5 * 2);
+        var heightOffset = 0.1 - Math.abs(p.extOrNull().deltaZero().getDelta1() * 2);
+        var pos = WWHelper.positionFromPosition(position, DELTA_1D_ALTITUDE + MathHelper.convertDoubleToDouble(heightOffset) * 2);
         var maxRadius = 10.0;
         var o = p.ext().getObservationFilteredLast();
 
@@ -84,9 +83,10 @@ public class GraphicRendererCircle extends GraphicRendererBase {
 
         RigidShape shape;
         if (dZ > 0) {
-            shape = new Box(pos, radius, height * .5, radius);
+            shape = new Pyramid(pos, DELTA_1D_POS_HEIGHT, radius);
         } else {
-            shape = new Cylinder(pos, height, radius);
+            shape = new Cone(pos, DELTA_1D_NEG_HEIGHT, radius);
+            shape.setTilt(Angle.POS180);
         }
 
         var alarmLevel = p.ext().getAlarmLevelHeight(o);
@@ -101,49 +101,47 @@ public class GraphicRendererCircle extends GraphicRendererBase {
             return;
         }
 
-        var height = 0.8;
-        var pos = WWHelper.positionFromPosition(position, height * 0.5 * 2);
+        var pos = WWHelper.positionFromPosition(position, DELTA_2D_ALTITUDE + DELTA_2D_HEIGHT * .5);
         var maxRadius = 10.0;
-        var o = p.ext().getObservationFilteredLast();
 
-        var delta2d = o.ext().getDelta2d();
-        if (Double.isNaN(delta2d)) {
-            return;
+        try {
+            var o = p.ext().getObservationFilteredLast();
+            var bearing = o.ext().getBearing();
+            var delta2d = o.ext().getDelta2d();
+            if (Butterfly.anyNaN(bearing, delta2d) || delta2d == 0) {
+                return;
+            }
+
+            var angle = 5.0;
+            var radius = Math.min(maxRadius, Math.abs(delta2d) * 250 + 0.05);
+            var maximus = radius == maxRadius;
+            var wedge = new Wedge(pos, Angle.fromDegrees(angle), DELTA_2D_HEIGHT, radius);
+            var az = Angle.normalizedDegrees(bearing - angle / 2);
+            wedge.setHeading(Angle.fromDegrees(az));
+            var alarmLevel = p.ext().getAlarmLevel(o);
+            var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, maximus);
+
+            wedge.setAttributes(attrs);
+            addRenderable(wedge, true, GraphicItem.CIRCLE_2D, sMapObjects);
+
+            if (sCheckModel.isChecked(GraphicItem.CIRCLE_1D)) {
+                var pos2 = WWHelper.positionFromPosition(position, DELTA_2D_ALTITUDE);
+                var angle2 = angle * 2;
+
+                var wedge2 = new Wedge(pos2, Angle.fromDegrees(angle2), 0.1, radius * 1.05);
+                var az2 = Angle.normalizedDegrees(bearing - angle2 / 2);
+                wedge2.setHeading(Angle.fromDegrees(az2));
+                var attrs2 = new BasicShapeAttributes();
+                attrs2.setDrawOutline(false);
+                attrs2.setDrawInterior(true);
+                attrs2.setInteriorMaterial(Material.WHITE);
+
+                wedge2.setAttributes(attrs2);
+                addRenderable(wedge2, true, null, sMapObjects);
+            }
+        } catch (Exception e) {
+            //
         }
-        var radius = Math.min(maxRadius, Math.abs(delta2d) * 250 + 0.05);
-        var maximus = radius == maxRadius;
-
-        var cylinder = new Cylinder(pos, height, radius);
-        var alarmLevel = p.ext().getAlarmLevel(o);
-        var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, maximus);
-
-        cylinder.setAttributes(attrs);
-        addRenderable(cylinder, true, GraphicItem.CIRCLE_2D, sMapObjects);
-    }
-
-    private void plot3dCircle(BTopoControlPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicItem.CIRCLE_3D, position)) {
-            return;
-        }
-
-        var height = 0.8;
-        var pos = WWHelper.positionFromPosition(position, height * 0.5 * 2);
-        var maxRadius = 10.0;
-        BTopoControlPointObservation o = p.ext().getObservationFilteredLast();
-
-        var delta3d = o.ext().getDelta3d();
-        if (Double.isNaN(delta3d)) {
-            return;
-        }
-
-        var radius = Math.min(maxRadius, Math.abs(delta3d) * 250 + 0.05);
-        var maximus = radius == maxRadius;
-        var cylinder = new Cylinder(pos, height, radius);
-        var alarmLevel = p.ext().getAlarmLevel(o);
-        var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, maximus);
-
-        cylinder.setAttributes(attrs);
-        addRenderable(cylinder, true, GraphicItem.CIRCLE_3D, sMapObjects);
     }
 
     private void plotFreqBuffer(BTopoControlPoint p, Position position) {
