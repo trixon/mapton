@@ -28,13 +28,56 @@ import org.mapton.ce_jfreechart.api.ChartHelper;
  */
 public class EwmaHelper {
 
+    @Deprecated(forRemoval = true)
     public static BPrimitiveSeries calculateEwma(BPrimitiveSeries series, int days) {
+        return calculateEwmaByDays(series, days);
+    }
+
+    public static BPrimitiveSeries calculateEwmaByDays(BPrimitiveSeries series, int days) {
+        var ewmaSeries = new BPrimitiveSeries(series.size());
+
+        if (series.size() == 0) {
+            return ewmaSeries;
+        }
+
+        final double tauSeconds = days * 24.0 * 3600.0;
+        double currentEwma = Double.NaN;
+        long previousSeconds = Long.MIN_VALUE;
+
+        for (int i = 0; i < series.size(); i++) {
+            double raw = series.getValues()[i];
+            long seconds = series.getEpochSeconds()[i];
+
+            if (Double.isNaN(raw)) {
+                ewmaSeries.add(seconds, currentEwma);
+                continue;
+            }
+
+            if (Double.isNaN(currentEwma)) {
+                currentEwma = raw;
+            } else {
+                long deltaSeconds = seconds - previousSeconds;
+                double lambda
+                        = 1.0 - Math.exp(-deltaSeconds / tauSeconds);
+                currentEwma
+                        = lambda * raw
+                        + (1.0 - lambda) * currentEwma;
+            }
+
+            ewmaSeries.add(seconds, currentEwma);
+            previousSeconds = seconds;
+        }
+
+        return ewmaSeries;
+    }
+
+    public static BPrimitiveSeries calculateEwmaByMeasurements(BPrimitiveSeries series, int measurements) {
         var ewmaSeries = new BPrimitiveSeries(series.size());
         if (series.size() == 0) {
             return ewmaSeries;
         }
 
-        double lambda = 2.0 / (days + 1.0);
+        double lambda = 2.0 / (measurements + 1.0);
         double currentEwma = Double.NaN;
 
         for (int i = 0; i < series.size(); i++) {

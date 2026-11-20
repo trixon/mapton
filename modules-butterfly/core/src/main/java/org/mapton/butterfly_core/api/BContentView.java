@@ -148,7 +148,8 @@ public abstract class BContentView {
         });
 
         var sortAndLimitPane = new VBox(8, mListSortOrderScb, mListLimitComboBox);
-        mListLimitComboBox.prefWidthProperty().bind(mListSortOrderScb.widthProperty());
+        //The following line, if in use, might trigger a bug in sort orde selection.
+//        mListLimitComboBox.prefWidthProperty().bind(mListSortOrderScb.widthProperty());
         sortAndLimitPane.setPadding(FxHelper.getUIScaledInsets(8, 16, 16, 16));
         mFilter.getListSortPopOver().setNode(sortAndLimitPane);
     }
