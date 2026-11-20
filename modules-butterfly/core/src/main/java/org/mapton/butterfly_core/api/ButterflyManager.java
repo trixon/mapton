@@ -130,6 +130,7 @@ public class ButterflyManager {
                 var message = "Det tog %.1f %s".formatted(timeSpent, Dict.TIME_SECONDS.toLower());
                 NotifocationHelper.displayTextNotification(title, message, 10_000);
                 mLoadCounter.set(mLoadCounter.get() + 1);
+                SystemHelper.runGcDelayed(30_000);
             }
         });
     }
