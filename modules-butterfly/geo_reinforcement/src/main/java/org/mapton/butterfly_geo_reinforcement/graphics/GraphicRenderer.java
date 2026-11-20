@@ -35,6 +35,7 @@ import java.util.Map;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.geo.BGeoReinforcementPoint;
 import org.mapton.butterfly_geo_reinforcement.ReinforcementAttributeManager;
 import org.mapton.butterfly_geo_reinforcement.ReinforcementManager;
@@ -50,9 +51,9 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoReinfo
 
     private final ReinforcementAttributeManager mAttributeManager = ReinforcementAttributeManager.getInstance();
     private final IndexedCheckModel<GraphicItem> mCheckModel;
-    private ArrayList<AVListImpl> mMapObjects;
-    private final ReinforcementManager mManager = ReinforcementManager.getInstance();
     private double mHeightOffset = 25.0;
+    private final ReinforcementManager mManager = ReinforcementManager.getInstance();
+    private ArrayList<AVListImpl> mMapObjects;
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer, sPlotLimiter);
@@ -82,6 +83,10 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoReinfo
 
         if (mCheckModel.isChecked(GraphicItem.RECENT)) {
             plotRecent(p, position);
+        }
+
+        if (mCheckModel.isChecked(GraphicItem.TRACE)) {
+            plotTrace(p, position);
         }
     }
 
@@ -203,6 +208,16 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicItem, BGeoReinfo
         var attrs2 = new BasicShapeAttributes(mAttributeManager.getComponentGroundPathAttributes());
         groundPath.setAttributes(attrs2);
         addRenderable(groundPath, false, null, null);
+    }
+
+    private void plotTrace(BXyzPoint p, Position position) {
+        var shape = new Cylinder(position, 0.2, 4.0);
+        var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
+        attrs.setDrawInterior(true);
+        attrs.setDrawOutline(false);
+        shape.setAttributes(attrs);
+
+        addRenderable(shape, true, GraphicItem.TRACE, mMapObjects);
     }
 
 }

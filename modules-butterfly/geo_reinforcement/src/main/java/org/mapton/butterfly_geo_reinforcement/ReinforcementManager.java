@@ -63,6 +63,7 @@ public class ReinforcementManager extends BaseManager<BGeoReinforcementPoint> {
 
     @Override
     public Object getObjectChart(BGeoReinforcementPoint selectedObject) {
+//        return MultiChartManager.getInstance().getObjectChart(selectedObject);
         return mMultiChartAggregate.build(selectedObject);
     }
 
