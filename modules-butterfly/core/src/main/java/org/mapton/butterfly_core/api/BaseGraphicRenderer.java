@@ -24,6 +24,7 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.RigidShape;
 import gov.nasa.worldwind.render.SurfaceCircle;
@@ -48,6 +49,12 @@ import se.trixon.almond.util.swing.SwingHelper;
 public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
 
     public static final double DEFAULT_AXIS_LENGTH = 2.0;
+    public static final double DELTA_1D_ALTITUDE = 0.4;
+    public static final double DELTA_1D_NEG_HEIGHT = DELTA_1D_ALTITUDE;
+    public static final double DELTA_1D_POS_HEIGHT = DELTA_1D_ALTITUDE * .5;
+    public static final double DELTA_2D_HEIGHT = 0.5;
+    public static final double DELTA_2D_ALTITUDE = DELTA_1D_ALTITUDE + 0.5 * DELTA_1D_NEG_HEIGHT + DELTA_2D_HEIGHT;
+
     public static final double PERCENTAGE_ALTITUDE = 50.0;
     public static final double PERCENTAGE_SIZE = 1.5;
     public static final double PERCENTAGE_SIZE_ALARM = PERCENTAGE_SIZE * 1.2;
@@ -226,6 +233,16 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
 
     public void plotIndicatorZero(Position pos, double radius, BBaseControlPointObservation o) {
         plotIndicator(pos, radius, 6, javafx.scene.paint.Color.CORNFLOWERBLUE, o.isZeroMeasurement());
+    }
+
+    public void plotLabel3d(Position position, String string) {
+        var placemark = new PointPlacemark(position);
+        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+        placemark.setAltitudeMode(WorldWind.ABSOLUTE);
+        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+        placemark.setLabelText(string);
+        placemark.setAlwaysOnTop(true);
+        addRenderable(placemark, false, null, null);
     }
 
     public void plotPercentageAlarmIndicator(Position position, BAlarm alarm, RigidShape rigidShape, boolean rising) {

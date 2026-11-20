@@ -40,35 +40,25 @@ public abstract class BaseAttributeManager {
 
     private AnnotationAttributes mAlarmAnnotationAttributes;
     private BasicShapeAttributes[] mAlarmInteriorAttributes;
+    private BasicShapeAttributes mAlarmInteriorMaxAttributes;
     private BasicShapeAttributes mAlarmLimitAttributes;
     private BasicShapeAttributes[] mAlarmOutlineAttributes;
     private BasicShapeAttributes mAxisAttributes;
+    private final HashMap<javafx.scene.paint.Color, BasicAirspaceAttributes> mColorToAirspaceAttributes = new HashMap<>();
     private BasicShapeAttributes mComponentAlarmLevelTrace1dAttributes;
     private BasicShapeAttributes mComponentAlarmLevelTrace2dAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
     private BasicShapeAttributes mComponentGroundPathEvenAttributes;
     private BasicShapeAttributes mComponentGroundPathOddAttributes;
+    private BasicShapeAttributes mComponentGroundPathStippleAttributes;
     private BasicShapeAttributes[][] mComponentTrace1dAttributes;
     private BasicShapeAttributes mComponentZeroAttributes;
     private BasicShapeAttributes mGroundwaterAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
     private PointPlacemarkAttributes mSinglePinAttributes;
-    private final HashMap<javafx.scene.paint.Color, BasicAirspaceAttributes> mColorToAirspaceAttributes = new HashMap<>();
 
     public BaseAttributeManager() {
-    }
-
-    public BasicAirspaceAttributes getIndicatorAttributes(javafx.scene.paint.Color color) {
-        return mColorToAirspaceAttributes.computeIfAbsent(color, k -> {
-            var attrs = new BasicAirspaceAttributes();
-            attrs.setInteriorMaterial(WWHelper.createMaterial(color));
-            attrs.setEnableLighting(true);
-            attrs.setInteriorOpacity(0.5);
-            attrs.setDrawInterior(true);
-
-            return attrs;
-        });
     }
 
     public AnnotationAttributes getAlarmAnnotationAttributes() {
@@ -87,6 +77,10 @@ public abstract class BaseAttributeManager {
     }
 
     public BasicShapeAttributes getAlarmInteriorAttributes(int alarmLevel) {
+        return getAlarmInteriorAttributes(alarmLevel, false);
+    }
+
+    public BasicShapeAttributes getAlarmInteriorAttributes(int alarmLevel, boolean maximum) {
         if (mAlarmInteriorAttributes == null) {
             mAlarmInteriorAttributes = new BasicShapeAttributes[5];
             for (int i = 0; i < 5; i++) {
@@ -96,6 +90,14 @@ public abstract class BaseAttributeManager {
                 attrs.setDrawOutline(false);
                 mAlarmInteriorAttributes[i] = attrs;
             }
+        }
+
+        if (maximum) {
+            if (mAlarmInteriorMaxAttributes == null) {
+                mAlarmInteriorMaxAttributes = mAlarmInteriorAttributes[0];
+                mAlarmInteriorMaxAttributes.setInteriorMaterial(Material.MAGENTA);
+            }
+            return mAlarmInteriorMaxAttributes;
         }
 
         return mAlarmInteriorAttributes[alarmLevel + 1];
@@ -173,6 +175,14 @@ public abstract class BaseAttributeManager {
         }
 
         return mComponentGroundPathOddAttributes;
+    }
+
+    public BasicShapeAttributes getComponentGroundPathStippleAttributes() {
+        if (mComponentGroundPathStippleAttributes == null) {
+            mComponentGroundPathStippleAttributes = new BasicShapeAttributes(getComponentGroundPathAttributes());
+            mComponentGroundPathStippleAttributes.setOutlineStippleFactor(3);
+        }
+        return mComponentGroundPathStippleAttributes;
     }
 
     public BasicShapeAttributes getComponentTrace1dAttributes(int alarmLevel, boolean rise, boolean maximus) {
@@ -261,6 +271,18 @@ public abstract class BaseAttributeManager {
         }
 
         return mGroundwaterAttributes;
+    }
+
+    public BasicAirspaceAttributes getIndicatorAttributes(javafx.scene.paint.Color color) {
+        return mColorToAirspaceAttributes.computeIfAbsent(color, k -> {
+            var attrs = new BasicAirspaceAttributes();
+            attrs.setInteriorMaterial(WWHelper.createMaterial(color));
+            attrs.setEnableLighting(true);
+            attrs.setInteriorOpacity(0.5);
+            attrs.setDrawInterior(true);
+
+            return attrs;
+        });
     }
 
     public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
