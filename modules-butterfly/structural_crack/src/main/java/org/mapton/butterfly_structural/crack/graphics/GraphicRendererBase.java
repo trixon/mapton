@@ -23,6 +23,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_structural.crack.CrackLayerOptions;
 
 /**
  *
@@ -33,6 +34,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
     protected static IndexedCheckModel<GraphicItem> sCheckModel;
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
+    protected final CrackLayerOptions mLayerOptions = CrackLayerOptions.getInstance();
 
     static {
         for (var renderItem : GraphicItem.values()) {
