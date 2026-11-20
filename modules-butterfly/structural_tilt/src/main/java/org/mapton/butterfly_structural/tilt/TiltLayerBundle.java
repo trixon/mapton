@@ -109,6 +109,10 @@ public class TiltLayerBundle extends BfLayerBundle {
                     mSymbolLayer.setEnabled(false);
                     mPinLayer.setEnabled(true);
                 }
+                case PIN_3D -> {
+                    mPinLayer.setEnabled(false);
+                    mSymbolLayer.setEnabled(false);
+                }
                 case SYMBOL -> {
                     mSymbolLayer.setEnabled(true);
                     mPinLayer.setEnabled(false);
@@ -125,8 +129,11 @@ public class TiltLayerBundle extends BfLayerBundle {
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
-                        mapObjects.add(plotPin(p, position, labelPlacemark));
-                        mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
+                        if (mLayerOptions.getPointBy() == TiltPointBy.PIN) {
+                            mapObjects.add(plotPin(p, position, labelPlacemark));
+                        } else if (mLayerOptions.getPointBy() == TiltPointBy.SYMBOL) {
+                            mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
+                        }
 
                         mGraphicRenderer.plot(p, mManager.getSelectedItem(), position, mapObjects, mLayerOptions);
                         addClickArea(position, mapObjects);
@@ -141,12 +148,17 @@ public class TiltLayerBundle extends BfLayerBundle {
     }
 
     private PointPlacemark plotLabel(BStructuralTiltPoint p, TiltLabelBy labelBy, Position position) {
+        mLabelLayer.setEnabled(mLayerOptions.getPointBy() != TiltPointBy.PIN_3D);
         if (labelBy == TiltLabelBy.NONE) {
+            p.setValue(BKey.PIN_NAME, "");
             return null;
         } else {
-            var label = labelBy.getLabel(p);
-            p.setValue(BKey.PIN_NAME, label);
-            var placemark = createPlacemark(position, label, mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
+            var placemark = createPlacemark(position, "", mAttributeManager.getLabelPlacemarkAttributes(), mLabelLayer);
+            Thread.ofVirtual().start(() -> {
+                var label = labelBy.getLabel(p);
+                p.setValue(BKey.PIN_NAME, label);
+                placemark.setLabelText(label);
+            });
 
             return placemark;
         }

@@ -22,21 +22,30 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Box;
 import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.Pyramid;
+import gov.nasa.worldwind.render.RigidShape;
 import gov.nasa.worldwind.render.Wedge;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.butterfly_core.api.BKey;
 import static org.mapton.butterfly_core.api.BaseGraphicRenderer.PERCENTAGE_ALTITUDE;
 import static org.mapton.butterfly_core.api.BaseGraphicRenderer.PERCENTAGE_SIZE;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BComponent;
+import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import org.mapton.butterfly_structural.tilt.TiltAttributeManager;
 import org.mapton.butterfly_structural.tilt.TiltHelper;
+import org.mapton.butterfly_structural.tilt.TiltPointBy;
 import org.mapton.worldwind.api.WWHelper;
+import org.openide.util.Exceptions;
 import se.trixon.almond.util.MathHelper;
 
 /**
@@ -44,6 +53,8 @@ import se.trixon.almond.util.MathHelper;
  * @author Patrik Karlström
  */
 public class GraphicRenderer extends GraphicRendererBase {
+
+    double SHAPE_SIZE = 0.5;
 
     private final TiltAttributeManager mAttributeManager = TiltAttributeManager.getInstance();
     private Position mPosition;
@@ -88,6 +99,43 @@ public class GraphicRenderer extends GraphicRendererBase {
         if (sCheckModel.isChecked(GraphicItem.TILT_TRANSVERSAL)) {
             plotTiltTransversal(p);
         }
+
+        if (mLayerOptions.getPointBy() == TiltPointBy.PIN_3D) {
+            plot3dPin2(p, position);
+        }
+
+    }
+
+    public Position plot3dPin(BXyzPoint p, Position position) {
+//        return s3dPinPointToPositionMap.computeIfAbsent(p, k -> {
+//        });
+        var zeroZ = Math.abs(MathHelper.convertDoubleToDouble(p.getZeroZ()));
+        var startPosition = WWHelper.positionFromPosition(position, zeroZ);
+        RigidShape startShape;
+        if (p.getDimension() == BDimension._1d) {
+            startShape = new Ellipsoid(startPosition, SHAPE_SIZE, SHAPE_SIZE, SHAPE_SIZE);
+        } else {
+            startShape = new Pyramid(startPosition, SHAPE_SIZE, SHAPE_SIZE);
+        }
+        var attrs = mAttributeManager.getAlarmInteriorAttributes(TiltHelper.getAlarmLevel(p));
+        startShape.setAttributes(attrs);
+        return plot3dPin(p, position, startShape);
+    }
+
+    public Position plot3dPin(BXyzPoint p, Position position, RigidShape startShape) {
+
+        addRenderable(startShape, true, null, sMapObjects);
+
+        var groundPath = new Path(position, startShape.getCenterPosition());
+        if (p.getZeroZ() < 0) {
+            groundPath.setAttributes(mAttributeManager.getComponentGroundPathStippleAttributes());
+        } else {
+            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        }
+        addRenderable(groundPath, true, null, sMapObjects);
+
+        return startShape.getCenterPosition();
+
     }
 
     private Double calcBearing(BStructuralTiltPoint p) {
@@ -157,6 +205,26 @@ public class GraphicRenderer extends GraphicRendererBase {
             var longLength = Math.max(Math.abs(scaleLength * longDelta), minLength);
             mPosition2 = WWHelper.movePolar(mPosition0, longBearing, longLength, z);
         }
+    }
+
+    private void plot3dPin2(BXyzPoint p, Position position) {
+        if (Butterfly.anyNaN(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
+            return;
+        }
+
+        var position2 = plot3dPin(p, position);
+//        plotLabel(p, position2);
+        Thread.ofVirtual().start(() -> {
+            try {
+                Thread.sleep(10);
+                String label = p.getValue(BKey.PIN_NAME);
+                if (StringUtils.isNotBlank(label)) {
+                    plotLabel3d(position2, label);
+                }
+            } catch (InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        });
     }
 
     private void plotAlarmConsumption(BStructuralTiltPoint p, Position position) {

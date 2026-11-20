@@ -23,6 +23,7 @@ import se.trixon.almond.util.Dict;
  */
 public enum TiltPointBy {
     PIN(Dict.PIN.toString()),
+    PIN_3D("%s 3d".formatted(Dict.PIN.toString())),
     SYMBOL(Dict.SYMBOL.toString()),
     NONE(Dict.NONE.toString());
     private final String mName;
