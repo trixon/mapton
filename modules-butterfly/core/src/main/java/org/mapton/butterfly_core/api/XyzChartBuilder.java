@@ -312,6 +312,13 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                 .append(" → ")
                 .append(p.getDateLatest().toLocalDate());
 
+        var toDate = p.getDateValidTo();
+        var invalidTo = toDate == null ? false : DateHelper.isAfterOrEqual(LocalDate.now(), toDate);
+
+        if (invalidTo) {
+            sb.append(" ⊣");
+        }
+
         if (p.getFrequency() > 0) {
             sb.append("   ");
             sb.append(Long.toString(p.extOrNull().getMeasurementUntilNext(ChronoUnit.DAYS)));
