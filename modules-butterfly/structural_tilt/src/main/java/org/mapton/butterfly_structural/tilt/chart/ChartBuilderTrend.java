@@ -39,6 +39,7 @@ import se.trixon.almond.util.Dict;
  */
 public class ChartBuilderTrend extends ChartBuilderBase {
 
+    private final TimeSeries mDetrendingTimeSeries;
     private final Function<BXyzPointObservation, Double> mFunction;
     private final TimeSeries mTimeSeries;
     private final String mType;
@@ -47,12 +48,14 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         mType = type;
         mFunction = function;
         mTimeSeries = new TimeSeries("%s %s".formatted(Dict.TREND.toString(), type));
+        mDetrendingTimeSeries = new TimeSeries("%s %s".formatted("Detrended", type));
         initChart("mm/m", "0.0");
     }
 
     @Override
     public void updateDataset(BStructuralTiltPoint p) {
         mTimeSeries.clear();
+        mDetrendingTimeSeries.clear();
 
         var plot = getPlot();
         resetPlot(plot);
@@ -71,6 +74,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
         plotOverlays(plot, p, p.ext().getObservationFilteredFirstDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
+        var trend = TrendHelper.createTrend(p, true, p.getDateZero().atStartOfDay(), LocalDateTime.now(), mFunction);
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             addNEMarkers(plot, o, true);
 
@@ -80,13 +84,20 @@ public class ChartBuilderTrend extends ChartBuilderBase {
                 mSubSetZeroMinute = minute;
             }
 
-            mTimeSeries.addOrUpdate(minute, mFunction.apply(o));
+            var value = mFunction.apply(o);
+
+            long x = minute.getFirstMillisecond();
+            double trendValue = trend.function().getValue(x);
+
+            mTimeSeries.addOrUpdate(minute, value);
+            mDetrendingTimeSeries.addOrUpdate(minute, value - trendValue);
 
             mDateEnd = DateHelper.convertToDate(o.getDate());
         });
 
         if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
             getDataset().addSeries(mTimeSeries);
+            getDataset().addSeries(mDetrendingTimeSeries);
             var renderer = new XYLineAndShapeRenderer(true, false);
             plot.setRenderer(0, renderer);
             var color = switch (mType) {
@@ -98,6 +109,7 @@ public class ChartBuilderTrend extends ChartBuilderBase {
                     Color.BLUE;
             };
             renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeries.getKey()), color);
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(mDetrendingTimeSeries.getKey()), Color.BLACK);
         }
 
         var startDateFirst = p.ext().getDateFirst();
