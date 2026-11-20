@@ -19,8 +19,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.Minute;
+import org.jfree.data.time.TimeSeries;
 
 /**
  *
@@ -53,5 +58,42 @@ public class ChartHelper {
                 ldt.getMonthValue(),
                 ldt.getYear()
         );
+    }
+
+    public static TimeSeries dailyMedian(TimeSeries source) {
+        Map<LocalDate, List<Double>> byDay = new TreeMap<>();
+
+        for (int i = 0; i < source.getItemCount(); i++) {
+            var item = source.getDataItem(i);
+            var day = Instant.ofEpochMilli(
+                    item.getPeriod().getStart().getTime())
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+            byDay.computeIfAbsent(day, d -> new ArrayList<>()).add(item.getValue().doubleValue());
+        }
+
+        var result = new TimeSeries(source.getKey() + " (daily median)");
+
+        byDay.forEach((day, values) -> {
+            values.sort(Double::compare);
+
+            double median;
+            int n = values.size();
+
+            if ((n & 1) == 0) {
+                median = (values.get(n / 2 - 1) + values.get(n / 2)) / 2.0;
+            } else {
+                median = values.get(n / 2);
+            }
+
+            result.add(new Day(
+                    day.getDayOfMonth(),
+                    day.getMonthValue(),
+                    day.getYear()),
+                    median);
+        });
+
+        return result;
     }
 }
