@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAxis;
@@ -34,6 +33,7 @@ import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
 import org.mapton.butterfly_format.types.BXyzPoint;
+import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -77,17 +77,19 @@ public class BTopoGrade extends BXyzPoint {
         setButterfly(mP1.getButterfly());
     }
 
-    public void calculate() {
+    public void calculate(LocalDate startDate, LocalDate endDate) {
         var map1 = sCachePointToObservations.get(mP1);
         var map2 = sCachePointToObservations.get(mP2);
 
         for (var entry : map1.entrySet()) {
             var date = entry.getKey();
-            var point2 = map2.get(date);
-            if (point2 != null) {
-                var gradeObservation = new BTopoGradeObservation(this, entry.getValue(), point2);
-                gradeObservation.setDate(date.atStartOfDay());
-                mCommonObservations.put(date, gradeObservation);
+            if (DateHelper.isBetween(startDate, endDate, date)) {
+                var point2 = map2.get(date);
+                if (point2 != null) {
+                    var gradeObservation = new BTopoGradeObservation(entry.getValue(), point2);
+                    gradeObservation.setDate(date.atStartOfDay());
+                    mCommonObservations.put(date, gradeObservation);
+                }
             }
         }
 
@@ -169,21 +171,21 @@ public class BTopoGrade extends BXyzPoint {
                         point = new Point3D(
                                 0.0,
                                 0.0,
-                                o.getMeasuredZ() - o.ext().getAccuZ()
+                                p.getZeroZ() + o.ext().getDeltaZ()
                         );
                         break;
                     case _2d:
                         point = new Point3D(
-                                o.getMeasuredX() - o.ext().getAccuX(),
-                                o.getMeasuredY() - o.ext().getAccuY(),
+                                p.getZeroX() + o.ext().getDeltaX(),
+                                p.getZeroY() + o.ext().getDeltaY(),
                                 0.0
                         );
                         break;
                     case _3d:
                         point = new Point3D(
-                                o.getMeasuredX() - o.ext().getAccuX(),
-                                o.getMeasuredY() - o.ext().getAccuY(),
-                                o.getMeasuredZ() - o.ext().getAccuZ()
+                                p.getZeroX() + o.ext().getDeltaX(),
+                                p.getZeroY() + o.ext().getDeltaY(),
+                                p.getZeroZ() + o.ext().getDeltaZ()
                         );
                         break;
                     default:
@@ -205,16 +207,16 @@ public class BTopoGrade extends BXyzPoint {
         }
 
         @Override
-        public int getAlarmLevel(BComponent component, Double value) {
+        public int getAlarmLevel(BComponent component, double value) {
             var alarm1 = getAlarmP1(component);
             var level1 = -1;
-            if (ObjectUtils.allNotNull(alarm1, value)) {
+            if (alarm1 != null && !Double.isNaN(value)) {
                 level1 = alarm1.ext().getRatioLevel(value);
             }
 
             var alarm2 = getAlarmP2(component);
             var level2 = -1;
-            if (ObjectUtils.allNotNull(alarm2, value)) {
+            if (alarm2 != null && !Double.isNaN(value)) {
                 level2 = alarm2.ext().getRatioLevel(value);
             }
 

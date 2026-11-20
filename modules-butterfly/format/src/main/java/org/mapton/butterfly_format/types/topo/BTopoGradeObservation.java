@@ -24,14 +24,12 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
  */
 public class BTopoGradeObservation extends BXyzPointObservation {
 
-    private final BTopoGrade mGrade;
-    private final Point3D mPoint3d1;
-    private final Point3D mPoint3d2;
     private Point3D mCoordinate1;
     private Point3D mCoordinate2;
+    private final Point3D mPoint3d1;
+    private final Point3D mPoint3d2;
 
-    public BTopoGradeObservation(BTopoGrade grade, Point3D point3d1, Point3D point3d2) {
-        mGrade = grade;
+    public BTopoGradeObservation(Point3D point3d1, Point3D point3d2) {
         mPoint3d1 = point3d1;
         mPoint3d2 = point3d2;
     }

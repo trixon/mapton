@@ -25,16 +25,11 @@ import se.trixon.almond.util.MathHelper;
 public class BTopoGradeDiff {
 
     private final double mDeltaDistance;
-
     private final Point3D mDeltaPairPoint3d;
     private final BTopoGrade mGrade;
-    private final BTopoGradeObservation mObservation;
-    private final BTopoGradeObservation mReferenceObservation;
 
     public BTopoGradeDiff(BTopoGrade grade, BTopoGradeObservation referenceObservation, BTopoGradeObservation observation) {
         mGrade = grade;
-        mReferenceObservation = referenceObservation;
-        mObservation = observation;
 
         var referencePoint1 = referenceObservation.getPoint3d1();
         var referencePoint2 = referenceObservation.getPoint3d2();
@@ -46,8 +41,13 @@ public class BTopoGradeDiff {
 
         mDeltaPairPoint3d = deltaPoint2.subtract(deltaPoint1);
 
-        var distanceReference = referenceObservation.getCoordinate1().distance(referenceObservation.getCoordinate2());
-        var distance = observation.getCoordinate1().distance(observation.getCoordinate2());
+        Point3D rc1 = referenceObservation.getCoordinate1();
+        Point3D rc2 = referenceObservation.getCoordinate2();
+
+        var distanceReference = rc1.distance(rc2);
+        Point3D c1 = observation.getCoordinate1();
+        Point3D c2 = observation.getCoordinate2();
+        var distance = c1.distance(c2);
         mDeltaDistance = distance - distanceReference;
     }
 
