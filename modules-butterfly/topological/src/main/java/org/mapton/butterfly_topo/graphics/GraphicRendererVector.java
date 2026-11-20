@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BCoordinatrix;
 import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.TrendHelper;
@@ -39,11 +40,13 @@ import org.mapton.butterfly_format.types.BTrendPeriod;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.butterfly_topo.TopoLayerBundle;
+import org.mapton.butterfly_topo.TopoPointBy;
 import static org.mapton.butterfly_topo.graphics.GraphicRendererBase.sMapObjects;
 import org.mapton.butterfly_topo.monmon.MonLayerOptions;
 import org.mapton.butterfly_topo.monmon.MonManager;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.mapton.worldwind.api.WWHelper;
+import org.openide.util.Exceptions;
 import se.trixon.almond.util.MathHelper;
 
 /**
@@ -90,6 +93,10 @@ public class GraphicRendererVector extends GraphicRendererBase {
 
         if (sCheckModel.isChecked(GraphicItem.PIN) && dimension != BDimension._2d) {
             plotPoint(p, position);
+        }
+
+        if (mLayerOptions.getPointBy() == TopoPointBy.PIN_3D) {
+            plot3dPin2(p, position);
         }
     }
 
@@ -325,6 +332,31 @@ public class GraphicRendererVector extends GraphicRendererBase {
                 });
     }
 
+    private void plot3dPin2(BTopoControlPoint p, Position position) {
+        if (Butterfly.anyNaN(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
+            return;
+        }
+
+        var position2 = plot3dPin(p, position);
+//        plotLabel(p, position2);
+        Thread.ofVirtual().start(() -> {
+            try {
+                Thread.sleep(10);
+                String label = p.getValue(BKey.PIN_NAME);
+                if (StringUtils.isNotBlank(label)) {
+                    plotLabel3d(position2, label);
+                }
+            } catch (InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        });
+
+        if (sCheckModel.isChecked(GraphicItem.BEARING)) {
+            plotBearing(p, position, position2.getAltitude());
+
+        }
+    }
+
     private void plotGroundPath(BTopoControlPoint p) {
         var p1 = BCoordinatrix.toPositionWW3d(p);
         p1 = WWHelper.positionFromPosition(p1, Math.abs(p.getZeroZ()));
@@ -352,4 +384,5 @@ public class GraphicRendererVector extends GraphicRendererBase {
 
         }
     }
+
 }

@@ -85,6 +85,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     public void reset() {
         super.reset();
         sPointToPositionMap.clear();
+        s3dPinPointToPositionMap.clear();
         mGroupRenderer.reset();
         clearLabeledPoints(BTopoControlPoint.class);
         mVectorRenderer.reset();

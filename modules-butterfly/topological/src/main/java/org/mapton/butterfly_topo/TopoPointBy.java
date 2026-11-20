@@ -23,6 +23,7 @@ import se.trixon.almond.util.Dict;
  */
 public enum TopoPointBy {
     PIN(Dict.PIN.toString()),
+    PIN_3D("%s 3d".formatted(Dict.PIN.toString())),
     SYMBOL(Dict.SYMBOL.toString()),
     AUTO(Dict.AUTOMATIC.toString()),
     NONE(Dict.NONE.toString());

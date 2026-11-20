@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo.graphics;
 
-import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -27,6 +26,15 @@ import se.trixon.almond.util.SDict;
 public enum GraphicItem implements GraphicRenderItemLimitProvider {
     PIN(Dict.PIN.toString(), Integer.MAX_VALUE),
     LABEL("\t— %s".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
+    SEPARATOR_1("*** MARK", 0),
+    BEARING(Dict.BEARING.toString(), Integer.MAX_VALUE),
+    CIRCLE_1D("Delta, 1d", Integer.MAX_VALUE),
+    CIRCLE_2D("Delta, 2d", Integer.MAX_VALUE),
+    MEASUREMENT_MODE("Mätläge", Integer.MAX_VALUE),
+    CIRCLE_VERTICAL_DIRECTION("Färgskala, vertikalrörelse", Integer.MAX_VALUE),
+    ALARM_LEVEL(SDict.ALARM_LEVEL.toString(), Integer.MAX_VALUE),
+    FREQ_BUFFER("Frekvens, hög (buffer)", Integer.MAX_VALUE),
+    SEPARATOR_2("*** KLUSTER", 0),
     CLUSTER_GROUNDWATER_CONNECTOR("Kluster, grundvatten", Integer.MAX_VALUE),
     CLUSTER_GROUNDWATER_GRAPH("Kluster, grundvattengraf", Integer.MAX_VALUE),
     CLUSTER_DEFORMATION_HULL("Kluster, deformation (convex hull)", Integer.MAX_VALUE),
@@ -35,13 +43,8 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     CLUSTER_DEFORMATION_PLANE_ALTITUDES("Kluster, deformation plan på olika höjder", Integer.MAX_VALUE),
     CLUSTER_DEFORMATION_PLANE_ALTITUDES_LABEL("\tEtikett: Avstånd och bäring", Integer.MAX_VALUE),
     //CLUSTER_DEFORMATION_TIN("Kluster, yta", Integer.MAX_VALUE),
-    BEARING(Dict.BEARING.toString(), Integer.MAX_VALUE),
-    MEASUREMENT_MODE("Mätläge", Integer.MAX_VALUE),
+    SEPARATOR_3("*** LUFTRUM", 0),
     ALTUTID("Altutid", Integer.MAX_VALUE),
-    CIRCLE_1D("1d-delta", Integer.MAX_VALUE),
-    CIRCLE_2D("2d-delta", Integer.MAX_VALUE),
-    CIRCLE_3D("3d-delta", Integer.MAX_VALUE),
-    CIRCLE_VERTICAL_DIRECTION("Färgskala, vertikalrörelse", Integer.MAX_VALUE),
     TRACE_1D(SDict.TRACE_1D.toString(), 10_000),
     TRACE_1D_ZERO("\t— %s".formatted("Nollmätning"), Integer.MAX_VALUE),
     TRACE_1D_REPLACE("\t— %s".formatted("Ersättningsmätning"), Integer.MAX_VALUE),
@@ -56,13 +59,14 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     VECTOR_3D_LINE_OF_SIGHT("3d-siktlinjer - Abs(z)", Integer.MAX_VALUE),
     MEASUREMENTS(Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower()), Integer.MAX_VALUE),
     MEASUREMENTS_PER_MONTH(Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower() + "/" + Dict.Time.MONTH.toLower()), 10_000),
-    ALARM_LEVEL(SDict.ALARM_LEVEL.toString(), Integer.MAX_VALUE),
     ALARM_CONSUMPTION("Larmförbrukning", Integer.MAX_VALUE),
     ALARM_CONSUMPTION_TRACE_1("\t— spår höjd", Integer.MAX_VALUE),
     ALARM_CONSUMPTION_TRACE_2("\t— spår plan", Integer.MAX_VALUE),
     TRACE_ALARM_LEVEL("%s (%s)".formatted(SDict.ALARM_LEVEL.toString(), SDict.TRACE.toLower()), Integer.MAX_VALUE),
+    SEPARATOR_4("*** MEDEL", 0),
     AVG_1D_PERIOD("Medel, 1d Period", 10_000),
     AVG_1D_ACTIVITY("Medel, 1d Aktivitet", 10_000),
+    SEPARATOR_5("*** TREND", 0),
     TREND_1D_PERIOD("Trend, 1d Period", Integer.MAX_VALUE),
     TREND_1D_PERIODS("Trend, 1d Perioder", Integer.MAX_VALUE),
     TREND_1D_DIFF_PREV("Trend, 1d Diff föregående", Integer.MAX_VALUE),
@@ -74,9 +78,8 @@ public enum GraphicItem implements GraphicRenderItemLimitProvider {
     TREND_2D_DIFF_PREV("Trend, 2d Diff föregående", Integer.MAX_VALUE),
     TREND_2D_DIFF("Trend, 2d Diff referens", Integer.MAX_VALUE),
     TREND_2D_PIE("Trend, 2d (paj)", Integer.MAX_VALUE),
-    TREND_2D_STACK("Trend, 2d (stapel)", Integer.MAX_VALUE),
-    FREQ_BUFFER("Frekvens, hög (buffer)", Integer.MAX_VALUE),
-    HEAT_MAP(Mapton.addWarning("Värmekarta", 5), Integer.MAX_VALUE);
+    TREND_2D_STACK("Trend, 2d (stapel)", Integer.MAX_VALUE);
+//    HEAT_MAP(Mapton.addWarning("Värmekarta", 5), Integer.MAX_VALUE);
 
     private final String mName;
     private final int mPlotLimit;

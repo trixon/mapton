@@ -22,6 +22,8 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.Pyramid;
+import gov.nasa.worldwind.render.RigidShape;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,11 +53,13 @@ import se.trixon.almond.util.MathHelper;
  */
 public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicItem, BTopoControlPoint> {
 
+    protected static HashMap<BXyzPoint, Position> s3dPinPointToPositionMap = new HashMap<>();
+
     protected static IndexedCheckModel<GraphicItem> sCheckModel;
     protected static final HashSet<BXyzPoint> sLabeledPoints = new HashSet<>();
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
-    protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
+    protected static HashMap<BXyzPoint, Position[]> sPointToPositionMap = new HashMap<>();
     protected final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
     protected final TopoLayerOptions mLayerOptions = TopoLayerOptions.getInstance();
     protected final TopoManager mManager = TopoManager.getInstance();
@@ -170,7 +174,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
 //                );
 //                int w = 0;
 //            }
-            var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
+var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
             currentPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
 
             var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
@@ -181,6 +185,41 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicIte
         }
 
         return new Position[]{startPosition, currentPosition};
+    }
+
+    public Position plot3dPin(BXyzPoint p, Position position) {
+        return s3dPinPointToPositionMap.computeIfAbsent(p, k -> {
+            return plot3dPinNoCache(p, position);
+        });
+    }
+
+    public Position plot3dPinNoCache(BXyzPoint p, Position position) {
+        var SHAPE_SIZE = 0.5;
+        var zeroZ = Math.abs(MathHelper.convertDoubleToDouble(p.getZeroZ()));
+
+        RigidShape startShape;
+        var startPosition = WWHelper.positionFromPosition(position, zeroZ);
+
+        if (p.getDimension() == BDimension._1d) {
+            startShape = new Ellipsoid(startPosition, SHAPE_SIZE, SHAPE_SIZE, SHAPE_SIZE);
+        } else {
+            startShape = new Pyramid(startPosition, SHAPE_SIZE, SHAPE_SIZE);
+        }
+
+        startShape.setAttributes(mAttributeManager.getSymbolAttributes((BTopoControlPoint) p));
+
+        addRenderable(startShape, true, null, sMapObjects);
+
+        var groundPath = new Path(position, startPosition);
+        if (p.getZeroZ() < 0) {
+            groundPath.setAttributes(mAttributeManager.getComponentGroundPathStippleAttributes());
+        } else {
+            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        }
+        addRenderable(groundPath, true, null, sMapObjects);
+
+        return startPosition;
+
     }
 
     public void plotBearing(BTopoControlPoint p, Position position, double zOffset) {
